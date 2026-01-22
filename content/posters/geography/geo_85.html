@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oceania: Islands of Fire and Coral</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: radial-gradient(circle at top, #0284c7, #082f49); color: white; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); }
+        .rounded-custom { border-radius: 2rem; }
+        canvas { cursor: pointer; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="mb-8 border-b border-white/20 pb-4 flex justify-between items-center">
+        <h1 id="title" class="text-3xl font-montserrat tracking-widest text-sky-200"></h1>
+        <div class="flex gap-2"><button onclick="setL('ru')" class="hover:text-sky-300">RU</button><button onclick="setL('en')" class="hover:text-sky-300">EN</button></div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="glass rounded-custom p-0 relative h-[500px] overflow-hidden flex items-center justify-center">
+            <canvas id="atollCanvas" class="w-full h-full"></canvas>
+            <div class="absolute bottom-4 left-0 right-0 text-center text-xs uppercase tracking-[0.3em] text-white/50">Atoll Formation Cycle</div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+            <div class="glass rounded-custom p-8 border-l-4 border-sky-500">
+                <h2 id="h-info" class="text-2xl font-bold mb-4 text-sky-100"></h2>
+                <p id="t-info" class="text-sm leading-relaxed text-white/80"></p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-4">
+                <div class="glass p-6 rounded-2xl flex items-center gap-4">
+                    <span class="text-3xl">🌋</span>
+                    <div>
+                        <div class="font-bold text-sky-300">Volcanic Islands</div>
+                        <div class="text-xs text-gray-400">Hawaii, Fiji</div>
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-2xl flex items-center gap-4">
+                    <span class="text-3xl">🏝️</span>
+                    <div>
+                        <div class="font-bold text-sky-300">Coral Atolls</div>
+                        <div class="text-xs text-gray-400">Marshall Islands</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: { t: "ОКЕАНИЯ", h: "Мир 10 тысяч островов", d: "Океания делится на Меланезию, Микронезию и Полинезию. Острова имеют вулканическое или коралловое происхождение. Климат теплый, морской, но подвержен тайфунам." },
+            en: { t: "OCEANIA", h: "World of 10,000 Islands", d: "Oceania is divided into Melanesia, Micronesia, and Polynesia. Islands are volcanic or coral in origin. Climate is warm, maritime, but prone to typhoons." }
+        };
+
+        let cx, cvs, stage = 0;
+
+        window.setL = (l) => {
+            const d = content[l] || content['en'];
+            document.getElementById('title').textContent = d.t;
+            document.getElementById('h-info').textContent = d.h;
+            document.getElementById('t-info').textContent = d.d;
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const cx_ = w/2, cy = h/2;
+            cx.clearRect(0,0,w,h);
+
+            // Ocean
+            cx.fillStyle = '#0369a1'; cx.fillRect(0, cy, w, h/2);
+
+            if (stage === 0) { // Volcano
+                cx.fillStyle = '#475569';
+                cx.beginPath(); cx.moveTo(cx_-50, cy); cx.lineTo(cx_, cy-60); cx.lineTo(cx_+50, cy); cx.fill();
+                cx.fillStyle = '#ef4444'; // Lava
+                cx.beginPath(); cx.moveTo(cx_, cy-60); cx.lineTo(cx_, cy-40); cx.stroke();
+            } else if (stage === 1) { // Fringing Reef
+                cx.fillStyle = '#475569';
+                cx.beginPath(); cx.moveTo(cx_-40, cy); cx.lineTo(cx_, cy-40); cx.lineTo(cx_+40, cy); cx.fill();
+                cx.fillStyle = '#a7f3d0'; // Coral
+                cx.fillRect(cx_-60, cy-5, 20, 5); cx.fillRect(cx_+40, cy-5, 20, 5);
+            } else { // Atoll
+                cx.fillStyle = '#a7f3d0'; // Coral ring
+                cx.beginPath(); cx.ellipse(cx_, cy, 60, 10, 0, 0, Math.PI*2); cx.fill();
+                cx.fillStyle = '#0ea5e9'; // Lagoon
+                cx.beginPath(); cx.ellipse(cx_, cy, 40, 6, 0, 0, Math.PI*2); cx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('atollCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            cvs.addEventListener('click', () => stage = (stage+1)%3);
+            setL('ru'); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

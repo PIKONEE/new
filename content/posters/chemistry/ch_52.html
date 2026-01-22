@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronegativity: The Tug of War</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #2e1065, #4c1d95, #020617);
+            background-attachment: fixed;
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2.5rem; cursor: crosshair; }
+        .lang-btn.active { background: #a78bfa; color: #2e1065; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-purple-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-purple-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-purple-300 uppercase mb-6 self-start tracking-widest"></h2>
+            <canvas id="enCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-purple-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-purple-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4 font-inter"></div>
+            <div class="mt-8 p-6 bg-purple-500/10 rounded-3xl border border-purple-500/20 text-center">
+                <span class="text-sm uppercase tracking-widest text-purple-400 block mb-2">Scale of Linus Pauling</span>
+                <span class="text-4xl heading-font text-white">χ (chi)</span>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-purple-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-purple-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-purple-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-purple-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-purple-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-purple-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-purple-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-purple-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Электроотрицательность",
+                subtitle: "Способность атомов притягивать электроны",
+                canvasHeading: "Визуализация 'Перетягивание каната'",
+                canvasHint: "Нажмите на атомы, чтобы изменить их силу ЭО",
+                defaultTitle: "Фундаментальная жадность",
+                defaultText: "Электроотрицательность (ЭО) — это фундаментальное свойство атома притягивать к себе общие электронные пары. Самый электроотрицательный элемент — Фтор (4.0).",
+                cards: [
+                    { title: "Лайнус Полинг", desc: "В 1932 году предложил шкалу ЭО, основанную на энергии связи. Его работы легли в основу современной теории хим. связи." },
+                    { title: "Закономерность", desc: "ЭО растет в периодах слева направо и уменьшается в группах сверху вниз. Фтор — чемпион, Цезий — аутсайдер." },
+                    { title: "Тип связи", desc: "Разница ЭО (Δχ) определяет характер связи: ковалентная неполярная (Δχ=0), полярная (0<Δχ<1.7) или ионная (Δχ>1.7)." }
+                ],
+                quote: "«Природа не распределяет блага поровну; в мире атомов всегда есть тот, кто тянет сильнее»",
+                author: "Лайнус Полинг"
+            },
+            kz: {
+                title: "Электртерістілік",
+                subtitle: "Атомдардың электрондарды тарту қабілеті",
+                canvasHeading: "'Арқан тартыс' визуалдауы",
+                canvasHint: "ЭТ күшін өзгерту үшін атомдарды басыңыз",
+                defaultTitle: "Іргелі тартылыс",
+                defaultText: "Электртерістілік (ЭТ) — бұл атомның ортақ электрон жұптарын өзіне тарту қабілеті. Ең электртеріс элемент — Фтор (4.0).",
+                cards: [
+                    { title: "Лайнус Полинг", desc: "1932 жылы байланыс энергиясына негізделген ЭТ шкаласын ұсынды. Оның еңбектері химиялық байланыс теориясының негізі болды." },
+                    { title: "Заңдылық", desc: "ЭТ периодтарда солдан оңға қарай артады, ал топтарда жоғарыдан төмен қарай кемиді." },
+                    { title: "Байланыс түрі", desc: "ЭТ айырмашылығы (Δχ) байланыс сипатын анықтайды: ковалентті полюссіз, полюсті немесе иондық." }
+                ],
+                quote: "«Табиғат игілікті тең бөлмейді; атомдар әлемінде әрқашан күштірек тартатын біреу бар»",
+                author: "Лайнус Полинг"
+            },
+            en: {
+                title: "Electronegativity",
+                subtitle: "The power of atoms to attract electrons",
+                canvasHeading: "Tug of War Visualization",
+                canvasHint: "Click the atoms to change their EN strength",
+                defaultTitle: "Atomic Greed",
+                defaultText: "Electronegativity (EN) is the measure of an atom's ability to attract shared electron pairs. Fluorine (4.0) is the most electronegative element.",
+                cards: [
+                    { title: "Linus Pauling", desc: "Proposed the EN scale in 1932 based on bond energies. His work became the bedrock of modern bonding theory." },
+                    { title: "Periodic Trend", desc: "EN increases from left to right in periods and decreases from top to bottom in groups." },
+                    { title: "Bond Nature", desc: "The difference in EN (Δχ) determines the bond type: nonpolar covalent, polar, or ionic." }
+                ],
+                quote: "«Nature does not distribute wealth equally; in the world of atoms, there is always one who pulls harder»",
+                author: "Linus Pauling"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('enCanvas');
+        const ctx = canvas.getContext('2d');
+        let enRatio = 0.5;
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.002;
+
+            // Atoms
+            const x1 = cx - 150, x2 = cx + 150;
+            const r1 = 40 + (1 - enRatio)*40, r2 = 40 + enRatio*40;
+            
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = '#a78bfa'; ctx.beginPath(); ctx.arc(x1, cy, r1, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#f472b6'; ctx.beginPath(); ctx.arc(x2, cy, r2, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Rope (bond)
+            ctx.strokeStyle = 'white'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(x1 + r1, cy); ctx.lineTo(x2 - r2, cy); ctx.stroke();
+
+            // Electron pair
+            const ex = x1 + r1 + (x2 - r2 - x1 - r1) * enRatio + Math.sin(time)*5;
+            ctx.fillStyle = '#facc15'; ctx.shadowBlur = 15; ctx.shadowColor = '#facc15';
+            ctx.beginPath(); ctx.arc(ex - 8, cy, 5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(ex + 8, cy, 5, 0, Math.PI*2); ctx.fill();
+
+            requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            enRatio = x / canvas.width;
+        });
+
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

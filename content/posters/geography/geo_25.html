@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Water Properties</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at bottom, #0e7490, #164e63, #020617); color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; }
+        .lang-btn.active { background: #22d3ee; color: #083344; font-weight: 800; }
+        .slider { -webkit-appearance: none; width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 5px; outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #22d3ee; cursor: pointer; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-cyan-400/30">
+        <div><h1 id="main-title" class="heading-font text-3xl uppercase tracking-tighter text-cyan-300"></h1></div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-1 glass rounded-custom p-8 flex flex-col justify-center gap-6">
+            <div>
+                <label class="text-xs uppercase tracking-widest text-cyan-200">Salinity / Соленость (‰)</label>
+                <input type="range" min="0" max="42" value="35" class="slider mt-2" id="saltSlider" oninput="draw()">
+                <div class="text-right font-mono text-cyan-400" id="saltVal">35 ‰</div>
+            </div>
+            <div>
+                <label class="text-xs uppercase tracking-widest text-orange-200">Temperature / Температура (°C)</label>
+                <input type="range" min="-2" max="30" value="17" class="slider mt-2" id="tempSlider" oninput="draw()">
+                <div class="text-right font-mono text-orange-400" id="tempVal">17 °C</div>
+            </div>
+        </div>
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col items-center justify-center min-h-[500px]">
+            <canvas id="propCanvas" class="w-full h-full"></canvas>
+            <div id="info-box" class="mt-4 text-center text-sm font-light text-white/80 max-w-lg"></div>
+        </div>
+    </main>
+    <script>
+        const translations = {
+            ru: { title: "Свойства Вод", info: "Средняя соленость Мирового океана — 35‰ (промилле). Это значит, что в 1 литре воды растворено 35 граммов солей. Самое соленое — Красное море (42‰). Температура поверхностных вод зависит от широты." },
+            kz: { title: "Су Қасиеттері", info: "Дүниежүзілік мұхиттың орташа тұздылығы — 35‰. Бұл 1 литр суда 35 грамм тұз ерігенін білдіреді. Ең тұздысы — Қызыл теңіз (42‰). Температура ендікке байланысты." },
+            en: { title: "Water Properties", info: "Average ocean salinity is 35‰ (per mille). This means 35 grams of salt per liter. The Red Sea is the saltiest (42‰). Surface temperature depends on latitude." }
+        };
+        let currentLang = 'ru', canvas, ctx, particles = [];
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        function updateUI() {
+            document.getElementById('main-title').textContent = translations[currentLang].title;
+            document.getElementById('info-box').textContent = translations[currentLang].info;
+        }
+        function draw() {
+            const salt = document.getElementById('saltSlider').value;
+            const temp = document.getElementById('tempSlider').value;
+            document.getElementById('saltVal').textContent = salt + " ‰";
+            document.getElementById('tempVal').textContent = temp + " °C";
+
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+
+            // Water Background (Color depends on Temp)
+            // Cold = Dark Blue, Warm = Turquoise/Greenish
+            const blueComp = Math.max(100, 255 - temp * 5); 
+            ctx.fillStyle = `rgb(10, ${100 + parseInt(temp)*2}, ${blueComp})`;
+            ctx.fillRect(0,0,w,h);
+
+            // Salt Particles
+            // Density of dots = salinity
+            const dotCount = salt * 5; 
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            for(let i=0; i<dotCount; i++) {
+                // Pseudo-random deterministic positions based on i to avoid flickering
+                const x = (Math.sin(i)*10000) % w;
+                const y = (Math.cos(i)*10000) % h;
+                ctx.beginPath(); ctx.arc(Math.abs(x), Math.abs(y), 2, 0, Math.PI*2); ctx.fill();
+            }
+
+            // Ice logic
+            if(temp < 0) {
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(w,0); ctx.lineTo(w, h*0.2); 
+                for(let i=w; i>=0; i-=20) ctx.lineTo(i, h*0.2 + Math.random()*10);
+                ctx.fill();
+            }
+        }
+        window.onload = function() {
+            canvas = document.getElementById('propCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500;
+            setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

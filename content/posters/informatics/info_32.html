@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Текстовые документы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #eff6ff; /* blue-50 */
+            overflow-x: hidden;
+            color: #1e3a8a; /* blue-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Word Blue Theme */
+        .header-card {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); /* blue-600 to 700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #1e40af; /* blue-800 */
+            border-bottom: 3px solid #93c5fd; /* blue-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #dbeafe; /* blue-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #1d4ed8; /* blue-700 */
+        }
+         .term {
+            font-weight: bold;
+            color: #2563eb; /* blue-600 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #2563eb;
+            background-color: #ffffff;
+            color: #2563eb;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #eff6ff;
+        }
+        .lang-btn.active {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 220px;
+            margin: 15px 0;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #1e40af;
+            text-anchor: middle;
+        }
+        .svg-doc-bg {
+            fill: #fff;
+            stroke: #3b82f6;
+            stroke-width: 2;
+        }
+        .svg-text-line {
+            stroke: #94a3b8;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-blue-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(37, 99, 235, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(37, 99, 235, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">МӘТІНДІК ҚҰЖАТТАР</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">TEXT DOCUMENTS</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ТЕКСТОВЫЕ ДОКУМЕНТЫ</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-blue-100">Ақпаратты жазу, сақтау және өңдеу.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-blue-100">Writing, storing, and processing information.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-blue-100">Запись, хранение и обработка информации.</p>
+        </header>
+
+        <!-- 1. РЕДАКТОР vs ПРОЦЕССОР -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Редактор және Процессор</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Editor vs Processor</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Редактор и Процессор</h2>
+
+            <div class="rule-card border-t-blue-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Text Editor (Notepad) -->
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h3 class="font-bold text-blue-900 mb-2 text-center" lang="ru">Текстовый редактор</h3>
+                        <h3 class="font-bold text-blue-900 mb-2 text-center" lang="kk">Мәтіндік редактор</h3>
+                        <ul class="list-disc pl-5 text-sm text-gray-700">
+                            <li lang="ru">Только простой текст.</li>
+                            <li lang="ru">Нет картинок и оформления.</li>
+                            <li lang="kk">Тек қарапайым мәтін.</li>
+                            <li lang="kk">Суреттер жоқ.</li>
+                            <li><strong>Notepad (Блокнот)</strong></li>
+                        </ul>
+
+                        <!-- Icon -->
+                        <svg viewBox="0 0 100 80" class="w-full h-20 mt-2">
+                            <rect x="30" y="10" width="40" height="60" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+                            <line x1="35" y1="20" x2="65" y2="20" stroke="#94a3b8"/>
+                            <line x1="35" y1="30" x2="60" y2="30" stroke="#94a3b8"/>
+                            <line x1="35" y1="40" x2="65" y2="40" stroke="#94a3b8"/>
+                            <text x="50" y="65" font-size="8" fill="#475569" text-anchor="middle">.txt</text>
+                        </svg>
+                    </div>
+
+                    <!-- Word Processor (Word) -->
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 shadow-sm">
+                        <h3 class="font-bold text-blue-900 mb-2 text-center" lang="ru">Текстовый процессор</h3>
+                        <h3 class="font-bold text-blue-900 mb-2 text-center" lang="kk">Мәтіндік процессор</h3>
+                        <ul class="list-disc pl-5 text-sm text-gray-700">
+                            <li lang="ru">Текст + Картинки + Таблицы.</li>
+                            <li lang="ru">Красивое оформление.</li>
+                            <li lang="kk">Мәтін + Сурет + Кесте.</li>
+                            <li lang="kk">Әдемі безендіру.</li>
+                            <li><strong>MS Word, Google Docs</strong></li>
+                        </ul>
+
+                        <!-- Icon -->
+                        <svg viewBox="0 0 100 80" class="w-full h-20 mt-2">
+                            <rect x="30" y="10" width="40" height="60" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+                            <rect x="25" y="15" width="15" height="15" fill="#2563eb" rx="2"/>
+                            <text x="32" y="27" font-size="12" fill="#fff" font-weight="bold" text-anchor="middle">W</text>
+
+                            <line x1="45" y1="20" x2="65" y2="20" stroke="#2563eb"/>
+                            <rect x="35" y="35" width="30" height="15" fill="#bfdbfe"/> <!-- Image placeholder -->
+                            <line x1="35" y1="55" x2="65" y2="55" stroke="#2563eb"/>
+                            <text x="50" y="68" font-size="8" fill="#2563eb" text-anchor="middle">.docx</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. РЕДАКЦИЯЛАУ ЖӘНЕ ПІШІМДЕУ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Редакциялау және Пішімдеу</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Editing and Formatting</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Редактирование и Форматирование</h2>
+
+            <div class="rule-card border-t-indigo-500">
+                <div class="flex flex-col md:flex-row gap-8">
+
+                    <!-- Editing -->
+                    <div class="flex-1">
+                        <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                            <span class="text-2xl">✂️</span>
+                            <span lang="ru">Редактирование (Түзету)</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 mb-2" lang="ru">Изменение содержания: исправление ошибок, копирование, удаление.</p>
+                        <p class="text-sm text-gray-700 mb-2" lang="kk">Мазмұнын өзгерту: қатені түзету, көшіру, өшіру.</p>
+
+                        <svg class="illustration-svg" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" style="height: 100px;">
+                            <text x="20" y="40" font-family="monospace" font-size="14" fill="#ef4444" text-decoration="line-through">Helo</text>
+                            <text x="60" y="40" font-family="monospace" font-size="14" fill="#16a34a">Hello</text>
+
+                            <!-- Cursor -->
+                            <line x1="105" y1="25" x2="105" y2="45" stroke="#000" stroke-width="1">
+                                <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" />
+                            </line>
+
+                            <!-- Cut/Paste Icons -->
+                            <path d="M 130 30 L 140 40 M 130 40 L 140 30" stroke="#475569" stroke-width="2"/>
+                            <rect x="150" y="25" width="15" height="20" fill="#fff" stroke="#475569"/>
+                            <rect x="155" y="22" width="5" height="3" fill="#475569"/>
+                        </svg>
+                    </div>
+
+                    <!-- Formatting -->
+                    <div class="flex-1 border-l border-indigo-100 pl-4">
+                        <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                            <span class="text-2xl">🎨</span>
+                            <span lang="ru">Форматирование (Пішімдеу)</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 mb-2" lang="ru">Изменение внешнего вида: шрифт, цвет, размер, выравнивание.</p>
+                        <p class="text-sm text-gray-700 mb-2" lang="kk">Түрін өзгерту: қаріп, түс, өлшем, туралау.</p>
+
+                        <svg class="illustration-svg" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" style="height: 100px;">
+                            <!-- Bold -->
+                            <text x="20" y="40" font-family="serif" font-size="20" font-weight="bold" fill="#1e3a8a">B</text>
+                            <!-- Italic -->
+                            <text x="50" y="40" font-family="serif" font-size="20" font-style="italic" fill="#1e3a8a">I</text>
+                            <!-- Underline -->
+                            <text x="70" y="40" font-family="serif" font-size="20" text-decoration="underline" fill="#1e3a8a">U</text>
+
+                            <!-- Color -->
+                            <text x="100" y="40" font-family="sans-serif" font-size="20" fill="#ef4444">Color</text>
+
+                            <!-- Alignment -->
+                            <line x1="20" y1="60" x2="80" y2="60" stroke="#475569" stroke-width="2"/>
+                            <line x1="20" y1="70" x2="60" y2="70" stroke="#475569" stroke-width="2"/>
+                            <line x1="20" y1="80" x2="70" y2="80" stroke="#475569" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ПЕРНЕТАҚТА (KEYBOARD) -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Пернетақта және Басқару</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Keyboard and Controls</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Клавиатура и Управление</h2>
+
+            <div class="rule-card border-t-purple-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Мәтін енгізу және басқару үшін маңызды пернелер:
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Important keys for typing and control:
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Важные клавиши для ввода текста и управления:
+                </p>
+
+                <!-- Illustration 3: Key Keys -->
+                <svg class="illustration-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Enter -->
+                    <g transform="translate(30, 30)">
+                        <path d="M 0 0 L 40 0 L 40 40 L 20 40 L 20 20 L 0 20 Z" fill="#fff" stroke="#4b5563" stroke-width="2" rx="2"/>
+                        <text x="20" y="15" font-size="8" text-anchor="middle">Enter</text>
+                        <path d="M 30 25 L 10 25 M 10 25 L 15 20 M 10 25 L 15 30" stroke="#4b5563" fill="none"/>
+                        <text x="20" y="60" font-size="10" fill="#1e3a8a" text-anchor="middle">Жаңа жол / New Line</text>
+                    </g>
+
+                    <!-- Space -->
+                    <g transform="translate(100, 30)">
+                        <rect x="0" y="20" width="80" height="20" rx="2" fill="#fff" stroke="#4b5563" stroke-width="2"/>
+                        <text x="40" y="33" font-size="8" text-anchor="middle">Space</text>
+                        <text x="40" y="60" font-size="10" fill="#1e3a8a" text-anchor="middle">Бос орын / Space</text>
+                    </g>
+
+                    <!-- Backspace -->
+                    <g transform="translate(200, 30)">
+                        <rect x="0" y="0" width="50" height="20" rx="2" fill="#fff" stroke="#4b5563" stroke-width="2"/>
+                        <path d="M 35 10 L 15 10 M 15 10 L 20 5 M 15 10 L 20 15" stroke="#4b5563" fill="none"/>
+                        <text x="25" y="60" font-size="10" fill="#1e3a8a" text-anchor="middle">Өшіру (Сол) / Delete Left</text>
+                    </g>
+
+                    <!-- Delete -->
+                    <g transform="translate(280, 30)">
+                        <rect x="0" y="0" width="40" height="20" rx="2" fill="#fff" stroke="#4b5563" stroke-width="2"/>
+                        <text x="20" y="13" font-size="8" text-anchor="middle">Del</text>
+                        <text x="20" y="60" font-size="10" fill="#1e3a8a" text-anchor="middle">Өшіру (Оң) / Delete Right</text>
+                    </g>
+
+                    <!-- Shift -->
+                    <g transform="translate(340, 30)">
+                        <rect x="0" y="0" width="40" height="20" rx="2" fill="#fff" stroke="#4b5563" stroke-width="2"/>
+                        <text x="20" y="13" font-size="8" text-anchor="middle">Shift</text>
+                        <text x="20" y="60" font-size="10" fill="#1e3a8a" text-anchor="middle">Бас әріп / Capital</text>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-blue-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-blue-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-blue-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-blue-800">
+                Редактор – жазу үшін, Процессор – безендіру үшін. "Қиып алу - Қою" (Cut-Paste) мәтінді жылжытуға көмектеседі.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-blue-800">
+                Editor is for writing, Processor is for styling. "Cut-Paste" helps move text.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-blue-800">
+                Редактор – для письма, Процессор – для оформления. "Вырезать - Вставить" помогает перемещать текст.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хан Тауке: Золотой век и Жеты Жаргы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfcf7; color: #451a03; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .golden-gradient {
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #fde68a 100%);
+        }
+
+        .premium-card {
+            background: white;
+            border-radius: 3.5rem;
+            border: 1px solid #d97706;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            border-color: #92400e;
+            box-shadow: 0 40px 80px -20px rgba(146, 64, 14, 0.2);
+        }
+
+        .lang-active {
+            background-color: #92400e;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(146, 64, 14, 0.3);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 3rem;
+            background: #fff;
+            box-shadow: inset 0 0 40px rgba(217, 119, 6, 0.05);
+        }
+
+        .biy-card {
+            background: white;
+            border-radius: 2.5rem;
+            border-bottom: 8px solid #92400e;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .biy-card:hover { transform: translateY(-10px); }
+
+        .law-info-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 10px solid #92400e;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 40px rgba(146, 64, 14, 0.1);
+        }
+    </style>
+</head>
+<body class="golden-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-amber-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-amber-950">Хан Тауке (1680–1715 гг.)</h1>
+            <div class="flex bg-amber-50 p-1 rounded-2xl border border-amber-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Interactive Section: Laws -->
+        <div class="premium-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Supreme Legal Reform</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic tracking-tighter">Семь столпов закона</h2>
+                    <p id="viz-desc" class="text-lg text-amber-900/70 font-light leading-relaxed">
+                        Тауке-хан создал «Жеты Жаргы» — конституцию Степи. Это свод норм, объединивший право Касыма и Есима с потребностями новой эпохи. Нажмите на вершины священной звезды.
+                    </p>
+                    
+                    <div id="info-panel" class="law-info-panel transition-all duration-500">
+                        <h3 id="law-title" class="text-xl font-bold text-amber-900 mb-3 uppercase tracking-tighter">Выберите главу</h3>
+                        <p id="law-desc" class="text-amber-800/70 text-sm leading-relaxed italic font-light">Кликните на элементы семиконечной звезды на холсте справа для анализа статей.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="starCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.4em]">Zheti Zhargy Universal Code</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bio & General Facts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="premium-card p-10 bg-white/40">
+                <h3 id="hist-t" class="text-2xl font-black mb-6 uppercase text-amber-950">Историческая миссия</h3>
+                <p id="hist-d" class="text-stone-700 text-sm leading-relaxed">
+                    Тауке-хан был последним правителем, чья власть признавалась всеми тремя жузами. Современники называли его «Ликургом Степи». Главной заслугой стало преодоление раздробленности: он опирался на совет Биев, отодвинув султанов от прямого управления родами. Это позволило создать единый фронт против Жунгарского нашествия.
+                </p>
+            </div>
+            <div class="premium-card p-10 bg-white/40">
+                <h3 id="dip-t" class="text-2xl font-black mb-6 uppercase text-amber-950">Внешняя политика</h3>
+                <p id="dip-d" class="text-stone-700 text-sm leading-relaxed">
+                    Тауке активно развивал связи с Россией. В 1686–1693 годах в Москву были отправлены посольства во главе с Ташим-батыром и Кабай-батыром. Хан искал военный союз против жунгар и стремился обезопасить северные границы для торговли. При нем Туркестан окончательно стал духовным и политическим центром ханства.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section: Great Biys -->
+        <div class="space-y-12">
+            <h2 id="biys-title" class="text-center text-3xl font-black text-amber-950 uppercase tracking-[0.5em]">Три опоры ханства</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="biy-card">
+                    <h3 class="text-2xl font-black text-amber-900 mb-4">ТОЛЕ БИ</h3>
+                    <p id="tole-d" class="text-stone-600 text-sm leading-relaxed">Лидер Старшего жуза (Уйсун). Его мудрость помогла удержать единство в самые тяжелые годы войны. Был инициатором объединения ополчения в Ордабасы.</p>
+                    <div class="mt-4 text-[10px] font-black text-amber-500 uppercase tracking-widest italic">Символ справедливости</div>
+                </div>
+                <div class="biy-card">
+                    <h3 class="text-2xl font-black text-amber-900 mb-4">КАЗЫБЕК БИ</h3>
+                    <p id="kazybek-d" class="text-stone-600 text-sm leading-relaxed">«Гусиный голос» Среднего жуза (Аргын). Великий оратор и дипломат. Его речи останавливали войны, а авторитет признавали даже жунгарские хунтайши.</p>
+                    <div class="mt-4 text-[10px] font-black text-amber-500 uppercase tracking-widest italic">Голос нации</div>
+                </div>
+                <div class="biy-card">
+                    <h3 class="text-2xl font-black text-amber-900 mb-4">АЙТЕКЕ БИ</h3>
+                    <p id="aiteke-d" class="text-stone-600 text-sm leading-relaxed">Судья Младшего жуза (Алшын). Известен своей неподкупностью. Он настаивал на жестком соблюдении законов для сохранения порядка в западных степях.</p>
+                    <div class="mt-4 text-[10px] font-black text-amber-500 uppercase tracking-widest italic">Щит закона</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Хан Тауке (1680–1715 гг.)",
+                vizTitle: "Семь столпов закона",
+                vizDesc: "«Жеты Жаргы» — конституция Степи. Нажмите на вершины священной звезды, чтобы изучить статьи кодекса.",
+                badge: "Анализ доктрины Жеты Жаргы",
+                lawTitleDefault: "Жеты Жаргы",
+                lawDescDefault: "Кликните на грани звезды на холсте справа для анализа.",
+                histT: "Историческая миссия", histD: "Тауке объединил три жуза и создал систему управления через Биев. Это был последний период стабильного единства кочевников перед великими испытаниями XVIII века.",
+                dipT: "Внешняя политика", dipD: "Активная дипломатия с Московским царством (Петром I) и оборона от ойратов. Туркестан стал неприступным политическим ядром ханства.",
+                biysTitle: "Три опоры ханства",
+                toleD: "Мудрец Старшего жуза. Проповедовал единство и справедливость, став духовным наставником всей нации.",
+                kazybekD: "Дипломат Среднего жуза. Его ораторское мастерство защищало границы и интересы казахских родов на международной арене.",
+                aitekeD: "Законодатель Младшего жуза. Обеспечил соблюдение правовых норм и сплоченность западных племен.",
+                laws: {
+                    land: { name: "Закон о земле", text: "Четкое разграничение пастбищ (жайлау) между родами. Нарушение границ каралось огромным штрафом или изгнанием." },
+                    family: { name: "Закон о семье", text: "Запрет на браки внутри одного рода до 7 колена. Регулирование прав вдов (аменгерство) и сирот." },
+                    criminal: { name: "Уголовный закон", text: "Введение системы 'Кун' (штраф скотом). За убийство воина — 1000 баранов, за женщину — 500." },
+                    tax: { name: "Закон о налогах", text: "Обязательный сбор 'зякет' (для мусульман) и 'ушур' (для всех) на содержание войска и бедняков." },
+                    military: { name: "Военный закон", text: "Каждый взрослый мужчина обязан был явиться в ополчение со своим конем и вооружением (бес кару)." },
+                    biy: { name: "Статус Биев", text: "Решение Бия считалось окончательным. Бии стали главными администраторами и судьями в своих регионах." },
+                    unity: { name: "Закон единства", text: "Запрет на кровную месть между казахами. Любой спор должен был решаться в суде Биев." }
+                }
+            },
+            kz: {
+                title: "Тәуке хан (1680–1715 жж.)",
+                vizTitle: "Заңның жеті тірегі",
+                vizDesc: "«Жеті Жарғы» — Дала конституциясы. Кодекс баптарын зерттеу үшін қасиетті жұлдыздың ұштарын басыңыз.",
+                badge: "Жеті Жарғы доктринасын талдау",
+                lawTitleDefault: "Жеті Жарғы",
+                lawDescDefault: "Талдау жасау үшін оң жақтағы жұлдыздың қырларын басыңыз.",
+                histT: "Тарихи миссия", histD: "Тәуке үш жүзді біріктіріп, Билер арқылы басқару жүйесін жасады. Бұл XVIII ғасырдағы сынақтар алдындағы көшпелілер бірлігінің соңғы кезеңі болды.",
+                dipT: "Сыртқы саясат", dipD: "Мәскеу патшалығымен (Петр I) белсенді дипломатия және ойраттардан қорғану. Түркістан хандықтың саяси өзегіне айналды.",
+                biysTitle: "Хандықтың үш тірегі",
+                toleD: "Ұлы жүздің данасы. Бірлік пен әділдікті насихаттап, бүкіл ұлттың рухани ұстазына айналды.",
+                kazybekD: "Орта жүздің дипломаты. Оның шешендік өнері халықаралық аренада қазақ руларының мүддесін қорғады.",
+                aitekeD: "Кіші жүздің заңгері. Құқықтық нормалардың сақталуын және батыс тайпаларының тұтастығын қамтамасыз етті.",
+                laws: {
+                    land: { name: "Жер заңы", text: "Рулар арасындағы жайлауларды нақты бөлу. Шекараны бұзу үлкен айыппұлмен немесе қуылумен жазаланды." },
+                    family: { name: "Отбасы заңы", text: "7 атаға дейін қыз алысуға тыйым салу. Жесірлер (әмеңгерлік) мен жетімдердің құқықтарын реттеу." },
+                    criminal: { name: "Қылмыстық заң", text: "«Құн» жүйесін енгізу. Жауынгерді өлтіргені үшін — 1000 қой, әйел үшін — 500 қой құн төленді." },
+                    tax: { name: "Салық заңы", text: "Әскерді асырау және кедейлерге көмектесу үшін міндетті «зекет» және «ұшыр» жинау." },
+                    military: { name: "Әскери заң", text: "Әрбір ер азамат хан шақырғанда өз атымен және бес қаруымен келуге міндетті болды." },
+                    biy: { name: "Билер мәртебесі", text: "Бидің шешімі соңғы деп танылды. Билер өз аймақтарында басты әкімшілер мен судьялар болды." },
+                    unity: { name: "Бірлік заңы", text: "Қазақтар арасындағы қанды кекке тыйым салу. Кез келген дау Билер сотында шешілуі тиіс болды." }
+                }
+            },
+            en: {
+                title: "Tauke Khan (1680–1715 AD)",
+                vizTitle: "Seven Pillars of Law",
+                vizDesc: "Zheti Zhargy — the Constitution of the Steppe. Click on the star points to explore the code sections.",
+                badge: "Zheti Zhargy Doctrine Analysis",
+                lawTitleDefault: "Zheti Zhargy",
+                lawDescDefault: "Click on the star edges to the right for details.",
+                histT: "Historical Mission", histD: "Tauke unified the three Zhuzes via the Council of Biys. This was the final era of nomadic unity before the trials of the 18th century.",
+                dipT: "Foreign Policy", dipD: "Active diplomacy with Russia (Peter I) and defense against the Oirats. Turkestan became the political core of the state.",
+                biysTitle: "Three Pillars of the State",
+                toleD: "The Sage of the Senior Zhuz. Symbol of unity and justice for the entire nation.",
+                kazybekD: "Diplomat of the Middle Zhuz. His oratory skills protected borders and tribal interests globally.",
+                aitekeD: "Legislator of the Junior Zhuz. Ensured legal order and cohesion among the western tribes.",
+                laws: {
+                    land: { name: "Land Law", text: "Strict delimitation of pastures (zhailau) between clans. Violations were severely punished." },
+                    family: { name: "Family Law", text: "Prohibition of marriage within the same clan up to 7 generations. Regulation of widow and orphan rights." },
+                    criminal: { name: "Criminal Law", text: "System of 'Kun' (fines in livestock). For a killed warrior — 1000 sheep, for a woman — 500." },
+                    tax: { name: "Tax Law", text: "Compulsory 'Zakat' and 'Ushur' for army maintenance and welfare." },
+                    military: { name: "Military Law", text: "Every adult man had to report for duty with his horse and armament (Bes Qaru)." },
+                    biy: { name: "Biy Status", text: "A Biy's decision was final. Biys acted as supreme administrators and judges." },
+                    unity: { name: "Unity Law", text: "Ban on blood feuds between Kazakh clans. All disputes had to be resolved in the Biy court." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 550;
+            drawStar();
+        }
+
+        function drawStar() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+            const outerR = 200 * scale;
+            const innerR = 85 * scale;
+
+            // Gradient for the star
+            const starGrad = ctx.createRadialGradient(cx, cy, innerR, cx, cy, outerR);
+            starGrad.addColorStop(0, '#fef3c7');
+            starGrad.addColorStop(1, '#92400e');
+
+            ctx.beginPath();
+            for(let i=0; i<14; i++) {
+                const r = i % 2 === 0 ? outerR : innerR;
+                const a = (i * Math.PI) / 7 - Math.PI/2;
+                ctx.lineTo(cx + Math.cos(a)*r, cy + Math.sin(a)*r);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(146, 64, 14, 0.05)';
+            ctx.fill();
+            ctx.strokeStyle = '#92400e';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Inner Circle
+            ctx.beginPath();
+            ctx.arc(cx, cy, innerR, 0, Math.PI*2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#92400e';
+            ctx.font = 'bold 16px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText("ZHETI", cx, cy - 5);
+            ctx.fillText("ZHARGY", cx, cy + 15);
+
+            // Interactive Vertices
+            const labels = ["LAND", "FAMILY", "CRIMINAL", "TAX", "MILITARY", "BIY", "UNITY"];
+            for(let i=0; i<7; i++) {
+                const a = (i * 2 * Math.PI) / 7 - Math.PI/2;
+                const px = cx + Math.cos(a) * outerR;
+                const py = cy + Math.sin(a) * outerR;
+                
+                ctx.beginPath();
+                ctx.arc(px, py, 18 * scale, 0, Math.PI*2);
+                ctx.fillStyle = '#92400e';
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.fillStyle = '#92400e';
+                ctx.font = '900 10px Inter';
+                ctx.fillText(labels[i], px, py + 35 * scale);
+            }
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width/2;
+            const cy = canvas.height/2;
+            const scale = canvas.width/800;
+
+            const angle = Math.atan2(y-cy, x-cx) + Math.PI/2;
+            const normAngle = angle < 0 ? angle + 2*Math.PI : angle;
+            const index = Math.round((normAngle * 7) / (2 * Math.PI)) % 7;
+            
+            const ids = ['land', 'family', 'criminal', 'tax', 'military', 'biy', 'unity'];
+            const info = translations[currentLang].laws[ids[index]];
+            
+            document.getElementById('law-title').innerText = info.name;
+            document.getElementById('law-desc').innerText = info.text;
+            document.getElementById('info-panel').style.transform = 'scale(1.02)';
+            setTimeout(() => document.getElementById('info-panel').style.transform = 'scale(1)', 200);
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('law-title').innerText = t.lawTitleDefault;
+            document.getElementById('law-desc').innerText = t.lawDescDefault;
+            document.getElementById('hist-t').innerText = t.histT;
+            document.getElementById('hist-d').innerText = t.histD;
+            document.getElementById('dip-t').innerText = t.dipT;
+            document.getElementById('dip-d').innerText = t.dipD;
+            document.getElementById('biys-title').innerText = t.biysTitle;
+            document.getElementById('tole-d').innerText = t.toleD;
+            document.getElementById('kazybek-d').innerText = t.kazybekD;
+            document.getElementById('aiteke-d').innerText = t.aitekeD;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-amber-700 hover:bg-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

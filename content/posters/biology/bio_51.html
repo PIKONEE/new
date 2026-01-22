@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видоизменения листьев</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fef08a; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #d97706 0%, #92400e 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #92400e; border-bottom: 3px solid #fed7aa; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #d97706; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #d97706; background: white; color: #d97706; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #d97706; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #fef08a 0%, #fed7aa 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; border: 2px dashed #d97706; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-amber-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Жапырақтың Өзгерістері</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Leaf Modifications</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Видоизменения листьев</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-amber-100">Ортасына адаптация - шүмек, шетінді, құндыру органдары</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-amber-100">Environmental adaptation - spines, tendrils, storage</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-amber-100">Адаптация к окружающей среде - шипы, усики, хранилище</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Жапырақтың Өзгерістері</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Types of Modified Leaves</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Типы видоизменённых листьев</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 700 350" style="height: 320px; width: 100%;">
+                        <!-- Шипы (колючки) -->
+                        <line x1="80" y1="80" x2="80" y2="150" stroke="#228B22" stroke-width="3"/>
+                        <line x1="80" y1="100" x2="60" y2="115" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="80" y1="115" x2="65" y2="125" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="80" y1="130" x2="60" y2="140" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="80" y1="100" x2="100" y2="115" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="80" y1="115" x2="95" y2="125" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="80" y1="130" x2="100" y2="140" stroke="#8B4513" stroke-width="2"/>
+                        <text x="80" y="190" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B4513">Шипы (акация)</text>
+
+                        <!-- Усики -->
+                        <line x1="220" y1="80" x2="220" y2="120" stroke="#228B22" stroke-width="3"/>
+                        <path d="M 220 120 Q 235 130 225 145" fill="none" stroke="#8B4513" stroke-width="2"/>
+                        <path d="M 225 145 Q 230 155 220 160" fill="none" stroke="#8B4513" stroke-width="2"/>
+                        <path d="M 220 155 Q 215 165 210 160" fill="none" stroke="#8B4513" stroke-width="2"/>
+                        <ellipse cx="220" cy="95" rx="20" ry="12" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+                        <text x="220" y="190" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B4513">Усики (горох)</text>
+
+                        <!-- Хранилище листья -->
+                        <ellipse cx="360" cy="100" rx="40" ry="50" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <line x1="360" y1="80" x2="360" y2="120" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="360" cy="90" r="4" fill="#FFD700"/>
+                        <circle cx="360" cy="110" r="4" fill="#FFD700"/>
+                        <text x="360" y="190" font-size="11" text-anchor="middle" font-weight="bold" fill="#FF1493">Листья (столетник)</text>
+
+                        <!-- Ловушка (венерина мухоловка) -->
+                        <ellipse cx="500" cy="100" rx="35" ry="45" fill="#90EE90" stroke="#228B22" stroke-width="2"/>
+                        <path d="M 475 100 L 485 105 L 485 95 Z" fill="#228B22" stroke="#0d3d0d" stroke-width="1"/>
+                        <path d="M 525 100 L 515 105 L 515 95 Z" fill="#228B22" stroke="#0d3d0d" stroke-width="1"/>
+                        <line x1="480" y1="115" x2="520" y2="115" stroke="#0d3d0d" stroke-width="1"/>
+                        <text x="500" y="190" font-size="11" text-anchor="middle" font-weight="bold" fill="#228B22">Ловушка (мухоловка)</text>
+
+                        <!-- Кувшинчик (непентес) -->
+                        <path d="M 620 100 L 620 130 Q 600 140 600 150 Q 600 160 610 165 Q 620 168 630 165 Q 640 160 640 150 Q 640 140 620 130 Z"
+                              fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                        <path d="M 610 100 Q 605 95 615 90 Q 625 85 630 90 Q 635 95 630 100"
+                              fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+                        <text x="620" y="190" font-size="11" text-anchor="middle" font-weight="bold" fill="#DAA520">Кувшинчик (непентес)</text>
+
+                        <!-- Каллус (чешуйки) -->
+                        <line x1="80" y1="240" x2="120" y2="280" stroke="#228B22" stroke-width="2"/>
+                        <rect x="85" y="245" width="12" height="12" fill="#E8D5C4" stroke="#8B6F47" stroke-width="1" transform="rotate(-30 91 251)"/>
+                        <rect x="95" y="255" width="12" height="12" fill="#E8D5C4" stroke="#8B6F47" stroke-width="1" transform="rotate(-30 101 261)"/>
+                        <rect x="105" y="265" width="12" height="12" fill="#E8D5C4" stroke="#8B6F47" stroke-width="1" transform="rotate(-30 111 271)"/>
+                        <text x="100" y="310" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B6F47">Чешуйки (ель)</text>
+
+                        <!-- Клубень листа -->
+                        <circle cx="260" cy="250" r="20" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <line x1="260" y1="210" x2="260" y2="230" stroke="#228B22" stroke-width="2"/>
+                        <circle cx="250" cy="250" r="3" fill="#FF1493"/>
+                        <circle cx="260" cy="260" r="3" fill="#FF1493"/>
+                        <circle cx="270" cy="250" r="3" fill="#FF1493"/>
+                        <text x="260" y="310" font-size="11" text-anchor="middle" font-weight="bold" fill="#FF1493">Клубень (кислица)</text>
+
+                        <!-- Раковина -->
+                        <path d="M 420 240 L 430 250 L 425 265 L 415 265 L 410 250 Z" fill="#D2B48C" stroke="#8B6F47" stroke-width="2"/>
+                        <line x1="420" y1="200" x2="420" y2="240" stroke="#228B22" stroke-width="2"/>
+                        <text x="420" y="310" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B6F47">Раковина (полусухая)</text>
+
+                        <!-- Воскресение листья -->
+                        <ellipse cx="560" cy="250" rx="25" ry="35" fill="#D3D3D3" stroke="#696969" stroke-width="2"/>
+                        <line x1="560" y1="200" x2="560" y2="215" stroke="#228B22" stroke-width="2"/>
+                        <text x="560" y="310" font-size="11" text-anchor="middle" font-weight="bold" fill="#696969">Воскресение (селагинелла)</text>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-amber-50 p-4 rounded border border-amber-300">
+                        <h4 lang="kk" class="lang-content font-bold text-amber-900 mb-3">🛡️ Қорғау Органдары</h4>
+                        <h4 lang="en" class="lang-content font-bold text-amber-900 mb-3">🛡️ Protective Organs</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-amber-900 mb-3">🛡️ Защитные органы</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Шипы:</strong> Қозуту, жүргіндіктің құндыруын тоқтату (акация)</li>
+                            <li lang="en" class="lang-content"><strong>Spines:</strong> Protection against herbivores</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Шипы:</strong> Защита от животных (акация)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Чешуйки:</strong> Қорғау, ылғалды сақтау (ель, сосна)</li>
+                            <li lang="en" class="lang-content"><strong>Scales:</strong> Protection, water retention</li>
+                            <li lang="ru" class="lang-content"><strong>Чешуйки:</strong> Защита, сохранение влаги (хвойные)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Раковина:</strong> Құндыру - су ұстау (полусухая құрамдарында)</li>
+                            <li lang="en" class="lang-content"><strong>Pitcher:</strong> Water capture surface</li>
+                            <li lang="ru" class="lang-content"><strong>Раковина:</strong> Сохранение воды в пустынях</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-orange-50 p-4 rounded border border-orange-300">
+                        <h4 lang="kk" class="lang-content font-bold text-orange-900 mb-3">🪤 Функциялық Органдары</h4>
+                        <h4 lang="en" class="lang-content font-bold text-orange-900 mb-3">🪤 Functional Organs</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-orange-900 mb-3">🪤 Функциональные органы</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Усики:</strong> Орындарындағы құрамдарын ұстау (горох, виноград)</li>
+                            <li lang="en" class="lang-content"><strong>Tendrils:</strong> Climbing support</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Усики:</strong> Опора для лазания (горох, виноград)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Ловушка:</strong> Және құрамдарын ұстау (венерина мухоловка)</li>
+                            <li lang="en" class="lang-content"><strong>Trap:</strong> Insect capture</li>
+                            <li lang="ru" class="lang-content"><strong>Ловушка:</strong> Ловля насекомых (мухоловка)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Кувшинчик:</strong> Және құрамдарын ұстау (непентес)</li>
+                            <li lang="en" class="lang-content"><strong>Pitcher:</strong> Insect trap for nutrition</li>
+                            <li lang="ru" class="lang-content"><strong>Кувшинчик:</strong> Ловля для питания (непентес)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Хранилище:</strong> Өндіс құрамдарын сақтау (алоэ, өндіс)</li>
+                            <li lang="en" class="lang-content"><strong>Storage:</strong> Nutrient/water storage</li>
+                            <li lang="ru" class="lang-content"><strong>Хранилище:</strong> Запас питательных веществ (алоэ)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Адаптациялық Маңызы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Adaptive Importance</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Адаптивное значение</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-100 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">🌵 Құрақты Адаптация</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Ылғалды сақтау, транспирацияны азайту. Қысқа жапырақ құрамы</span>
+                            <span lang="en" class="lang-content">Water retention, reduce transpiration. Desert plants</span>
+                            <span lang="ru" class="lang-content">Запас воды, уменьшить испарение. Пустынные растения</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-100 p-3 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-2">🌳 Тропикалық Адаптация</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Және құрамдарын ұстау, ауа циркуляциясы. Және ловушкалар</span>
+                            <span lang="en" class="lang-content">Insect capture, nutrient uptake. Tropical adaptation</span>
+                            <span lang="ru" class="lang-content">Ловля насекомых, питание. Тропическая адаптация</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-100 p-3 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">🍃 Механикалық Адаптация</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Ешінді құрамдарын сақтау, ұстау. Шүмек, усики</span>
+                            <span lang="en" class="lang-content">Mechanical support, climbing. Spines, tendrils</span>
+                            <span lang="ru" class="lang-content">Механическая опора, лазание. Шипы, усики</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fed7aa; border-radius: 1rem; border-top: 4px solid #d97706;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-amber-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-amber-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-amber-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-amber-800">Жапырақтың өзгерістері - ортасына құндыру. Шипы, усики, ловушкалар, хранилища - бәрі әрзілік өндіс ортасына құндыру</p>
+            <p lang="en" class="lang-content text-md font-semibold text-amber-800">Leaf modifications show adaptation to environment. Spines, tendrils, traps - all serve specific functions</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-amber-800">Видоизменения листьев - адаптация к среде. Шипы, усики, ловушки - все имеют специальные функции</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northern Continents Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #38bdf8; color: #0f172a; font-weight: 800; }
+        canvas { cursor: pointer; border-radius: 1.5rem; }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-sky-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Visual Comparison -->
+        <div class="glass rounded-custom p-8 relative min-h-[500px] flex flex-col items-center">
+            <div class="flex gap-4 mb-6">
+                <button onclick="setMode('eurasia')" class="px-4 py-1 glass rounded-lg text-xs hover:bg-white/10 font-bold text-green-400 uppercase">Eurasia</button>
+                <button onclick="setMode('na')" class="px-4 py-1 glass rounded-lg text-xs hover:bg-white/10 font-bold text-blue-400 uppercase">N. America</button>
+                <button onclick="setMode('both')" class="px-4 py-1 glass rounded-lg text-xs hover:bg-white/10 font-bold text-purple-400 uppercase">Compare</button>
+            </div>
+            <canvas id="compCanvas" class="w-full h-full"></canvas>
+        </div>
+
+        <!-- Data Panel -->
+        <div class="flex flex-col gap-6">
+            <div class="glass p-10 rounded-custom border-l-4 border-sky-500">
+                <h3 id="info-title" class="heading-font text-2xl mb-4 text-sky-200"></h3>
+                <div id="info-text" class="text-sm font-light leading-relaxed text-white/80 space-y-4"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass p-6 rounded-2xl">
+                    <div class="text-xs uppercase text-gray-400 mb-1">Laurasia</div>
+                    <div class="font-bold text-white text-sm" id="fact-laurasia"></div>
+                </div>
+                <div class="glass p-6 rounded-2xl">
+                    <div class="text-xs uppercase text-gray-400 mb-1">Glaciation</div>
+                    <div class="font-bold text-white text-sm" id="fact-ice"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Северные Материки", subtitle: "Евразия и Северная Америка",
+                info: {
+                    eurasia: { t: "Евразия", d: "Самый большой материк (54 млн км²). Состоит из двух частей света. Омывается всеми океанами. Имеет самую сложную береговую линию." },
+                    na: { t: "Северная Америка", d: "Третий по величине материк (24.7 млн км²). Полностью лежит в Северном и Западном полушариях. Сильно расчленен на севере." },
+                    both: { t: "Общие черты", d: "1. Были частью Лавразии. 2. Сходство рельефа (равнины в центре, горы по краям). 3. Древнее оледенение повлияло на природу севера (озера, морены)." }
+                },
+                facts: { l: "Древний праматерик, объединявший их", i: "Следы ледника: Великие озера (СА) и озера Европы" }
+            },
+            kz: {
+                title: "Солтүстік Материктер", subtitle: "Еуразия және Солтүстік Америка",
+                info: {
+                    eurasia: { t: "Еуразия", d: "Ең үлкен материк (54 млн км²). Екі дүние бөлігінен тұрады. Барлық мұхиттармен шайылады." },
+                    na: { t: "Солтүстік Америка", d: "Көлемі жағынан үшінші (24.7 млн км²). Толығымен Солтүстік және Батыс жарты шарларда жатыр." },
+                    both: { t: "Ортақ белгілер", d: "1. Лавразияның бөлігі болған. 2. Рельеф ұқсастығы. 3. Ежелгі мұз басу солтүстік табиғатына әсер етті." }
+                },
+                facts: { l: "Оларды біріктірген ежелгі праматерик", i: "Мұздық іздері: Ұлы көлдер және Еуропа көлдері" }
+            },
+            en: {
+                title: "Northern Continents", subtitle: "Eurasia & North America",
+                info: {
+                    eurasia: { t: "Eurasia", d: "Largest continent (54M km²). Comprises Europe and Asia. Washed by all oceans." },
+                    na: { t: "North America", d: "Third largest (24.7M km²). Entirely in Northern & Western Hemispheres. Highly indented north coast." },
+                    both: { t: "Common Features", d: "1. Parts of Laurasia. 2. Similar relief layout. 3. Ancient glaciation shaped northern landscapes." }
+                },
+                facts: { l: "Ancient supercontinent", i: "Glacial traces: Great Lakes & European lakes" }
+            }
+        };
+
+        let lang = 'ru', mode = 'both', canvas, ctx;
+
+        window.setLang = (l) => { lang = l; upd(); }
+        window.setMode = (m) => { mode = m; upd(); }
+
+        function upd() {
+            const t = translations[lang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('info-title').textContent = t.info[mode].t;
+            document.getElementById('info-text').textContent = t.info[mode].d;
+            document.getElementById('fact-laurasia').textContent = t.facts.l;
+            document.getElementById('fact-ice').textContent = t.facts.i;
+            draw();
+        }
+
+        function draw() {
+            const w = canvas.width, h = canvas.height;
+            const t = Date.now() * 0.001;
+            ctx.clearRect(0,0,w,h);
+
+            const cx = w/2, cy = h/2;
+            
+            // Laurasia Connection Visual
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
+
+            // Eurasia (Right)
+            const euAlpha = (mode === 'eurasia' || mode === 'both') ? 1 : 0.2;
+            ctx.fillStyle = `rgba(16, 185, 129, ${euAlpha})`;
+            ctx.beginPath(); ctx.arc(cx + 80, cy, 90, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = `rgba(255,255,255,${euAlpha})`; ctx.fillText("EURASIA", cx+60, cy);
+
+            // N. America (Left)
+            const naAlpha = (mode === 'na' || mode === 'both') ? 1 : 0.2;
+            ctx.fillStyle = `rgba(59, 130, 246, ${naAlpha})`;
+            ctx.beginPath(); ctx.arc(cx - 80, cy, 70, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = `rgba(255,255,255,${naAlpha})`; ctx.fillText("N. AMERICA", cx-110, cy);
+
+            // Bridge (Bering)
+            if(mode === 'both') {
+                ctx.strokeStyle = '#facc15'; ctx.setLineDash([5,5]);
+                ctx.beginPath(); ctx.moveTo(cx-10, cy-50); ctx.lineTo(cx+10, cy-50); ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            canvas = document.getElementById('compCanvas'); ctx = canvas.getContext('2d');
+            const rs = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            setLang('ru');
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

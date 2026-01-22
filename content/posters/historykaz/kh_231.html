@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Освоение целины в Казахстане</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #fffbeb; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .lang-active { background-color: #d97706 !important; color: white !important; font-weight: 900; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(217, 119, 6, 0.1); }
+        .gold-grad { background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); }
+    </style>
+</head>
+<body class="pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Переключатель языков -->
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-slate-900/80 backdrop-blur p-1 rounded-full border border-white/20 shadow-xl">
+        <button onclick="setLang('ru')" id="lang-ru" class="lang-active w-10 h-10 rounded-full text-xs transition-all">RU</button>
+        <button onclick="setLang('kz')" id="lang-kz" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">KZ</button>
+        <button onclick="setLang('en')" id="lang-en" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">EN</button>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-6 mt-12 space-y-10">
+        <header class="p-16 rounded-[4rem] text-white text-center shadow-2xl relative overflow-hidden gold-grad">
+            <div class="relative z-10">
+                <span id="period" class="inline-block bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 tracking-widest">1954 — 1965 гг.</span>
+                <h1 id="title" class="text-4xl md:text-6xl font-black uppercase mb-4 leading-none">Освоение целины</h1>
+                <p id="desc" class="text-xl font-light opacity-90">Превращение Казахстана в главную житницу страны</p>
+            </div>
+            <div class="absolute top-0 right-0 text-[15rem] opacity-10 pointer-events-none font-black translate-x-1/4 -translate-y-1/4">🌾</div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-amber-600">
+                <h3 id="f1T" class="font-black uppercase mb-4 text-amber-900">Масштаб</h3>
+                <p id="f1D" class="text-sm leading-relaxed">За первые два года было распахано 25 млн га земель. В Казахстан прибыло более 600 тысяч новоселов.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-amber-600">
+                <h3 id="f2T" class="font-black uppercase mb-4 text-amber-900">Рекорд 1956</h3>
+                <p id="f2D" class="text-sm leading-relaxed">Казахстан впервые выдал «золотой миллиард» пудов зерна, став мировым лидером по темпам роста посевов.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-amber-600">
+                <h3 id="f3T" class="font-black uppercase mb-4 text-amber-900">Экология</h3>
+                <p id="f3D" class="text-sm leading-relaxed">Нарушение баланса почв привело к пыльным бурям и ветровой эрозии. Потеряно до 30% плодородного слоя.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl">
+                <h3 id="chartTitle" class="text-2xl font-black mb-6 uppercase text-amber-900">Производство зерна (млн тонн)</h3>
+                <div class="h-[350px]">
+                    <canvas id="grainChart"></canvas>
+                </div>
+            </div>
+            <div class="p-10 rounded-[3rem] shadow-2xl text-white flex flex-col justify-center relative overflow-hidden bg-slate-900">
+                <h3 id="specialTitle" class="text-3xl font-black mb-6 uppercase text-yellow-400">Демографический сдвиг</h3>
+                <p id="specialD" class="text-xl font-light leading-relaxed relative z-10">В результате миграции населения в целинные годы доля коренного населения в республике временно снизилась до 30%, сделав Казахстан многонациональным краем.</p>
+                <div class="absolute -bottom-10 -right-10 text-[20rem] opacity-5 pointer-events-none">🏘️</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                period: "1954 — 1965 гг.", title: "Освоение целины", desc: "Превращение Казахстана в главную житницу страны",
+                f1T: "Масштаб", f1D: "За первые два года было распахано 25 млн га земель. В Казахстан прибыло более 600 тысяч новоселов.",
+                f2T: "Рекорд 1956", f2D: "Казахстан впервые выдал «золотой миллиард» пудов зерна, став мировым лидером по темпам роста посевов.",
+                f3T: "Экология", f3D: "Нарушение баланса почв привело к пыльным бурям и ветровой эрозии. Потеряно до 30% плодородного слоя.",
+                chartTitle: "Производство зерна (млн тонн)", specialTitle: "Демографический сдвиг",
+                specialD: "В результате миграции населения в целинные годы доля коренного населения в республике временно снизилась до 30%, сделав Казахстан многонациональным краем.",
+                labels: ['1953', '1956', '1958', '1960', '1964']
+            },
+            kz: {
+                period: "1954 — 1965 жж.", title: "Тың игеру", desc: "Қазақстанның елдің басты астық қоймасына айналуы",
+                f1T: "Ауқымы", f1D: "Алғашқы екі жылда 25 млн га жер жыртылды. Қазақстанға 600 мыңнан астам жаңа қоныстанушылар келді.",
+                f2T: "1956 ж. рекорды", f2D: "Қазақстан алғаш рет «алтын миллиард» пұт астық беріп, егіс өсімі бойынша әлемдік көшбасшы атанды.",
+                f3T: "Экология", f3D: "Топырақ тепе-теңдігінің бұзылуы шаңды дауылдар мен эрозияға әкелді. Құнарлы қабаттың 30%-ы жоғалды.",
+                chartTitle: "Астық өндірісі (млн тонн)", specialTitle: "Демографиялық өзгеріс",
+                specialD: "Тың игеру жылдарындағы көші-қон нәтижесінде республикадағы жергілікті халықтың үлесі уақытша 30%-ға дейін төмендеді.",
+                labels: ['1953', '1956', '1958', '1960', '1964']
+            },
+            en: {
+                period: "1954 — 1965", title: "Virgin Lands Campaign", desc: "Turning Kazakhstan into the main breadbasket of the country",
+                f1T: "Scale", f1D: "25 million hectares of land were plowed in the first two years. Over 600,000 new settlers arrived.",
+                f2T: "1956 Record", f2D: "Kazakhstan produced its first billion poods of grain, becoming a global leader in crop growth rates.",
+                f3T: "Ecology", f3D: "Soil imbalance led to dust storms and erosion. Up to 30% of the fertile layer was lost.",
+                chartTitle: "Grain Production (Million Tons)", specialTitle: "Demographic Shift",
+                specialD: "Migration during the Virgin Lands years caused the indigenous population share to temporarily drop to 30%.",
+                labels: ['1953', '1956', '1958', '1960', '1964']
+            }
+        };
+
+        let activeChart = null;
+
+        function setLang(lang) {
+            ['ru', 'kz', 'en'].forEach(l => document.getElementById(`lang-${l}`).classList.toggle('lang-active', l === lang));
+            const t = translations[lang];
+            document.getElementById('period').innerText = t.period;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('f1T').innerText = t.f1T; document.getElementById('f1D').innerText = t.f1D;
+            document.getElementById('f2T').innerText = t.f2T; document.getElementById('f2D').innerText = t.f2D;
+            document.getElementById('f3T').innerText = t.f3T; document.getElementById('f3D').innerText = t.f3D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('specialTitle').innerText = t.specialTitle;
+            document.getElementById('specialD').innerText = t.specialD;
+            renderChart(t.labels);
+        }
+
+        function renderChart(labels) {
+            const ctx = document.getElementById('grainChart').getContext('2d');
+            if (activeChart) activeChart.destroy();
+            activeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Зерно', data: [5.4, 16.1, 14.5, 12.8, 15.0], backgroundColor: '#d97706', borderRadius: 8
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

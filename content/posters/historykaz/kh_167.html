@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История Казахстана (XVIII в. – 1914 г.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .era-gradient {
+            background: radial-gradient(circle at top right, #1e293b, #020617 90%);
+        }
+
+        .premium-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .premium-panel:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 0 50px rgba(96, 165, 250, 0.1);
+        }
+
+        .lang-active {
+            background-color: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: rgba(2, 6, 23, 0.5);
+        }
+
+        .milestone-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-left: 6px solid #3b82f6;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.4s ease;
+            height: 100%;
+        }
+
+        .milestone-card:hover {
+            transform: translateY(-10px);
+            border-color: #60a5fa;
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .status-tag {
+            background: #1e3a8a;
+            color: #93c5fd;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="era-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-white/10 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-white">История Казахстана (XVIII в. – 1914 г.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-white/10">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Timeline Analysis (Canvas) -->
+        <div class="premium-panel p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-blue-500 text-blue-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Colonial Transformation Map</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Магистраль Империи</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        За два столетия Степь прошла путь от суверенного ханства до глубокой интеграции в состав Российской империи. Нажмите на этапы «продвижения», чтобы раскрыть суть перемен.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[3rem] bg-blue-950/20 border-l-8 border-blue-500 shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-blue-300 mb-3 uppercase tracking-tighter">Выберите период</h3>
+                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на точки влияния XVIII, XIX или начала XX века на холсте.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="timelineCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-blue-900 font-mono uppercase tracking-[0.4em]">Strategic Geo-History Model</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Content Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Political Evolution -->
+            <div class="milestone-card">
+                <span class="status-tag mb-4 inline-block" id="tag-1">Политика</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Утрата суверенитета</h3>
+                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed">
+                    Процесс начался с присяги Абулхаира (1731) и завершился полной ликвидацией ханской власти в 1820-х гг. К концу XIX века вся территория Казахстана была разделена между генерал-губернаторствами (Степным и Туркестанским). Традиционная власть султанов была полностью заменена российской чиновничьей вертикалью.
+                </p>
+                <div class="mt-4 text-[10px] font-black text-blue-500 uppercase tracking-widest italic">1822/1824: Конец ханства</div>
+            </div>
+
+            <!-- Socio-Economic Shift -->
+            <div class="milestone-card">
+                <span class="status-tag mb-4 inline-block" id="tag-2">Экономика</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Земельный передел</h3>
+                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed">
+                    XIX век стал временем массового изъятия земель под переселенческий фонд. По закону 1891 г. земля была объявлена государственной собственностью России. Это привело к кризису традиционного кочевого скотоводства, росту оседлости и началу промышленного освоения недр (Жезказган, Караганда).
+                </p>
+                <div class="mt-4 text-[10px] font-black text-blue-500 uppercase tracking-widest italic">1891: Земельный закон</div>
+            </div>
+
+            <!-- Social Resistance -->
+            <div class="milestone-card">
+                <span class="status-tag mb-4 inline-block" id="tag-3">Общество</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Борьба и Культура</h3>
+                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed">
+                    Эпоха характеризуется мощными восстаниями (Сырым Датов, Кенесары Касымов, Исатай и Махамбет). Параллельно шел процесс формирования новой казахской интеллигенции. Ч. Валиханов, И. Алтынсарин и Абай Кунанбаев заложили основы современного просвещения, пытаясь найти место казахов в меняющемся мире.
+                </p>
+                <div class="mt-4 text-[10px] font-black text-blue-500 uppercase tracking-widest italic">Абай — голос нации</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "История Казахстана (XVIII в. – 1914 г.)",
+                vizTitle: "Магистраль Империи",
+                vizDesc: "За два столетия Степь прошла путь от суверенного ханства до глубокой интеграции. Нажмите на точки для анализа перемен.",
+                badge: "Анализ колониальной трансформации",
+                elementTitleDefault: "Выберите период",
+                elementDescDefault: "Кликните на точки влияния на холсте справа.",
+                tag1: "Политика", tag2: "Экономика", tag3: "Общество",
+                c1T: "Утрата суверенитета", c1D: "Ликвидация ханской власти (1822-1824) и введение генерал-губернаторств. Степь стала частью имперской административной машины.",
+                c2T: "Земельный передел", c2D: "Переселенческая политика и изъятие пастбищ. Переход от кочевья к полукочевью и начало промышленной добычи ископаемых.",
+                c3T: "Борьба и Культура", c3D: "Восстания против колонизации и рождение новой интеллигенции. Абай и Шокан стали мостами между культурами.",
+                footer: "«Эта эпоха превратила Казахстан в арену глобальной имперской политики, изменив облик нации навсегда.»",
+                milestones: {
+                    early: { name: "XVIII век: Протекторат", text: "Период дипломатического выбора. Крепости по Иртышу и Уралу. Номинальное подданство при сохранении внутренней автономии ханов." },
+                    mid: { name: "XIX век: Реформы и Оборона", text: "Ликвидация ханств. Восстание Кенесары. Изъятие земель под 'переселенческий фонд'. Полная военная оккупация Степи." },
+                    late: { name: "Начало XX века: Пробуждение", text: "Формирование движения Алаш. Промышленный бум. Первая мировая война и канун великих революционных потрясений." }
+                }
+            },
+            kz: {
+                title: "Қазақстан тарихы (XVIII ғ. – 1914 ж.)",
+                vizTitle: "Империя магистралі",
+                vizDesc: "Екі ғасыр ішінде Дала егемен хандықтан империя құрамына толық интеграциялану жолынан өтті. Өзгерістерді талдау үшін нүктелерді басыңыз.",
+                badge: "Отарлық трансформацияны талдау",
+                elementTitleDefault: "Кезеңді таңдаңыз",
+                elementDescDefault: "Оң жақтағы кенептегі ықпал ету нүктелерін басыңыз.",
+                tag1: "Саясат", tag2: "Экономика", tag3: "Әлеумет",
+                c1T: "Егемендіктен айырылу", c1D: "Хандық биліктің жойылуы (1822-1824) және генерал-губернаторлықтардың енгізілуі. Дала империялық әкімшілік машинаның бөлігіне айналды.",
+                c2T: "Жер мәселесі", c2D: "Қоныс аудару саясаты және жайылымдарды тартып алу. Көшпеліліктен жартылай көшпелілікке көшу және өндірістік қазба байлықтарды игерудің басталуы.",
+                c3T: "Күрес пен Мәдениет", c3D: "Отаршылдыққа қарсы көтерілістер және жаңа зиялы қауымның тууы. Абай мен Шоқан мәдениеттер арасындағы көпір болды.",
+                milestones: {
+                    early: { name: "XVIII ғасыр: Протекторат", text: "Дипломатиялық таңдау кезеңі. Ертіс пен Жайық бойындағы бекіністер. Хандардың ішкі автономиясы сақталған номиналды бодандық." },
+                    mid: { name: "XIX ғасыр: Реформалар мен Қорғаныс", text: "Хандықтарды жою. Кенесары көтерілісі. Жерлерді 'қоныс аудару қорына' алу. Даланы толық әскери басып алу." },
+                    late: { name: "XX ғасыр басы: Ояну", text: "Алаш қозғалысының қалыптасуы. Өнеркәсіптік серпіліс. Бірінші дүниежүзілік соғыс және ұлы төңкерістер қарсаңы." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('timelineCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawTimeline();
+        }
+
+        function drawTimeline() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const scale = canvas.width / 800;
+
+            // Main Axis
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 400);
+            ctx.lineTo(700 * scale, 100);
+            ctx.strokeStyle = 'rgba(96, 165, 250, 0.4)';
+            ctx.lineWidth = 10 * scale;
+            ctx.stroke();
+
+            // Dots
+            drawMilestone(150 * scale, 375, '#3b82f6', "1700s", 'early');
+            drawMilestone(400 * scale, 250, '#60a5fa', "1800s", 'mid');
+            drawMilestone(650 * scale, 125, '#93c5fd', "1900s", 'late');
+        }
+
+        function drawMilestone(x, y, color, label, id) {
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.stroke();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 45);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (x < 300 * scale) target = 'early';
+            else if (x < 550 * scale) target = 'mid';
+            else target = 'late';
+
+            if (target) {
+                const info = translations[currentLang].milestones[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (target === 'early' ? '#3b82f6' : (target === 'mid' ? '#60a5fa' : '#93c5fd'));
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

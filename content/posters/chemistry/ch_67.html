@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemical Calculations with Impurities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #312e81, #1e1b4b, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: crosshair; }
+        .lang-btn.active { background: #6366f1; color: white; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-indigo-400/20">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-indigo-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-indigo-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="impurityCanvas" class="w-full h-[400px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-indigo-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-indigo-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+            <div class="mt-10 p-6 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 text-center font-mono">
+                w(чист) = 1 - w(прим) <br> m(чист) = m(техн) · w(чист)
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-indigo-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-indigo-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Чистота Материи",
+                subtitle: "Вычисления по уравнениям с долей примесей",
+                canvasHeading: "Модель 'Технический продукт'",
+                canvasHint: "Нажмите, чтобы отфильтровать примеси",
+                defaultTitle: "Химия реальности",
+                defaultText: "В природе и промышленности вещества редко бывают чистыми. Для расчетов по уравнениям реакций необходимо сначала найти массу чистого компонента.",
+                cards: [
+                    { title: "Зачем это нужно?", desc: "Технические образцы металлов, руд или солей всегда содержат посторонние компоненты, не участвующие в реакции." },
+                    { title: "Два этапа", desc: "1. Вычитаем долю примесей. 2. Проводим расчет по уравнению реакции, используя только чистую массу." },
+                    { title: "Обозначение", desc: "Доля чистого вещества выражается через ω (омега). Сумма долей чистого вещества и примесей всегда равна 1 (или 100%)." }
+                ],
+                quote: "«Наука — это попытка отсеять истину от случайных примесей заблуждений»",
+                author: "Клод Бертолле"
+            },
+            kz: {
+                title: "Материя Тазалығы",
+                subtitle: "Қоспасы бар заттардың теңдеулері бойынша есептеулер",
+                canvasHeading: "'Техникалық өнім' моделі",
+                canvasHint: "Қоспаларды сүзу үшін басыңыз",
+                defaultTitle: "Шындық химиясы",
+                defaultText: "Табиғатта және өнеркәсіпте заттар сирек таза болады. Реакция теңдеулері бойынша есептеулер жүргізу үшін алдымен таза компоненттің массасын табу керек.",
+                cards: [
+                    { title: "Бұл не үшін қажет?", desc: "Металдардың, кендердің немесе тұздардың техникалық үлгілерінде әрқашан реакцияға қатыспайтын бөгде компоненттер болады." },
+                    { title: "Екі кезең", desc: "1. Қоспа үлесін шегереміз. 2. Тек таза массаны пайдаланып, реакция теңдеуі бойынша есептейміз." },
+                    { title: "Белгіленуі", desc: "Таза заттың үлесі ω (омега) арқылы өрнектеледі. Таза зат пен қоспа үлестерінің қосындысы әрқашан 1-ге тең." }
+                ],
+                quote: "«Ғылым — бұл ақиқатты кездейсоқ қоспалардан тазарту талпынысы»",
+                author: "Клод Бертолле"
+            },
+            en: {
+                title: "Purity of Matter",
+                subtitle: "Calculations involving substance impurities",
+                canvasHeading: "Technical Product Model",
+                canvasHint: "Click to filter out impurities",
+                defaultTitle: "Real-world Chemistry",
+                defaultText: "In nature and industry, substances are rarely pure. For reaction equations, you must first find the mass of the pure component.",
+                cards: [
+                    { title: "Why use this?", desc: "Technical samples of metals, ores, or salts always contain external components that do not react." },
+                    { title: "Two Stages", desc: "1. Subtract impurity fraction. 2. Calculate via reaction equation using only the pure mass." },
+                    { title: "Notation", desc: "The pure substance fraction is denoted by ω (omega). Pure + Impurity fractions always sum to 1." }
+                ],
+                quote: "«Science is an attempt to filter truth from the accidental impurities of error»",
+                author: "Claude Berthollet"
+            }
+        };
+
+        let currentLang = 'ru';
+        let filtered = false;
+        const canvas = document.getElementById('impurityCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function init() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            particles = [];
+            for(let i=0; i<100; i++) {
+                particles.push({
+                    x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                    vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2,
+                    pure: Math.random() > 0.2
+                });
+            }
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                if(filtered && !p.pure) {
+                    p.y += 5; if(p.y > canvas.height + 10) return;
+                } else {
+                    p.x += p.vx; p.y += p.vy;
+                    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                }
+                ctx.fillStyle = p.pure ? '#6366f1' : '#475569';
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.pure ? 5 : 3, 0, Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('click', () => filtered = !filtered);
+        window.onload = () => { init(); setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

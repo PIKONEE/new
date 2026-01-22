@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Root Modifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #3f2c22; color: #fde68a; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.5rem; }
+        canvas { border-radius: 1rem; }
+        .mod-btn { cursor: pointer; transition: 0.3s; opacity: 0.6; }
+        .mod-btn.active { opacity: 1; transform: scale(1.1); color: #fff; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-8 flex flex-col items-center">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <h1 class="text-4xl font-montserrat mb-8" id="header-text">METAMORPHOSIS</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+        <div class="mod-btn text-center" onclick="window.setM(0)">
+            <div class="text-6xl mb-2">🥕</div>
+            <h3 class="font-bold" id="l-tap">Taproot</h3>
+        </div>
+        <div class="mod-btn text-center" onclick="window.setM(1)">
+            <div class="text-6xl mb-2">🍠</div>
+            <h3 class="font-bold" id="l-tuber">Tuber</h3>
+        </div>
+        <div class="mod-btn text-center" onclick="window.setM(2)">
+            <div class="text-6xl mb-2">🦠</div>
+            <h3 class="font-bold" id="l-nodule">Nodules</h3>
+        </div>
+    </div>
+
+    <div class="glass p-8 mt-8 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div class="h-64 bg-black/20 rounded-xl relative">
+            <canvas id="modCanvas" class="w-full h-full"></canvas>
+        </div>
+        <div>
+            <h2 id="m-title" class="text-2xl font-bold text-white mb-4"></h2>
+            <p id="m-desc" class="text-lg opacity-80 leading-relaxed"></p>
+        </div>
+    </div>
+
+    <div class="fixed bottom-4 right-4 flex gap-2 text-xs font-bold text-gray-500">
+        <button onclick="window.updL('ru')" class="hover:text-white">RU</button>
+        <button onclick="window.updL('kz')" class="hover:text-white">KZ</button>
+        <button onclick="window.updL('en')" class="hover:text-white">EN</button>
+    </div>
+
+    <script>
+        const bio5Data = {
+            ru: { h: "ВИДОИЗМЕНЕНИЯ КОРНЯ", l: ["Корнеплод", "Корнеклубень", "Клубеньки"], m: [
+                {t: "Корнеплод", d: "Утолщение главного корня для запаса питательных веществ. Примеры: морковь, свекла, редис. Двулетние растения."},
+                {t: "Корневые клубни", d: "Утолщение боковых или придаточных корней. Примеры: георгин, батат, чистяк. Служат для размножения и запаса."},
+                {t: "Клубеньки (Симбиоз)", d: "Азотфиксирующие бактерии на корнях бобовых. Растение дает бактериям жилье, бактерии — азот."}
+            ]},
+            kz: { h: "ТАМЫР ТҮРӨЗГЕРІСТЕРІ", l: ["Жемістамыр", "Тамыр түйнегі", "Түйнекшелер"], m: [
+                {t: "Жемістамыр", d: "Негізгі тамырдың қоректік заттарды жинау үшін жуандауы. Мысалы: сәбіз, қызылша. Екі жылдық өсімдіктер."},
+                {t: "Тамыр түйнектері", d: "Жанама немесе қосалқы тамырлардың жуандауы. Мысалы: нарғызгүл, батат. Көбею және қор жинау үшін."},
+                {t: "Түйнекшелер", d: "Бұршақ тұқымдастар тамырындағы азот бекітуші бактериялар. Өсімдік баспана, бактерия азот береді."}
+            ]},
+            en: { h: "ROOT MODIFICATIONS", l: ["Storage Taproot", "Root Tubers", "Nodules"], m: [
+                {t: "Storage Taproot", d: "Thickening of the main root for nutrient storage. Examples: carrot, beet, radish. Biennial plants."},
+                {t: "Root Tubers", d: "Thickening of lateral or adventitious roots. Examples: dahlia, sweet potato. Used for storage and reproduction."},
+                {t: "Root Nodules", d: "Nitrogen-fixing bacteria on legume roots. Symbiosis: plants provide shelter, bacteria provide nitrogen."}
+            ]}
+        };
+
+        let lang='ru', idx=0, cx, cvs;
+
+        window.updL = function(l) {
+            lang = l;
+            document.getElementById('header-text').textContent = bio5Data[l].h;
+            document.getElementById('l-tap').textContent = bio5Data[l].l[0];
+            document.getElementById('l-tuber').textContent = bio5Data[l].l[1];
+            document.getElementById('l-nodule').textContent = bio5Data[l].l[2];
+            updateInfo();
+        }
+
+        window.setM = function(i) { idx = i; updateInfo(); }
+
+        function updateInfo() {
+            const data = bio5Data[lang].m[idx];
+            document.getElementById('m-title').textContent = data.t;
+            document.getElementById('m-desc').textContent = data.d;
+            document.querySelectorAll('.mod-btn').forEach((b, k) => {
+                b.classList.toggle('active', k === idx);
+            });
+            draw();
+        }
+
+        function draw() {
+            if(!cx) return;
+            const w = cvs.width, h = cvs.height;
+            cx.clearRect(0,0,w,h);
+            const cx_ = w/2, cy_ = h/2;
+
+            if (idx === 0) { // Carrot
+                cx.fillStyle = '#f97316';
+                cx.beginPath(); cx.moveTo(cx_-20, cy_-80); cx.lineTo(cx_+20, cy_-80); cx.lineTo(cx_, cy_+80); cx.fill();
+                // Greens
+                cx.strokeStyle = '#22c55e'; cx.lineWidth = 2;
+                cx.beginPath(); cx.moveTo(cx_, cy_-80); cx.lineTo(cx_, cy_-120); cx.stroke();
+            } else if (idx === 1) { // Sweet potato
+                cx.fillStyle = '#be185d';
+                cx.beginPath(); cx.ellipse(cx_-30, cy_, 20, 40, -0.2, 0, Math.PI*2); cx.fill();
+                cx.beginPath(); cx.ellipse(cx_+30, cy_+10, 25, 45, 0.2, 0, Math.PI*2); cx.fill();
+            } else { // Nodules
+                cx.strokeStyle = '#a16207'; cx.lineWidth = 2;
+                cx.beginPath(); cx.moveTo(cx_, 20); cx.lineTo(cx_, h-20); cx.stroke(); 
+                cx.fillStyle = '#fde047';
+                for(let i=0; i<8; i++) {
+                    cx.beginPath(); cx.arc(cx_ + (i%2==0?10:-10), 50 + i*30, 6, 0, Math.PI*2); cx.fill();
+                }
+            }
+        }
+
+        window.onload = function() {
+            cvs = document.getElementById('modCanvas'); 
+            if(cvs) {
+                cx = cvs.getContext('2d');
+                const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; draw(); };
+                window.addEventListener('resize', rs); rs();
+                window.updL('ru');
+            }
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

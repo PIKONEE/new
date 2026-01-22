@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хан Касым: Золотой век ханства</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .royal-gradient {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f8fafc 50%, #ffffff 100%);
+        }
+
+        .premium-card {
+            background: white;
+            border-radius: 3rem;
+            border: 1px solid #bae6fd;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px -15px rgba(3, 105, 161, 0.15);
+            border-color: #fbbf24;
+        }
+
+        .lang-active {
+            background-color: #0369a1;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(3, 105, 161, 0.3);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: #fff;
+            border: 1px solid #e0f2fe;
+        }
+
+        .fact-box {
+            background: white;
+            border-radius: 2.5rem;
+            border-left: 8px solid #fbbf24;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .gold-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="royal-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-sky-100 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-sky-950">Хан Касым: Собиратель казахских земель</h1>
+            <div class="flex bg-sky-50 p-1 rounded-2xl border border-sky-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Territorial Apex Visualization (Canvas) -->
+        <div class="premium-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-amber-500 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Territorial Zenith Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-sky-950 leading-tight italic uppercase">Границы Миллионной Державы</h2>
+                    <p id="viz-desc" class="text-lg text-sky-900/60 font-light leading-relaxed">
+                        При Касым-хане территория Казахстана расширилась до максимальных пределов за всю раннюю историю ханства. Нажмите на зоны расширения, чтобы изучить масштаб державы.
+                    </p>
+                    
+                    <div id="info-display" class="p-8 rounded-[2.5rem] bg-sky-50 border-l-8 border-amber-500 shadow-xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-sky-900 mb-3 uppercase">Достижения Касыма</h3>
+                        <p id="element-desc" class="text-sky-800/70 text-sm leading-relaxed italic font-light">Кликните на Жайык, Иртыш или Сырдарью на схеме.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="expansionCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-sky-300 font-mono uppercase tracking-[0.4em]">Strategic Domain Expansion 1511–1521</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Historical Facts -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="fact-box">
+                <span class="gold-badge mb-4 inline-block" id="t-law">Закон</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-sky-950">Светлый путь</h3>
+                <p id="c1-d" class="text-slate-600 text-sm leading-relaxed">Разработал первый свод законов **«Қасым ханның қасқа жолы»**. Кодекс включал 5 разделов: имущественный, уголовный, военный, посольский и общественный, что заложило правовой фундамент нации.</p>
+            </div>
+            <div class="fact-box">
+                <span class="gold-badge mb-4 inline-block" id="t-mil">Мощь</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-sky-950">Войско и Народ</h3>
+                <p id="c2-d" class="text-slate-600 text-sm leading-relaxed">Численность населения достигла **1 миллиона человек**. Касым мог выставить в поход **300 тысяч воинов**. При нем ханство стало самой влиятельной силой в Центральной Азии.</p>
+            </div>
+            <div class="fact-box">
+                <span class="gold-badge mb-4 inline-block" id="t-dip">Мир</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-sky-950">Дипломатия</h3>
+                <p id="c3-d" class="text-slate-600 text-sm leading-relaxed">Установил прямые дипломатические отношения с Московским государством при **Василии III**. О Казахском ханстве впервые узнали в Европе как о мощном государстве.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-20 bg-sky-950 text-sky-300/40 text-center border-t border-sky-900/20">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
+                «Касым-хан превратил кочевое государство в мировую державу, объединив Степь единым законом и нерушимыми границами.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-amber-600 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Хан Касым: Золотой век",
+                vizTitle: "Границы Миллионной Державы",
+                vizDesc: "Территория Казахстана достигла пика: от Жайыка до Иртыша. Нажмите на зоны на карте для изучения этапов расширения.",
+                badge: "Анализ территориального апогея",
+                elementTitleDefault: "Достижения Касыма",
+                elementDescDefault: "Кликните на Жайык, Иртыш или Сырдарью на чертеже.",
+                tLaw: "Закон", tMil: "Мощь", tDip: "Мир",
+                c1T: "Светлый путь", c1D: "Свод законов «Қасқа жолы» стал высшим достижением правовой мысли Степи, адаптировав исламские нормы к кочевому быту.",
+                c2T: "Войско и Народ", c2D: "Миллион подданных и 300-тысячная армия сделали Касым-хана 'Вторым Чингисханом' в глазах современников.",
+                c3T: "Дипломатия", c3D: "Признание ханства Москвой и Индией (Бабуром). Казахи стали ключевым звеном в торговле между Китаем и Европой.",
+                footer: "«Касым-хан превратил кочевое государство в мировую державу, объединив Степь единым законом.»",
+                expansions: {
+                    west: { name: "Западный вектор (Жайык)", text: "Касым присоединил большую часть Ногайской Орды. Границы дошли до реки Жайык (Урал)." },
+                    east: { name: "Восточный вектор (Иртыш)", text: "Укрепление власти на востоке, контроль над землями до бассейна реки Иртыш." },
+                    south: { name: "Южный вектор (Сырдарья)", text: "Возврат контроля над Отраром, Саураном и Туркестаном после побед над Шайбанидами." }
+                }
+            },
+            kz: {
+                title: "Қасым хан: Хандықтың алтын ғасыры",
+                vizTitle: "Миллиондық держава шекарасы",
+                vizDesc: "Қазақстан аумағы Жайықтан Ертіске дейін кеңейді. Кеңею кезеңдерін зерттеу үшін картаны басыңыз.",
+                badge: "Аумақтық шарықтау шегін талдау",
+                elementTitleDefault: "Қасым жетістіктері",
+                elementDescDefault: "Сызбадағы Жайық, Ертіс немесе Сырдарияны басыңыз.",
+                tLaw: "Заң", tMil: "Қуат", tDip: "Бейбітшілік",
+                c1T: "Қасқа жол", c1D: "«Қасқа жолы» заңдар жинағы ислам нормаларын көшпелі тұрмысқа бейімдеген Дала құқықтық ойының жоғарғы жетістігі болды.",
+                c2T: "Әскер мен Халық", c2D: "Миллион халық пен 300 мыңдық әскер Қасым ханды замандастарының көз алдында «Екінші Шыңғыс хан» етті.",
+                c3T: "Дипломатия", c3D: "Мәскеу мен Үндістанның (Бабыр) хандықты мойындауы. Қазақтар Қытай мен Еуропа арасындағы сауданың негізгі буынына айналды.",
+                footer: "«Қасым хан көшпелі мемлекетті әлемдік державаға айналдырып, Даланы ортақ заңмен біріктірді.»",
+                expansions: {
+                    west: { name: "Батыс бағыт (Жайық)", text: "Қасым Ноғай Ордасының көп бөлігін қосып алды. Шекара Жайық өзеніне дейін жетті." },
+                    east: { name: "Шығыс бағыт (Ертіс)", text: "Шығыстағы биліктің нығаюы, Ертіс өзенінің алабына дейінгі жерлерді бақылау." },
+                    south: { name: "Оңтүстік бағыт (Сырдария)", text: "Шайбанидтерді жеңгеннен кейін Отырар, Сауран және Түркістан қалаларын бақылауды қайтару." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('expansionCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawExpansion();
+        }
+
+        function drawExpansion() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Simple 2D Map Outline
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 250 * scale);
+            ctx.lineTo(400 * scale, 100 * scale);
+            ctx.lineTo(700 * scale, 250 * scale);
+            ctx.lineTo(400 * scale, 450 * scale);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(3, 105, 161, 0.05)';
+            ctx.fill();
+            ctx.strokeStyle = '#bae6fd';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Expansion Zones
+            drawSector(cx - 150 * scale, cy, '#fbbf24', 'WEST');
+            drawSector(cx + 150 * scale, cy, '#38bdf8', 'EAST');
+            drawSector(cx, cy + 130 * scale, '#dc2626', 'SOUTH');
+        }
+
+        function drawSector(x, y, color, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, 45 * canvas.width/800, 0, Math.PI * 2);
+            ctx.fillStyle = color + '22';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let zone = null;
+            if (Math.sqrt((x-(cx-150*scale))**2 + (y-cy)**2) < 50*scale) zone = 'west';
+            else if (Math.sqrt((x-(cx+150*scale))**2 + (y-cy)**2) < 50*scale) zone = 'east';
+            else if (Math.sqrt((x-cx)**2 + (y-(cy+130*scale))**2) < 50*scale) zone = 'south';
+
+            if (zone) {
+                const info = translations[currentLang].expansions[zone];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-display').style.borderColor = '#fbbf24';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('t-law').innerText = t.tLaw;
+            document.getElementById('t-mil').innerText = t.tMil;
+            document.getElementById('t-dip').innerText = t.tDip;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-sky-600 hover:bg-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

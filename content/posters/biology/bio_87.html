@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эволюция растений</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #e9d5ff; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #6d28d9; border-bottom: 3px solid #d8b4fe; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #7c3aed; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #7c3aed; background: white; color: #7c3aed; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #7c3aed; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #7c3aed; color: white; }
+        tr:nth-child(even) { background-color: #f3e8ff; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-purple-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Өндіс Эволюция</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Plant Evolution - 500 Million Years</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Эволюция растений - 500 миллионов лет</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-purple-100">Су салуудан топырақ өндіс өнgertсі - 5 сатысы эволюциялық өндіріс</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-purple-100">From aquatic algae to land plants - 5 evolutionary stages over 500 million years</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-purple-100">От водных водорослей к наземным растениям - 5 эволюционных этапов</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Өндіс Эволюция 5 Сатысы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Five Stages of Plant Evolution</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Пять этапов эволюции растений</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">Сатысы</th>
+                            <th lang="kk" class="lang-content">Уақыты</th>
+                            <th lang="kk" class="lang-content">Ортасы</th>
+                            <th lang="kk" class="lang-content">Ерекшеліктері</th>
+                            <th lang="kk" class="lang-content">Мысалдары</th>
+                            <th lang="kk" class="lang-content">Адаптация</th>
+
+                            <th lang="en" class="lang-content">Stage</th>
+                            <th lang="en" class="lang-content">Time</th>
+                            <th lang="en" class="lang-content">Habitat</th>
+                            <th lang="en" class="lang-content">Features</th>
+                            <th lang="en" class="lang-content">Examples</th>
+                            <th lang="en" class="lang-content">Adaptation</th>
+
+                            <th lang="ru" class="lang-content">Этап</th>
+                            <th lang="ru" class="lang-content">Время</th>
+                            <th lang="ru" class="lang-content">Среда</th>
+                            <th lang="ru" class="lang-content">Признаки</th>
+                            <th lang="ru" class="lang-content">Примеры</th>
+                            <th lang="ru" class="lang-content">Адаптация</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>1. САЛУУ<br/>(Algae)</strong></td>
+                            <td lang="kk" class="lang-content">500 млн жыл бұрын (Кембрий)<br/>3500 млн жыл эволюция</td>
+                            <td lang="kk" class="lang-content">Оқеан, өзендер, көлдер<br/>(100% су ішінде)</td>
+                            <td lang="kk" class="lang-content">• Бір денелі немесе многоклеточные<br/>• Жапырақ нет (thallus)<br/>• Жилдіру нет<br/>• Спора репродукция<br/>• Хлорофилл а + в</td>
+                            <td lang="kk" class="lang-content">Хламидомонас (зелёные), спирогира (ленты), улва (зеленая салат), ламинария (жасыл салат)</td>
+                            <td lang="kk" class="lang-content">• Су ортасына толық адаптация<br/>• Плавающие органы<br/>• Осмос давления (турго́рность)<br/>• Легко размножение</td>
+
+                            <td lang="en" class="lang-content"><strong>1. ALGAE</strong></td>
+                            <td lang="en" class="lang-content">500M yrs ago (Cambrian)<br/>3500M yrs evolution</td>
+                            <td lang="en" class="lang-content">Ocean, rivers, lakes<br/>(100% water)</td>
+                            <td lang="en" class="lang-content">• Single or multicellular<br/>• No true leaves<br/>• No vascular tissue<br/>• Spore reproduction<br/>• Chlorophyll a + b</td>
+                            <td lang="en" class="lang-content">Chlamydomonas, Spirogyra (ribbon), Ulva (sea lettuce), Laminaria (kelp)</td>
+                            <td lang="en" class="lang-content">• Full aquatic adaptation<br/>• Floating organs<br/>• Osmotic pressure<br/>• Easy reproduction</td>
+
+                            <td lang="ru" class="lang-content"><strong>1. ВОДОРОСЛИ</strong></td>
+                            <td lang="ru" class="lang-content">500 млн лет назад<br/>(Кембрий период)</td>
+                            <td lang="ru" class="lang-content">Океан, реки, озёра<br/>(100% вода)</td>
+                            <td lang="ru" class="lang-content">• Одно или многоклеточные<br/>• Нет настоящих листьев<br/>• Нет сосудов<br/>• Размножение спорами<br/>• Хлорофилл а + в</td>
+                            <td lang="ru" class="lang-content">Хламидомонада, спирогира, ульва (салат), ламинария (ламинария)</td>
+                            <td lang="ru" class="lang-content">• Полная водная адаптация<br/>• Плавающие органы<br/>• Осмотическое давление<br/>• Лёгкое размножение</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>2. МХИДІҢ<br/>(Mosses)</strong></td>
+                            <td lang="kk" class="lang-content">450 млн жыл бұрын (Ордовик)<br/>Сиълі 5000+ түрлі</td>
+                            <td lang="kk" class="lang-content">Су және құрағы орын<br/>Ісінді орманның тиген</td>
+                            <td lang="kk" class="lang-content">• Ризоидтар (түсіндіруші корень)<br/>• Стебель және жапырақ сұрақы<br/>• Сосудтар жоқ (адвансе)<br/>• Альбом және спорофит<br/>• Су репродукция қажет</td>
+                            <td lang="kk" class="lang-content">Мниум (polytrichum), фунария, сфагнум (торфяной мох - қарауыл болота)<br/>5000+ түрлі, 99% мхов</td>
+                            <td lang="kk" class="lang-content">• Су орнындағы өндіріс<br/>• Ризоидтар - қара қай жарта<br/>• Куттикула жүктеме (мажед)<br/>• Сокращение размера</td>
+
+                            <td lang="en" class="lang-content"><strong>2. MOSSES</strong></td>
+                            <td lang="en" class="lang-content">450M yrs ago (Ordovician)<br/>~5000+ species alive</td>
+                            <td lang="en" class="lang-content">Water and dry areas<br/>Moist forest floors</td>
+                            <td lang="en" class="lang-content">• Rhizoids (root-like)<br/>• Stem and leaves present<br/>• No vascular tissue<br/>• Alternating gametophyte/sporophyte<br/>• Water needed for reproduction</td>
+                            <td lang="en" class="lang-content">Mnium, Funaria, Sphagnum (peat moss)<br/>5000+ species, 99% of bryophytes</td>
+                            <td lang="en" class="lang-content">• Transition to land<br/>• Rhizoids attach to surface<br/>• Cuticle for protection<br/>• Small size</td>
+
+                            <td lang="ru" class="lang-content"><strong>2. МХИ</strong></td>
+                            <td lang="ru" class="lang-content">450 млн лет назад<br/>(Ордовик, ~5000+ видов)</td>
+                            <td lang="ru" class="lang-content">Вода и сухие места<br/>Влажные лесные полы</td>
+                            <td lang="ru" class="lang-content">• Ризоиды (корневидные)<br/>• Стебель и листья<br/>• Нет сосудов<br/>• Чередование поколений<br/>• Вода нужна для размножения</td>
+                            <td lang="ru" class="lang-content">Мниум, фунария, сфагнум (торфяной мох)<br/>5000+ видов, 99% мохообразных</td>
+                            <td lang="ru" class="lang-content">• Переход на сушу<br/>• Ризоиды к поверхности<br/>• Кутикула защита<br/>• Маленький размер</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>3. ПАПОРОТНИКТЕР<br/>(Ferns)</strong></td>
+                            <td lang="kk" class="lang-content">400 млн жыл бұрын (Девон)<br/>~12,000 түрлі әділе</td>
+                            <td lang="kk" class="lang-content">Ысыңқылықты және құрағы орын<br/>Төменгі өндіс (сүндік)</td>
+                            <td lang="kk" class="lang-content">• Құнды сосудтар (xylem+phloem)<br/>• Шыныарақ жапырақ<br/>• Шыны түсемдер (обширное)<br/>• Құнды жағдайы (спорофит)<br/>• Су репродукция қажет</td>
+                            <td lang="kk" class="lang-content">Pteridophyllum (папоротник обыкн.), Asplenium, Bracken (папоротник кулак)<br/>12,000 түрлі, 7 сатысы</td>
+                            <td lang="kk" class="lang-content">• Сосудтар - жағдай құндалығы<br/>• Шыны жапырақ - фотосинтез<br/>• Құрағы ортасында мүмкін<br/>• Спорангии құрта</td>
+
+                            <td lang="en" class="lang-content"><strong>3. FERNS</strong></td>
+                            <td lang="en" class="lang-content">400M yrs ago (Devonian)<br/>~12,000 species alive</td>
+                            <td lang="en" class="lang-content">Humid and dry areas<br/>Forest understory</td>
+                            <td lang="en" class="lang-content">• Vascular tissue present<br/>• True leaves (fronds)<br/>• True roots<br/>• Complex sporophyte<br/>• Water needed for reproduction</td>
+                            <td lang="en" class="lang-content">Pteridium (bracken), Asplenium, Dryopteris (wood fern)<br/>12,000 species, 7 divisions</td>
+                            <td lang="en" class="lang-content">• Vascular system complex<br/>• True leaves large<br/>• Can survive dry areas<br/>• Spore cases visible</td>
+
+                            <td lang="ru" class="lang-content"><strong>3. ПАПОРОТНИКИ</strong></td>
+                            <td lang="ru" class="lang-content">400 млн лет назад<br/>(Девон, ~12000 видов)</td>
+                            <td lang="ru" class="lang-content">Влажные и сухие места<br/>Лесной подлесок</td>
+                            <td lang="ru" class="lang-content">• Сосудистая система<br/>• Настоящие листья (вайи)<br/>• Настоящие корни<br/>• Сложный спорофит<br/>• Вода нужна для размножения</td>
+                            <td lang="ru" class="lang-content">Птеридиум (папоротник орлиный), аспленум, щитовник<br/>12000 видов, 7 отделов</td>
+                            <td lang="ru" class="lang-content">• Сосудистая система<br/>• Настоящие большие листья<br/>• Выживают в сухих местах<br/>• Видимые спорангии</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>4. ГОЛОСЕМЕННЫЕ<br/>(Gymnosperms)</strong></td>
+                            <td lang="kk" class="lang-content">350 млн жыл бұрын (Карбон)<br/>~1000 түрлі әділе</td>
+                            <td lang="kk" class="lang-content">Құрағы орын (степь, пустыня)<br/>Арктика құмағы</td>
+                            <td lang="kk" class="lang-content">• Семена нет үзде<br/>• Хвоя немесе масштабированные листья<br/>• Шишки (мужской, женский)<br/>• Сосудтар өндіріс құнды<br/>• Су дөңгелек репродукция</td>
+                            <td lang="kk" class="lang-content">Сосна (pine), ель (spruce), пихта (fir), лиственница (larch), можжевельник (juniper)<br/>1000 түрлі, 4 сатысы (Pinophyta)</td>
+                            <td lang="kk" class="lang-content">• Семена - құрағы дөңгелек<br/>• Хвоя - су құмар<br/>• Шишки - ветер опыление<br/>• Арктика түндегі өндіртігі</td>
+
+                            <td lang="en" class="lang-content"><strong>4. GYMNOSPERMS</strong></td>
+                            <td lang="en" class="lang-content">350M yrs ago (Carboniferous)<br/>~1000 species alive</td>
+                            <td lang="en" class="lang-content">Dry areas (steppe, desert)<br/>Arctic tundra</td>
+                            <td lang="en" class="lang-content">• Seeds exposed (not enclosed)<br/>• Needle or scale-like leaves<br/>• Cones (male, female)<br/>• Complex vascular system<br/>• Water not needed for reproduction</td>
+                            <td lang="en" class="lang-content">Pine, spruce, fir, larch, juniper, cycad, ginkgo<br/>1000 species, 4 divisions</td>
+                            <td lang="en" class="lang-content">• Seeds for dry survival<br/>• Needles reduce water loss<br/>• Cones for wind pollination<br/>• Boreal forest dominants</td>
+
+                            <td lang="ru" class="lang-content"><strong>4. ГОЛОСЕМЕННЫЕ</strong></td>
+                            <td lang="ru" class="lang-content">350 млн лет назад<br/>(Карбон, ~1000 видов)</td>
+                            <td lang="ru" class="lang-content">Сухие места (степь)<br/>Северные леса</td>
+                            <td lang="ru" class="lang-content">• Семена открытые<br/>• Хвоевидные листья<br/>• Шишки (мужские, женские)<br/>• Сложная сосудистая система<br/>• Вода не нужна</td>
+                            <td lang="ru" class="lang-content">Сосна, ель, пихта, лиственница, можжевельник, цикас, гинкго<br/>1000 видов, 4 отдела</td>
+                            <td lang="ru" class="lang-content">• Семена сухие<br/>• Хвоя уменьшает испарение<br/>• Ветром опыляемые<br/>• Хвойные леса</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>5. ПОКРЫТОСЕМЕННЫЕ<br/>(Angiosperms)</strong></td>
+                            <td lang="kk" class="lang-content">150 млн жыл бұрын (Юра)<br/>~400,000 түрлі (99% өндіс)</td>
+                            <td lang="kk" class="lang-content">ВСЕ ОРТАСЫ<br/>(сез, құрағы, ысыңқылықты)</td>
+                            <td lang="kk" class="lang-content">• Цветок (аттрактивті)<br/>• Семена плодта (защищена)<br/>• Лист - әділе түсіндіртін<br/>• Сосудтар - өндіріс түрлі<br/>• Опыление (ветер, жануарлар)</td>
+                            <td lang="kk" class="lang-content">РОЗЫ, ЯБЛОКИ, ПОМИДОРЫ, КУКУРУЗА, ПШЕНИЦА, ПАЛЬМА, ОРХИДЕЯ<br/>400,000 түрлі - Цветковая (70,000+), Двудольные (200,000+), Однодольные (60,000+)</td>
+                            <td lang="kk" class="lang-content">• Цветок - опыление (жан)<br/>• Плод - семя дисперсия<br/>• Лист түсіндіртіндік<br/>• Сосудтар - су транспорт<br/>• Түрлі опыл стратегия</td>
+
+                            <td lang="en" class="lang-content"><strong>5. ANGIOSPERMS<br/>(Flowering Plants)</strong></td>
+                            <td lang="en" class="lang-content">150M yrs ago (Jurassic)<br/>~400,000 species (99% plants)</td>
+                            <td lang="en" class="lang-content">ALL ENVIRONMENTS<br/>(dry, wet, tropical)</td>
+                            <td lang="en" class="lang-content">• Flowers (colorful)<br/>• Seeds enclosed in fruit<br/>• Varied leaf types<br/>• Complex vascular system<br/>• Diverse pollination strategies</td>
+                            <td lang="en" class="lang-content">ROSES, APPLES, TOMATOES, CORN, WHEAT, PALM, ORCHID<br/>400,000 species total</td>
+                            <td lang="en" class="lang-content">• Flowers for pollination<br/>• Fruits for seed dispersal<br/>• Diverse leaf shapes<br/>• Efficient water transport<br/>• Co-evolution with pollinators</td>
+
+                            <td lang="ru" class="lang-content"><strong>5. ПОКРЫТОСЕМЕННЫЕ<br/>(Цветковые растения)</strong></td>
+                            <td lang="ru" class="lang-content">150 млн лет назад<br/>(Юра, ~400000 видов)</td>
+                            <td lang="ru" class="lang-content">ВСЕ СРЕДЫ<br/>(сухие, влажные)</td>
+                            <td lang="ru" class="lang-content">• Цветки (яркие)<br/>• Семена в плодах<br/>• Различные листья<br/>• Сложные сосуды<br/>• Разнообразные опылители</td>
+                            <td lang="ru" class="lang-content">РОЗЫ, ЯБЛОКИ, ПОМИДОРЫ, КУКУРУЗА, ПШЕНИЦА, ПАЛЬМА, ОРХИДЕЯ<br/>400000 видов - это 99% всех растений!</td>
+                            <td lang="ru" class="lang-content">• Цветки привлекают опылителей<br/>• Плоды распространяют семена<br/>• Лист разнообразие<br/>• Эффективный транспорт<br/>• Коэволюция с животными</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Адаптация Сатылары: Су → Топырақ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Adaptation Steps: Water → Land</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Этапы адаптации: Вода → Суша</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-purple-50 p-4 rounded border border-purple-300">
+                        <h4 lang="kk" class="lang-content font-bold text-purple-900 mb-3">🌊 Су Адаптация → Суша</h4>
+                        <h4 lang="en" class="lang-content font-bold text-purple-900 mb-3">🌊 Water → Land Adaptation</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-purple-900 mb-3">🌊 Водная → Наземная адаптация</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Су орнын проблемасы:</strong> Қүрту, UV лучи, температура өзгеріндігі, механиялық әрекет</li>
+                            <li lang="en" class="lang-content"><strong>Land challenges:</strong> Drying, UV rays, temperature change, mechanical stress</li>
+                            <li lang="ru" class="lang-content"><strong>Проблемы суши:</strong> высыхание, УФ лучи, перепады температуры</li>
+
+                            <li lang="kk" class="lang-content"><strong>Кутикула:</strong> Су сақтау (салу - жоқ, мхи - басталады, папоротник - өндіріс, голосеменные - жақсы, покрытосеменные - идеалды)</li>
+                            <li lang="en" class="lang-content"><strong>Cuticle:</strong> Water retention (algae none, moss starting, fern better, gymnosperm good, angiosperm ideal)</li>
+                            <li lang="ru" class="lang-content"><strong>Кутикула:</strong> сохранение воды (водоросли - нет, мхи - начинают)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Сосудтар (xylem + phloem):</strong> Су транспорт (салу - жоқ, мхи - жоқ, папоротник - ↑↑↑, голосеменные - өндіріс, покрытосеменные - өндіріс)</li>
+                            <li lang="en" class="lang-content"><strong>Vascular tissue:</strong> Water transport (algae none, moss none, fern great, gymnosperm excellent)</li>
+                            <li lang="ru" class="lang-content"><strong>Сосудистая система:</strong> транспорт воды (водоросли - нет, папоротники - начинают)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Корень:</strong> Су және түлік сұрану (салу - жоқ, мхи - ризоидтар, папоротник - құнды, голосеменные - өндіріс, покрытосеменные - идеалды)</li>
+                            <li lang="en" class="lang-content"><strong>Roots:</strong> Water and nutrient absorption (algae none, moss rhizoids, fern roots, gymnosperm strong)</li>
+                            <li lang="ru" class="lang-content"><strong>Корни:</strong> поглощение воды (водоросли - нет, мхи - ризоиды)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Жапырақ:</strong> Фотосинтез өндіністі (салу - ламина жоқ, мхи - түрі жапырақ, папоротник - күлік жапырақ, голосеменные - хвоя, покрытосеменные - лист түрлі)</li>
+                            <li lang="en" class="lang-content"><strong>Leaves:</strong> Photosynthesis (algae no leaves, moss leaf-like, fern fronds, gymnosperm needles)</li>
+                            <li lang="ru" class="lang-content"><strong>Листья:</strong> фотосинтез (водоросли - нет листьев)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-indigo-50 p-4 rounded border border-indigo-300">
+                        <h4 lang="kk" class="lang-content font-bold text-indigo-900 mb-3">🔬 Репродукция Адаптация</h4>
+                        <h4 lang="en" class="lang-content font-bold text-indigo-900 mb-3">🔬 Reproduction Adaptation</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-indigo-900 mb-3">🔬 Адаптация размножения</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>САЛУУ - су репродукция:</strong> Гамета және зигота су ішінде (100% су қажет)</li>
+                            <li lang="en" class="lang-content"><strong>ALGAE - water reproduction:</strong> Gametes and zygotes in water (100% required)</li>
+                            <li lang="ru" class="lang-content"><strong>ВОДОРОСЛИ - водное размножение:</strong> гаметы и зиготы в воде</li>
+
+                            <li lang="kk" class="lang-content"><strong>МХИ - сыбайлас (60%):</strong> Спора су ішінде өндіріс, әлеге су қажет (30% су ортасында, 70% құрағы)</li>
+                            <li lang="en" class="lang-content"><strong>MOSSES - spores (60%):</strong> Spores germinate in water, partial land (still need moisture)</li>
+                            <li lang="ru" class="lang-content"><strong>МХИ - споры (60%):</strong> спора в воде, нужна влага</li>
+
+                            <li lang="kk" class="lang-content"><strong>ПАПОРОТНИКТЕР - спора (40%):</strong> Спора құрағы орында өндіріс, аз су қажет (0.1 мм су)</li>
+                            <li lang="en" class="lang-content"><strong>FERNS - spores (40%):</strong> Spores germinate in dry soil, less water needed</li>
+                            <li lang="ru" class="lang-content"><strong>ПАПОРОТНИКИ - споры (40%):</strong> споры в почве, меньше воды</li>
+
+                            <li lang="kk" class="lang-content"><strong>ГОЛОСЕМЕННЫЕ - семена (0%):</strong> Ветер опыление, семена құрағы (НЕ су қажет)</li>
+                            <li lang="en" class="lang-content"><strong>GYMNOSPERMS - seeds (0%):</strong> Wind pollination, seeds dry (NO water needed)</li>
+                            <li lang="ru" class="lang-content"><strong>ГОЛОСЕМЕННЫЕ - семена (0%):</strong> ветер опыляемые, семена сухие</li>
+
+                            <li lang="kk" class="lang-content"><strong>ПОКРЫТОСЕМЕННЫЕ - семена (0%) + цветок:</strong> Жануарлар опыление, плод защита, семена өндіріст (су НЕ қажет)</li>
+                            <li lang="en" class="lang-content"><strong>ANGIOSPERMS - seeds (0%) + flower:</strong> Animal pollination, fruit protected, complete independence</li>
+                            <li lang="ru" class="lang-content"><strong>ПОКРЫТОСЕМЕННЫЕ - семена (0%) + цветы:</strong> опыляемые животными, плоды защищают</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Әділі Фактелер және Статистика</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Interesting Facts & Statistics</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Интересные факты и статистика</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-purple-100 p-4 rounded border-l-4 border-purple-600">
+                        <h4 lang="kk" class="lang-content font-bold mb-2">🌍 Өндіс Распределение</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-2">🌍 Plant Distribution</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-2">🌍 Распределение растений</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">🌾 <strong>Покрытосеменные:</strong> 400,000 видов = 99.8% всех растений</li>
+                            <li lang="en" class="lang-content">🌾 <strong>Angiosperms:</strong> 400,000 species = 99.8% all plants</li>
+                            <li lang="ru" class="lang-content">🌾 <strong>Покрытосеменные:</strong> 400000 видов = 99.8% всех растений</li>
+
+                            <li lang="kk" class="lang-content">🌲 <strong>Голосеменные:</strong> 1,000 видов = 0.25% всех растений</li>
+                            <li lang="en" class="lang-content">🌲 <strong>Gymnosperms:</strong> 1,000 species = 0.25% all plants</li>
+                            <li lang="ru" class="lang-content">🌲 <strong>Голосеменные:</strong> 1000 видов = 0.25% всех растений</li>
+
+                            <li lang="kk" class="lang-content">🌿 <strong>Папоротниктер:</strong> 12,000 видов = 0.03% всех растений</li>
+                            <li lang="en" class="lang-content">🌿 <strong>Ferns:</strong> 12,000 species = 0.03% all plants</li>
+                            <li lang="ru" class="lang-content">🌿 <strong>Папоротники:</strong> 12000 видов = 0.03% всех растений</li>
+
+                            <li lang="kk" class="lang-content">☘️ <strong>Мхидің:</strong> 5,000 видов = < 0.01% всех растений</li>
+                            <li lang="en" class="lang-content">☘️ <strong>Mosses:</strong> 5,000 species = < 0.01% all plants</li>
+                            <li lang="ru" class="lang-content">☘️ <strong>Мхи:</strong> 5000 видов = < 0.01% всех растений</li>
+
+                            <li lang="kk" class="lang-content">🌊 <strong>Салуу:</strong> миллионы видов = < 0.01% надземной флоры</li>
+                            <li lang="en" class="lang-content">🌊 <strong>Algae:</strong> millions species = < 0.01% land flora</li>
+                            <li lang="ru" class="lang-content">🌊 <strong>Водоросли:</strong> миллионы видов = < 0.01% наземной флоры</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-purple-200 p-4 rounded border-l-4 border-purple-600">
+                        <h4 lang="kk" class="lang-content font-bold mb-2">⏱️ Эволюциялық Уақыты</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-2">⏱️ Evolutionary Timeline</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-2">⏱️ Эволюционная временная линия</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">3500 млн жыл: САЛУУ өндіриліп (первые организмы!)</li>
+                            <li lang="en" class="lang-content">3500M yrs: ALGAE evolved (first organisms!)</li>
+                            <li lang="ru" class="lang-content">3500 млн лет: ВОДОРОСЛИ эволюционировали</li>
+
+                            <li lang="kk" class="lang-content">500 млн жыл: Салуу жапырақты (Cambrian)</li>
+                            <li lang="en" class="lang-content">500M yrs: Algae flourished (Cambrian)</li>
+                            <li lang="ru" class="lang-content">500 млн лет: водоросли процветали</li>
+
+                            <li lang="kk" class="lang-content">450 млн жыл: МХИ өндіріп өндіс (Ordovician)</li>
+                            <li lang="en" class="lang-content">450M yrs: MOSSES evolved (Ordovician)</li>
+                            <li lang="ru" class="lang-content">450 млн лет: МХИ эволюционировали</li>
+
+                            <li lang="kk" class="lang-content">400 млн жыл: ПАПОРОТНИКТЕР өндіріп (Devonian)</li>
+                            <li lang="en" class="lang-content">400M yrs: FERNS evolved (Devonian)</li>
+                            <li lang="ru" class="lang-content">400 млн лет: ПАПОРОТНИКИ эволюционировали</li>
+
+                            <li lang="kk" class="lang-content">350 млн жыл: ГОЛОСЕМЕННЫЕ өндіріп (Carboniferous)</li>
+                            <li lang="en" class="lang-content">350M yrs: GYMNOSPERMS evolved (Carboniferous)</li>
+                            <li lang="ru" class="lang-content">350 млн лет: ГОЛОСЕМЕННЫЕ эволюционировали</li>
+
+                            <li lang="kk" class="lang-content">150 млн жыл: ПОКРЫТОСЕМЕННЫЕ өндіріп (Jurassic)</li>
+                            <li lang="en" class="lang-content">150M yrs: ANGIOSPERMS evolved (Jurassic)</li>
+                            <li lang="ru" class="lang-content">150 млн лет: ПОКРЫТОСЕМЕННЫЕ эволюционировали</li>
+
+                            <li lang="kk" class="lang-content">Бүгүн: 99.8% ынамдысы ПОКРЫТОСЕМЕННЫЕ!</li>
+                            <li lang="en" class="lang-content">Today: 99.8% of plants are ANGIOSPERMS!</li>
+                            <li lang="ru" class="lang-content">Сегодня: 99.8% растений - ПОКРЫТОСЕМЕННЫЕ!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #d8b4fe; border-radius: 1rem; border-top: 4px solid #7c3aed;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-purple-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-purple-800">Өндіс эволюция 500 млн жыл - су салуудан топырақ өндіс. 5 сатысы: САЛУУ (3500 млн жыл) → МХИ (450 млн) → ПАПОРОТНИКТЕР (400 млн) → ГОЛОСЕМЕННЫЕ (350 млн) → ПОКРЫТОСЕМЕННЫЕ (150 млн). АДАПТАЦИЯ: кутикула, сосудтар, корень, лист, репродукция. БҮГҮН: 99.8% покрытосеменные = эволюциялық сәтсіздіктің ең зор!</p>
+            <p lang="en" class="lang-content text-md font-semibold text-purple-800">Plant evolution 500M years - water algae to land plants. 5 stages: ALGAE (3500M yrs) → MOSSES (450M) → FERNS (400M) → GYMNOSPERMS (350M) → ANGIOSPERMS (150M). ADAPTATIONS: cuticle, vascular tissue, roots, leaves, reproduction. TODAY: 99.8% angiosperms - evolution's greatest success!</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-purple-800">Эволюция растений 500 млн лет - от водных к наземным. 5 этапов: ВОДОРОСЛИ (3500 млн лет) → МХИ (450 млн) → ПАПОРОТНИКИ (400 млн) → ГОЛОСЕМЕННЫЕ (350 млн) → ПОКРЫТОСЕМЕННЫЕ (150 млн). АДАПТАЦИИ: кутикула, сосуды, корни, листья. СЕГОДНЯ: 99.8% - покрытосеменные!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

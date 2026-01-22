@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сәулеленү - Излучение</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #fef08a 0%, #fef3c7 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #eab308 0%, #a16207 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #a16207; border-bottom: 3px solid #fef3c7; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #eab308; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #eab308; background: white; color: #eab308; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #eab308; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #eab308; color: white; }
+        .info-box { background: linear-gradient(135deg, #fef3c7 0%, #fef08a 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #eab308; margin: 10px 0; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .example-card { background: #fef9e7; padding: 12px; border-radius: 0.5rem; border-left: 3px solid #eab308; font-size: 11px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-yellow-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Сәулеленү (Излучение)</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Radiation</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Излучение</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-yellow-100">Ішінгі энергиясы электромагниттік түрінде ауыстырылады. Сәулеленулі теңіздіктің биіктігі = c/ν. Абсолютты қара дене = максимум сәулеленең. ТОЛЫҚ ТЕОРИЯ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-yellow-100">Internal energy transferred as electromagnetic waves. Wavelength λ = c/ν. Black body = maximum radiation. COMPLETE THEORY!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-yellow-100">Внутренняя энергия передаётся электромагнитными волнами. Длина волны λ = c/ν. Абсолютно чёрное тело = максимальное излучение. ПОЛНАЯ ТЕОРИЯ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. СӘУЛЕЛЕНҮНІҢ АНЫҚТАМАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. DEFINITION OF RADIATION</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Определение излучения</h2>
+
+            <div class="rule-card">
+                <p lang="kk" class="lang-content text-sm"><strong>🌞 СӘУЛЕЛЕНЕҢ:</strong> Жылу ішінде ауырылған энергия электромагниттік толқындар түрінде (光 сәулеле). Барлық сәндеген дене сәулелене тұрады. Температура жоғары болса, сәулеленің көбейеді.</p>
+                <p lang="en" class="lang-content text-sm"><strong>🌞 RADIATION:</strong> Heat energy transferred as electromagnetic waves (light rays). All heated bodies emit radiation. Higher temperature = more radiation.</p>
+                <p lang="ru" class="lang-content text-sm"><strong>🌞 ИЗЛУЧЕНИЕ:</strong> Тепловая энергия передаётся электромагнитными волнами (световые лучи). Все нагретые тела излучают энергию. Выше температура = больше излучение.</p>
+
+                <div class="overflow-x-auto" style="margin-top: 15px;">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">АНЫҚТАМАСЫ</th>
+                            <th lang="kk" class="lang-content">БЕЛГІ</th>
+                            <th lang="kk" class="lang-content">ӨЛШЕМ БІРЛІГІ</th>
+                            <th lang="kk" class="lang-content">МЫСАЛ</th>
+
+                            <th lang="en" class="lang-content">DEFINITION</th>
+                            <th lang="en" class="lang-content">SYMBOL</th>
+                            <th lang="en" class="lang-content">UNIT</th>
+                            <th lang="en" class="lang-content">EXAMPLE</th>
+
+                            <th lang="ru" class="lang-content">ОПРЕДЕЛЕНИЕ</th>
+                            <th lang="ru" class="lang-content">СИМВОЛ</th>
+                            <th lang="ru" class="lang-content">ЕДИНИЦА</th>
+                            <th lang="ru" class="lang-content">ПРИМЕР</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Сәулеленің теңіздіктігі</td>
+                            <td lang="kk" class="lang-content">λ (лямбда)</td>
+                            <td lang="kk" class="lang-content">м (метр), нм</td>
+                            <td lang="kk" class="lang-content">Қызыл: 700 нм | Сокол: 400 нм</td>
+
+                            <td lang="en" class="lang-content">Wavelength</td>
+                            <td lang="en" class="lang-content">λ (lambda)</td>
+                            <td lang="en" class="lang-content">m (meter), nm</td>
+                            <td lang="en" class="lang-content">Red: 700 nm | Violet: 400 nm</td>
+
+                            <td lang="ru" class="lang-content">Длина волны</td>
+                            <td lang="ru" class="lang-content">λ (лямбда)</td>
+                            <td lang="ru" class="lang-content">м (метр), нм</td>
+                            <td lang="ru" class="lang-content">Красный: 700 нм | Фиолетовый: 400 нм</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Сәулеленің жиілігі</td>
+                            <td lang="kk" class="lang-content">ν (ню)</td>
+                            <td lang="kk" class="lang-content">Гц (герц)</td>
+                            <td lang="kk" class="lang-content">Қызыл: 4.3×10¹⁴ Гц</td>
+
+                            <td lang="en" class="lang-content">Frequency</td>
+                            <td lang="en" class="lang-content">ν (nu)</td>
+                            <td lang="en" class="lang-content">Hz (hertz)</td>
+                            <td lang="en" class="lang-content">Red: 4.3×10¹⁴ Hz</td>
+
+                            <td lang="ru" class="lang-content">Частота волны</td>
+                            <td lang="ru" class="lang-content">ν (ню)</td>
+                            <td lang="ru" class="lang-content">Гц (герц)</td>
+                            <td lang="ru" class="lang-content">Красный: 4.3×10¹⁴ Гц</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Сәулеленің жылдамдығы</td>
+                            <td lang="kk" class="lang-content">c</td>
+                            <td lang="kk" class="lang-content">м/с</td>
+                            <td lang="kk" class="lang-content">c = 3×10⁸ м/с (төңіргесіндігі)</td>
+
+                            <td lang="en" class="lang-content">Speed of light</td>
+                            <td lang="en" class="lang-content">c</td>
+                            <td lang="en" class="lang-content">m/s</td>
+                            <td lang="en" class="lang-content">c = 3×10⁸ m/s (constant)</td>
+
+                            <td lang="ru" class="lang-content">Скорость света</td>
+                            <td lang="ru" class="lang-content">c</td>
+                            <td lang="ru" class="lang-content">м/с</td>
+                            <td lang="ru" class="lang-content">c = 3×10⁸ м/с (постоянная)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>🔴 ФОРМУЛА:</strong> λ × ν = c | Теңіздік × жиілік = 3×10⁸ м/с</p>
+                <p lang="en" class="lang-content text-sm"><strong>🔴 FORMULA:</strong> λ × ν = c | Wavelength × Frequency = 3×10⁸ m/s</p>
+                <p lang="ru" class="lang-content text-sm"><strong>🔴 ФОРМУЛА:</strong> λ × ν = c | Длина волны × Частота = 3×10⁸ м/с</p>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ЭЛЕКТРОМАГНИТТІК СПЕКТРЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. ELECTROMAGNETIC SPECTRUM</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Электромагнитный спектр</h2>
+
+            <div class="rule-card">
+                <div class="grid-3">
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>📻 Радиолташ</strong></p>
+                        <p lang="kk" class="lang-content">λ > 1 мм</p>
+                        <p lang="kk" class="lang-content">Радио, телевизия, wi-fi</p>
+
+                        <p lang="en" class="lang-content"><strong>📻 Radio Waves</strong></p>
+                        <p lang="en" class="lang-content">λ > 1 mm</p>
+                        <p lang="en" class="lang-content">Radio, TV, wifi</p>
+
+                        <p lang="ru" class="lang-content"><strong>📻 Радиоволны</strong></p>
+                        <p lang="ru" class="lang-content">λ > 1 мм</p>
+                        <p lang="ru" class="lang-content">Радио, ТВ, wi-fi</p>
+                    </div>
+
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>🌡️ Инфракрас</strong></p>
+                        <p lang="kk" class="lang-content">700 нм - 1 мм</p>
+                        <p lang="kk" class="lang-content">Жылу, өндіктігінің, камера</p>
+
+                        <p lang="en" class="lang-content"><strong>🌡️ Infrared</strong></p>
+                        <p lang="en" class="lang-content">700 nm - 1 mm</p>
+                        <p lang="en" class="lang-content">Heat, cooking, thermal camera</p>
+
+                        <p lang="ru" class="lang-content"><strong>🌡️ Инфракрасный</strong></p>
+                        <p lang="ru" class="lang-content">700 нм - 1 мм</p>
+                        <p lang="ru" class="lang-content">Тепло, готовка, тепловизор</p>
+                    </div>
+
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>👁️ Көзімен көрінді</strong></p>
+                        <p lang="kk" class="lang-content">400-700 нм</p>
+                        <p lang="kk" class="lang-content">Қызыл, сарынай, жасыл, сокол</p>
+
+                        <p lang="en" class="lang-content"><strong>👁️ Visible Light</strong></p>
+                        <p lang="en" class="lang-content">400-700 nm</p>
+                        <p lang="en" class="lang-content">Red, orange, green, violet</p>
+
+                        <p lang="ru" class="lang-content"><strong>👁️ Видимый свет</strong></p>
+                        <p lang="ru" class="lang-content">400-700 нм</p>
+                        <p lang="ru" class="lang-content">Красный, жёлтый, зелёный, фиолетовый</p>
+                    </div>
+
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>☀️ Ультрасокол</strong></p>
+                        <p lang="kk" class="lang-content">10-400 нм</p>
+                        <p lang="kk" class="lang-content">Күннің сәулесі, дезинфекция</p>
+
+                        <p lang="en" class="lang-content"><strong>☀️ Ultraviolet</strong></p>
+                        <p lang="en" class="lang-content">10-400 nm</p>
+                        <p lang="en" class="lang-content">Sunlight, disinfection</p>
+
+                        <p lang="ru" class="lang-content"><strong>☀️ Ультрафиолетовый</strong></p>
+                        <p lang="ru" class="lang-content">10-400 нм</p>
+                        <p lang="ru" class="lang-content">Солнечные лучи, дезинфекция</p>
+                    </div>
+
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>☢️ Рентген</strong></p>
+                        <p lang="kk" class="lang-content">0.01-10 нм</p>
+                        <p lang="kk" class="lang-content">Медициналық сәулегілік</p>
+
+                        <p lang="en" class="lang-content"><strong>☢️ X-rays</strong></p>
+                        <p lang="en" class="lang-content">0.01-10 nm</p>
+                        <p lang="en" class="lang-content">Medical imaging</p>
+
+                        <p lang="ru" class="lang-content"><strong>☢️ Рентгеновский</strong></p>
+                        <p lang="ru" class="lang-content">0.01-10 нм</p>
+                        <p lang="ru" class="lang-content">Медицинское сканирование</p>
+                    </div>
+
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>☢️ Гамма</strong></p>
+                        <p lang="kk" class="lang-content">< 0.01 нм</p>
+                        <p lang="kk" class="lang-content">Радиоактивті дәндіктігінің</p>
+
+                        <p lang="en" class="lang-content"><strong>☢️ Gamma Rays</strong></p>
+                        <p lang="en" class="lang-content">< 0.01 nm</p>
+                        <p lang="en" class="lang-content">Radioactive decay</p>
+
+                        <p lang="ru" class="lang-content"><strong>☢️ Гамма-лучи</strong></p>
+                        <p lang="ru" class="lang-content">< 0.01 нм</p>
+                        <p lang="ru" class="lang-content">Радиоактивный распад</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. АБСОЛЮТТЫ ҚА ДЕНЕ (ЧЕРНОЕ ТЕЛО)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. BLACK BODY</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Абсолютно чёрное тело</h2>
+
+            <div class="rule-card">
+                <p lang="kk" class="lang-content text-sm"><strong>🖤 АНЫҚТАМАСЫ:</strong> Абсолютты қа дене - барлық түскен сәулеленісін сіңіретін және барлық температурасында сәулелене беретін идеальды дене.</p>
+                <p lang="en" class="lang-content text-sm"><strong>🖤 DEFINITION:</strong> Black body - ideal body that absorbs all incident radiation and emits at all temperatures.</p>
+                <p lang="ru" class="lang-content text-sm"><strong>🖤 ОПРЕДЕЛЕНИЕ:</strong> Абсолютно чёрное тело - идеальное тело, поглощающее всё падающее излучение и излучающее при любой температуре.</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>⭐ МЫСАЛ:</strong> Сокғын (сияқты материал), уголь, қара фарба. Күндіктігі (Солнце) = шамамен абсолютты қа дене.</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>⭐ EXAMPLES:</strong> Coal (like material), black paint. The Sun ≈ approximate black body.</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>⭐ ПРИМЕРЫ:</strong> Уголь (как материал), чёрная краска. Солнце ≈ приблизительное чёрное тело.</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>🔴 СТЕФАН-БОЛЦМАННЫҢ ЗАҢЫ:</strong> P = σ·A·T⁴ (Сәулеленің мөлшері = болимдіктік × аймақ × температура⁴)</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>🔴 STEFAN-BOLTZMANN LAW:</strong> P = σ·A·T⁴ (Power = constant × area × temperature⁴)</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>🔴 ЗАКОН СТЕФАНА-БОЛЬЦМАНА:</strong> P = σ·A·T⁴ (Мощность = константа × площадь × температура⁴)</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fef3c7; border-radius: 1rem; border-top: 4px solid #eab308;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Сәулеленең - барлық сәндеген денелердің электромагниттік толқындарымен энергия ауыстырады. λ = c/ν формуласы байланыстырады. Электромагниттік спектр радиодан гамма-сәулегіге өтеді. Абсолютты қа дене - максимум сәулелене беретін идеалды дене!</p>
+            <p lang="en" class="lang-content text-sm">Radiation is energy transfer by electromagnetic waves from all heated bodies. λ = c/ν formula connects them. EM spectrum ranges from radio to gamma rays. Black body is ideal maximum radiator!</p>
+            <p lang="ru" class="lang-content text-sm">Излучение - это передача энергии электромагнитными волнами от всех нагретых тел. λ = c/ν формула их связывает. ЭМ спектр простирается от радио до гамма-лучей. Абсолютно чёрное тело - идеальный максимальный излучатель!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

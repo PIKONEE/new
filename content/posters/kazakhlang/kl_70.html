@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Етіс түрлері</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #eff6ff; color: #111827; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .header-card {
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            border-radius: 1rem; color: white; padding: 40px; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(29, 78, 216, 0.4);
+        }
+        .voice-card {
+            background-color: white; border-radius: 1rem; padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 6px solid #2563eb; margin-bottom: 15px;
+            display: flex; flex-direction: column; md:flex-row; justify-content: space-between; align-items: center;
+        }
+        .voice-name { font-weight: 800; color: #1e40af; font-size: 1.1rem; margin-bottom: 5px; md:margin-bottom: 0; }
+        .suffix-badge { background-color: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-weight: 700; margin: 5px 0; }
+        .example { font-style: italic; color: #4b5563; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div class="container">
+        <header class="header-card">
+            <h1 class="text-3xl font-extrabold mb-2 uppercase">ЕТІС ТҮРЛЕРІ</h1>
+            <p class="text-blue-100 text-lg">Субъект пен объект қатынасы</p>
+        </header>
+
+        <div class="grid gap-4">
+            <div class="voice-card">
+                <div class="text-center md:text-left">
+                    <div class="voice-name">1. ӨЗДІК ЕТІС (Возвратный)</div>
+                    <p class="text-sm text-gray-500">Қимыл иесінің өзіне бағытталады.</p>
+                </div>
+                <div class="text-center">
+                    <div class="suffix-badge">-ын / -ін / -н</div>
+                    <p class="example">Жу<b>ын</b>ды, тара<b>н</b>ды.</p>
+                </div>
+            </div>
+
+            <div class="voice-card">
+                <div class="text-center md:text-left">
+                    <div class="voice-name">2. ӨЗГЕ ЕТІС (Понудительный)</div>
+                    <p class="text-sm text-gray-500">Қимылды басқа біреуге орындатады.</p>
+                </div>
+                <div class="text-center">
+                    <div class="suffix-badge">-ғыз, -дір, -т</div>
+                    <p class="example">Жаз<b>дыр</b>, оқы<b>т</b>.</p>
+                </div>
+            </div>
+
+            <div class="voice-card">
+                <div class="text-center md:text-left">
+                    <div class="voice-name">3. ЫРЫҚСЫЗ ЕТІС (Страдательный)</div>
+                    <p class="text-sm text-gray-500">Иесі белгісіз, қимыл өздігінен.</p>
+                </div>
+                <div class="text-center">
+                    <div class="suffix-badge">-ыл / -іл / -л</div>
+                    <p class="example">Хат жаз<b>ыл</b>ды.</p>
+                </div>
+            </div>
+
+            <div class="voice-card">
+                <div class="text-center md:text-left">
+                    <div class="voice-name">4. ОРТАҚ ЕТІС (Взаимный)</div>
+                    <p class="text-sm text-gray-500">Қимыл бірлесіп орындалады.</p>
+                </div>
+                <div class="text-center">
+                    <div class="suffix-badge">-ыс / -іс / -с</div>
+                    <p class="example">Күл<b>іс</b>ті, сөйле<b>с</b>ті.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

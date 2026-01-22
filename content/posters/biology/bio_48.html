@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Побеги и почки</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #dcfce7; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #166534; border-bottom: 3px solid #86efac; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #16a34a; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #16a34a; background: white; color: #16a34a; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #16a34a; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; border: 2px dashed #16a34a; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-green-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Ынамдар және Қоршету</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Shoots and Buds</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Побеги и почки</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-green-100">Өндіс өндіс өндіс - жапырақ және гүл құрау</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-green-100">Shoot system - generates leaves and flowers</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-green-100">Побеговая система - образование листьев и цветов</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Ынамдарының Құрамдары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Shoot Structure</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Структура побега</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 700 400" style="height: 350px; width: 100%;">
+                        <!-- Побег -->
+                        <line x1="150" y1="50" x2="150" y2="300" stroke="#228B22" stroke-width="4"/>
+
+                        <!-- Узлы и междоузлия -->
+                        <circle cx="150" cy="80" r="5" fill="#0d3d0d" stroke="#228B22" stroke-width="2"/>
+                        <text x="200" y="85" font-size="10" fill="#333">Узел</text>
+
+                        <circle cx="150" cy="140" r="5" fill="#0d3d0d" stroke="#228B22" stroke-width="2"/>
+                        <text x="200" y="145" font-size="10" fill="#333">Узел</text>
+
+                        <circle cx="150" cy="200" r="5" fill="#0d3d0d" stroke="#228B22" stroke-width="2"/>
+                        <text x="200" y="205" font-size="10" fill="#333">Узел</text>
+
+                        <line x1="150" y1="85" x2="200" y2="85" stroke="#999" stroke-width="1" stroke-dasharray="3,3"/>
+                        <text x="175" y="105" font-size="9" fill="#666">Междоузлие</text>
+
+                        <!-- Листья -->
+                        <ellipse cx="100" cy="80" rx="25" ry="15" fill="#32CD32" stroke="#228B22" stroke-width="2" transform="rotate(-45 100 80)"/>
+                        <ellipse cx="200" cy="80" rx="25" ry="15" fill="#32CD32" stroke="#228B22" stroke-width="2" transform="rotate(45 200 80)"/>
+
+                        <ellipse cx="80" cy="140" rx="25" ry="15" fill="#32CD32" stroke="#228B22" stroke-width="2" transform="rotate(-45 80 140)"/>
+                        <ellipse cx="220" cy="140" rx="25" ry="15" fill="#32CD32" stroke="#228B22" stroke-width="2" transform="rotate(45 220 140)"/>
+
+                        <!-- Почка -->
+                        <ellipse cx="150" cy="40" rx="15" ry="20" fill="#90EE90" stroke="#228B22" stroke-width="2"/>
+                        <circle cx="150" cy="35" r="3" fill="#0d3d0d"/>
+                        <text x="195" y="45" font-size="10" fill="#333">Верхушечная почка</text>
+
+                        <!-- Боковая почка -->
+                        <ellipse cx="170" cy="140" rx="10" ry="12" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+                        <text x="195" y="150" font-size="10" fill="#333">Боковая почка</text>
+
+                        <!-- Структура почки в разрезе -->
+                        <!-- Почковые чешуйки -->
+                        <circle cx="450" cy="100" r="50" fill="#D4A574" stroke="#8B6F47" stroke-width="2"/>
+                        <ellipse cx="450" cy="100" rx="42" ry="45" fill="#E8D5C4" stroke="#8B6F47" stroke-width="1"/>
+
+                        <!-- Зачаточные листья -->
+                        <ellipse cx="435" cy="90" rx="15" ry="8" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+                        <ellipse cx="465" cy="90" rx="15" ry="8" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+                        <ellipse cx="435" cy="110" rx="15" ry="8" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+                        <ellipse cx="465" cy="110" rx="15" ry="8" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+
+                        <!-- Зачаточный стебель -->
+                        <line x1="450" y1="95" x2="450" y2="120" stroke="#FF6347" stroke-width="2"/>
+
+                        <text x="450" y="170" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B6F47">Почка в разрезе</text>
+
+                        <!-- Типы почек -->
+                        <!-- Вегетативная -->
+                        <ellipse cx="600" cy="80" rx="12" ry="15" fill="#90EE90" stroke="#228B22" stroke-width="2"/>
+                        <text x="600" y="130" font-size="10" text-anchor="middle" fill="#333">Вегетативная</text>
+                        <text x="600" y="145" font-size="9" text-anchor="middle" fill="#666">(листья)</text>
+
+                        <!-- Генеративная -->
+                        <ellipse cx="600" cy="220" rx="12" ry="15" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <text x="600" y="270" font-size="10" text-anchor="middle" fill="#333">Генеративная</text>
+                        <text x="600" y="285" font-size="9" text-anchor="middle" fill="#666">(цветы)</text>
+
+                        <!-- Смешанная -->
+                        <ellipse cx="600" cy="350" rx="12" ry="15" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                        <text x="600" y="380" font-size="10" text-anchor="middle" fill="#333">Смешанная</text>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-green-50 p-4 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-3">🌿 Ынамдарының Бөліндігі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-3">🌿 Shoot Parts</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-3">🌿 Части побега</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Стебель:</strong> Өндіс құрамдарын тіктеу және өткізу</li>
+                            <li lang="en" class="lang-content"><strong>Stem:</strong> Support and transport</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Стебель:</strong> Опора и транспорт</li>
+
+                            <li lang="kk" class="lang-content"><strong>Узел:</strong> Жапырақ және мүнділіктер орындарында</li>
+                            <li lang="en" class="lang-content"><strong>Node:</strong> Where leaves and buds attach</li>
+                            <li lang="ru" class="lang-content"><strong>Узел:</strong> Место прикрепления листьев</li>
+
+                            <li lang="kk" class="lang-content"><strong>Междоузлие:</strong> Узел арасындағы аймақ</li>
+                            <li lang="en" class="lang-content"><strong>Internode:</strong> Space between nodes</li>
+                            <li lang="ru" class="lang-content"><strong>Междоузлие:</strong> Расстояние между узлами</li>
+
+                            <li lang="kk" class="lang-content"><strong>Жапырақ:</strong> Фотосинтез, транспирация</li>
+                            <li lang="en" class="lang-content"><strong>Leaf:</strong> Photosynthesis, transpiration</li>
+                            <li lang="ru" class="lang-content"><strong>Лист:</strong> Фотосинтез, транспирация</li>
+
+                            <li lang="kk" class="lang-content"><strong>Почка:</strong> Өндіс өндіс - жапырақ және гүл</li>
+                            <li lang="en" class="lang-content"><strong>Bud:</strong> Growth point - leaves/flowers</li>
+                            <li lang="ru" class="lang-content"><strong>Почка:</strong> Точка роста - листья/цветы</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-3">🔬 Почкасының Түрлері</h4>
+                        <h4 lang="en" class="lang-content font-bold text-blue-900 mb-3">🔬 Types of Buds</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-blue-900 mb-3">🔬 Типы почек</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Верхушечная почка:</strong> Сабақтың төбесінде - өндіс өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Terminal bud:</strong> Top of stem - main growth</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Верхушечная:</strong> На вершине - главный рост</li>
+
+                            <li lang="kk" class="lang-content"><strong>Боковая почка:</strong> Түбінде - жапырақ әйгектері</li>
+                            <li lang="en" class="lang-content"><strong>Lateral bud:</strong> Along stem - side growth</li>
+                            <li lang="ru" class="lang-content"><strong>Боковая:</strong> По стеблю - боковой рост</li>
+
+                            <li lang="kk" class="lang-content"><strong>Вегетативная:</strong> Жапырақ құрау - өндіс гүл</li>
+                            <li lang="en" class="lang-content"><strong>Vegetative:</strong> Leaf formation only</li>
+                            <li lang="ru" class="lang-content"><strong>Вегетативная:</strong> Только листья</li>
+
+                            <li lang="kk" class="lang-content"><strong>Генеративная:</strong> Гүл құрау - өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Reproductive:</strong> Flower formation</li>
+                            <li lang="ru" class="lang-content"><strong>Генеративная:</strong> Образование цветов</li>
+
+                            <li lang="kk" class="lang-content"><strong>Смешанная:</strong> Жапырақ және гүл құрау</li>
+                            <li lang="en" class="lang-content"><strong>Mixed:</strong> Leaves and flowers</li>
+                            <li lang="ru" class="lang-content"><strong>Смешанная:</strong> Листья и цветы</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Ынамдарының Ағымдарындағы Өндіс</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Shoot Growth</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Рост побега</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-100 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">📈 Ағымдағы өндіс</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Ағымды өндіс - түбінің байланысы. Апикальдық басым</span>
+                            <span lang="en" class="lang-content">Primary growth - root/shoot connection. Apical dominance</span>
+                            <span lang="ru" class="lang-content">Первичный рост - связь с корнем. Апикальное доминирование</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-100 p-3 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-2">🌳 Іс жүргіндігінің өндіс</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Өндіс жүргіндігінің өндіс - камбиум. Ағаң құрау</span>
+                            <span lang="en" class="lang-content">Secondary growth - cambium. Tree formation</span>
+                            <span lang="ru" class="lang-content">Вторичный рост - камбий. Образование древесины</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-100 p-3 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">🍂 Сезондық өндіс</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Жыл сайындағы өндіс - орындарындағы адаптация</span>
+                            <span lang="en" class="lang-content">Annual growth - seasonal adaptation</span>
+                            <span lang="ru" class="lang-content">Годовой рост - сезонная адаптация</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #bbf7d0; border-radius: 1rem; border-top: 4px solid #16a34a;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-green-800">Ынамдар - өндіс құрамдарының өндіс сабақ. Почка - жапырақ және гүл құрау үшін маңызды. Өндіс құрамдарын тіктеу және фотосинтез</p>
+            <p lang="en" class="lang-content text-md font-semibold text-green-800">Shoots generate leaves and flowers. Buds are growth points. Support and photosynthesis functions</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-green-800">Побеги образуют листья и цветы. Почки - точки роста. Опора и фотосинтез</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

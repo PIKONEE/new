@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Искусство и музыка казахского народа (XIX в.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #451a03; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .musical-gradient {
+            background: linear-gradient(135deg, #fef3c7 0%, #fdf6e3 50%, #ffffff 100%);
+        }
+
+        .premium-card {
+            background: white;
+            border-radius: 3.5rem;
+            border: 2px solid #d97706;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            border-color: #92400e;
+            box-shadow: 0 40px 80px -20px rgba(146, 64, 14, 0.2);
+        }
+
+        .lang-active {
+            background-color: #78350f;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(120, 53, 15, 0.3);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: #fff;
+            box-shadow: inset 0 0 50px rgba(120, 53, 15, 0.05);
+            border: 1px solid #e7e5e4;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 2.5rem;
+            border-left: 10px solid #78350f;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.5s ease;
+        }
+
+        .music-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body class="musical-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-amber-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-amber-950 text-center">Искусство и музыка казахского народа</h1>
+            <div class="flex bg-amber-50 p-1 rounded-2xl border border-amber-100">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Musical Map (Canvas) -->
+        <div class="premium-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Acoustic Soul of the Steppe</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic tracking-tighter">Струны Души</h2>
+                    <p id="viz-desc" class="text-lg text-amber-900/60 font-light leading-relaxed">
+                        XIX век стал временем расцвета инструментальной музыки и песенного искусства. Нажмите на символы на холсте, чтобы раскрыть философию кюя и традиции сал-серэ.
+                    </p>
+                    
+                    <div id="info-panel" class="info-panel shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-amber-900 mb-3 uppercase tracking-tighter">Выберите направление</h3>
+                        <p id="element-desc" class="text-amber-800/70 text-sm leading-relaxed italic font-light">Кликните на Западную школу (Төкпе), Восточную школу (Шертпе) или Певческую традицию.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="musicCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.4em]">Integrated Musical Heritage Model</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Textual Data -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Instrumental Music -->
+            <div class="premium-card p-10 space-y-6 border-t-8 border-amber-800">
+                <span class="music-badge" id="tag-1">Инструментал</span>
+                <h3 id="c1-t" class="text-2xl font-black text-amber-900 uppercase italic">Кюй: Философия звука</h3>
+                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed mb-4">
+                    Кюй — это инструментальная пьеса для домбры или кобыза, передающая историю народа без слов. **Курмангазы Сагырбайулы** (1823–1896) стал «отцом» динамичного стиля «төкпе», а **Таттимбет** (1815–1862) развил лирический стиль «шертпе». Их музыка была летописью борьбы, надежд и красоты природы.
+                </p>
+                <div class="pt-4 border-t border-amber-100 text-[11px] font-bold text-amber-800">Шедевры: «Адай», «Сарыарка», «Косбасар».</div>
+            </div>
+
+            <!-- Song Tradition -->
+            <div class="premium-card p-10 space-y-6 border-t-8 border-amber-600">
+                <span class="music-badge" id="tag-2">Вокал</span>
+                <h3 id="c2-t" class="text-2xl font-black text-amber-900 uppercase italic">Сал-Серэ: Рыцари песни</h3>
+                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed mb-4">
+                    Уникальная категория певцов-поэтов, сочетавших вокал, театрализованное представление и верховую езду. **Биржан-сал** и **Акан-серэ** были кумирами Степи. Их творчество отличалось глубоким психологизмом и любовной лирикой. Они были хранителями этикета и эстетики, выступая в роли народных просветителей.
+                </p>
+                <div class="pt-4 border-t border-amber-100 text-[11px] font-bold text-amber-800">Песни: «Кулагер», «Ляйлим-шырак», «Жиырма бес».</div>
+            </div>
+
+            <!-- Visual Art -->
+            <div class="premium-card p-10 space-y-6 border-t-8 border-amber-800">
+                <span class="music-badge" id="tag-3">Прикладное</span>
+                <h3 id="c3-t" class="text-2xl font-black text-amber-900 uppercase italic">Орнамент и Стиль</h3>
+                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed mb-4">
+                    Прикладное искусство XIX века достигло совершенства в **зергерстве** (ювелирном деле) и резьбе по дереву. Мастера-зергеры создавали уникальные серебряные украшения: шолпы, блезик. Ковроткачество (сырмак, текемет) стало способом зашифровки истории рода в геометрические и растительные орнаменты.
+                </p>
+                <div class="pt-4 border-t border-amber-100 text-[11px] font-bold text-amber-800">Символ: «Кошкар муйиз» (Бараньи рога).</div>
+            </div>
+        </div>
+
+        <!-- Section 3: The Great Contest (Full Width) -->
+        <div class="bg-amber-950 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h3 id="special-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Айтыс: Битва Интеллектов</h3>
+                    <p id="special-d" class="text-amber-100/80 text-xl font-light leading-relaxed">
+                        Вершина устной культуры — состязание акынов-импровизаторов. Айтыс был «степной газетой», где поднимались острые социальные и политические вопросы. Знаменитый айтыс Биржана и Сары (1871) стал эталоном поэтического мастерства и защиты человеческого достоинства.
+                    </p>
+                </div>
+                <div class="flex justify-center relative">
+                    <div class="w-80 h-80 border-4 border-dashed border-amber-500/30 rounded-full flex items-center justify-center animate-pulse">
+                        <div class="text-center">
+                            <div class="text-7xl mb-4 grayscale opacity-30">🪕</div>
+                            <div id="unit-label" class="text-[10px] font-black uppercase text-amber-400 tracking-[0.5em]">Oral Tradition</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">SOUL</div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-stone-950 text-stone-500 text-center border-t border-amber-900/20">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-stone-400">
+                «Музыка казахов XIX века — это застывшее в звуках время, когда через струны домбры народ говорил с вечностью о своей свободе.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-amber-700 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Искусство и музыка казахского народа",
+                vizTitle: "Струны Души",
+                vizDesc: "XIX век — это Золотой век кюя. Нажмите на узлы на холсте, чтобы изучить школы домбровой музыки и традиции сал-серэ.",
+                badge: "Анализ музыкального кода",
+                elementTitleDefault: "Выберите направление",
+                elementDescDefault: "Кликните на Западную школу (Төкпе), Восточную школу (Шертпе) или Певческую традицию.",
+                tag1: "Инструментал", tag2: "Вокал", tag3: "Прикладное",
+                c1T: "Кюй: Философия звука", c1D: "Кюй — это монументальный жанр без слов. Курмангазы создал стиль 'төкпе' (стремительный, волевой), а Таттимбет — стиль 'шертпе' (философский, мягкий).",
+                c2T: "Сал-Серэ: Рыцари песни", c2D: "Уникальная певческая культура. Биржан-сал и Акан-серэ превратили народную песню в высокую классику, воспевая идеалы чести и любви.",
+                c3T: "Орнамент и Стиль", c3D: "Расцвет ювелирного искусства и ковроткачества. Традиционные орнаменты стали способом сохранения истории и философии кочевников.",
+                specialT: "Айтыс: Битва Интеллектов", specialD: "Состязание в импровизации. Айтыс выполнял роль СМИ и общественного суда, где акыны смело критиковали несправедливость.",
+                footer: "«Музыка XIX века — это застывшее во времени эхо свободы народа.»",
+                nodes: {
+                    tokpe: { name: "Школа Төкпе (Запад)", text: "Стиль Курмангазы и Дины Нурпеисовой. Характеризуется мощным, стремительным звуком, исполняется ударом кисти по струнам. Символ воли и простора." },
+                    shertpe: { name: "Школа Шертпе (Восток)", text: "Стиль Таттимбета и Сугура. Исполняется щипковым методом, отличается лиричностью, психологизмом и сложными мелодическими переливами." },
+                    vocals: { name: "Певческая школа", text: "Традиция высокого вокала (арқа әні). Биржан-сал и Акан-серэ создали сложнейшие арии, требующие диапазона в несколько октав." }
+                }
+            },
+            kz: {
+                title: "Қазақ халқының өнері мен музыкасы",
+                vizTitle: "Жан серпіні",
+                vizDesc: "XIX ғасыр — күй өнерінің алтын ғасыры. Домбыра мектептері мен сал-серілер дәстүрін зерттеу үшін кенептегі белгілерді басыңыз.",
+                badge: "Музыкалық кодты талдау",
+                elementTitleDefault: "Бағытты таңдаңыз",
+                elementDescDefault: "Батыс (Төкпе), Шығыс (Шертпе) мектептерін немесе әншілік дәстүрді басыңыз.",
+                tag1: "Аспаптық", tag2: "Вокал", tag3: "Қолданбалы",
+                c1T: "Күй: Дыбыс философиясы", c1D: "Күй — сөзсіз берілетін монументалды жанр. Құрманғазы 'төкпе' (екпінді, жігерлі) стилін, ал Тәттімбет 'шертпе' (философиялық, нәзік) стилін қалыптастырды.",
+                c2T: "Сал-Сері: Ән серілері", c2D: "Бірегей әншілік мәдениет. Біржан сал мен Ақан сері халық әнін жоғары классика деңгейіне көтеріп, намыс пен махаббатты дәріптеді.",
+                c3T: "Ою-өрнек пен Стиль", c3D: "Зергерлік өнер мен кілем тоқудың гүлденуі. Дәстүрлі ою-өрнектер көшпелілердің тарихы мен философиясын сақтау тәсіліне айналды.",
+                specialT: "Айтыс: Зияткерлік сайыс", specialD: "Импровизациялық өнер. Айтыс БАҚ пен қоғамдық сот рөлін атқарып, ақындар әділетсіздікті ашық сынаған.",
+                footer: "«XIX ғасыр музыкасы — халықтың азаттық рухының дыбыстағы жаңғырығы.»",
+                nodes: {
+                    tokpe: { name: "Төкпе мектебі (Батыс)", text: "Құрманғазы мен Дина Нұрпейісованың стилі. Қуатты, екпінді дыбыспен ерекшеленеді. Еркіндік пен кеңдіктің нышаны." },
+                    shertpe: { name: "Шертпе мектебі (Шығыс)", text: "Тәттімбет пен Сүгірдің стилі. Саусақпен шерту арқылы орындалады, лирикалық, психологиялық тереңдігімен ерекшеленеді." },
+                    vocals: { name: "Әншілік мектеп", text: "Арқа әні дәстүрі. Біржан сал мен Ақан сері бірнеше октаваны қамтитын, орындалуы күрделі ән туындыларын жасады." }
+                }
+            },
+            en: {
+                title: "Art and Music of the Kazakh People",
+                vizTitle: "Strings of the Soul",
+                vizDesc: "The 19th c. is the Golden Age of the Kuy. Click on the canvas nodes to study dombra schools and Sal-Sere traditions.",
+                badge: "Musical Code Analysis",
+                elementTitleDefault: "Select a Style",
+                elementDescDefault: "Click on the West School (Tokpe), East School (Shertpe), or the Vocal tradition.",
+                tag1: "Instrumental", tag2: "Vocal", tag3: "Applied Arts",
+                c1T: "Kuy: Sound Philosophy", c1D: "Kuy is a monumental genre without words. Kurmangazy founded the 'Tokpe' style (dynamic), while Tattimbet developed 'Shertpe' (lyrical).",
+                c2T: "Sal-Sere: Knights of Song", c2D: "A unique vocal culture. Birzhan-sal and Akhan-sere elevated folk songs to high classics, praising honor and love.",
+                c3T: "Ornament & Style", c3D: "The height of jewelry and weaving. Traditional ornaments served as a way to encode the history and philosophy of nomads.",
+                specialT: "Aitys: Battle of Intellects", specialD: "An improvisational contest. Aitys served as media and a public court where akyns boldly critiqued injustice.",
+                footer: "«19th-century music is the echo of a nation's freedom frozen in time.»",
+                nodes: {
+                    tokpe: { name: "Tokpe School (West)", text: "The style of Kurmangazy and Dina Nurpeisova. Characterized by a powerful, rapid sound produced by striking the strings." },
+                    shertpe: { name: "Shertpe School (East)", text: "The style of Tattimbet and Sugur. Performed by plucking, it is defined by lyrical depth and melodic complexity." },
+                    vocals: { name: "Vocal Tradition", text: "The Great Steppe vocal school (Arka Ani). Birzhan-sal and Akhan-sere created complex arias requiring extreme vocal range." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('musicCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 550;
+            drawNexus();
+        }
+
+        function drawNexus() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Connection Glow
+            const grad = ctx.createRadialGradient(cx, cy, 20, cx, cy, 250 * scale);
+            grad.addColorStop(0, 'rgba(217, 119, 6, 0.1)');
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 250 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. Dombra-like central axis
+            ctx.strokeStyle = 'rgba(120, 53, 15, 0.2)';
+            ctx.lineWidth = 15 * scale;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 180 * scale); ctx.lineTo(cx, cy + 180 * scale);
+            ctx.stroke();
+
+            // 3. Main Nodes
+            drawNode(cx - 200 * scale, cy - 50 * scale, 60 * scale, '#78350f', "TOKPE");
+            drawNode(cx + 200 * scale, cy - 50 * scale, 60 * scale, '#d97706', "SHERTPE");
+            drawNode(cx, cy + 180 * scale, 65 * scale, '#b45309', "VOCALS");
+
+            // 4. Center Seal
+            ctx.beginPath();
+            ctx.arc(cx, cy, 45 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#451a03';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#451a03';
+            ctx.font = 'bold 12px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText("GOLDEN", cx, cy - 5);
+            ctx.fillText("ERA", cx, cy + 15);
+
+            // Instructions
+            ctx.fillStyle = 'rgba(69, 26, 3, 0.3)';
+            ctx.font = 'bold 10px monospace';
+            ctx.fillText("TAP ON NODES TO HEAR THE HISTORY", cx, 40);
+        }
+
+        function drawNode(x, y, r, color, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = color + '22';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            ctx.fillStyle = color;
+            ctx.font = 'bold 13px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.sqrt((x-(cx-200*scale))**2 + (y-(cy-50*scale))**2) < 65*scale) target = 'tokpe';
+            else if (Math.sqrt((x-(cx+200*scale))**2 + (y-(cy-50*scale))**2) < 65*scale) target = 'shertpe';
+            else if (Math.sqrt((x-cx)**2 + (y-(cy+180*scale))**2) < 70*scale) target = 'vocals';
+
+            const langData = translations[currentLang];
+            if (target && langData && langData.nodes && langData.nodes[target]) {
+                const info = langData.nodes[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (target === 'vocals' ? '#b45309' : '#78350f');
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            if (!t) return;
+
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('special-t').innerText = t.specialT;
+            document.getElementById('special-d').innerText = t.specialD;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-amber-700 hover:bg-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

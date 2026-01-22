@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Следы прошлого: Методы истории</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #0f172a, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+        .btn-lang.active {
+            background: #0ea5e9;
+            color: white;
+            box-shadow: 0 0 30px rgba(14, 165, 233, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #0ea5e9;
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-6 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-5xl md:text-6xl font-black tracking-tight text-sky-400 uppercase">
+                Следы Прошлого
+            </h1>
+            <p id="sub-title" class="text-slate-400 text-xl font-light">Как ученые восстанавливают историю предков</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-sky-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Section: The Stratigraphy -->
+        <div class="lg:col-span-8 glass p-10 flex flex-col border-sky-500/10">
+            <h2 id="visual-title" class="text-2xl mb-6 text-sky-300 uppercase font-bold tracking-widest">Интерактивный раскоп (Стратиграфия)</h2>
+            <div class="relative flex-grow bg-slate-950/80 rounded-[2.5rem] overflow-hidden border border-sky-500/30">
+                <canvas id="archaeologyCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-center text-slate-500 italic">Нажимайте на слои земли, чтобы извлечь артефакты и знания</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-4 glass p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto pr-2">
+                <div id="info-placeholder">
+                    <h3 class="text-3xl text-sky-400 mb-6 font-bold" id="placeholder-title">Лаборатория истории</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        История не просто рассказ, это детективное расследование. Нажмите на культурные слои слева, чтобы увидеть, какие улики оставляют после себя тысячелетия.
+                    </p>
+                    <div class="mt-10 space-y-4">
+                        <div class="flex items-center gap-4 text-slate-400">
+                            <span class="text-2xl">🦴</span> <span id="hint-1">Останки и ДНК</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-slate-400">
+                            <span class="text-2xl">🏺</span> <span id="hint-2">Керамика и орудия</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-slate-400">
+                            <span class="text-2xl">🌋</span> <span id="hint-3">Радиоуглеродный анализ</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="info-data" class="hidden animate-fade-in">
+                    <span id="info-tag" class="inline-block bg-sky-500/20 text-sky-400 px-4 py-1 rounded-full text-xs font-black uppercase mb-6 tracking-widest"></span>
+                    <h3 id="info-title" class="text-3xl text-white font-bold mb-6"></h3>
+                    <div id="info-desc" class="text-slate-300 leading-relaxed text-lg mb-8"></div>
+                    <div class="p-6 bg-sky-950/30 rounded-3xl border border-sky-500/20 shadow-inner">
+                        <strong class="text-sky-400 block mb-3 text-sm uppercase tracking-wider" id="label-method">Метод исследования:</strong>
+                        <p id="info-fact" class="text-slate-100 italic"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Logic Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 group hover:bg-white/5 transition-colors border-b-4 border-emerald-500">
+            <div class="text-4xl mb-6">⛏️</div>
+            <h3 id="card1-title" class="text-2xl font-bold mb-4 text-emerald-400">Археология</h3>
+            <p id="card1-text" class="text-slate-400 leading-relaxed">Наука, изучающая прошлое по материальным остаткам: постройкам, орудиям, украшениям. Археологи работают с <strong>культурным слоем</strong> — пластом земли, содержащим следы жизнедеятельности.</p>
+        </div>
+        <div class="glass p-10 group hover:bg-white/5 transition-colors border-b-4 border-orange-500">
+            <div class="text-4xl mb-6">👥</div>
+            <h3 id="card2-title" class="text-2xl font-bold mb-4 text-orange-400">Этнография</h3>
+            <p id="card2-text" class="text-slate-400 leading-relaxed">Ученые изучают быт и традиции племен, живущих в условиях первобытности сегодня. Это помогает понять, как были устроены общины охотников и собирателей тысячи лет назад.</p>
+        </div>
+        <div class="glass p-10 group hover:bg-white/5 transition-colors border-b-4 border-purple-500">
+            <div class="text-4xl mb-6">🧬</div>
+            <h3 id="card3-title" class="text-2xl font-bold mb-4 text-purple-400">Антропология</h3>
+            <p id="card3-text" class="text-slate-400 leading-relaxed">Изучение строения человеческого тела, костей и ДНК. Позволяет узнать болезни предков, их рацион, физическую силу и пути миграции по планете.</p>
+        </div>
+    </section>
+
+    <footer class="max-w-7xl mx-auto text-center p-16 glass border-sky-500/20">
+        <p id="footer-quote" class="text-3xl font-light italic text-sky-100/80 leading-snug">
+            «История — это не то, что мы помним, а то, что мы смогли доказать».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Следы Прошлого",
+                subtitle: "Как ученые восстанавливают историю предков",
+                visualTitle: "Интерактивный раскоп",
+                hint: "Нажимайте на слои земли, чтобы изучить артефакты",
+                placeholderTitle: "Лаборатория истории",
+                placeholderText: "Нажмите на слои слева. Вы узнаете, как по осколку керамики или форме черепа восстанавливается облик целых эпох.",
+                labelMethod: "Метод исследования:",
+                hint1: "Останки и ДНК", hint2: "Керамика и орудия", hint3: "Радиоуглеродный анализ",
+                footerQuote: "«История — это не то, что мы помним, а то, что мы смогли доказать».",
+                card1Title: "Археология",
+                card1Text: "Изучение прошлого по материальным остаткам: постройкам, орудиям, украшениям. Главное понятие — культурный слой.",
+                card2Title: "Этнография",
+                card2Text: "Наблюдение за народами, сохранившими традиционный уклад. Позволяет реконструировать социальные связи прошлого.",
+                card3Title: "Антропология",
+                card3Text: "Наука о биологической природе человека. Современные методы анализа ДНК раскрывают тайны родства древних популяций.",
+                nodes: [
+                    { id: 1, tag: "Верхний слой", title: "Современность и Железо", desc: "Здесь находят остатки строений, изделия из металлов и первые письменные свидетельства. Слой богат предметами быта, которые сохранили свою форму.", fact: "Дендрохронология — датировка по годовым кольцам деревьев, найденных в постройках." },
+                    { id: 2, tag: "Средний слой", title: "Бронза и Неолит", desc: "Эпоха появления первых земледельцев. Здесь находят шлифованные топоры, пряслица и большое количество расписной керамики.", fact: "Типологический метод — сравнение форм сосудов для определения их возраста." },
+                    { id: 3, tag: "Глубокий слой", title: "Каменный век", desc: "Самые древние следы: грубые рубила, скребла, кости вымерших животных (мамонтов). Культурный слой здесь тонок и требует предельной осторожности.", fact: "Радиоуглеродный анализ (C14) — определение возраста органики по распаду изотопов углерода." },
+                    { id: 4, tag: "Материк", title: "Стерильный слой", desc: "Слой земли, в котором нет следов человеческой деятельности. Для археолога это сигнал к окончанию раскопок на данном участке.", fact: "Стратиграфия — наука о последовательности залегания слоев земли." }
+                ]
+            },
+            kz: {
+                title: "Өткеннің іздері",
+                subtitle: "Ғалымдар ата-баба тарихын қалай қалпына келтіреді",
+                visualTitle: "Интерактивті қазба жұмыстары",
+                hint: "Артефактілерді зерттеу үшін жер қабаттарын басыңыз",
+                placeholderTitle: "Тарих зертханасы",
+                placeholderText: "Сол жақтағы қабаттарды басыңыз. Сіз қыш сынығы немесе бас сүйегі арқылы тұтас дәуірлердің бейнесі қалай қалпына келетінін білесіз.",
+                labelMethod: "Зерттеу әдісі:",
+                hint1: "Қалдықтар мен ДНҚ", hint2: "Керамика мен құралдар", hint3: "Радиокөміртекті талдау",
+                footerQuote: "«Тарих — бұл біздің есімізде қалған нәрсе емес, біз дәлелдей алған нәрсе».",
+                card1Title: "Археология",
+                card1Text: "Өткенді материалдық қалдықтар: ғимараттар, құралдар, әшекейлер арқылы зерттеу. Негізгі ұғым — мәдени қабат.",
+                card2Title: "Этнография",
+                card2Text: "Дәстүрлі өмір салтын сақтаған халықтарды бақылау. Өткеннің әлеуметтік байланыстарын қайта жаңғыртуға мүмкіндік береді.",
+                card3Title: "Антропология",
+                card3Text: "Адамның биологиялық табиғаты туралы ғылым. Заманауи ДНҚ талдау әдістері ежелгі халықтардың туыстық құпияларын ашады.",
+                nodes: [
+                    { id: 1, tag: "Жоғарғы қабат", title: "Қазіргі заман және Темір", desc: "Мұнда ғимараттардың қалдықтары, металл бұйымдар мен алғашқы жазбаша айғақтар табылады. Қабат тұрмыстық заттарға бай.", fact: "Дендрохронология — құрылыстарда табылған ағаштардың жылдық сақиналары бойынша мерзімдеу." },
+                    { id: 2, tag: "Ортаңғы қабат", title: "Қола және Неолит", desc: "Алғашқы егіншілердің пайда болу дәуірі. Мұнда тегістелген балталар, ұршықбастар және көптеген өрнекті керамика табылады.", fact: "Типологиялық әдіс — жасын анықтау үшін ыдыстардың пішінін салыстыру." },
+                    { id: 3, tag: "Терең қабат", title: "Тас дәуірі", desc: "Ең ежелгі іздер: дөрекі шапқылар, қырғыштар, жойылған жануарлардың (мамонттардың) сүйектері.", fact: "Радиокөміртекті талдау (C14) — көміртегі изотоптарының ыдырауы бойынша органиканың жасын анықтау." },
+                    { id: 4, tag: "Материк", title: "Стерильді қабат", desc: "Адам қызметінің іздері жоқ жер қабаты. Археолог үшін бұл осы учаскедегі қазба жұмыстарын аяқтау белгісі.", fact: "Стратиграфия — жер қабаттарының орналасу реттілігі туралы ғылым." }
+                ]
+            },
+            en: {
+                title: "Traces of the Past",
+                subtitle: "How scientists reconstruct the history of ancestors",
+                visualTitle: "Interactive Excavation",
+                hint: "Click on earth layers to study artifacts",
+                placeholderTitle: "History Lab",
+                placeholderText: "Click on the layers to the left. You will learn how whole eras are reconstructed from a pottery shard or a skull shape.",
+                labelMethod: "Research Method:",
+                hint1: "Remains & DNA", hint2: "Pottery & Tools", hint3: "Carbon Dating",
+                footerQuote: "«History is not what we remember, it's what we can prove.»",
+                card1Title: "Archaeology",
+                card1Text: "Studying the past through material remains: buildings, tools, jewelry. The key concept is the cultural layer.",
+                card2Title: "Ethnography",
+                card2Text: "Observing peoples who have preserved a traditional way of life. It helps reconstruct social ties of the past.",
+                card3Title: "Anthropology",
+                card3Text: "The science of human biological nature. Modern DNA analysis reveals the kinship secrets of ancient populations.",
+                nodes: [
+                    { id: 1, tag: "Top Layer", title: "Modernity & Iron", desc: "Remains of buildings, metal products, and first written records are found here. Rich in household items that kept their shape.", fact: "Dendrochronology — dating by the annual rings of trees found in buildings." },
+                    { id: 2, tag: "Middle Layer", title: "Bronze & Neolithic", desc: "The era of the first farmers. Polished axes, spindle whorls, and a large amount of painted pottery are found here.", fact: "Typological method — comparing vessel shapes to determine their age." },
+                    { id: 3, tag: "Deep Layer", title: "Stone Age", desc: "The oldest traces: crude hand axes, scrapers, bones of extinct animals (mammoths). The layer is thin and fragile.", fact: "Radiocarbon dating (C14) — determining the age of organic matter by carbon isotope decay." },
+                    { id: 4, tag: "Bedrock", title: "Sterile Layer", desc: "A layer of earth with no traces of human activity. For an archaeologist, this signals the end of the dig in this area.", fact: "Stratigraphy — the science of the sequence of soil layers." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('archaeologyCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-method').innerText = t.labelMethod;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('hint-3').innerText = t.hint3;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const nodes = translations[currentLang].nodes;
+            const h = canvas.height / nodes.length;
+            
+            canvasNodes = [];
+
+            nodes.forEach((node, i) => {
+                const y = i * h;
+                
+                // Draw Layer
+                const colors = ['#4a3728', '#5d4037', '#3e2723', '#212121'];
+                ctx.fillStyle = colors[i];
+                ctx.fillRect(0, y, canvas.width, h);
+
+                // Texture
+                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                for(let j=0; j<10; j++) {
+                    ctx.beginPath();
+                    ctx.moveTo(Math.random()*canvas.width, y + Math.random()*h);
+                    ctx.lineTo(Math.random()*canvas.width, y + Math.random()*h);
+                    ctx.stroke();
+                }
+
+                // Interaction Point
+                const px = canvas.width / 2;
+                const py = y + h/2;
+                
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#0ea5e9';
+                ctx.fillStyle = '#0ea5e9';
+                ctx.beginPath();
+                ctx.arc(px, py, 12, 0, Math.PI*2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(node.tag, px, py - 20);
+
+                canvasNodes.push({ x: px, y: py, r: 20, id: node.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

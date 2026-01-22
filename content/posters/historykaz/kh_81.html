@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реформы 1867–1868 гг. в Казахстане</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .imperial-gradient {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a 90%);
+        }
+
+        .admin-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 3rem;
+            border: 2px solid #3b82f6;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .admin-card:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.15);
+        }
+
+        .lang-active {
+            background-color: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: #020617;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+        }
+
+        .info-panel {
+            background: rgba(15, 23, 42, 0.8);
+            border-left: 10px solid #3b82f6;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+        }
+
+        .reform-tag {
+            background: #1e3a8a;
+            color: #93c5fd;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="imperial-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-blue-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-blue-500">Реформы 1867–1868 гг. в Казахстане</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-blue-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Administrative Map Analysis (Canvas) -->
+        <div class="admin-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-blue-500 text-blue-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Administrative Division Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic tracking-tighter">Сетка Имперской Власти</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Реформы Александра II окончательно закрепили колониальный статус Казахстана. Нажмите на зоны административного деления, чтобы изучить структуру управления.
+                    </p>
+                    
+                    <div id="info-panel" class="info-panel shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-blue-300 mb-3 uppercase tracking-tighter">Выберите субъект</h3>
+                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic font-light">Кликните на генерал-губернаторства или области на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="adminCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-blue-900 font-mono uppercase tracking-[0.4em]">Administrative Structure Blueprint 1867</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Textual Data -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Politics -->
+            <div class="admin-card p-10 flex flex-col justify-between border-t-8 border-blue-600">
+                <div>
+                    <span class="reform-tag mb-4 inline-block" id="tag-1">Власть</span>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white italic">Военно-бюрократический строй</h3>
+                    <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Вся полнота власти перешла к генерал-губернаторам. Традиционная власть султанов была ликвидирована. Управление строилось на принципе **военного администрирования**: во главе областей и уездов стояли офицеры русской армии. Реформы были объявлены «временными», но действовали десятилетиями, ломая привычный уклад жизни.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Economy -->
+            <div class="admin-card p-10 flex flex-col justify-between border-t-8 border-slate-500">
+                <div>
+                    <span class="reform-tag mb-4 inline-block" id="tag-2">Земля</span>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white italic">Государственная собственность</h3>
+                    <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Земли Казахстана были объявлены собственностью Российской империи. Казахи перешли в разряд «государственных сельских обывателей». Был введен подушный налог (**кибиточный сбор**), а изъятие земель под переселенческий фонд приобрело массовый характер, лишая кочевников доступа к лучшим жайляу и водоемам.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Judiciary -->
+            <div class="admin-card p-10 flex flex-col justify-between border-t-8 border-blue-600">
+                <div>
+                    <span class="reform-tag mb-4 inline-block" id="tag-3">Суд</span>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white italic">Двойные стандарты правосудия</h3>
+                    <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Судебная система была разделена. Для решения мелких тяжб сохранили суд **Биев** и Казиев, но серьезные уголовные дела перешли в ведение военно-судебных комиссий. Это ограничило действие Адата и Шариата, подчинив правовое пространство Степи законам Российской империи.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-blue-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Реформы 1867–1868 годов превратили Казахстан в классическую колонию, где древние законы Степи были принесены в жертву имперской целесообразности.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-blue-900 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Реформы 1867–1868 гг. в Казахстане",
+                vizTitle: "Сетка Имперской Власти",
+                vizDesc: "Реформы окончательно закрепили колониальный статус. Нажмите на зоны административного деления для изучения структуры управления.",
+                badge: "Анализ административной трансформации",
+                elementTitleDefault: "Выберите субъект",
+                elementDescDefault: "Кликните на генерал-губернаторства или области на чертеже справа.",
+                tag1: "Власть", tag2: "Земля", tag3: "Суд",
+                c1T: "Военно-бюрократический строй", c1D: "Генерал-губернатор наделялся неограниченной властью. Вся административная вертикаль была милитаризирована, лишая казахов права на самоуправление.",
+                c2T: "Государственная собственность", c2D: "Земля была отчуждена в пользу казны империи. Кибиточный сбор вырос до 3-3.5 рублей, став тяжелым бременем для хозяйства шаруа.",
+                c3T: "Двойные стандарты правосудия", c3D: "Суд Биев был ограничен мелкими делами. Все важные политические и уголовные процессы контролировались имперскими судьями и офицерами.",
+                footer: "«Реформы 1867–1868 годов превратили Казахстан в классическую колонию империи.»",
+                entities: {
+                    governorate: { name: "Генерал-губернаторства", text: "Территория была поделена между Туркестанским (центр — Ташкент) и Оренбургским (позже Степным) ведомствами. Это исключало единство управления казахами." },
+                    oblast: { name: "Области (6 единиц)", text: "Уральская, Тургайская, Акмолинская, Семипалатинская, Семиреченская и Сырдарьинская. Каждая управлялась военным губернатором." },
+                    uезд: { name: "Уезды и Волости", text: "Многоступенчатая система управления, где низшим звеном был аульный старшина, а высшим в уезде — русский офицер." }
+                }
+            },
+            kz: {
+                title: "1867–1868 жж. Қазақстандағы реформалар",
+                vizTitle: "Империялық билік торы",
+                vizDesc: "Реформалар отарлық мәртебені түпкілікті бекітті. Басқару құрылымын зерттеу үшін әкімшілік бөлініс аймақтарын басыңыз.",
+                badge: "Әкімшілік трансформацияны талдау",
+                elementTitleDefault: "Субъектіні таңдаңыз",
+                elementDescDefault: "Оң жақтағы сызбадан генерал-губернаторлықтарды немесе облыстарды басыңыз.",
+                tag1: "Билік", tag2: "Жер", tag3: "Сот",
+                c1T: "Әскери-бюрократиялық жүйе", c1D: "Генерал-губернаторға шексіз билік берілді. Барлық әкімшілік вертикаль милитаризацияланып, қазақтарды өзін-өзі басқару құқығынан айырды.",
+                c2T: "Мемлекеттік меншік", c2D: "Жер империя қазынасының пайдасына тартып алынды. Шаңырақ салығы 3-3.5 рубльге дейін өсіп, шаруаларға ауыр салмақ салды.",
+                c3T: "Қос стандартты сот жүйесі", c3D: "Билер соты ұсақ істермен шектелді. Маңызды саяси және қылмыстық процестер империялық судьялар мен офицерлердің бақылауында болды.",
+                footer: "«1867–1868 жылдардағы реформалар Қазақстанды империяның классикалық отарына айналдырды.»"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('adminCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 550;
+            drawAdminMap();
+        }
+
+        function drawAdminMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Grid of administration (Abstract boxes)
+            ctx.strokeStyle = '#1e3a8a';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([10, 5]);
+            
+            // Draw Main Governorates (Large Circles)
+            drawEntity(cx - 150 * scale, cy - 100 * scale, 120 * scale, 'rgba(59, 130, 246, 0.1)', "General-Governorate", 'governorate');
+            drawEntity(cx + 150 * scale, cy + 100 * scale, 120 * scale, 'rgba(59, 130, 246, 0.1)', "General-Governorate", 'governorate');
+
+            // Draw Oblasts (Smaller inside)
+            drawEntity(cx - 150 * scale, cy - 100 * scale, 60 * scale, '#3b82f6', "OBLAST", 'oblast');
+            drawEntity(cx + 150 * scale, cy + 100 * scale, 60 * scale, '#3b82f6', "OBLAST", 'oblast');
+
+            // 2. Hierarchy arrows
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(cx - 50 * scale, cy); ctx.lineTo(cx + 50 * scale, cy);
+            ctx.stroke();
+        }
+
+        function drawEntity(x, y, r, color, label, id) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#3b82f6';
+            ctx.stroke();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.abs(x - cx) < 100 * scale && Math.abs(y - cy) < 100 * scale) target = 'uезд';
+            else if (Math.sqrt((x-(cx-150*scale))**2 + (y-(cy-100*scale))**2) < 65 * scale) target = 'oblast';
+            else target = 'governorate';
+
+            if (target) {
+                const info = translations[currentLang].entities[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#3b82f6';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-blue-400 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

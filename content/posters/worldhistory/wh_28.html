@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гомер: Великая Одиссея</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #075985, #0c4a6e, #020617);
+            color: #f0f9ff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #0ea5e9;
+            color: white;
+            box-shadow: 0 0 30px rgba(14, 165, 233, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #0ea5e9;
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-amber-300 uppercase">
+                Поэма «Одиссея»
+            </h1>
+            <p id="sub-title" class="text-sky-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Десять лет скитаний и путь к Итаке</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-sky-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-sky-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-sky-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-sky-600 inline-block"></span>
+                Карта странствий
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-sky-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="odysseyCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-sky-500/50 italic text-center uppercase tracking-widest">Нажмите на вехи пути, чтобы раскрыть легенду</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-sky-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Хитроумный герой</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        После падения Трои Одиссей отправляется домой. Его путь полон испытаний, созданных разгневанным богом Посейдоном. Выберите этап путешествия на карте.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⛵</span>
+                            <span id="hint-1" class="text-sky-200/60 font-bold uppercase text-xs tracking-widest">Мудрость и хитрость</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏝️</span>
+                            <span id="hint-2" class="text-sky-200/60 font-bold uppercase text-xs tracking-widest">Верная Пенелопа</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-sky-950/40 text-sky-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-sky-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-sky-950/20 rounded-[2.5rem] border border-sky-900/30 shadow-xl">
+                        <strong class="text-sky-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-lesson">Урок мудрости:</strong>
+                        <p id="info-fact" class="text-sky-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-sky-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🧠</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-sky-400 uppercase">Одиссей «Хитроумный»</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">В отличие от Ахиллеса, Одиссей побеждает не только силой, но и умом. Его способность находить выход из безнадежных ситуаций сделала его любимцем богини <strong>Афины</strong>.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-amber-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🧶</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-amber-500 uppercase">Пенелопа и её хитрость</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Жена Одиссея 20 лет ждала его, отбиваясь от назойливых женихов. Она обещала выбрать мужа, когда закончит ткать саван, но каждую ночь распускала сделанное за день.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⚓</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-sky-400 uppercase">Понятие «Одиссея»</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Название поэмы стало нарицательным. Сегодня словом «одиссея» называют любое долгое путешествие, полное приключений и неожиданных поворотов судьбы.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-sky-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-sky-100/70 leading-tight max-w-5xl mx-auto">
+            «Мужа воспой мне, богиня, весьма многоопытного, который долго скитался с тех пор, как святой Илион им разрушен был...»
+        </p>
+        <span class="block mt-4 text-sky-500 uppercase tracking-widest text-sm">— Первая строка «Одиссеи»</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Поэма «Одиссея»",
+                subtitle: "Десять лет скитаний и путь к Итаке",
+                visualTitle: "Карта странствий",
+                hint: "Нажмите на вехи пути, чтобы раскрыть легенду",
+                placeholderTitle: "Хитроумный герой",
+                placeholderText: "История о возвращении, верности и силе человеческого духа. Пройдите путь Одиссея по ключевым точкам на карте.",
+                labelLesson: "Урок мудрости:",
+                hint1: "Мудрость и хитрость", hint2: "Верная Пенелопа",
+                card1Title: "Одиссей «Хитроумный»",
+                card1Text: "Герой нового типа. Он ценит жизнь, использует логику и обман для спасения друзей. Его главная цель — дом и семья.",
+                card2Title: "Пенелопа",
+                card2Text: "Символ верности. Её хитрость с тканьем савана показывает, что ум Одиссея нашел отражение и в его жене.",
+                card3Title: "Понятие Одиссеи",
+                card3Text: "Эпос Гомера превратился в метафору жизненного пути каждого человека, стремящегося к своей цели сквозь бури испытаний.",
+                footerQuote: "«Мужа воспой мне, богиня, весьма многоопытного, который долго скитался с тех пор, как святой Илион им разрушен был...»",
+                nodes: [
+                    { id: 1, tag: "Остров Киклопов", title: "Встреча с Полифемом", desc: "Одиссей и его спутники попали в пещеру к одноглазому великану Полифему. Чтобы спастись, герой назвался именем 'Никто', ослепил великана и сбежал, спрятавшись под шкурами овец.", fact: "Раненая гордость Одиссея заставила его выкрикнуть свое имя, за что Посейдон проклял его на долгие годы странствий." },
+                    { id: 2, tag: "Остров Эия", title: "Волшебница Кирка", desc: "Коварная Кирка (Цирцея) превратила спутников Одиссея в свиней. Герой с помощью божественной травы 'моли' преодолел её чары и заставил вернуть друзьям человеческий облик.", fact: "Кирка помогла Одиссею, дав совет, как спуститься в царство мертвых и узнать свою судьбу." },
+                    { id: 3, tag: "Море опасностей", title: "Сирены", desc: "Полуптицы-полуженщины заманивали моряков на скалы своим божественным пением. Одиссей приказал гребцам залепить уши воском, а себя велел привязать к мачте.", fact: "Одиссей стал первым смертным, кто услышал пение Сирен и остался жив." },
+                    { id: 4, tag: "Пролив", title: "Сцилла и Харибда", desc: "Два чудовища по берегам узкого пролива. Одиссей выбрал путь мимо шестиглавой Сциллы, пожертвовав шестью воинами, чтобы не погубить весь корабль в водовороте Харибды.", fact: "Выражение 'между Сциллой и Харибдой' означает нахождение между двумя равными опасностями." },
+                    { id: 5, tag: "Финал пути", title: "Возвращение на Итаку", desc: "Одиссей вернулся домой в облике нищего, чтобы проверить верность близких. Победив в состязании из лука, он перебил дерзких женихов и воссоединился с семьей.", fact: "Старый пес Аргус был единственным, кто сразу узнал хозяина после 20 лет разлуки." }
+                ]
+            },
+            kz: {
+                title: "«Одиссея» жыры",
+                subtitle: "Он жылдық қаңғыбастық және Итакаға жол",
+                visualTitle: "Сапар картасы",
+                hint: "Аңызды ашу үшін жол белгілерін басыңыз",
+                placeholderTitle: "Айлакер кейіпкер",
+                placeholderText: "Оралу, адалдық және адам рухының күші туралы хикая. Одиссейдің жолын картадағы негізгі нүктелер арқылы өтіңіз.",
+                labelLesson: "Даналық сабағы:",
+                hint1: "Даналық пен айла", hint2: "Адал Пенелопа",
+                card1Title: "«Айлакер» Одиссей",
+                card1Text: "Жаңа типтегі кейіпкер. Ол өмірді бағалайды, достарын құтқару үшін логика мен алдауды қолданады. Басты мақсаты — үй мен отбасы.",
+                card2Title: "Пенелопа",
+                card2Text: "Адалдық символы. Оның саван тоқудағы айласы Одиссейдің ақылы әйелінде де бар екенін көрсетеді.",
+                card3Title: "Одиссея ұғымы",
+                card3Text: "Гомер эпосы әрбір адамның өмір жолының, сынақтар арқылы өз мақсатына ұмтылуының метафорасына айналды.",
+                footerQuote: "«Мұза, жырла көп бейнет тартқан ерді, Илионды қиратып, кезген жерді...»",
+                nodes: [
+                    { id: 1, tag: "Киклоптар аралы", title: "Полифеммен кездесу", desc: "Одиссей мен оның серіктері бір көзді дәу Полифемнің үңгіріне түседі. Құтылу үшін кейіпкер өзін 'Ешкім' деп атап, дәудің көзін соқыр етеді.", fact: "Одиссей өз есімін айтып айқайлағаны үшін Посейдон оны ұзақ жылдарға қарғыс аттырды." },
+                    { id: 2, tag: "Эия аралы", title: "Сиқыршы Кирка", desc: "Кирка Одиссейдің жолдастарын шошқаға айналдырады. Кейіпкер 'моли' шөбінің көмегімен сиқырды жеңіп, достарын қайтарады.", fact: "Кирка Одиссейге өлілер патшалығына түсіп, өз тағдырын білуге кеңес берді." },
+                    { id: 3, tag: "Қауіпті теңіз", title: "Сиреналар", desc: "Жартылай құс, жартылай әйелдер теңізшілерді өздерінің әсем әнімен жартастарға алдайтын. Одиссей өзін діңгекке байлатты.", fact: "Одиссей Сиреналардың әнін естіп, тірі қалған алғашқы пенде болды." },
+                    { id: 4, tag: "Бұғаз", title: "Сцилла мен Харибда", desc: "Тар бұғаздың екі жағындағы екі құбыжық. Одиссей Харибданың иірімінде бәрін жоғалтпас үшін алты жауынгерін құрбан етті.", fact: "'Сцилла мен Харибда арасында' деген тіркес екі бірдей қауіптің ортасында қалуды білдіреді." },
+                    { id: 5, tag: "Жолдың соңы", title: "Итакаға оралу", desc: "Одиссей үйіне қайыршы кейпінде оралады. Садақ тарту жарысында жеңіске жетіп, отбасымен қауышады.", fact: "Кәрі ит Аргус 20 жылдан кейін иесін бірден таныған жалғыз жан болды." }
+                ]
+            },
+            en: {
+                title: "Poem «The Odyssey»",
+                subtitle: "Ten Years of Wandering and the Road to Ithaca",
+                visualTitle: "Map of the Journey",
+                hint: "Click on milestones to reveal the legend",
+                placeholderTitle: "The Cunning Hero",
+                placeholderText: "A story of homecoming, loyalty, and the strength of the human spirit. Trace Odysseus' journey through the key points on the map.",
+                labelLesson: "Wisdom Lesson:",
+                hint1: "Wisdom and Cunning", hint2: "Faithful Penelope",
+                card1Title: "Odysseus 'The Cunning'",
+                card1Text: "A new type of hero. He values life and uses logic and deception to save his crew. His main goal is home and family.",
+                card2Title: "Penelope",
+                card2Text: "The ultimate symbol of fidelity. Her shroud-weaving trick shows that Odysseus' wit is reflected in his wife as well.",
+                card3Title: "The Concept of Odyssey",
+                card3Text: "Homer's epic has become a metaphor for any person's life journey, striving toward a goal through storms and trials.",
+                footerQuote: "«Tell me, O muse, of that ingenious hero who travelled far and wide after he had sacked the famous town of Troy...»",
+                nodes: [
+                    { id: 1, tag: "Island of Cyclopes", title: "Meeting Polyphemus", desc: "Odysseus trapped in a cave with the one-eyed giant. To escape, he blinded the monster and called himself 'Noman'.", fact: "Odysseus' pride made him reveal his real name, causing Poseidon's decade-long wrath." },
+                    { id: 2, tag: "Aeaea Island", title: "Circe the Enchantress", desc: "The sorceress Circe turned the crew into swine. With the herb 'moly' provided by Hermes, Odysseus resisted her magic.", fact: "Circe eventually helped Odysseus by advising him to consult the prophet Tiresias in Hades." },
+                    { id: 3, tag: "Sea of Perils", title: "The Sirens", desc: "Creatures who lured sailors to their deaths with divine singing. Odysseus plugged his crew's ears with wax and tied himself to the mast.", fact: "Odysseus was the first mortal to hear the Sirens' song and survive the enchantment." },
+                    { id: 4, tag: "The Strait", title: "Scylla and Charybdis", desc: "Choosing between a six-headed monster and a whirlpool. Odysseus sacrificed six men to Scylla to save the rest from the abyss.", fact: "The phrase 'between Scylla and Charybdis' means being caught between two equal dangers." },
+                    { id: 5, tag: "End of Path", title: "Return to Ithaca", desc: "Odysseus returned disguised as a beggar. After winning the bow contest, he reclaimed his throne and reunited with Penelope.", fact: "His old dog Argus was the only one to recognize him immediately after 20 years of absence." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('odysseyCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-lesson').innerText = t.labelLesson;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Sea Background Decoration
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.1)';
+            for(let i=0; i<canvas.width; i+=50) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+
+            const nodesData = [
+                { id: 1, x: canvas.width * 0.15, y: cy - 80, icon: "👁️" }, // Polyphemus (West)
+                { id: 2, x: canvas.width * 0.4, y: cy - 120, icon: "🐷" }, // Circe (North-ish)
+                { id: 3, x: canvas.width * 0.6, y: cy + 100, icon: "🧜" }, // Sirens (South-ish)
+                { id: 4, x: canvas.width * 0.75, y: cy - 40, icon: "🌪️" }, // Scylla (East)
+                { id: 5, x: canvas.width * 0.9, y: cy + 60, icon: "🏝️" }   // Ithaca (Final)
+            ];
+
+            // Draw Route Path
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#0ea5e9';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(nodesData[0].x, nodesData[0].y);
+            for(let i=1; i<nodesData.length; i++) {
+                ctx.lineTo(nodesData[i].x, nodesData[i].y);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(14, 165, 233, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core Circle
+                ctx.fillStyle = (i === 4) ? '#f59e0b' : '#0ea5e9';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon text
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#bae6fd';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

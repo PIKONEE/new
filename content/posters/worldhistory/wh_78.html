@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Церковь в Средние века: Власть Духа</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #2e1065, #0f172a, #000000);
+            color: #f5f3ff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .serif { font-family: 'Playfair Display', serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #8b5cf6;
+            color: white;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #8b5cf6;
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #8b5cf6; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-white to-indigo-300 uppercase">
+                Церковь и Клир
+            </h1>
+            <p id="sub-title" class="text-purple-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase italic">Опора средневекового мироздания</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-purple-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-purple-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-purple-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-purple-600 inline-block"></span>
+                Иерархия и Могущество
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-purple-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="churchCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-purple-500/50 italic text-center uppercase tracking-widest">Нажмите на символы для изучения роли Церкви</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-purple-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Священная власть</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Католическая церковь была самой богатой и влиятельной организацией Средневековья. Она владела третью всех земель и диктовала волю королям. Выберите область на схеме.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🇻atican</span>
+                            <span id="hint-1" class="text-purple-200/60 font-bold uppercase text-xs tracking-widest">Папский престол</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🕯️</span>
+                            <span id="hint-2" class="text-purple-200/60 font-bold uppercase text-xs tracking-widest">Монастырская мудрость</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-purple-950/40 text-purple-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-purple-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-indigo-950/40 rounded-[2.5rem] border border-purple-900/30 shadow-xl">
+                        <strong class="text-purple-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-spiritual">Духовная истина:</strong>
+                        <p id="info-fact" class="text-purple-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-purple-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👑</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-purple-400 uppercase">Римский Папа</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Глава всей Католической церкви, считавшийся преемником апостола Петра. Он обладал правом отлучать королей от церкви, что делало их власть незаконной в глазах народа.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📜</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-indigo-400 uppercase">Десятина</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Налог в пользу Церкви. Каждый христианин был обязан отдавать десятую часть своего дохода или урожая на нужды храмов, монастырей и содержание духовенства.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⛪</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Монастыри</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Центры культуры и образования. Монахи переписывали древние книги в <strong>скрипториях</strong>, лечили больных и внедряли новые методы земледелия в своих хозяйствах.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-purple-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl serif italic text-purple-100/70 leading-tight max-w-5xl mx-auto">
+            «Церковь — это душа мира, направляющая мечи королей и плуги пахарей к небесному благу».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Церковь и Клир",
+                subtitle: "Опора средневекового мироздания",
+                visualTitle: "Иерархия и Могущество",
+                hint: "Нажмите на символы для изучения роли Церкви",
+                placeholderTitle: "Священная власть",
+                placeholderText: "В Средние века Церковь была государством в государстве. Узнайте, как она хранила знания и управляла умами миллионов.",
+                labelSpiritual: "Духовная истина:",
+                hint1: "Папский престол", hint2: "Монастырская мудрость",
+                card1Title: "Римский Папа",
+                card1Text: "Высший авторитет Европы. Его слово могло остановить войны или объявить Крестовый поход.",
+                card2Title: "Десятина",
+                card2Text: "Экономическая мощь Церкви. Огромные богатства позволяли строить грандиозные соборы и содержать школы.",
+                card3Title: "Монастыри",
+                card3Text: "Оазисы грамотности. Девиз монахов 'Ora et labora' (Молись и трудись) стал правилом их жизни.",
+                footerQuote: "«Церковь — это душа мира, направляющая мечи королей и плуги пахарей к небесному благу».",
+                nodes: [
+                    { id: 1, tag: "Вершина", title: "Папа Римский", desc: "Святой Престол в Риме. Папа — глава Церкви, наместник Христа на земле. Он вершил суд над светскими правителями и хранил чистоту веры.", fact: "Папа Григорий VII ввел правило безбрачия (целибат) для всего духовенства, чтобы оно не заботилось о наследниках." },
+                    { id: 2, tag: "Знание", title: "Скрипторий", desc: "Мастерская при монастыре, где монахи вручную переписывали Библию и труды античных ученых на пергаменте. Каждая книга стоила целое состояние.", fact: "Для написания одной большой Библии требовались шкуры целого стада телят." },
+                    { id: 3, tag: "Грех", title: "Индульгенции", desc: "Грамоты о прощении грехов, которые Церковь начала продавать за деньги. Это вызывало недовольство и позже привело к Реформации.", fact: "Первоначально индульгенции давались за личные подвиги, например, за участие в Крестовом походе." },
+                    { id: 4, tag: "Защита", title: "Инквизиция", desc: "Особый церковный суд для борьбы с еретиками — теми, кто сомневался в учении Церкви. Целью было 'спасение души' через покаяние или суровую кару.", fact: "Слово 'инквизиция' переводится с латыни как 'расследование'." },
+                    { id: 5, tag: "Социум", title: "Приходская церковь", desc: "Центр жизни каждой деревни или города. Здесь крестили, венчали и отпевали. Церковный календарь определял дни труда и праздников для каждого человека.", fact: "В Средние века время считали не по минутам, а по церковным службам." }
+                ]
+            },
+            kz: {
+                title: "Шіркеу және Дінбасылар",
+                subtitle: "Ортағасырлық әлемнің тірегі",
+                visualTitle: "Иерархия және Қуаттылық",
+                hint: "Шіркеу рөлін зерттеу үшін нышандарды басыңыз",
+                placeholderTitle: "Қасиетті билік",
+                placeholderText: "Орта ғасырларда Шіркеу мемлекет ішіндегі мемлекет болды. Оның білім мен миллиондаған адамның санасын қалай басқарғанын біліңіз.",
+                labelSpiritual: "Рухани ақиқат:",
+                hint1: "Папа тағы", hint2: "Монастырь даналығы",
+                card1Title: "Рим Папасы",
+                card1Text: "Еуропаның жоғарғы беделі. Оның сөзі соғыстарды тоқтата алатын немесе Крест жорықтарын жариялай алатын.",
+                card2Title: "Ширек салық",
+                card2Text: "Шіркеудің экономикалық қуаты. Орасан зор байлық зәулім соборлар салуға мүмкіндік берді.",
+                card3Title: "Монастырлар",
+                card3Text: "Сауаттылық орталықтары. Монахтардың 'Ora et labora' (Дұға қыл және еңбектен) ұраны олардың өмір салты болды.",
+                footerQuote: "«Шіркеу — патшалардың семсері мен шаруалардың соқасын көктегі игілікке бағыттайтын әлемнің жаны».",
+                nodes: [
+                    { id: 1, tag: "Шың", title: "Рим Папасы", desc: "Римдегі қасиетті тақ. Папа — шіркеу басшысы, Мәсіхтің жердегі өкілі.", fact: "Папа Григорий VII дінбасылар үшін үйленбеу (целибат) ережесін енгізді." },
+                    { id: 2, tag: "Білім", title: "Скрипторий", desc: "Монастырь жанындағы шеберхана. Мұнда монахтар кітаптарды қолмен көшіріп жазған.", fact: "Бір үлкен Інжілді жазу үшін бір табын бұзаудың терісі қажет болды." },
+                    { id: 3, tag: "Күнә", title: "Индульгенция", desc: "Күнәні кешіру туралы грамоталар. Оларды шіркеу ақшаға сата бастады.", fact: "Бастапқыда индульгенциялар жеке ерліктер үшін берілетін." },
+                    { id: 4, tag: "Қорғаныс", title: "Инквизиция", desc: "Еретиктермен күресуге арналған ерекше шіркеу соты.", fact: "'Инквизиция' сөзі латын тілінен аударғанда 'тергеу' дегенді білдіреді." },
+                    { id: 5, tag: "Қоғам", title: "Шіркеу приходы", desc: "Әр ауыл мен қаланың өмір орталығы. Шіркеу күнтізбесі адамдардың жұмыс және демалыс күндерін анықтады.", fact: "Орта ғасырларда уақыт минутпен емес, шіркеу қызметімен есептелді." }
+                ]
+            },
+            en: {
+                title: "The Church and Clergy",
+                subtitle: "The Pillar of the Medieval World",
+                visualTitle: "Hierarchy and Power",
+                hint: "Click symbols to study the role of the Church",
+                placeholderTitle: "Sacred Authority",
+                placeholderText: "In the Middle Ages, the Church was a state within a state. Discover how it preserved knowledge and governed the minds of millions.",
+                labelSpiritual: "Spiritual Truth:",
+                hint1: "Papal Throne", hint2: "Monastic Wisdom",
+                card1Title: "The Pope",
+                card1Text: "The supreme authority of Europe. His word could stop kings or launch Crusades across continents.",
+                card2Title: "The Tithe",
+                card2Text: "The Church's economic engine. Immense wealth allowed for the construction of great cathedrals.",
+                card3Title: "Monasteries",
+                card3Text: "Islands of literacy. The monastic motto 'Ora et labora' (Pray and work) defined their disciplined lives.",
+                footerQuote: "«The Church is the soul of the world, guiding the swords of kings and the plows of farmers toward heavenly grace.»",
+                nodes: [
+                    { id: 1, tag: "The Top", title: "The Pope", desc: "Based in Rome, the Pope was the Vicar of Christ. He held the power of excommunication, making him more powerful than emperors.", fact: "Pope Gregory VII enforced clerical celibacy to ensure priests remained loyal to the Church alone." },
+                    { id: 2, tag: "Knowledge", title: "Scriptorium", desc: "A room in a monastery where monks meticulously copied manuscripts by hand on vellum. Books were rarer than gold.", fact: "A single large Bible could require the hides of over 200 sheep or calves." },
+                    { id: 3, tag: "Sin", title: "Indulgences", desc: "Certificates sold by the Church to grant the remission of temporal punishment for sins. A major source of revenue.", fact: "The aggressive sale of indulgences eventually became a primary spark for the Reformation." },
+                    { id: 4, tag: "Protection", title: "The Inquisition", desc: "A powerful office established to root out heresy. It aimed to 'save' souls through investigation and, sometimes, execution.", fact: "The term 'Inquisition' comes from the Latin word for 'inquiry' or 'investigation'." },
+                    { id: 5, tag: "Society", title: "Parish Church", desc: "The focal point of communal life. From baptism to burial, the Church marked every major milestone of a human life.", fact: "In medieval times, hours were often measured by the ringing of the church bells for prayer." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('churchCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-spiritual').innerText = t.labelSpiritual;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Gothic Window (Background)
+            ctx.strokeStyle = 'rgba(139, 92, 246, 0.1)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx - 100, cy + 150);
+            ctx.lineTo(cx - 100, cy - 50);
+            ctx.arc(cx, cy - 50, 100, Math.PI, 0);
+            ctx.lineTo(cx + 100, cy + 150);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx, y: cy - 100, icon: "👑" },    // Pope
+                { id: 2, x: cx - 120, y: cy + 20, icon: "🖋️" }, // Scriptorium
+                { id: 3, x: cx + 120, y: cy + 20, icon: "📜" }, // Indulgences
+                { id: 4, x: cx - 60, y: cy + 130, icon: "⚖️" }, // Inquisition
+                { id: 5, x: cx + 60, y: cy + 130, icon: "⛪" }  // Parish
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 0) ? '#4c1d95' : '#8b5cf6';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#a5b4fc';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

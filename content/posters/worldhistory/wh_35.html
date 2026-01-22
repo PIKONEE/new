@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Марафон: Первый триумф Эллады</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e3a8a, #0f172a, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #2563eb;
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-600 uppercase">
+                Марафонская битва
+            </h1>
+            <p id="sub-title" class="text-blue-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">490 год до н.э. / Героизм против Империи</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-blue-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-blue-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-blue-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-blue-600 inline-block"></span>
+                Поле боя
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-blue-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="battleCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-blue-500/50 italic text-center uppercase tracking-widest">Нажмите на узлы тактики для изучения хода сражения</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-blue-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Щит Афин</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Персидский царь Дарий I отправил флот, чтобы покарать Афины. 10 тысяч греков встретили огромную армию на Марафонской равнине. Узнайте, как тактика победила численное превосходство.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🛡️</span>
+                            <span id="hint-1" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Фаланга гоплитов</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏃</span>
+                            <span id="hint-2" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Марафонский бег</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-blue-950/40 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-blue-950/20 rounded-[2.5rem] border border-blue-900/30 shadow-xl">
+                        <strong class="text-blue-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-tactics">Детали сражения:</strong>
+                        <p id="info-fact" class="text-blue-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-blue-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏺</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Мильтиад</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Афинский стратег, знавший персидскую тактику. Он убедил советников дать бой на равнине и придумал план атаки с усиленными флангами, который привел к разгрому врага.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-slate-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🎖️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-white uppercase">Сила Гоплитов</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Греческие воины были защищены бронзовыми доспехами и сражались в плотном строю. Персы, привыкшие к легкой пехоте и обстрелу из луков, не выдержали лобового удара тяжелой фаланги.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👟</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-red-400 uppercase">Бег Фидиппида</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Согласно легенде, воин прибежал в Афины с радостной вестью. Воскликнув «Радуйтесь, мы победили!», он упал замертво. Дистанция в 42 км легла в основу марафонского бега.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-blue-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-blue-100/70 leading-tight max-w-5xl mx-auto">
+            «Свобода — это щит, который афиняне выковали на полях Марафона, доказав миру мощь свободного духа».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Марафонская битва",
+                subtitle: "490 год до н.э. / Героизм против Империи",
+                visualTitle: "Поле боя",
+                hint: "Нажмите на узлы тактики для изучения хода сражения",
+                placeholderTitle: "Щит Афин",
+                placeholderText: "Битва на Марафонской равнине стала первым столкновением, где греки нанесли сокрушительное поражение персам. Выберите этап на карте.",
+                labelTactics: "Детали сражения:",
+                hint1: "Фаланга гоплитов", hint2: "Марафонский бег",
+                card1Title: "Мильтиад",
+                card1Text: "Стратег, выстроивший греков так, чтобы центр был тонким, а края — мощными. Это позволило окружить персов.",
+                card2Title: "Сила Гоплитов",
+                card2Text: "Тяжелое вооружение и железная дисциплина фаланги оказались эффективнее персидских стрел.",
+                card3Title: "Бег Фидиппида",
+                card3Text: "Весть о победе была доставлена ценой жизни, став символом верности долгу и выносливости.",
+                footerQuote: "«Свобода — это щит, который афиняне выковали на полях Марафона, доказав миру мощь свободного духа».",
+                nodes: [
+                    { id: 1, tag: "Расположение", title: "Греческий строй", desc: "Греки заняли позицию в узком проходе между горами и морем. Мильтиад намеренно ослабил центр, чтобы заманить персов в ловушку, и усилил фланги для решающего удара.", fact: "Афинянам помогали воины из города Платеи — это была единственная поддержка, пришедшая на помощь." },
+                    { id: 2, tag: "Атака", title: "Бег гоплитов", desc: "Греки начали наступление бегом, чтобы быстрее преодолеть зону обстрела персидских лучников. Тяжеловооруженная пехота буквально протаранила ряды врага.", fact: "Персы были настолько ошеломлены этой самоубийственной атакой, что сначала приняли её за безумие." },
+                    { id: 3, tag: "Окружение", title: "Прорыв флангов", desc: "Персидский центр прорвал слабую греческую середину, но в это время мощные фланги греков смяли края персов и сомкнулись за их спиной, начав истребление захватчиков.", fact: "В битве погибло около 6400 персов и всего 192 афинянина." },
+                    { id: 4, tag: "Побег", title: "Битва у кораблей", desc: "Персы в панике бежали к своим судам, стоявшим у берега. Греки преследовали их до самой воды, сумев захватить семь вражеских кораблей.", fact: "В этой стычке погиб афинский военачальник Каллимах, сражавшийся до последнего вздоха." },
+                    { id: 5, tag: "Легенда", title: "Вестник победы", desc: "Сразу после битвы воин-гонец был отправлен в Афины. Преодолев 42 км в полном вооружении по жаре, он принес весть о спасении города.", fact: "Хотя современные историки спорят о деталях легенды, дистанция Марафона официально признана спортивным стандартом." }
+                ]
+            },
+            kz: {
+                title: "Марафон шайқасы",
+                subtitle: "б.з.б. 490 жыл / Империяға қарсы ерлік",
+                visualTitle: "Ұрыс алаңы",
+                hint: "Шайқас барысын зерттеу үшін тактикалық нүктелерді басыңыз",
+                placeholderTitle: "Афины қалқаны",
+                placeholderText: "Марафон жазығындағы шайқас гректердің парсыларды алғаш рет талқандаған сәті болды. Картадан кезеңді таңдаңыз.",
+                labelTactics: "Шайқас мәліметтері:",
+                hint1: "Гоплиттер фалангасы", hint2: "Марафон жүгірісі",
+                card1Title: "Мильтиад",
+                card1Text: "Парсы тактикасын жақсы білген стратег. Ол орталықты әлсіретіп, шеткі бөліктерді күшейту арқылы жауды қоршауға алды.",
+                card2Title: "Гоплиттер қуаты",
+                card2Text: "Ауыр сауыт пен фаланганың темірдей тәртібі парсы жебелерінен әлдеқайда тиімді болды.",
+                card3Title: "Фидиппид жүгірісі",
+                card3Text: "Жеңіс туралы хабар өз өмірінің құнымен жеткізілді, бұл төзімділіктің символына айналды.",
+                footerQuote: "«Еркіндік — афинылықтар Марафон даласында соққан қалқан, ол әлемге азат рухтың құдіретін дәлелдеді».",
+                nodes: [
+                    { id: 1, tag: "Орналасу", title: "Грек сабы", desc: "Гректер тау мен теңіз арасындағы тар жерді иеленді. Мильтиад жауды тұзаққа түсіру үшін орталықты әлсіретті.", fact: "Афинылықтарға тек Платеи қаласының жауынгерлері ғана көмекке келді." },
+                    { id: 2, tag: "Шабуыл", title: "Гоплиттердің жүгіруі", desc: "Гректер парсы садақшыларының атқылау аймағынан тез өту үшін жүгіріп шабуылдады.", fact: "Парсылар бұл шабуылды алғашында ессіздік деп қабылдады." },
+                    { id: 3, tag: "Қоршау", title: "Қапталдардың бұзылуы", desc: "Парсылардың орталығы гректерді бұзып өтті, бірақ күшті грек қапталдары жауды қоршауға алып, жоя бастады.", fact: "Шайқаста 6400 парсы және небәрі 192 афинылық қаза тапты." },
+                    { id: 4, tag: "Қашу", title: "Кемелер түбіндегі ұрыс", desc: "Парсылар үрейленіп кемелеріне қарай қашты. Гректер оларды суға дейін қуып барып, жеті кемені қолға түсірді.", fact: "Бұл қақтығыста грек қолбасшысы Каллимах қаһармандықпен қаза тапты." },
+                    { id: 5, tag: "Аңыз", title: "Жеңіс хабаршысы", desc: "Шайқастан кейін Афиныға хабаршы жіберілді. Ол 42 км жерді жүгіріп өтіп, жеңіс туралы сүйінші хабар жеткізді.", fact: "Марафон жүгірісінің қазіргі стандарты осы оқиғаға негізделген." }
+                ]
+            },
+            en: {
+                title: "Battle of Marathon",
+                subtitle: "490 BC / Heroism Against Empire",
+                visualTitle: "Battlefield",
+                hint: "Click on tactical nodes to study the battle progression",
+                placeholderTitle: "Shield of Athens",
+                placeholderText: "The Battle of Marathon was the first major encounter where Greeks decisively defeated the Persians. Select a phase on the map.",
+                labelTactics: "Battle Detail:",
+                hint1: "Hoplite Phalanx", hint2: "Marathon Run",
+                card1Title: "Miltiades",
+                card1Text: "The strategist who deliberately weakened the center to allow the wings to envelop the Persian host.",
+                card2Title: "Power of Hoplites",
+                card2Text: "Bronze armor and rigid phalanx discipline proved far superior to light Persian infantry and archers.",
+                card3Title: "Pheidippides' Run",
+                card3Text: "The news of victory was delivered at the cost of life, becoming a global symbol of duty and endurance.",
+                footerQuote: "«Freedom is the shield forged by Athenians at Marathon, proving to the world the power of the free spirit.»",
+                nodes: [
+                    { id: 1, tag: "Deployment", title: "Greek Formation", desc: "Greeks took a position between the mountains and the sea. Miltiades thinned the center to entrap the Persians while reinforcing the wings.", fact: "Only the city of Plataea sent reinforcements to support Athens." },
+                    { id: 2, tag: "The Charge", title: "Hoplite Rush", desc: "The Greeks attacked at a run to minimize exposure to Persian arrows, a tactic that shocked the invader's light infantry.", fact: "Persians initially thought the Greek charge was an act of madness." },
+                    { id: 3, tag: "Envelopment", title: "Wings Close In", desc: "While the Persian center pushed through, the reinforced Greek wings routed the Persian flanks and circled back to trap them.", fact: "About 6,400 Persians died compared to only 192 Athenians." },
+                    { id: 4, tag: "The Retreat", title: "Clash at the Ships", desc: "Panicked Persians fled to their vessels. The Greeks pursued them to the shoreline, capturing seven enemy ships.", fact: "The Athenian general Callimachus died here while valiantly preventing the ships from launching." },
+                    { id: 5, tag: "Legend", title: "The Messenger", desc: "A runner sped from the battlefield to Athens to warn of potential further attacks and announce victory.", fact: "The 42km distance covered by the messenger gave birth to the modern Marathon race." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('battleCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-tactics').innerText = t.labelTactics;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Battle Plain Background
+            ctx.fillStyle = 'rgba(30, 41, 59, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Shoreline
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.8, 0);
+            ctx.lineTo(canvas.width * 0.7, canvas.height);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx - 120, y: cy - 100, icon: "🛡️" }, // Deployment
+                { id: 2, x: cx - 60, y: cy - 20, icon: "⚔️" },  // Charge
+                { id: 3, x: cx, y: cy + 40, icon: "🔄" },       // Envelopment
+                { id: 4, x: cx + 100, y: cy + 100, icon: "⛵" }, // Ships
+                { id: 5, x: cx - 150, y: cy + 150, icon: "🏃" }  // Messenger
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = (i === 4) ? '#ef4444' : '#2563eb';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 45);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 45, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

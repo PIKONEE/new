@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Anatomy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Merriweather:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        body { background: #064e3b; color: #f0fdf4; font-family: 'Inter'; min-height: 100vh; }
+        .glass { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
+        .rounded-custom { border-radius: 2rem; }
+        .part-btn { transition: 0.3s; border-left: 4px solid transparent; }
+        .part-btn:hover { background: rgba(255,255,255,0.1); padding-left: 1rem; border-color: #a3e635; }
+        canvas { cursor: crosshair; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-8 h-screen flex flex-col">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-lime-300 tracking-tight" id="title"></h1>
+        <div class="flex gap-2 text-xs font-bold">
+            <button onclick="window.setL('ru')" class="hover:text-lime-300">RU</button>
+            <button onclick="window.setL('kz')" class="hover:text-lime-300">KZ</button>
+            <button onclick="window.setL('en')" class="hover:text-lime-300">EN</button>
+        </div>
+    </div>
+
+    <div class="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-6 flex flex-col justify-center gap-2" id="parts-list">
+            <!-- Buttons injected here -->
+        </div>
+
+        <div class="lg:col-span-2 glass rounded-custom p-4 relative overflow-hidden">
+            <canvas id="plantCanvas" class="w-full h-full"></canvas>
+            
+            <div id="info-overlay" class="absolute top-8 right-8 w-64 glass p-6 rounded-2xl border-t-4 border-lime-500 opacity-0 transition duration-500 transform translate-x-4">
+                <h3 id="part-name" class="font-bold text-xl text-lime-200 mb-2"></h3>
+                <p id="part-desc" class="text-sm text-lime-50 leading-snug"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bio2Data = {
+            ru: { t: "Строение Растения", parts: {
+                flower: {n: "Цветок", d: "Генеративный орган. Служит для размножения (образования семян и плодов)."},
+                leaf: {n: "Лист", d: "Вегетативный орган. Функции: фотосинтез, дыхание, испарение воды."},
+                stem: {n: "Стебель", d: "Осевая часть побега. Проводит воду и вещества, выносит листья к свету."},
+                root: {n: "Корень", d: "Подземный орган. Закрепляет растение, всасывает воду с минералами."}
+            }},
+            kz: { t: "Өсімдік Құрылысы", parts: {
+                flower: {n: "Гүл", d: "Генеративті мүше. Көбеюге (тұқым мен жеміс түзуге) қызмет етеді."},
+                leaf: {n: "Жапырақ", d: "Вегетативті мүше. Қызметі: фотосинтез, тыныс алу, суды буландыру."},
+                stem: {n: "Сабақ", d: "Өркеннің осьтік бөлігі. Су мен заттарды өткізеді, жапырақты жарыққа шығарады."},
+                root: {n: "Тамыр", d: "Жер асты мүшесі. Өсімдікті бекітеді, су мен минералдарды сорады."}
+            }},
+            en: { t: "Plant Structure", parts: {
+                flower: {n: "Flower", d: "Generative organ. Reproduction center (seed and fruit formation)."},
+                leaf: {n: "Leaf", d: "Vegetative organ. Photosynthesis, respiration, transpiration."},
+                stem: {n: "Stem", d: "Axial part of the shoot. Transport of water/nutrients, supports leaves."},
+                root: {n: "Root", d: "Underground organ. Anchors plant, absorbs water and minerals."}
+            }}
+        };
+
+        let lang = 'ru', activePart = null;
+        let cx, cvs;
+
+        window.setL = function(l) {
+            lang = l;
+            document.getElementById('title').textContent = bio2Data[l].t;
+            renderButtons();
+            if(activePart) window.showInfo(activePart);
+        };
+
+        function renderButtons() {
+            const list = document.getElementById('parts-list');
+            list.innerHTML = '';
+            Object.keys(bio2Data[lang].parts).forEach(key => {
+                const btn = document.createElement('button');
+                btn.className = 'part-btn py-4 text-left text-lime-100 uppercase tracking-widest font-bold text-sm';
+                btn.textContent = bio2Data[lang].parts[key].n;
+                btn.onclick = () => window.showInfo(key);
+                list.appendChild(btn);
+            });
+        }
+
+        window.showInfo = function(key) {
+            activePart = key;
+            const d = bio2Data[lang].parts[key];
+            const el = document.getElementById('info-overlay');
+            document.getElementById('part-name').textContent = d.n;
+            document.getElementById('part-desc').textContent = d.d;
+            el.style.opacity = '1';
+            el.style.transform = 'translateX(0)';
+            draw();
+        };
+
+        function draw() {
+            if(!ctx) return;
+            const w = cvs.width, h = cvs.height;
+            const cx_ = w/2;
+            cx.clearRect(0,0,w,h);
+
+            // Soil
+            cx.fillStyle = '#3f2c22'; cx.fillRect(0, h*0.8, w, h*0.2);
+
+            // Root
+            cx.strokeStyle = activePart === 'root' ? '#facc15' : '#a8a29e';
+            cx.lineWidth = activePart === 'root' ? 6 : 4;
+            cx.beginPath(); cx.moveTo(cx_, h*0.8); 
+            cx.lineTo(cx_, h*0.95); // Main
+            cx.moveTo(cx_, h*0.85); cx.lineTo(cx_-30, h*0.92);
+            cx.moveTo(cx_, h*0.88); cx.lineTo(cx_+20, h*0.94);
+            cx.stroke();
+
+            // Stem
+            cx.strokeStyle = activePart === 'stem' ? '#facc15' : '#4d7c0f';
+            cx.lineWidth = activePart === 'stem' ? 8 : 6;
+            cx.beginPath(); cx.moveTo(cx_, h*0.8); cx.quadraticCurveTo(cx_+10, h*0.5, cx_, h*0.2); cx.stroke();
+
+            // Leaves
+            const drawLeaf = (x, y, dir) => {
+                cx.fillStyle = activePart === 'leaf' ? '#facc15' : '#22c55e';
+                cx.beginPath(); cx.ellipse(x, y, 40, 15, dir, 0, Math.PI*2); cx.fill();
+            }
+            drawLeaf(cx_+5, h*0.6, -0.5);
+            drawLeaf(cx_-5, h*0.4, 0.5);
+
+            // Flower
+            const fy = h*0.2;
+            cx.fillStyle = activePart === 'flower' ? '#facc15' : '#e11d48';
+            for(let i=0; i<6; i++) {
+                cx.beginPath(); cx.arc(cx_ + Math.cos(i)*20, fy + Math.sin(i)*20, 15, 0, Math.PI*2); cx.fill();
+            }
+            cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(cx_, fy, 10, 0, Math.PI*2); cx.fill();
+        }
+
+        window.onload = function() {
+            cvs = document.getElementById('plantCanvas');
+            if(cvs) {
+                cx = cvs.getContext('2d');
+                cvs.width = cvs.parentElement.clientWidth; 
+                cvs.height = cvs.parentElement.clientHeight || 500;
+                window.setL('ru');
+                draw();
+            }
+        };
+        
+        window.onresize = () => {
+            if(cvs) {
+                cvs.width = cvs.parentElement.clientWidth;
+                cvs.height = cvs.parentElement.clientHeight || 500;
+                draw();
+            }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Жизнедеятельность клетки</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fee7; /* lime-50 */
+            overflow-x: hidden;
+            color: #14532d; /* green-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Life Lime Theme */
+        .header-card {
+            background: linear-gradient(135deg, #65a30d 0%, #15803d 100%); /* lime-600 to green-700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(101, 163, 13, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #1a2e05; /* lime-950 */
+            border-bottom: 3px solid #bef264; /* lime-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #ecfccb; /* lime-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #4d7c0f; /* lime-700 */
+        }
+         .term {
+            font-weight: bold;
+            color: #65a30d; /* lime-600 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #65a30d;
+            background-color: #ffffff;
+            color: #65a30d;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #f7fee7;
+        }
+        .lang-btn.active {
+            background-color: #65a30d;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 250px;
+            margin: 15px 0;
+            border: 1px solid #bef264;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #365314;
+            text-anchor: middle;
+        }
+        .svg-cell {
+            fill: #dcfce7;
+            stroke: #16a34a;
+            stroke-width: 2;
+        }
+        .svg-nucleus {
+            fill: #a78bfa;
+            stroke: #7c3aed;
+        }
+        .svg-arrow-process {
+            stroke-width: 2;
+            fill: none;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-lime-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #84cc16 0%, #4d7c0f 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(132, 204, 22, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(132, 204, 22, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(132, 204, 22, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ЖАСУШАНЫҢ ТІРШІЛІК ӘРЕКЕТІ</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">CELL LIFE PROCESSES</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ЖИЗНЕДЕЯТЕЛЬНОСТЬ КЛЕТКИ</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-lime-100">Зат алмасу, өсу және бөліну.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-lime-100">Metabolism, growth, and division.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-lime-100">Обмен веществ, рост и деление.</p>
+        </header>
+
+        <!-- 1. ЗАТ АЛМАСУ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Зат алмасу (Метаболизм)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Metabolism</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Обмен веществ</h2>
+
+            <div class="rule-card border-t-lime-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Жасуша</span> – ашық жүйе. Ол қоршаған ортадан қоректік заттар мен оттегіні қабылдайды, ал қажетсіз заттарды сыртқа шығарады.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    A <span class="term" lang="en">Cell</span> is an open system. It takes in nutrients and oxygen from the environment and excretes waste products.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Клетка</span> – это открытая система. Она потребляет питательные вещества и кислород из среды, а выделяет продукты распада.
+                </p>
+
+                <!-- Illustration 1: Metabolism -->
+                <svg class="illustration-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-in" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#16a34a" />
+                        </marker>
+                        <marker id="arrow-out" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#dc2626" />
+                        </marker>
+                    </defs>
+
+                    <!-- Central Cell -->
+                    <g transform="translate(200, 100)">
+                        <circle cx="0" cy="0" r="50" class="svg-cell"/>
+                        <circle cx="0" cy="0" r="15" class="svg-nucleus"/>
+                        <text x="0" y="5" font-size="10" fill="#fff" text-anchor="middle">Ядро</text>
+                    </g>
+
+                    <!-- Inputs (Green Arrows) -->
+                    <g transform="translate(50, 50)">
+                        <text x="0" y="0" font-size="12" fill="#15803d" font-weight="bold">O₂ + Food</text>
+                        <path d="M 40 10 Q 100 20, 140 40" stroke="#16a34a" stroke-width="3" fill="none" marker-end="url(#arrow-in)"/>
+                        <path d="M 40 40 Q 100 50, 130 60" stroke="#16a34a" stroke-width="3" fill="none" marker-end="url(#arrow-in)"/>
+                    </g>
+
+                    <!-- Outputs (Red Arrows) -->
+                    <g transform="translate(350, 50)">
+                        <text x="0" y="0" font-size="12" fill="#991b1b" font-weight="bold" text-anchor="end">CO₂ + Waste</text>
+                        <!-- Arrows pointing OUT from cell -->
+                        <path d="M -100 40 Q -60 20, -10 10" stroke="#dc2626" stroke-width="3" fill="none" marker-end="url(#arrow-out)"/>
+                        <path d="M -90 60 Q -50 50, -10 40" stroke="#dc2626" stroke-width="3" fill="none" marker-end="url(#arrow-out)"/>
+                    </g>
+
+                    <text x="200" y="170" class="svg-label">Энергия алмасуы / Energy Exchange</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 2. ЖАСУШАНЫҢ ӨСУІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Жасушаның өсуі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Cell Growth</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Рост клетки</h2>
+
+            <div class="rule-card border-t-green-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Қоректік заттардың есебінен жас жасушаның мөлшері ұлғаяды. Өсімдік жасушаларында ұсақ вакуольдер бірігіп, бір үлкен <strong>орталық вакуольді</strong> құрайды.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Due to nutrients, a young cell increases in size. In plant cells, small vacuoles merge to form one large <strong>central vacuole</strong>.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    За счет питательных веществ молодая клетка увеличивается в размерах. В растительных клетках мелкие вакуоли сливаются в одну большую <strong>центральную вакуоль</strong>.
+                </p>
+
+                <!-- Illustration 2: Growth Stages -->
+                <svg class="illustration-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stage 1: Young -->
+                    <g transform="translate(60, 90)">
+                        <rect x="-20" y="-20" width="40" height="40" rx="5" class="svg-cell"/>
+                        <circle cx="0" cy="0" r="8" class="svg-nucleus"/>
+                        <!-- Small vacuoles -->
+                        <circle cx="-10" cy="-10" r="3" fill="#bae6fd"/>
+                        <circle cx="10" cy="10" r="3" fill="#bae6fd"/>
+                        <text x="0" y="40" font-size="10" fill="#3f6212" text-anchor="middle">Жас (Young)</text>
+                    </g>
+
+                    <!-- Arrow -->
+                    <line x1="100" y1="90" x2="140" y2="90" stroke="#65a30d" stroke-width="2" marker-end="url(#arrow-in)"/>
+
+                    <!-- Stage 2: Growing -->
+                    <g transform="translate(190, 90)">
+                        <rect x="-30" y="-30" width="60" height="60" rx="5" class="svg-cell"/>
+                        <circle cx="15" cy="15" r="10" class="svg-nucleus"/> <!-- Nucleus moves -->
+                        <!-- Bigger vacuoles -->
+                        <circle cx="-10" cy="-10" r="8" fill="#bae6fd"/>
+                        <circle cx="5" cy="5" r="6" fill="#bae6fd"/>
+                        <text x="0" y="50" font-size="10" fill="#3f6212" text-anchor="middle">Өсуде (Growing)</text>
+                    </g>
+
+                    <!-- Arrow -->
+                    <line x1="240" y1="90" x2="280" y2="90" stroke="#65a30d" stroke-width="2" marker-end="url(#arrow-in)"/>
+
+                    <!-- Stage 3: Mature -->
+                    <g transform="translate(340, 90)">
+                        <rect x="-40" y="-40" width="80" height="80" rx="5" class="svg-cell"/>
+                        <circle cx="25" cy="25" r="12" class="svg-nucleus"/> <!-- Nucleus near wall -->
+                        <!-- One BIG vacuole -->
+                        <rect x="-30" y="-30" width="50" height="50" rx="10" fill="#bae6fd" stroke="#3b82f6"/>
+                        <text x="0" y="60" font-size="10" fill="#3f6212" text-anchor="middle">Ересек (Mature)</text>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 3. ЖАСУШАНЫҢ БӨЛІНУІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Жасушаның бөлінуі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Cell Division</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Деление клетки</h2>
+
+            <div class="rule-card border-t-emerald-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Бөліну</span> – жасушалардың көбею процесі. Аналық жасушадан екі жас (еншілес) жасуша пайда болады. Бөліну алдында ядродағы хромосомалар екі еселенеді.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="en">Division</span> is the process of cell reproduction. One mother cell produces two daughter cells. Before division, chromosomes in the nucleus double.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Деление</span> – это процесс размножения клеток. Из одной материнской клетки образуются две дочерние. Перед делением хромосомы в ядре удваиваются.
+                </p>
+
+                <!-- Illustration 3: Simple Division -->
+                <svg class="illustration-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Step 1: Mother Cell -->
+                    <g transform="translate(50, 90)">
+                        <circle cx="0" cy="0" r="30" class="svg-cell"/>
+                        <circle cx="0" cy="0" r="10" class="svg-nucleus"/>
+                        <text x="0" y="45" font-size="10" text-anchor="middle">Mother Cell</text>
+                    </g>
+
+                    <!-- Arrow -->
+                    <line x1="90" y1="90" x2="120" y2="90" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-in)"/>
+
+                    <!-- Step 2: Nucleus Divides -->
+                    <g transform="translate(160, 90)">
+                        <ellipse cx="0" cy="0" rx="40" ry="30" class="svg-cell"/>
+                        <circle cx="-15" cy="0" r="10" class="svg-nucleus"/>
+                        <circle cx="15" cy="0" r="10" class="svg-nucleus"/>
+                        <text x="0" y="45" font-size="10" text-anchor="middle">Nucleus Divides</text>
+                    </g>
+
+                    <!-- Arrow -->
+                    <line x1="210" y1="90" x2="240" y2="90" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-in)"/>
+
+                    <!-- Step 3: Cytoplasm Divides -->
+                    <g transform="translate(280, 90)">
+                         <!-- Two cells pinching -->
+                         <path d="M -10 -30 Q 10 0, -10 30" fill="none" stroke="#16a34a" stroke-width="2"/>
+                         <path d="M 10 -30 Q -10 0, 10 30" fill="none" stroke="#16a34a" stroke-width="2"/>
+
+                         <circle cx="-25" cy="0" r="25" class="svg-cell"/>
+                         <circle cx="-25" cy="0" r="8" class="svg-nucleus"/>
+
+                         <circle cx="25" cy="0" r="25" class="svg-cell"/>
+                         <circle cx="25" cy="0" r="8" class="svg-nucleus"/>
+                    </g>
+
+                     <text x="350" y="100" font-size="10" text-anchor="middle" font-weight="bold">2 Daughter Cells</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-lime-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-lime-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-lime-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-lime-800">
+                Жасуша – тірі жүйе. Ол қоректенеді, тыныс алады, өседі және бөліну арқылы көбейеді.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-lime-800">
+                The cell is a living system. It feeds, breathes, grows, and reproduces by dividing.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-lime-800">
+                Клетка – это живая система. Она питается, дышит, растет и размножается путем деления.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

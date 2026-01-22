@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Социальное развитие Казахстана</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f0fdf4; color: #164e63; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .lang-active { background-color: #15803d !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #15803d; position: relative; min-height: 1200px; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.2); }
+        .stamp { position: absolute; top: 40px; right: 40px; border: 4px double #15803d; padding: 5px 15px; color: #15803d; font-weight: 900; transform: rotate(15deg); text-transform: uppercase; font-size: 14px; opacity: 0.5; }
+        .info-block { border-left: 8px solid #22c55e; background: #f8fafc; padding: 1.5rem; border-radius: 0 1.5rem 1.5rem 0; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Переключатель -->
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-white/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-green-200">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-green-700">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-green-700">EN</button>
+    </div>
+
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <div id="stamp" class="stamp">Social Welfare • 1950-1980</div>
+        
+        <header class="border-b-8 border-green-800 pb-10 mb-12">
+            <h1 id="title" class="text-5xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">Социальное Развитие</h1>
+            <p id="desc" class="text-xl font-medium text-green-700 italic">От бараков к современным городам: рост благосостояния нации</p>
+        </header>
+
+        <div class="space-y-12">
+            <!-- Секция 1: Жилищный вопрос -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div class="space-y-6">
+                    <h2 id="sec1T" class="text-3xl font-black uppercase text-green-900 leading-tight">Жилищный Прорыв</h2>
+                    <div id="sec1D" class="info-block italic text-slate-600">
+                        Массовое строительство 1960-х: в Казахстане темпы ввода жилья были выше, чем в среднем по СССР. Миллионы семей получили квартиры с центральным отоплением и водопроводом.
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 shadow-inner">
+                    <h4 id="chart1Title" class="text-center text-[10px] font-black uppercase mb-4 text-green-600 tracking-widest">Ввод жилья (млн кв.м)</h4>
+                    <div class="h-48">
+                        <canvas id="housingChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция 2: Урбанизация -->
+            <section class="bg-green-900 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                <h2 id="sec2T" class="text-2xl font-black uppercase mb-6 tracking-wide">Взлет Урбанизации</h2>
+                <p id="sec2D" class="text-lg font-light leading-relaxed mb-8 opacity-90">
+                    Доля городского населения выросла с 28% в 1945 году до 54% к 1979 году. Формирование новых промышленных центров: Павлодар, Екибастуз, Рудный.
+                </p>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-white/10 p-4 rounded-2xl">
+                        <p class="text-3xl font-black">54%</p>
+                        <p id="stat1" class="text-[9px] uppercase font-bold text-green-300">Горожане (1979)</p>
+                    </div>
+                    <div class="bg-white/10 p-4 rounded-2xl">
+                        <p class="text-3xl font-black">#1</p>
+                        <p id="stat2" class="text-[9px] uppercase font-bold text-green-300">Место по темпам</p>
+                    </div>
+                    <div class="bg-white/10 p-4 rounded-2xl">
+                        <p class="text-3xl font-black">1.5м</p>
+                        <p id="stat3" class="text-[9px] uppercase font-bold text-green-300">Новых квартир</p>
+                    </div>
+                </div>
+                <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-5">🏢</div>
+            </section>
+
+            <!-- Секция 3: Обучающий блок -->
+            <section class="border-4 border-dashed border-green-300 p-8 rounded-[2.5rem]">
+                <h3 id="learnTitle" class="text-xl font-black uppercase text-green-800 mb-4">📚 Важно для запоминания</h3>
+                <p id="learnD" class="text-sm leading-relaxed text-slate-700 font-medium">
+                    Социальное развитие этого периода характеризуется «экономикой дефицита». При высоких зарплатах и доступном жилье существовал острый недостаток качественных товаров народного потребления, что породило систему «блата».
+                </p>
+            </section>
+        </div>
+
+        <footer class="mt-20 pt-8 border-t border-slate-200 flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">
+            <span>Digital Archive • KZ</span>
+            <span>Section: Social History</span>
+        </footer>
+    </div>
+
+    <script>
+        const content = {
+            ru: {
+                title: "Социальное Развитие", desc: "От бараков к современным городам: рост благосостояния нации",
+                sec1T: "Жилищный Прорыв", sec1D: "Массовое строительство 1960-х: в Казахстане темпы ввода жилья были выше, чем в среднем по СССР. Миллионы семей получили квартиры с удобствами.",
+                chart1Title: "Ввод жилья (млн кв.м)", sec2T: "Взлет Урбанизации", sec2D: "Доля городского населения выросла с 28% в 1945 году до 54% к 1979 году. Формирование новых промышленных центров.",
+                stat1: "Горожане (1979)", stat2: "Место по темпам", stat3: "Новых квартир",
+                learnTitle: "📚 Важно для запоминания", learnD: "Социальное развитие этого периода характеризуется «экономикой дефицита». При росте доходов существовал острый недостаток качественных товаров, что породило систему «блата»."
+            },
+            kz: {
+                title: "Әлеуметтік даму", desc: "Барақтардан заманауи қалаларға: ұлттың әл-ауқатының артуы",
+                sec1T: "Тұрғын үй серпілісі", sec1D: "1960-жылдардағы жаппай құрылыс: Қазақстанда тұрғын үйді пайдалануға беру қарқыны КСРО бойынша орташа көрсеткіштен жоғары болды.",
+                chart1Title: "Пайдалануға берілген үй (млн ш.м)", sec2T: "Урбанизация қарқыны", sec2D: "Қала халқының үлесі 1945 жылғы 28%-дан 1979 жылы 54%-ға дейін өсті. Жаңа өнеркәсіптік орталықтар қалыптасты.",
+                stat1: "Қалалықтар (1979)", stat2: "Қарқын бойынша #1", stat3: "Жаңа пәтерлер",
+                learnTitle: "📚 Есте сақтау маңызды", learnD: "Осы кезеңдегі әлеуметтік даму «тапшылық экономикасымен» сипатталады. Табыстың өсуіне қарамастан, тауарлардың жетіспеушілігі «блат» жүйесін тудырды."
+            },
+            en: {
+                title: "Social Development", desc: "From barracks to modern cities: rising national well-being",
+                sec1T: "Housing Breakthrough", sec1D: "Mass construction of the 1960s: housing completion rates in Kazakhstan were among the highest in the USSR. Millions moved to modern apartments.",
+                chart1Title: "Housing completion (M sq.m)", sec2T: "Urbanization Surge", sec2D: "The urban population share rose from 28% in 1945 to 54% in 1979. Creation of new massive industrial centers.",
+                stat1: "Urbanites (1979)", stat2: "Growth Rank #1", stat3: "New Apartments",
+                learnTitle: "📚 Key Takeaway", learnD: "Social development of this period is marked by a 'shortage economy.' Despite rising incomes, high-quality goods were scarce, leading to the 'blat' (favor) system."
+            }
+        };
+
+        let chart = null;
+
+        function setLang(lang) {
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('chart1Title').innerText = t.chart1Title;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('stat1').innerText = t.stat1;
+            document.getElementById('stat2').innerText = t.stat2;
+            document.getElementById('stat3').innerText = t.stat3;
+            document.getElementById('learnTitle').innerText = t.learnTitle;
+            document.getElementById('learnD').innerText = t.learnD;
+            renderChart();
+        }
+
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('housingChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: ['1950', '1960', '1970', '1980'], datasets: [{ data: [1.2, 5.8, 6.4, 7.2], borderColor: '#15803d', tension: 0.4, fill: true, backgroundColor: 'rgba(34, 197, 94, 0.1)', borderWidth: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+            });
+        }
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

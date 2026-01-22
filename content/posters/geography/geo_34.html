@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atmosphere Structure: Vertical Journey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-deep: #020617;
+            --sky-bright: #38bdf8;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--sky-deep);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .rounded-custom { border-radius: 2.5rem; }
+        .altitude-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(to right, #38bdf8, #1e3a8a, #000);
+            border-radius: 10px;
+            outline: none;
+        }
+        .altitude-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px; height: 24px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px #38bdf8;
+        }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-8 flex flex-col lg:flex-row justify-between items-center border-t border-sky-400/20">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-2xl animate-pulse">☁️</div>
+            <div>
+                <h1 id="main-title" class="heading-font text-2xl md:text-4xl uppercase tracking-tighter text-sky-300"></h1>
+                <p id="sub-title" class="mt-1 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-4 lg:mt-0">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        <!-- Interactive Vertical Canvas -->
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col relative min-h-[600px] overflow-hidden">
+            <div class="absolute top-8 right-8 text-right z-10">
+                <div class="text-[10px] uppercase text-sky-400 opacity-60" id="label-alt">Altitude</div>
+                <div id="alt-val" class="heading-font text-4xl text-white">0 km</div>
+            </div>
+            
+            <div class="flex-grow flex items-center justify-center">
+                <canvas id="atmCanvas" class="w-full h-full"></canvas>
+            </div>
+
+            <div class="mt-6 w-full max-w-2xl mx-auto z-10 p-6 glass rounded-3xl border border-white/5">
+                <input type="range" min="0" max="800" value="0" class="altitude-slider" id="altSlider">
+                <div class="flex justify-between mt-2 text-[10px] text-white/30 uppercase tracking-widest">
+                    <span>Earth / Земля</span>
+                    <span>Space / Космос</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-sky-500">
+            <div id="info-content" class="transition-all duration-500">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-sky-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+                
+                <div id="feature-box" class="mt-8 p-4 bg-sky-950/40 rounded-2xl border border-sky-500/20 hidden">
+                    <div class="text-[10px] uppercase text-sky-400 mb-2 font-bold tracking-widest" id="label-feature">Key Feature</div>
+                    <p id="feature-text" class="text-sm italic text-sky-100"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass rounded-custom p-8 hover:bg-sky-500/5 transition-all">
+            <h4 id="card1-title" class="heading-font text-lg mb-3 text-sky-400 uppercase font-bold"></h4>
+            <div id="card1-desc" class="text-white/50 text-xs leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-8 hover:bg-sky-500/5 transition-all">
+            <h4 id="card2-title" class="heading-font text-lg mb-3 text-sky-400 uppercase font-bold"></h4>
+            <div id="card2-desc" class="text-white/50 text-xs leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-8 hover:bg-sky-500/5 transition-all">
+            <h4 id="card3-title" class="heading-font text-lg mb-3 text-sky-400 uppercase font-bold"></h4>
+            <div id="card3-desc" class="text-white/50 text-xs leading-relaxed"></div>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Атмосфера", subtitle: "Воздушная оболочка Земли",
+                labelAlt: "Высота", labelFeature: "Особенности",
+                defaultTitle: "Атмосфера",
+                defaultText: "Атмосфера — это смесь газов, удерживаемая гравитацией Земли. Она защищает нас от радиации и метеоритов, регулирует температуру и содержит кислород для дыхания.",
+                layers: [
+                    { h: 12, name: "Тропосфера", text: "Нижний слой (до 12-18 км). Здесь сосредоточено 80% массы воздуха и почти весь водяной пар. Здесь происходит вся погода.", feature: "Температура падает на 0.6°C каждые 100 метров." },
+                    { h: 50, name: "Стратосфера", text: "Слой до 50 км. Здесь находится озоновый слой, который поглощает жесткий ультрафиолет. Воздух разрежен.", feature: "Озоновый щит Земли защищает жизнь от радиации." },
+                    { h: 85, name: "Мезосфера", text: "Слой до 85 км. Самое холодное место в атмосфере (до -90°C). Здесь сгорают метеоры, оставляя 'падающие звезды'.", feature: "Плотности воздуха хватает для воспламенения метеоритов." },
+                    { h: 600, name: "Термосфера", text: "Слой до 600-800 км. Температура растет до 1500°C. Здесь возникают полярные сияния и летают спутники.", feature: "Ионосфера отражает радиоволны, обеспечивая связь." },
+                    { h: 1000, name: "Экзосфера", text: "Слой рассеяния. Газы здесь очень разрежены и постепенно ускользают в космическое пространство.", feature: "Внешняя граница четко не выражена." }
+                ],
+                cards: [
+                    { title: "Состав воздуха", desc: "Азот (78%), Кислород (21%), Аргон (0.9%), Углекислый газ (0.03%) и другие газы." },
+                    { title: "Граница", desc: "Линия Кармана (100 км) считается условной границей между атмосферой Земли и космосом." },
+                    { title: "Значение", desc: "Без атмосферы Земля была бы безжизненной пустыней с перепадами температур в сотни градусов." }
+                ]
+            },
+            kz: {
+                title: "Атмосфера", subtitle: "Жердің ауа қабығы",
+                labelAlt: "Биіктік", labelFeature: "Ерекшеліктері",
+                defaultTitle: "Атмосфера",
+                defaultText: "Атмосфера — Жердің гравитациясымен ұсталып тұрған газдар қоспасы. Ол бізді радиациядан, метеориттерден қорғайды және температураны реттейді.",
+                layers: [
+                    { h: 12, name: "Тропосфера", text: "Төменгі қабат (12-18 км дейін). Мұнда ауа массасының 80% және бүкіл су буы жинақталған. Барлық ауа райы осында қалыптасады.", feature: "Әр 100 метр сайын температура 0.6°C төмендейді." },
+                    { h: 50, name: "Стратосфера", text: "50 км-ге дейінгі қабат. Мұнда ультракүлгін сәулелерді жұтатын озон қабаты орналасқан.", feature: "Жердің озон қалқаны тіршілікті радиациядан қорғайды." },
+                    { h: 85, name: "Мезосфера", text: "85 км-ге дейінгі қабат. Атмосферадағы ең суық жер (-90°C дейін). Мұнда метеорлар жанып кетеді.", feature: "Ауа тығыздығы метеориттердің жануына жеткілікті." },
+                    { h: 600, name: "Термосфера", text: "600-800 км дейінгі қабат. Температура 1500°C-қа дейін көтеріледі. Поляр шұғыласы осы қабатта болады.", feature: "Ионосфера радио толқындарды шағылыстырып, байланысты қамтамасыз етеді." },
+                    { h: 1000, name: "Экзосфера", text: "Сыртқы қабат. Газдар өте сирек және біртіндеп ғарыш кеңістігіне таралады.", feature: "Сыртқы шекарасы нақты анықталмаған." }
+                ],
+                cards: [
+                    { title: "Ауа құрамы", desc: "Азот (78%), Оттегі (21%), Аргон (0.9%), Көмірқышқыл газы (0.03%)." },
+                    { title: "Шекара", desc: "Карман сызығы (100 км) Жер атмосферасы мен ғарыш арасындағы шартты шекара болып саналады." },
+                    { title: "Маңызы", desc: "Атмосферасыз Жер температурасы күрт ауытқитын тіршіліксіз шөлге айналар еді." }
+                ]
+            },
+            en: {
+                title: "Atmosphere", subtitle: "The Air Shell of Earth",
+                labelAlt: "Altitude", labelFeature: "Key Features",
+                defaultTitle: "The Atmosphere",
+                defaultText: "The atmosphere is a mixture of gases held by Earth's gravity. It protects us from solar radiation and meteoroids, regulates temperature, and provides life-giving oxygen.",
+                layers: [
+                    { h: 12, name: "Troposphere", text: "The lowest layer (up to 12-18 km). It contains 80% of the air mass and nearly all water vapor. All weather occurs here.", feature: "Temperature drops by 0.6°C per every 100 meters." },
+                    { h: 50, name: "Stratosphere", text: "Up to 50 km. Contains the ozone layer which absorbs harmful UV radiation. Air is very thin.", feature: "The Earth's ozone shield is vital for protecting life." },
+                    { h: 85, name: "Mesosphere", text: "Up to 85 km. The coldest part of the atmosphere (-90°C). Meteors burn up here, leaving 'falling stars'.", feature: "Air density is enough to ignite meteorites." },
+                    { h: 600, name: "Thermosphere", text: "Up to 600-800 km. Temperature rises up to 1500°C. Home to auroras and low-earth orbit satellites.", feature: "The ionosphere reflects radio waves for global communication." },
+                    { h: 1000, name: "Exosphere", text: "The outermost layer. Gases are extremely sparse and gradually leak into outer space.", feature: "There is no distinct upper boundary." }
+                ],
+                cards: [
+                    { title: "Air Composition", desc: "Nitrogen (78%), Oxygen (21%), Argon (0.9%), Carbon Dioxide (0.03%), and trace gases." },
+                    { title: "The Boundary", desc: "The Kármán Line (100 km) is the conventional boundary between the atmosphere and space." },
+                    { title: "Importance", desc: "Without the atmosphere, Earth would be a lifeless desert with extreme temperature fluctuations." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('label-alt').textContent = t.labelAlt;
+            document.getElementById('label-feature').textContent = t.labelFeature;
+            
+            const slider = document.getElementById('altSlider');
+            const h = parseInt(slider.value);
+            document.getElementById('alt-val').textContent = h + " km";
+
+            let selectedLayer = null;
+            for(let layer of t.layers) {
+                if(h <= layer.h) { selectedLayer = layer; break; }
+            }
+            if(!selectedLayer) selectedLayer = t.layers[t.layers.length-1];
+
+            const it = document.getElementById('info-title');
+            const text = document.getElementById('info-text');
+            const feature = document.getElementById('feature-text');
+            const featureBox = document.getElementById('feature-box');
+
+            if(h === 0) {
+                it.textContent = t.defaultTitle;
+                text.textContent = t.defaultText;
+                featureBox.classList.add('hidden');
+            } else {
+                it.textContent = selectedLayer.name;
+                text.textContent = selectedLayer.text;
+                feature.textContent = selectedLayer.feature;
+                featureBox.classList.remove('hidden');
+            }
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').textContent = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').textContent = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const alt = parseInt(document.getElementById('altSlider').value);
+            const time = Date.now() * 0.001;
+
+            // Sky Gradient based on Altitude
+            // 0 km = Sky Blue, 100+ km = Deep Space Black
+            const skyFactor = Math.min(alt / 150, 1);
+            const r = Math.floor(56 * (1 - skyFactor));
+            const g = Math.floor(189 * (1 - skyFactor));
+            const b = Math.floor(248 * (1 - skyFactor));
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            ctx.fillRect(0, 0, w, h);
+
+            // Particles (Air density)
+            const density = Math.max(5, 50 * (1 - alt/100));
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            for(let i=0; i<density; i++) {
+                const px = (Math.sin(i*10 + time)*w + w)%w;
+                const py = (Math.cos(i*5 + time)*h + h)%h;
+                ctx.beginPath(); ctx.arc(px, py, 2, 0, Math.PI*2); ctx.fill();
+            }
+
+            // Ground (visible at low altitude)
+            if(alt < 50) {
+                const groundY = h - (50 - alt) * 5;
+                ctx.fillStyle = '#064e3b';
+                ctx.fillRect(0, groundY, w, h-groundY);
+            }
+
+            // Atmosphere details
+            if(alt > 80 && alt < 200) {
+                // Meteorites burning
+                ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(w*0.2, h*0.2); ctx.lineTo(w*0.3, h*0.4); ctx.stroke();
+            }
+            if(alt > 300) {
+                // Aurora effect
+                ctx.strokeStyle = `rgba(74, 222, 128, ${0.3 + Math.sin(time)*0.2})`;
+                ctx.lineWidth = 20; ctx.beginPath();
+                for(let i=0; i<w; i+=20) ctx.lineTo(i, h*0.3 + Math.sin(i*0.01 + time)*50);
+                ctx.stroke();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('atmCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight || 500;
+            
+            document.getElementById('altSlider').addEventListener('input', updateUI);
+            window.setLang('ru');
+            draw();
+        };
+        window.onresize = () => {
+             if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+             }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

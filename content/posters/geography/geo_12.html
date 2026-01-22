@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Масштаб Плана: План и Карта</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e; /* Глубокий синий фон */
+            color: #f0f4f8; /* Светлый текст */
+        }
+        .gradient-title {
+            background: linear-gradient(to right, #e94560, #ff7e5f); /* Красно-оранжевый градиент */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .fact-card {
+            background-color: #2c2c43; /* Чуть светлее фон карточки */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-height: 200px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border-left: 5px solid #ff7e5f;
+        }
+        .fact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.4);
+        }
+        .fact-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+            color: #ff7e5f;
+        }
+        .fact-metric {
+            color: #e94560; /* Красный акцент */
+            font-weight: 900;
+            font-size: 1.25rem;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+        .fact-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-top: 10px;
+        }
+        .lang-button {
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 700;
+            background-color: #e94560;
+            color: white;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .lang-button:hover {
+            background-color: #ff7e5f;
+        }
+        .lang-button.active {
+            background-color: #ff7e5f;
+            color: #1a1a2e;
+            box-shadow: 0 0 10px rgba(255, 126, 95, 0.7);
+        }
+        .calc-input {
+            border: 2px solid #ff7e5f;
+            background-color: #1a1a2e;
+            color: #f0f4f8;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .calc-result {
+            background-color: #3e4a7c;
+            color: #ff7e5f;
+            font-size: 1.5rem;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+        }
+    </style>
+    <script>
+        let currentLang = 'ru';
+
+        // --- 10 ПРАВИЛ МАСШТАБА (ПЛАН) ---
+        const scaleRules = [
+            { icon: '📏', metric: 'Численный', ru: '**Численный Масштаб** — это дробь. Например, $1:1000$ означает, что $1$ см на карте равен $1000$ см ($10$ м) на местности.', kz: '**Сандық Масштаб** — бұл бөлшек. Мысалы, $1:1000$ картадағы $1$ см жердегі $1000$ см-ге ($10$ м) тең екенін білдіреді.', en: '**Numerical Scale** is a fraction. E.g., $1:1000$ means $1$ cm on the map equals $1000$ cm ($10$ m) on the ground.' },
+            { icon: '🗣️', metric: 'Именованный', ru: 'Пример **Именованного Масштаба**: "В $1$ см $100$ м". Он прост для восприятия и сразу указывает реальное расстояние.', kz: '**Атаулы Масштаб** Мысалы: "$1$ см-де $100$ м". Ол қабылдауға оңай және нақты қашықтықты көрсетеді.', en: 'Example of **Named Scale**: "One cm equals $100$ m". It is easy to understand and directly shows the real distance.' },
+            { icon: '📐', metric: 'Линейный', ru: '**Линейный Масштаб** — это графическая линия с делениями, позволяющая измерять расстояния при помощи циркуля.', kz: '**Сызықтық Масштаб** — бұл бөліктері бар графикалық сызық, ол циркуль арқылы қашықтықты өлшеуге мүмкіндік береді.', en: '**Linear Scale** is a graphic line with divisions, allowing distances to be measured using dividers (compass).' },
+            { icon: '🗺️', metric: 'Крупный', ru: 'Крупный масштаб (например, $1:500$) используется для планов местности (здания, участки). Он показывает большую детализацию.', kz: 'Ірі масштаб (мысалы, $1:500$) жергілікті жердің жоспарлары үшін қолданылады (ғимараттар, учаскелер). Ол үлкен егжей-тегжейлікті көрсетеді.', en: 'Large scale (e.g., $1:500$) is used for local area plans (buildings, plots). It shows greater detail.' },
+            { icon: '🌍', metric: 'Мелкий', ru: 'Мелкий масштаб (например, $1:10,000,000$) используется для географических карт. Детализация низкая, но охват территории — огромный.', kz: 'Ұсақ масштаб (мысалы, $1:10,000,000$) географиялық карталар үшін қолданылады. Егжей-тегжейлігі төмен, бірақ аумақты қамтуы — үлкен.', en: 'Small scale (e.g., $1:10,000,000$) is used for geographical maps. Detail is low, but the area coverage is vast.' },
+            { icon: '🔗', metric: 'Перевод', ru: 'Чтобы перевести $1:50000$ в именованный, нужно разделить знаменатель на $100$ (для метров): $50000 / 100 = 500$ м. ($1$ см $= 500$ м).', kz: '$1:50000$ -ды атаулы масштабқа аудару үшін бөлгішті $100$-ге (метр үшін) бөлу керек: $50000 / 100 = 500$ м. ($1$ см $= 500$ м).', en: 'To convert $1:50000$ to named scale, divide the denominator by $100$ (for meters): $50000 / 100 = 500$ m. ($1$ cm $= 500$ m).' },
+            { icon: '➖', metric: 'Увеличение', ru: 'Чем меньше число в знаменателе численного масштаба, тем **крупнее** сам масштаб и тем **больше** деталей на карте.', kz: 'Сандық масштабтың бөлгішіндегі сан неғұрлым аз болса, масштаб соғұрлым **ірі** болады және картадағы егжей-тегжейлігі соғұрлым **көп** болады.', en: 'The smaller the number in the denominator of the numerical scale, the **larger** the scale itself, and the **more** detail is on the map.' },
+            { icon: '✖️', metric: 'Расчет', ru: 'Формула расчета: **Расстояние на местности** $=$ **Расстояние на карте** $\times$ **Знаменатель масштаба**.', kz: 'Есептеу формуласы: **Жердегі қашықтық** $=$ **Картадағы қашықтық** $\times$ **Масштаб бөлгіші**.', en: 'Calculation formula: **Distance on Ground** $=$ **Distance on Map** $\times$ **Scale Denominator**.' },
+            { icon: '🔄', metric: 'Точность', ru: 'Точность масштаба — это расстояние на местности, соответствующее $0.1$ мм на плане. Для $1:10000$ точность $10000 \times 0.1$ мм $= 1$ м.', kz: 'Масштабтың дәлдігі — жоспардағы $0.1$ мм-ге сәйкес келетін жердегі қашықтық. $1:10000$ үшін дәлдік $10000 \times 0.1$ мм $= 1$ м.', en: 'Scale accuracy is the distance on the ground corresponding to $0.1$ mm on the plan. For $1:10000$, accuracy is $10000 \times 0.1$ mm $= 1$ m.' },
+            { icon: '🚨', metric: 'Искажение', ru: 'На глобусе масштаб постоянный, но на плоских картах (особенно мелкого масштаба) всегда есть **искажения** расстояний и форм.', kz: 'Глобуста масштаб тұрақты, бірақ жазық карталарда (әсіресе ұсақ масштабты) қашықтықтар мен пішіндердің **бұрмалануы** әрқашан болады.', en: 'The scale is constant on a globe, but flat maps (especially small scale) always have **distortions** of distances and shapes.' }
+        ];
+        // --- КОНЕЦ ПРАВИЛ ---
+
+        // Тексты для калькулятора (КАРТА)
+        const calcTexts = {
+            ru: {
+                title: '🗺️ Карта: Калькулятор Расстояний',
+                desc: '**RU:** Введите численный масштаб ($1:X$, например, $10000$) и расстояние на плане (в см), чтобы найти реальное расстояние на местности (в метрах).',
+                scaleLabel: 'Численный Масштаб (Знаменатель $X$):',
+                distOnMapLabel: 'Расстояние на Плане (см):',
+                resultLabel: 'Реальное Расстояние на Местности (м):',
+                placeholderScale: 'Например, 10000 (из 1:10000)',
+                placeholderDist: 'Например, 5.2'
+            },
+            kz: {
+                title: '🗺️ Карта: Қашықтық Калькуляторы',
+                desc: '**KZ:** Нақты қашықтықты (метрмен) табу үшін сандық масштабты ($1:X$, мысалы, $10000$) және жоспардағы қашықтықты (см-мен) енгізіңіз.',
+                scaleLabel: 'Сандық Масштаб (Бөлгіш $X$):',
+                distOnMapLabel: 'Жоспардағы Қашықтық (см):',
+                resultLabel: 'Жердегі Нақты Қашықтық (м):',
+                placeholderScale: 'Мысалы, 10000 (1:10000-нан)',
+                placeholderDist: 'Мысалы, 5.2'
+            },
+            en: {
+                title: '🗺️ Map: Distance Calculator',
+                desc: '**EN:** Enter the numerical scale denominator ($1:X$, e.g., $10000$) and the map distance (in cm) to find the actual distance on the ground (in meters).',
+                scaleLabel: 'Numerical Scale Denominator ($X$):',
+                distOnMapLabel: 'Distance on Map (cm):',
+                resultLabel: 'Actual Distance on Ground (m):',
+                placeholderScale: 'E.g., 10000 (from 1:10000)',
+                placeholderDist: 'E.g., 5.2'
+            }
+        };
+
+        // Функция рендеринга фактов (ПЛАН)
+        function renderFacts(lang) {
+            const factsGrid = document.getElementById('facts-grid');
+            let factsHTML = '';
+
+            scaleRules.forEach(fact => {
+                const factText = fact[lang] || fact.ru;
+
+                factsHTML += `
+                    <div class="fact-card rounded-xl shadow-lg p-4 flex flex-col justify-start">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <div class="fact-icon">${fact.icon}</div>
+                            <div class="fact-metric font-bold">${fact.metric}</div>
+                        </div>
+                        <p class="fact-text text-gray-300">${factText}</p>
+                    </div>
+                `;
+            });
+
+            factsGrid.innerHTML = factsHTML;
+            updateActiveButton(lang);
+            updateCalculatorUI(lang);
+        }
+
+        // Функция: Обновление UI Калькулятора (КАРТА)
+        function updateCalculatorUI(lang) {
+            const texts = calcTexts[lang];
+
+            document.getElementById('map-calc-title').textContent = texts.title;
+            document.getElementById('map-calc-desc').innerHTML = texts.desc;
+
+            document.getElementById('scale-label').textContent = texts.scaleLabel;
+            document.getElementById('dist-on-map-label').textContent = texts.distOnMapLabel;
+            document.getElementById('result-label').textContent = texts.resultLabel;
+
+            document.getElementById('scale-input').placeholder = texts.placeholderScale;
+            document.getElementById('dist-on-map-input').placeholder = texts.placeholderDist;
+
+            // Пересчет результата при смене языка, если данные введены
+            calculateDistance();
+        }
+
+
+        // Функция расчета расстояния
+        function calculateDistance() {
+            const scaleDenominator = parseFloat(document.getElementById('scale-input').value);
+            const distOnMap = parseFloat(document.getElementById('dist-on-map-input').value);
+            const resultElement = document.getElementById('calc-result');
+
+            if (isNaN(scaleDenominator) || isNaN(distOnMap) || scaleDenominator <= 0) {
+                resultElement.textContent = '0.00 ' + (currentLang === 'ru' ? 'м' : (currentLang === 'kz' ? 'м' : 'm'));
+                return;
+            }
+
+            // Формула: (Дистанция на плане * Знаменатель масштаба) / 100 (для перевода см в м)
+            const realDistanceMeters = (distOnMap * scaleDenominator) / 100;
+
+            let unit = '';
+            if (currentLang === 'ru') {
+                unit = 'м';
+            } else if (currentLang === 'kz') {
+                unit = 'м';
+            } else {
+                unit = 'm';
+            }
+
+            resultElement.textContent = realDistanceMeters.toFixed(2) + ' ' + unit;
+        }
+
+
+        // Функция: Управление видимостью языковых блоков
+        function updateContentVisibility(lang) {
+            const languages = ['ru', 'kz', 'en'];
+
+            languages.forEach(l => {
+                const elements = document.querySelectorAll(`.${l}-text`);
+                elements.forEach(el => {
+                    if (l === lang) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // Функция переключения языка
+        function switchLang(lang) {
+            currentLang = lang;
+            renderFacts(lang);
+            updateContentVisibility(lang);
+        }
+
+        // Функция обновления активной кнопки
+        function updateActiveButton(activeLang) {
+            document.querySelectorAll('.lang-button').forEach(button => {
+                if (button.dataset.lang === activeLang) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Привязка событий к кнопкам
+            document.getElementById('lang-ru').addEventListener('click', () => switchLang('ru'));
+            document.getElementById('lang-kz').addEventListener('click', () => switchLang('kz'));
+            document.getElementById('lang-en').addEventListener('click', () => switchLang('en'));
+
+            // Привязка клейкого события для калькулятора
+            document.getElementById('scale-input').addEventListener('input', calculateDistance);
+            document.getElementById('dist-on-map-input').addEventListener('input', calculateDistance);
+
+            // Первичный рендеринг
+            switchLang(currentLang);
+        });
+    </script>
+</head>
+<body class="text-gray-100">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="bg-[#2c2c43] text-center p-8 shadow-2xl border-b-8 border-[#e94560]">
+
+        <!-- Language Switcher Buttons -->
+        <div class="flex justify-center space-x-4 mb-6">
+            <button id="lang-ru" data-lang="ru" class="lang-button">РУС</button>
+            <button id="lang-kz" data-lang="kz" class="lang-button">КАЗ</button>
+            <button id="lang-en" data-lang="en" class="lang-button">ENG</button>
+        </div>
+
+        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-wider gradient-title">МАСШТАБ ПЛАНА</h1>
+        <!-- Subtitles controlled by visibility toggling -->
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ff7e5f] ru-text">ФОРМУЛА ПЕРЕВОДА РАССТОЯНИЙ</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ff7e5f] kz-text hidden">ҚАШЫҚТЫҚТЫ АУЫСТЫРУ ФОРМУЛАСЫ</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ff7e5f] en-text hidden">THE DISTANCE CONVERSION FORMULA</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-10">
+
+        <!-- СЕКЦИЯ 1: КАРТА (Интерактивный Калькулятор) -->
+        <section class="mb-12 bg-[#2c2c43] p-6 rounded-xl shadow-xl border-4 border-[#ff7e5f]">
+
+            <!-- Map Titles (Fully localized) -->
+            <h2 id="map-calc-title" class="text-3xl font-extrabold pb-2 text-[#e94560]">🗺️ Карта: Калькулятор Расстояний</h2>
+
+            <!-- Description paragraphs (Fully localized) -->
+            <p id="map-calc-desc" class="text-lg text-gray-300 mb-6"></p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                <!-- Ввод 1: Знаменатель масштаба -->
+                <div>
+                    <label id="scale-label" for="scale-input" class="block text-sm font-medium text-gray-400">Численный Масштаб (Знаменатель X):</label>
+                    <input type="number" id="scale-input" class="calc-input" placeholder="Например, 10000 (из 1:10000)">
+                </div>
+
+                <!-- Ввод 2: Расстояние на плане -->
+                <div>
+                    <label id="dist-on-map-label" for="dist-on-map-input" class="block text-sm font-medium text-gray-400">Расстояние на Плане (см):</label>
+                    <input type="number" id="dist-on-map-input" class="calc-input" placeholder="Например, 5.2">
+                </div>
+
+                <!-- Результат -->
+                <div class="flex flex-col">
+                    <label id="result-label" class="block text-sm font-medium text-gray-400 mb-2">Реальное Расстояние на Местности (м):</label>
+                    <div id="calc-result" class="calc-result">
+                        0.00 м
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ 2: ПЛАН (Сетка Правил) -->
+
+        <!-- Title for the Fact Grid (Fully localized) -->
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ff7e5f] ru-text">📑 План: 10 Основных Правил Масштаба</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ff7e5f] kz-text hidden">📑 Жоспар: Масштабтың 10 Негізгі Ережесі</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ff7e5f] en-text hidden">📑 Plan: 10 Essential Scale Rules</h2>
+
+        <!-- FACT GRID (Presents all 10 facts) -->
+        <div id="facts-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Facts will be inserted here by JavaScript -->
+        </div>
+
+    </main>
+
+    <footer class="text-center p-6 mt-12 bg-[#2c2c43] text-gray-400">
+        <p class="text-sm">Масштаб — основа картографии. Успешный расчет — залог верной навигации!</p>
+    </footer>
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

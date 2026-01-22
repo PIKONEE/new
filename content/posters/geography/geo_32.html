@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glaciers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #e0f2fe; color: #0c4a6e; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); border: 1px solid white; }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #0284c7; color: white; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center">
+        <div><h1 id="main-title" class="heading-font text-3xl uppercase tracking-tighter"></h1></div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-sky-300 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-sky-300 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-sky-300 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="glass rounded-custom p-8 flex flex-col items-center justify-center min-h-[500px]">
+            <canvas id="glacierCanvas" class="w-full h-full"></canvas>
+            <p class="mt-4 text-xs font-bold tracking-widest text-sky-800">SNOW LINE MODEL</p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-l-8 border-sky-600">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-sky-900"></h3>
+            <div id="info-text" class="text-lg font-medium leading-relaxed text-sky-800 space-y-4"></div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: { title: "Ледники", infoTitle: "Ледяные реки", infoText: "Ледники — скопления льда атмосферного происхождения. Горные ледники стекают по склонам (Альпы, Кавказ). Покровные ледники занимают огромные площади (Антарктида, Гренландия). Снеговая линия — граница, выше которой снег не тает." },
+            kz: { title: "Мұздықтар", infoTitle: "Мұзды өзендер", infoText: "Мұздықтар — атмосфералық шыққан мұз шоғырлары. Тау мұздықтары беткейлермен ағады. Жамылғы мұздықтар үлкен аумақтарды алып жатыр. Қар сызығы — қар ерімейтін шекара." },
+            en: { title: "Glaciers", infoTitle: "Rivers of Ice", infoText: "Glaciers are accumulations of atmospheric ice. Mountain glaciers flow down slopes. Sheet glaciers cover vast areas (Antarctica). Snow line — the boundary above which snow does not melt." }
+        };
+        let currentLang = 'ru', canvas, ctx;
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        function updateUI() {
+            document.getElementById('main-title').textContent = translations[currentLang].title;
+            document.getElementById('info-title').textContent = translations[currentLang].infoTitle;
+            document.getElementById('info-text').textContent = translations[currentLang].infoText;
+        }
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const w = canvas.width, h = canvas.height;
+
+            // Mountain
+            ctx.fillStyle = '#64748b';
+            ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(w/2, h*0.1); ctx.lineTo(w, h); ctx.fill();
+
+            // Snow line
+            const snowLineY = h * 0.4;
+            ctx.strokeStyle = '#0284c7'; ctx.setLineDash([5,5]); 
+            ctx.beginPath(); ctx.moveTo(0, snowLineY); ctx.lineTo(w, snowLineY); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Glacier (White cap)
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.moveTo(w/2, h*0.1);
+            ctx.lineTo(w*0.35, h*0.4); // Left limit
+            ctx.quadraticCurveTo(w/2, h*0.5, w*0.65, h*0.4); // Flow tongue
+            ctx.fill();
+        }
+        window.onload = function() {
+            canvas = document.getElementById('glacierCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500;
+            setLang('ru'); draw();
+        };
+        window.onresize = function() {
+             if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+                draw();
+             }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

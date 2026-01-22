@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эволюция растений</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fef2f2; color: #7f1d1d; }
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #7f1d1d; border-bottom: 3px solid #fecaca; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid; }
+        .footer-card { text-align: center; margin-top: 40px; padding: 24px; background: #fee2e2; border-radius: 1rem; border-top: 4px solid #dc2626; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #dc2626; background: white; color: #dc2626; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #dc2626; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .lang-kk span.lang-content[lang="kk"], .lang-en span.lang-content[lang="en"], .lang-ru span.lang-content[lang="ru"] { display: inline; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-red-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">Өсімдіктердің Эволюциясы</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">Plant Evolution</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">Эволюция растений</h1>
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-red-100">Орындарының өндіктіңу сатысы</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-red-100">Adaptation to diverse environments</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-red-100">Адаптация к разным окружающим</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Су ортасындағы құм өсімдіктерден құрақты өндіктіңе</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. From Aquatic to Terrestrial Plants</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. От водных к наземным растениям</h2>
+
+            <div class="rule-card border-t-red-500">
+                <div class="space-y-3">
+                    <div class="border-l-4 border-red-400 pl-4 py-2 bg-red-50 p-2 rounded">
+                        <p lang="kk" class="lang-content font-bold text-red-900">Су өсімдіктерінің ерекшеліктері</p>
+                        <p lang="en" class="lang-content font-bold text-red-900">Aquatic Plant Features</p>
+                        <p lang="ru" class="lang-content font-bold text-red-900">Особенности водных растений</p>
+                        <ul class="text-xs text-gray-700 mt-1 space-y-1">
+                            <li lang="kk" class="lang-content">Құм құрамдар - түбіртегі немесе сабақ ЖОҚ</li>
+                            <li lang="en" class="lang-content">Simple structures - no roots or stems</li>
+                            <li lang="ru" class="lang-content">Простые структуры - нет корней</li>
+
+                            <li lang="kk" class="lang-content">Су буойанттар - су салмағы қызмет</li>
+                            <li lang="en" class="lang-content">Water buoyancy - water supports weight</li>
+                            <li lang="ru" class="lang-content">Вода поддерживает вес</li>
+
+                            <li lang="kk" class="lang-content">Су ортасында өндіс - оттегі болмасыз мүмкін</li>
+                            <li lang="en" class="lang-content">Direct water absorption</li>
+                            <li lang="ru" class="lang-content">Прямое поглощение воды</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-l-4 border-red-400 pl-4 py-2 bg-red-50 p-2 rounded">
+                        <p lang="kk" class="lang-content font-bold text-red-900">Құрақты өсімдіктерінің әдіптеу</p>
+                        <p lang="en" class="lang-content font-bold text-red-900">Land Plant Adaptations</p>
+                        <p lang="ru" class="lang-content font-bold text-red-900">Адаптации наземных растений</p>
+                        <ul class="text-xs text-gray-700 mt-1 space-y-1">
+                            <li lang="kk" class="lang-content">Түбіртегі түзілді - су өндіс үшін, мінерал беру</li>
+                            <li lang="en" class="lang-content">Root development - water absorption and anchoring</li>
+                            <li lang="ru" class="lang-content">Развитие корней - поглощение воды</li>
+
+                            <li lang="kk" class="lang-content">Сабақ өндіктіңі - құрамдар тіктеу, өндіс тасымалдау</li>
+                            <li lang="en" class="lang-content">Stem strength - support and transport</li>
+                            <li lang="ru" class="lang-content">Прочность стебля - опора и транспорт</li>
+
+                            <li lang="kk" class="lang-content">Түбіс жапырақтар - құрамдар тесіктерін өндіс арақатындау</li>
+                            <li lang="en" class="lang-content">Waxy cuticle - reduces water loss</li>
+                            <li lang="ru" class="lang-content">Восковая кутикула - снижает потерю воды</li>
+
+                            <li lang="kk" class="lang-content">Сумалық өндіс - спора, шотындысы құрамдары</li>
+                            <li lang="en" class="lang-content">Specialized reproduction - spores, seeds</li>
+                            <li lang="ru" class="lang-content">Специализированное размножение</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Өндіс Алемінің Өндіктінгі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Ecological Role Evolution</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Эволюция экологической роли</h2>
+
+            <div class="rule-card border-t-red-600">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-orange-50 p-3 rounded border border-orange-300">
+                        <h4 lang="kk" class="lang-content font-bold text-orange-900 mb-2">Ерте Рөлі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-orange-900 mb-2">Early Role</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-orange-900 mb-2">Ранняя роль</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Оттегі өндіру - атмосферасында</li>
+                            <li lang="en" class="lang-content">Oxygen production</li>
+                            <li lang="ru" class="lang-content">Производство кислорода</li>
+
+                            <li lang="kk" class="lang-content">Су ағ циклы - өндістік құмасы</li>
+                            <li lang="en" class="lang-content">Water cycle influence</li>
+                            <li lang="ru" class="lang-content">Влияние на цикл воды</li>
+
+                            <li lang="kk" class="lang-content">Құм өндіс құрайды</li>
+                            <li lang="en" class="lang-content">Build ecosystems</li>
+                            <li lang="ru" class="lang-content">Строят экосистемы</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-yellow-50 p-3 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">Құрақты Сатысы</h4>
+                        <h4 lang="en" class="lang-content font-bold text-yellow-900 mb-2">Land Colonization</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-yellow-900 mb-2">Освоение суши</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Топырақ құрайды - өсімдік құамы</li>
+                            <li lang="en" class="lang-content">Soil formation</li>
+                            <li lang="ru" class="lang-content">Образование почвы</li>
+
+                            <li lang="kk" class="lang-content">Жануарлар құрақта - өндіс біліщі</li>
+                            <li lang="en" class="lang-content">Animals colonize land</li>
+                            <li lang="ru" class="lang-content">Животные осваивают сушу</li>
+
+                            <li lang="kk" class="lang-content">Өндіс байттығы ниспеде</li>
+                            <li lang="en" class="lang-content">Increase biodiversity</li>
+                            <li lang="ru" class="lang-content">Увеличение биоразнообразия</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-red-50 p-3 rounded border border-red-300">
+                        <h4 lang="kk" class="lang-content font-bold text-red-900 mb-2">Заңды Рөлі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-red-900 mb-2">Modern Role</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-red-900 mb-2">Современная роль</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Оттегі, өндіс құрайды - атмосфер сақтау</li>
+                            <li lang="en" class="lang-content">Oxygen, food production</li>
+                            <li lang="ru" class="lang-content">Кислород, пища</li>
+
+                            <li lang="kk" class="lang-content">Климат - СО₂ сақтау</li>
+                            <li lang="en" class="lang-content">Climate regulation</li>
+                            <li lang="ru" class="lang-content">Регулирование климата</li>
+
+                            <li lang="kk" class="lang-content">Өндіс сервис - әуеодосы</li>
+                            <li lang="en" class="lang-content">Ecosystem services</li>
+                            <li lang="ru" class="lang-content">Услуги экосистемы</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Өндіс Форматын Эволюциясы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Evolution of Plant Forms</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Эволюция формы растений</h2>
+
+            <div class="rule-card border-t-red-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-green-50 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">Құрамдар Дамуы</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-2">Structural Development</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-2">Развитие структур</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Құм бөліктерінен - түндіндерге құрамдар</li>
+                            <li lang="en" class="lang-content">Simple → Complex structures</li>
+                            <li lang="ru" class="lang-content">Простые → сложные структуры</li>
+
+                            <li lang="kk" class="lang-content">Түбіртегі жүргіндігі - құм айтарының дамуы</li>
+                            <li lang="en" class="lang-content">Roots: from rhizoids to complex systems</li>
+                            <li lang="ru" class="lang-content">Корни: от ризоидов к системам</li>
+
+                            <li lang="kk" class="lang-content">Өндіс сасы - құм сабағынан ағасты сабасына</li>
+                            <li lang="en" class="lang-content">Stems: from simple to woody</li>
+                            <li lang="ru" class="lang-content">Стебли: от простых к древесным</li>
+
+                            <li lang="kk" class="lang-content">Жапырақтар - таллустан жөндік жапырақтарына</li>
+                            <li lang="en" class="lang-content">Leaves: from thallus to specialized</li>
+                            <li lang="ru" class="lang-content">Листья: от таллуса к специализированным</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-purple-50 p-3 rounded border border-purple-300">
+                        <h4 lang="kk" class="lang-content font-bold text-purple-900 mb-2">Өндіс Алдағы Эволюциясы</h4>
+                        <h4 lang="en" class="lang-content font-bold text-purple-900 mb-2">Reproductive Evolution</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-purple-900 mb-2">Эволюция размножения</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Вегетативті өндіс - құм қосму</li>
+                            <li lang="en" class="lang-content">Vegetative reproduction → sexual</li>
+                            <li lang="ru" class="lang-content">Вегетативное → половое</li>
+
+                            <li lang="kk" class="lang-content">Су өндіс - спора өндіс</li>
+                            <li lang="en" class="lang-content">Water-dependent → spore release</li>
+                            <li lang="ru" class="lang-content">Зависимое от воды → споры</li>
+
+                            <li lang="kk" class="lang-content">Спора - шотындысы - жеміс</li>
+                            <li lang="en" class="lang-content">Spores → seeds → fruits</li>
+                            <li lang="ru" class="lang-content">Споры → семена → плоды</li>
+
+                            <li lang="kk" class="lang-content">Жануарлармен түндеу - құм өндіс</li>
+                            <li lang="en" class="lang-content">Wind → animal-pollinated flowers</li>
+                            <li lang="ru" class="lang-content">Ветром → животные-опыляемые цветы</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-red-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-red-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-red-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-red-800">Өсімдіктердің эволюциясы орындарының өндіктіңу оқысында ақыл ауыстыру. Жалпы су өсімдіктерінен құрақты өндіктіңге дейін, өсімдіктер баре сәтті болдылары</p>
+            <p lang="en" class="lang-content text-md font-semibold text-red-800">Plant evolution shows increasing adaptation. From aquatic to land plants, each innovation increased success</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-red-800">Эволюция растений показывает растущую адаптацию к условиям среды</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => switchLang('kk'));
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

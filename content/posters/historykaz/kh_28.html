@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Древнее искусство и верования кочевников</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .cosmic-gradient {
+            background: radial-gradient(circle at top, #1e1b4b 0%, #020617 80%);
+        }
+
+        .gold-panel {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(234, 179, 8, 0.2);
+            border-radius: 2.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .gold-panel:hover {
+            border-color: #eab308;
+            box-shadow: 0 0 40px rgba(234, 179, 8, 0.1);
+        }
+
+        .lang-active {
+            background-color: #eab308;
+            color: #020617;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 2rem;
+        }
+
+        .world-node {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .meaning-card {
+            border-left: 4px solid #eab308;
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-point { animation: pulse-gold 3s infinite; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="cosmic-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header (No emoji, strict typography) -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-amber-900/20 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-amber-500">Древнее искусство и верования кочевников</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-amber-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Nomadic Cosmology (The Map) -->
+        <div class="gold-panel p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-amber-500/20 text-amber-500 border border-amber-500/30 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-nowrap">Sacred Universe Model</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Мировое Древо Степи</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Кочевники видели мир как трехчастную структуру. Нажмите на уровни Древа справа, чтобы раскрыть философию древнего мировоззрения.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2rem] bg-slate-900/50 border-l-8 border-amber-500 shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-amber-400 mb-3 uppercase tracking-tighter">Исследуйте Вселенную</h3>
+                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на крону, ствол или корни дерева на холсте.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="cosmoCanvas"></canvas>
+                    <div class="absolute top-8 left-10 text-[10px] text-amber-900 font-mono uppercase tracking-[0.3em]">Cosmological Reconstruction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Artistic Content (The Plan) -->
+        <div class="space-y-12">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.4em] text-amber-500">Язык Звериного Стиля</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Animal Style Evolution -->
+                <div class="gold-panel p-10 flex flex-col justify-between border-t-8 border-amber-500">
+                    <div>
+                        <div class="text-5xl mb-6">🐆</div>
+                        <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Код Звериного Стиля</h3>
+                        <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Это не просто декор, а знаковая система. Хищники (снежный барс, волк) символизировали силу и власть, а травоядные (олень, архар) — жизненную энергию и душу. Сочетание разных животных в одном предмете описывало мифологический сюжет борьбы или гармонии миров.
+                        </p>
+                        <div class="p-4 bg-amber-500/10 rounded-2xl text-xs font-mono text-amber-200">
+                            Пик развития: VII–III вв. до н.э.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Totemism & Shamanism -->
+                <div class="gold-panel p-10 flex flex-col justify-between border-t-8 border-slate-600">
+                    <div>
+                        <div class="text-5xl mb-6">🦅</div>
+                        <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Тотемизм и Магия</h3>
+                        <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Кочевники верили в сверхъестественную связь рода с животным-предком (тотемом). Волк считался отцом-защитником, беркут — посланником неба. Ритуальные маски коней с рогами оленя (как в Береле) превращали обычное животное в мифическое существо, способное доставить душу хозяина к богам.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Petroglyphs -->
+                <div class="gold-panel p-10 flex flex-col justify-between border-t-8 border-amber-500">
+                    <div>
+                        <div class="text-5xl mb-6">☀️</div>
+                        <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Каменная Книга</h3>
+                        <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Петроглифы (Тамгалы, Ешкиольмес) — это храмы под открытым небом. Изображения «солнцеголовых» божеств свидетельствуют о развитом солярном культе. Кочевники поклонялись Огню как очищающей силе и Солнцу как источнику жизни, ориентируя свои курганы строго на восток.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Full Width Deep Info: Symbolism -->
+            <div class="bg-amber-900/10 rounded-[4rem] p-10 md:p-16 border border-amber-500/20 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 id="feat-title" class="text-3xl font-black text-white mb-8 uppercase italic tracking-widest">Семантика Оленя</h3>
+                        <p id="feat-desc" class="text-slate-300 text-xl font-light leading-relaxed">
+                            Олень — центральный образ сакского искусства. Его ветвистые рога, часто превращающиеся в птичьи головы, символизировали связь земли и неба. В мифологии олень был проводником душ, а его золотое изображение на шлеме воина служило магическим оберегом.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-6 bg-slate-900/80 rounded-3xl border border-amber-500/20">
+                            <div class="text-amber-500 font-black mb-2 uppercase text-[10px]">Хищник</div>
+                            <div id="sym-1" class="text-sm font-medium text-slate-100">Власть, Небо, Огонь</div>
+                        </div>
+                        <div class="p-6 bg-slate-900/80 rounded-3xl border border-amber-500/20">
+                            <div class="text-amber-500 font-black mb-2 uppercase text-[10px]">Птица</div>
+                            <div id="sym-2" class="text-sm font-medium text-slate-100">Свобода, Верхний мир</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-12">SACRED</div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-amber-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Искусство кочевников — это молитва в золоте и камне, зашифрованная в образах зверей и бесконечном ритме Мирового Древа.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-amber-700 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Древнее искусство и верования кочевников",
+                vizTitle: "Мировое Древо Степи",
+                vizDesc: "Кочевники видели мир как трехчастную структуру. Нажмите на уровни Древа справа, чтобы раскрыть философию древнего мировоззрения.",
+                badge: "Модель сакральной вселенной",
+                elementTitleDefault: "Исследуйте Вселенную",
+                elementDescDefault: "Кликните на крону, ствол или корни дерева на холсте.",
+                planTitle: "Язык Звериного Стиля",
+                c1T: "Код Звериного Стиля", c1D: "Это не просто декор, а знаковая система. Хищники (барс, волк) символизировали власть, а травоядные — жизненную энергию. Борьба зверей на украшениях отражала смену времен года и циклы жизни.",
+                c2T: "Тотемизм и Магия", c2D: "Вера в предка-животного была фундаментом рода. Оленьи рога на масках коней в курганах Береля — это способ наделить животное магической силой для перехода в небесный мир.",
+                c3T: "Каменная Книга", c3D: "Петроглифы Тамгалы — это древние святилища. Образы «солнцеголовых» людей показывают, что кочевники обожествляли небесные светила и огонь, видя в них источник мудрости.",
+                featTitle: "Семантика Оленя",
+                featDesc: "Олень — главный образ сакского искусства. Его рога, уходящие в небо, символизировали связь миров и бессмертие духа. Золотой олень был главным оберегом вождя.",
+                sym1: "Власть, Небо, Огонь", sym2: "Свобода, Верхний мир",
+                footer: "«Искусство кочевников — это молитва в золоте и камне, зашифрованная в образах зверей и бесконечном ритме Мирового Древа.»",
+                worlds: {
+                    upper: { name: "Верхний мир (Аспан)", text: "Мир богов и священных птиц. Символизирует будущее и дух. Его обитатели — птицы (грифон, орел), помогающие связывать человека с небом." },
+                    middle: { name: "Средний мир (Жер)", text: "Мир людей и животных. Символизирует настоящее. Здесь обитают копытные и хищники. Это пространство борьбы и созидания." },
+                    lower: { name: "Нижний мир (Жер асты)", text: "Мир предков и подземных сил. Символизирует прошлое. Его символы — змеи, рыбы и фантастические существа, охраняющие покой мертвых." }
+                }
+            },
+            kz: {
+                title: "Көшпелілердің ежелгі өнері мен наным-сенімдері",
+                vizTitle: "Даланың Бәйтерегі",
+                vizDesc: "Көшпелілер әлемді үш деңгейлі құрылым ретінде көрді. Ежелгі дүниетаным философиясын білу үшін ағаш деңгейлерін басыңыз.",
+                badge: "Қасиетті ғалам моделі",
+                elementTitleDefault: "Әлемді зерттеңіз",
+                elementDescDefault: "Кенептегі ағаштың бұтақтарын, діңін немесе тамырын басыңыз.",
+                planTitle: "Аң стилінің тілі",
+                c1T: "Аң стилінің коды", c1D: "Бұл жай ғана әшекей емес, таңбалық жүйе. Жыртқыштар билікті, ал шөпқоректілер өмірлік энергияны білдірген. Әшекейлердегі аңдар айқасы жыл мезгілдерінің ауысуын бейнелеген.",
+                c2T: "Тотемизм және Магия", c2D: "Жануар-бабаға сену рудың негізі болды. Берел қорғандарындағы аттарға кигізілген бұғы мүйізді маскалар — жануарға көк әлеміне өту үшін тылсым күш беру тәсілі.",
+                c3T: "Тас кітабы", c3D: "Тамғалы петроглифтері — ежелгі ғибадатханалар. «Күнбасты» адамдар бейнесі көшпелілердің аспан шырақтары мен отқа табынғанын көрсетеді.",
+                featTitle: "Бұғы семантикасы",
+                featDesc: "Бұғы — сақ өнерінің басты бейнесі. Оның көкке өрлеген мүйіздері әлемдер байланысы мен рухтың өлмес нышаны. Алтын бұғы көсемнің басты бойтұмары саналған.",
+                sym1: "Билік, Аспан, От", sym2: "Бостандық, Жоғарғы әлем",
+                footer: "«Көшпелілер өнері — аңдар бейнесі мен Бәйтеректің шексіз ырғағында жасырылған алтын мен тастағы мінәжат.»",
+                worlds: {
+                    upper: { name: "Жоғарғы әлем (Аспан)", text: "Құдайлар мен қасиетті құстар мекені. Болашақ пен рухты білдіреді. Оның тұрғындары — адамды көкпен байланыстыратын құстар (грифон, бүркіт)." },
+                    middle: { name: "Ортаңғы әлем (Жер)", text: "Адамдар мен жануарлар әлемі. Осы шақты білдіреді. Мұнда тұяқтылар мен жыртқыштар мекендейді. Бұл — күрес пен жаратылыс кеңістігі." },
+                    lower: { name: "Төменгі әлем (Жер асты)", text: "Ата-бабалар мен жер асты күштерінің әлемі. Өткен шақты білдіреді. Нышандары — жыландар, балықтар және өлілер тыныштығын қорғайтын мақұлықтар." }
+                }
+            },
+            en: {
+                title: "Ancient Art and Beliefs of Nomads",
+                vizTitle: "The Steppe World Tree",
+                vizDesc: "Nomads saw the world as a tripartite structure. Click on the Tree levels to the right to reveal the philosophy of the ancient worldview.",
+                badge: "Sacred Universe Model",
+                elementTitleDefault: "Explore the Universe",
+                elementDescDefault: "Click on the crown, trunk, or roots of the tree on the canvas.",
+                planTitle: "The Language of Animal Style",
+                c1T: "The Animal Style Code", c1D: "This isn't just decor; it's a sign system. Predators symbolized power, while herbivores represented life energy. Animal combat depicted on jewelry reflected seasonal cycles and the circle of life.",
+                c2T: "Totemism and Magic", c2D: "Belief in an animal ancestor was the clan's foundation. Stag antlers on horse masks in Berel mounds were a way to give the animal magical power to travel to the celestial world.",
+                c3T: "The Stone Book", c3D: "Tamgaly petroglyphs are open-air temples. Images of 'sun-headed' deities show that nomads deified celestial bodies and fire as sources of wisdom.",
+                featTitle: "Stag Semantics",
+                featDesc: "The stag is the central image of Saka art. Its antlers, reaching to the sky, symbolized the connection of worlds and immortality. A golden stag was a chieftain's primary magical amulet.",
+                sym1: "Power, Sky, Fire", sym2: "Freedom, Upper World",
+                footer: "«Nomadic art is a prayer in gold and stone, encoded in animal images and the infinite rhythm of the World Tree.»",
+                worlds: {
+                    upper: { name: "Upper World (Aspan)", text: "The realm of gods and sacred birds. Symbolizes the future and spirit. Inhabitants like griffin and eagle helped connect humans to heaven." },
+                    middle: { name: "Middle World (Zher)", text: "The realm of humans and animals. Symbolizes the present. Home to hoofed animals and predators; a space of struggle and creation." },
+                    lower: { name: "Lower World (Zher asty)", text: "The realm of ancestors and underworld forces. Symbolizes the past. Represented by snakes, fish, and mythical guardians of the dead." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('cosmoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+            drawTree();
+        }
+
+        function drawTree() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.height / 500;
+
+            // 1. Draw Axis (Trunk)
+            ctx.beginPath();
+            ctx.moveTo(cx, 100 * scale);
+            ctx.lineTo(cx, 400 * scale);
+            ctx.strokeStyle = 'rgba(234, 179, 8, 0.4)';
+            ctx.lineWidth = 10 * scale;
+            ctx.stroke();
+
+            // 2. Upper World (Crown)
+            ctx.beginPath();
+            ctx.arc(cx, 100 * scale, 60 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(234, 179, 8, 0.2)';
+            ctx.fill();
+            ctx.strokeStyle = '#eab308';
+            ctx.stroke();
+            // Bird icon simplified
+            ctx.font = `${30 * scale}px serif`;
+            ctx.textAlign = 'center';
+            ctx.fillText("🦅", cx, 110 * scale);
+
+            // 3. Middle World (Center)
+            ctx.beginPath();
+            ctx.arc(cx, cy, 70 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(148, 163, 184, 0.2)';
+            ctx.fill();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.stroke();
+            ctx.fillText("🐆", cx, cy + 10 * scale);
+
+            // 4. Lower World (Roots)
+            ctx.beginPath();
+            ctx.arc(cx, 400 * scale, 60 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(153, 27, 27, 0.2)';
+            ctx.fill();
+            ctx.strokeStyle = '#991b1b';
+            ctx.stroke();
+            ctx.fillText("🐍", cx, 410 * scale);
+
+            // Decorative star dust
+            for(let i=0; i<20; i++) {
+                ctx.fillStyle = 'rgba(234, 179, 8, 0.5)';
+                ctx.beginPath();
+                ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 1, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const y = e.clientY - rect.top;
+            const scale = canvas.height / 500;
+
+            let zone = null;
+            if (y < 160 * scale) zone = 'upper';
+            else if (y > 340 * scale) zone = 'lower';
+            else zone = 'middle';
+
+            if (zone) {
+                const info = translations[currentLang].worlds[zone];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (zone === 'upper' ? '#eab308' : (zone === 'middle' ? '#94a3b8' : '#991b1b'));
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('feat-title').innerText = t.featTitle;
+            document.getElementById('feat-desc').innerText = t.featDesc;
+            document.getElementById('sym-1').innerText = t.sym1;
+            document.getElementById('sym-2').innerText = t.sym2;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-lg text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-amber-500 transition-all";
+            });
+
+            resizeCanvas();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Continents: Comprehensive Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <style>
+        body { background: #020617; color: white; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        canvas { cursor: pointer; border-radius: 1.5rem; }
+        .lang-btn.active { background: #facc15; color: #422006; font-weight: 800; }
+        .tooltip {
+            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: opacity 0.2s;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    
+    <header class="glass rounded-2xl p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-white/10">
+        <div>
+            <h1 id="main-title" class="font-montserrat text-3xl md:text-5xl uppercase tracking-tighter text-white"></h1>
+            <p id="sub-title" class="text-white/40 text-[10px] uppercase tracking-[0.3em] mt-1"></p>
+        </div>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+    
+    <div class="relative h-[600px] w-full glass rounded-3xl overflow-hidden border border-white/5">
+        <canvas id="worldCanvas" class="w-full h-full"></canvas>
+        
+        <!-- Enhanced Tooltip -->
+        <div id="tooltip" class="tooltip absolute pointer-events-none p-6 rounded-2xl hidden w-64 z-10">
+            <h3 id="tt-name" class="font-black text-2xl text-yellow-400 mb-2 uppercase font-montserrat"></h3>
+            <div class="space-y-2 text-xs text-gray-300">
+                <div class="flex justify-between border-b border-white/10 pb-1">
+                    <span class="text-gray-500 uppercase tracking-wider">Area</span>
+                    <span id="tt-area" class="font-bold text-white"></span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-1">
+                    <span class="text-gray-500 uppercase tracking-wider">Pop.</span>
+                    <span id="tt-pop" class="font-bold text-white"></span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-1">
+                    <span class="text-gray-500 uppercase tracking-wider">Countries</span>
+                    <span id="tt-cnt" class="font-bold text-white"></span>
+                </div>
+                <p id="tt-fact" class="pt-2 italic text-gray-400 leading-relaxed"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Материки Мира", subtitle: "Глобальная География",
+                data: {
+                    eurasia: { n: "Евразия", pop: "5.4 млрд", cnt: "93", fact: "Самый большой материк, омывается всеми 4 океанами. Здесь находится Эверест и Байкал." },
+                    africa: { n: "Африка", pop: "1.4 млрд", cnt: "54", fact: "Самый жаркий материк. Прародина человечества. Здесь протекает самая длинная река Нил." },
+                    na: { n: "Сев. Америка", pop: "600 млн", cnt: "23", fact: "Здесь находится самый большой остров в мире — Гренландия и система Великих озер." },
+                    sa: { n: "Юж. Америка", pop: "430 млн", cnt: "12", fact: "Самый влажный материк. Здесь течет Амазонка и находятся Анды." },
+                    ant: { n: "Антарктида", pop: "0 (1-5 тыс)", cnt: "0", fact: "Самый холодный и высокий материк. Покрыт ледяным щитом, содержащим 90% льда Земли." },
+                    aus: { n: "Австралия", pop: "43 млн", cnt: "14", fact: "Самый маленький и сухой материк. Уникальный мир сумчатых животных." }
+                }
+            },
+            kz: {
+                title: "Әлем Материктері", subtitle: "Жаһандық География",
+                data: {
+                    eurasia: { n: "Еуразия", pop: "5.4 млрд", cnt: "93", fact: "Ең үлкен материк, 4 мұхитпен шайылады. Мұнда Эверест пен Байкал орналасқан." },
+                    africa: { n: "Африка", pop: "1.4 млрд", cnt: "54", fact: "Ең ыстық материк. Адамзаттың бесігі. Ең ұзын Ніл өзені осында ағады." },
+                    na: { n: "Солт. Америка", pop: "600 млн", cnt: "23", fact: "Мұнда әлемдегі ең үлкен арал — Гренландия және Ұлы көлдер жүйесі бар." },
+                    sa: { n: "Оңт. Америка", pop: "430 млн", cnt: "12", fact: "Ең ылғалды материк. Мұнда Амазонка өзені және Анд таулары орналасқан." },
+                    ant: { n: "Антарктида", pop: "0", cnt: "0", fact: "Ең суық және биік материк. Жер мұзының 90%-ын қамтитын мұз қалқанымен жабылған." },
+                    aus: { n: "Австралия", pop: "43 млн", cnt: "14", fact: "Ең кіші және құрғақ материк. Қалталы жануарлардың бірегей әлемі." }
+                }
+            },
+            en: {
+                title: "World Continents", subtitle: "Global Geography",
+                data: {
+                    eurasia: { n: "Eurasia", pop: "5.4 B", cnt: "93", fact: "Largest continent, bordered by 4 oceans. Home to Everest and Baikal." },
+                    africa: { n: "Africa", pop: "1.4 B", cnt: "54", fact: "Hottest continent. Cradle of humanity. Home to the Nile River." },
+                    na: { n: "North America", pop: "600 M", cnt: "23", fact: "Contains the world's largest island, Greenland, and the Great Lakes." },
+                    sa: { n: "South America", pop: "430 M", cnt: "12", fact: "Wettest continent. Home to the Amazon River and the Andes." },
+                    ant: { n: "Antarctica", pop: "0", cnt: "0", fact: "Coldest and highest continent. Covered by an ice sheet holding 90% of Earth's ice." },
+                    aus: { n: "Australia", pop: "43 M", cnt: "14", fact: "Smallest and driest continent. Unique world of marsupials." }
+                }
+            }
+        };
+
+        const geometry = [
+            {id: "eurasia", a: 54, c: "#10b981", r: 110, x: 0.65, y: 0.25},
+            {id: "africa", a: 30.3, c: "#f59e0b", r: 80, x: 0.5, y: 0.55},
+            {id: "na", a: 24.7, c: "#3b82f6", r: 72, x: 0.2, y: 0.25},
+            {id: "sa", a: 17.8, c: "#22c55e", r: 62, x: 0.28, y: 0.65},
+            {id: "ant", a: 14, c: "#94a3b8", r: 55, x: 0.55, y: 0.88},
+            {id: "aus", a: 7.7, c: "#ef4444", r: 40, x: 0.85, y: 0.65}
+        ];
+
+        let currentLang = 'ru';
+        let cx, cvs;
+        let mouse = {x:0, y:0};
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            
+            const t = translations[l];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            cx.clearRect(0,0,w,h);
+            const time = Date.now() * 0.001;
+            
+            // Background Grid
+            cx.strokeStyle = 'rgba(255,255,255,0.03)'; cx.lineWidth = 1;
+            for(let i=0; i<w; i+=40) { cx.beginPath(); cx.moveTo(i,0); cx.lineTo(i,h); cx.stroke(); }
+            for(let i=0; i<h; i+=40) { cx.beginPath(); cx.moveTo(0,i); cx.lineTo(w,i); cx.stroke(); }
+
+            geometry.forEach(c => {
+                const x = c.x * w;
+                const y = c.y * h;
+                const hover = Math.sin(time + c.x * 10) * 5;
+                
+                // Glow
+                cx.shadowBlur = 30; cx.shadowColor = c.c;
+                
+                // Bubble
+                cx.fillStyle = c.c;
+                cx.beginPath(); cx.arc(x, y + hover, c.r, 0, Math.PI*2); cx.fill();
+                cx.shadowBlur = 0;
+
+                // Inner ring
+                cx.strokeStyle = 'rgba(255,255,255,0.3)'; cx.lineWidth = 2;
+                cx.beginPath(); cx.arc(x, y + hover, c.r - 5, 0, Math.PI*2); cx.stroke();
+
+                // Label
+                cx.fillStyle = 'white';
+                cx.font = 'bold 14px Montserrat';
+                cx.textAlign = 'center';
+                const name = translations[currentLang].data[c.id].n;
+                cx.fillText(name.split(' ')[0], x, y + hover + 5);
+            });
+
+            checkHover(w, h, time);
+            requestAnimationFrame(draw);
+        }
+
+        function checkHover(w, h, time) {
+            const tt = document.getElementById('tooltip');
+            let found = false;
+            
+            geometry.forEach(c => {
+                const x = c.x * w;
+                const hoverOffset = Math.sin(time + c.x * 10) * 5;
+                const y = c.y * h + hoverOffset;
+                const d = Math.sqrt((mouse.x-x)**2 + (mouse.y-y)**2);
+                
+                if (d < c.r) {
+                    const data = translations[currentLang].data[c.id];
+                    tt.style.display = 'block';
+                    
+                    // Keep tooltip within bounds
+                    let left = x + c.r + 20;
+                    let top = y - 50;
+                    if (left + 256 > w) left = x - c.r - 276;
+                    if (top < 0) top = 10;
+                    
+                    tt.style.left = left + 'px';
+                    tt.style.top = top + 'px';
+                    
+                    document.getElementById('tt-name').textContent = data.n;
+                    document.getElementById('tt-name').style.color = c.c;
+                    document.getElementById('tt-area').textContent = c.a + " M km²";
+                    document.getElementById('tt-pop').textContent = data.pop;
+                    document.getElementById('tt-cnt').textContent = data.cnt;
+                    document.getElementById('tt-fact').textContent = data.fact;
+                    found = true;
+                }
+            });
+            if(!found) tt.style.display = 'none';
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('worldCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            
+            cvs.addEventListener('mousemove', e => {
+                const r = cvs.getBoundingClientRect();
+                mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+            });
+            
+            setLang('ru');
+            draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

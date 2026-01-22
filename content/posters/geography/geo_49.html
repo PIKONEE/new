@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natural Zones of the Earth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0c0a09; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #eab308; color: #422006; font-weight: 800; }
+        .zone-btn { transition: all 0.3s; border-bottom: 2px solid transparent; opacity: 0.6; }
+        .zone-btn.active { opacity: 1; border-color: #eab308; color: #eab308; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-yellow-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-yellow-500"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col min-h-[500px]">
+            <div class="flex justify-around mb-8 overflow-x-auto pb-4">
+                <button onclick="setZone('forest')" id="btn-forest" class="zone-btn active heading-font text-xs uppercase tracking-widest"></button>
+                <button onclick="setZone('desert')" id="btn-desert" class="zone-btn heading-font text-xs uppercase tracking-widest"></button>
+                <button onclick="setZone('tundra')" id="btn-tundra" class="zone-btn heading-font text-xs uppercase tracking-widest"></button>
+            </div>
+            <canvas id="zoneCanvas" class="flex-grow w-full rounded-3xl"></canvas>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-yellow-600">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-yellow-400"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Природные зоны", subtitle: "Широтная зональность планеты",
+                forest: "Леса", desert: "Пустыни", tundra: "Тундра",
+                zones: {
+                    forest: { t: "Экваториальные леса", d: "Постоянное лето. Максимальное биоразнообразие. Почвы красно-желтые ферраллитные." },
+                    desert: { t: "Тропические пустыни", d: "Минимум осадков. Редкая растительность. Почвы сероземы. Экстремальные суточные перепады температур." },
+                    tundra: { t: "Тундра", d: "Короткое лето. Многолетняя мерзлота. Мхи, лишайники и карликовые березы." }
+                }
+            },
+            kz: {
+                title: "Табиғат зоналары", subtitle: "Планетаның ендік зоналылығы",
+                forest: "Ормандар", desert: "Шөлдер", tundra: "Тундра",
+                zones: {
+                    forest: { t: "Экваторлық ормандар", d: "Мәңгілік жаз. Максималды биоалуантүрлілік. Топырағы қызыл-сары ферраллитті." },
+                    desert: { t: "Тропиктік шөлдер", d: "Жауын-шашын өте аз. Сирек өсімдік жабыны. Температураның тәуліктік ауытқуы өте үлкен." },
+                    tundra: { t: "Тундра", d: "Қысқа жаз. Көпжылдық тоң. Мүктер мен қыналар." }
+                }
+            },
+            en: {
+                title: "Natural Zones", subtitle: "Global Latitudinal Zonation",
+                forest: "Forests", desert: "Deserts", tundra: "Tundra",
+                zones: {
+                    forest: { t: "Equatorial Forests", d: "Perpetual summer. Maximum biodiversity. Red-yellow ferrallitic soils." },
+                    desert: { t: "Tropical Deserts", d: "Minimal rainfall. Sparse vegetation. Serozem soils. Extreme daily temperature fluctuations." },
+                    tundra: { t: "Tundra", d: "Short summers. Permafrost. Mosses, lichens, and dwarf birches." }
+                }
+            }
+        };
+
+        let currentLang = 'ru', activeZone = 'forest', canvas, ctx;
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.setZone = function(z) { 
+            activeZone = z; 
+            document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${z}`).classList.add('active');
+            updateUI(); 
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('btn-forest').textContent = t.forest;
+            document.getElementById('btn-desert').textContent = t.desert;
+            document.getElementById('btn-tundra').textContent = t.tundra;
+            const z = t.zones[activeZone];
+            document.getElementById('info-title').textContent = z.t;
+            document.getElementById('info-text').textContent = z.d;
+            draw();
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            
+            if(activeZone === 'forest') {
+                ctx.fillStyle = '#064e3b'; ctx.fillRect(0,0,w,h);
+                ctx.fillStyle = '#10b981'; for(let i=0; i<30; i++) { ctx.beginPath(); ctx.arc(Math.random()*w, Math.random()*h, 40, 0, Math.PI*2); ctx.fill(); }
+            } else if(activeZone === 'desert') {
+                ctx.fillStyle = '#fef08a'; ctx.fillRect(0,0,w,h);
+                ctx.strokeStyle = '#eab308'; ctx.lineWidth = 10;
+                ctx.beginPath(); ctx.moveTo(0, h*0.5); for(let i=0; i<w; i+=40) ctx.lineTo(i, h*0.5 + Math.sin(i*0.05)*30); ctx.stroke();
+            } else {
+                ctx.fillStyle = '#e2e8f0'; ctx.fillRect(0,0,w,h);
+                ctx.fillStyle = '#94a3b8'; for(let i=0; i<10; i++) ctx.fillRect(Math.random()*w, h-40, 40, 10);
+            }
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('zoneCanvas'); ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 400;
+            setLang('ru');
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

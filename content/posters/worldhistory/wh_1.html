@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заря Человечества: Первобытный мир</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #443322, #1a1a1a);
+            color: #f3f4f6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 3rem;
+        }
+        .canvas-container {
+            position: relative;
+            cursor: crosshair;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.5rem 1.5rem;
+            border-radius: 1.5rem;
+            font-weight: 600;
+        }
+        .btn-lang.active {
+            background: #d97706;
+            color: white;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.4);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.3); border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+        <div class="flex flex-col">
+            <h1 id="main-title" class="text-4xl md:text-5xl font-extrabold uppercase tracking-tighter text-amber-500">
+                Заря Человечества
+            </h1>
+            <p id="sub-title" class="text-gray-400 mt-2 text-lg">История первобытного общества</p>
+        </div>
+        <div class="flex gap-2 glass p-2">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+        <!-- Canvas Visualizer -->
+        <div class="lg:col-span-7 glass p-8 min-h-[500px] flex flex-col">
+            <h2 id="visual-title" class="text-2xl mb-4 text-amber-200 uppercase font-bold tracking-widest">Интерактивная карта эволюции</h2>
+            <div class="canvas-container flex-grow bg-black/30 rounded-[2rem] overflow-hidden border border-amber-900/30">
+                <canvas id="historyCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-4 text-sm text-gray-500 italic text-center">Нажмите на значки, чтобы изучить этапы развития</p>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="lg:col-span-5 glass p-8 flex flex-col justify-between border-l-4 border-amber-600">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto pr-4">
+                <div id="info-placeholder">
+                    <h3 class="text-3xl text-amber-500 mb-4" id="placeholder-title">Выберите этап</h3>
+                    <p class="text-gray-300 leading-relaxed text-lg" id="placeholder-text">
+                        Исследуйте ключевые вехи: от первых людей в Африке до возникновения земледелия.
+                    </p>
+                </div>
+                <div id="info-data" class="hidden">
+                    <span id="info-tag" class="bg-amber-600/20 text-amber-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest"></span>
+                    <h3 id="info-title" class="text-3xl text-white mt-4 mb-4"></h3>
+                    <p id="info-desc" class="text-gray-300 leading-relaxed text-lg"></p>
+                    <div class="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10">
+                        <strong class="text-amber-500 block mb-2" id="label-fact">Ключевой факт:</strong>
+                        <p id="info-fact" class="text-sm italic"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cards Section -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="glass p-8 transform hover:scale-105 transition-all">
+            <div class="w-12 h-12 bg-amber-600 rounded-2xl mb-6 flex items-center justify-center text-2xl">🎨</div>
+            <h3 id="card1-title" class="text-xl font-bold mb-3 text-amber-400">Рождение искусства</h3>
+            <p id="card1-text" class="text-gray-400 text-sm leading-relaxed">Древнейшие наскальные рисунки (пещера Альтамира, Ласко) показывают магическую связь охотника со зверем и зарождение религиозных верований.</p>
+        </div>
+        <div class="glass p-8 transform hover:scale-105 transition-all">
+            <div class="w-12 h-12 bg-amber-600 rounded-2xl mb-6 flex items-center justify-center text-2xl">🌾</div>
+            <h3 id="card2-title" class="text-xl font-bold mb-3 text-amber-400">Неолитическая революция</h3>
+            <p id="card2-text" class="text-gray-400 text-sm leading-relaxed">Переход от собирательства к земледелию и от охоты к скотоводству изменил жизнь людей, создав излишки продуктов и оседлый образ жизни.</p>
+        </div>
+        <div class="glass p-8 transform hover:scale-105 transition-all">
+            <div class="w-12 h-12 bg-amber-600 rounded-2xl mb-6 flex items-center justify-center text-2xl">⏳</div>
+            <h3 id="card3-title" class="text-xl font-bold mb-3 text-amber-400">Счёт времени</h3>
+            <p id="card3-text" class="text-gray-400 text-sm leading-relaxed">Понятие «Эра» и летоисчисление помогают нам ориентироваться в тысячелетиях. Появление излишков привело к социальному неравенству и появлению знати.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-12 glass relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-transparent"></div>
+        <p id="footer-quote" class="text-2xl italic font-light text-gray-300 relative z-10">
+            «Человек стал человеком только тогда, когда взял в руки орудие труда и осознал свою связь с миром и временем».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Заря Человечества",
+                subtitle: "История первобытного общества",
+                visualTitle: "Интерактивная хронология",
+                hint: "Нажмите на узлы, чтобы изучить этапы развития",
+                placeholderTitle: "Выберите этап",
+                placeholderText: "Используйте интерактивную схему слева, чтобы узнать о жизни наших предков, их орудиях и открытиях.",
+                labelFact: "Ключевой факт:",
+                footerQuote: "«Человек стал человеком только тогда, когда осознал свою связь с прошлым и научился изменять мир вокруг себя».",
+                card1Title: "Рождение искусства",
+                card1Text: "Наскальные рисунки в пещерах Альтамира и Ласко — это не просто декор, а первые магические ритуалы и попытка запечатлеть мир.",
+                card2Title: "Аграрный прорыв",
+                card2Text: "Примерно 10 тысяч лет назад люди начали приручать животных и выращивать злаки. Это начало новой эпохи — Неолита.",
+                card3Title: "Знать и Неравенство",
+                card3Text: "Металлы заменили камень. Появились излишки еды, частная собственность и вожди, что привело к распаду родовых общин.",
+                nodes: [
+                    { id: 1, tag: "2.5 млн лет назад", title: "Человек умелый (Homo habilis)", desc: "Первый из рода Homo. Начал изготавливать простейшие каменные орудия (чопперы). Жил в Восточной Африке группами.", fact: "Именно с него начинается эпоха палеолита." },
+                    { id: 2, tag: "1.5 млн лет назад", title: "Человек прямоходящий (Erectus)", desc: "Освоил огонь, начал строить хижины и первым покинул Африку, заселив Евразию. Использовал рубило.", fact: "Огонь позволил человеку сделать пищу более питательной." },
+                    { id: 3, tag: "40 тыс. лет назад", title: "Человек разумный (Sapiens)", desc: "Наш прямой предок. Появление членораздельной речи, родовых общин и развитие сложных орудий из кости и камня.", fact: "В это время возникает кроманьонский тип человека." },
+                    { id: 4, tag: "10 тыс. лет назад", title: "Неолитическая революция", desc: "Великий переход от присваивающего хозяйства (охота) к производящему (земледелие, скотоводство).", fact: "Люди перешли к оседлости и начали строить первые города." }
+                ]
+            },
+            kz: {
+                title: "Адамзаттың таңы",
+                subtitle: "Алғашқы қауымдық қоғам тарихы",
+                visualTitle: "Интерактивті хронология",
+                hint: "Даму кезеңдерін зерттеу үшін түйіндерді басыңыз",
+                placeholderTitle: "Кезеңді таңдаңыз",
+                placeholderText: "Ата-бабаларымыздың өмірі, олардың еңбек құралдары мен ашылымдары туралы білу үшін сол жақтағы схеманы пайдаланыңыз.",
+                labelFact: "Негізгі факт:",
+                footerQuote: "«Адам тек өткенмен байланысын түсінгенде және айналасындағы әлемді өзгертуді үйренгенде ғана адам болды».",
+                card1Title: "Өнердің тууы",
+                card1Text: "Альтамира мен Ласко үңгірлеріндегі суреттер — бұл жай ғана декор емес, алғашқы сиқырлы ритуалдар.",
+                card2Title: "Аграрлық серпіліс",
+                card2Text: "Шамамен 10 мың жыл бұрын адамдар жануарларды қолға үйретіп, егін еге бастады. Бұл — Неолит дәуірінің басы.",
+                card3Title: "Теңсіздіктің пайда болуы",
+                card3Text: "Металдар тасты алмастырды. Артық өнім, жеке меншік пен көсемдер пайда болып, рулық қауым ыдырай бастады.",
+                nodes: [
+                    { id: 1, tag: "2.5 млн жыл бұрын", title: "Епті адам (Homo habilis)", desc: "Homo туысының алғашқы өкілі. Қарапайым тас құралдарын жасауды бастады. Шығыс Африкада топпен өмір сүрді.", fact: "Дәл осыдан палеолит дәуірі басталады." },
+                    { id: 2, tag: "1.5 млн жыл бұрын", title: "Тік жүретін адам (Erectus)", desc: "Отты игерді, күркелер салып, Африкадан шығып Еуразияға қоныстанған алғашқы адам.", fact: "От адамға тағамды құнарлы етуге мүмкіндік берді." },
+                    { id: 3, tag: "40 мың жыл бұрын", title: "Саналы адам (Sapiens)", desc: "Біздің тікелей бабамыз. Сөйлеу қабілеті, рулық қауым және сүйектен жасалған күрделі құралдардың пайда болуы.", fact: "Осы уақытта кроманьондық адам түрі қалыптасады." },
+                    { id: 4, tag: "10 мың жыл бұрын", title: "Неолиттік төңкеріс", desc: "Тұтынушы шаруашылықтан (аңшылық) өндіруші шаруашылыққа (егіншілік, мал шаруашылығы) өту кезеңі.", fact: "Адамдар отырықшылыққа көшіп, алғашқы қалаларды сала бастады." }
+                ]
+            },
+            en: {
+                title: "Dawn of Humanity",
+                subtitle: "History of Prehistoric Society",
+                visualTitle: "Interactive Timeline",
+                hint: "Click on the nodes to explore development stages",
+                placeholderTitle: "Select a Stage",
+                placeholderText: "Use the interactive diagram on the left to learn about our ancestors' lives, tools, and discoveries.",
+                labelFact: "Key Fact:",
+                footerQuote: "«Man became man only when he realized his connection to the past and learned to change the world around him.»",
+                card1Title: "Birth of Art",
+                card1Text: "Cave paintings in Altamira and Lascaux were more than decor; they were the first magical rituals and attempts to capture the world.",
+                card2Title: "Agrarian Breakthrough",
+                card2Text: "About 10,000 years ago, humans began to domesticate animals and grow crops. This marks the start of the Neolithic.",
+                card3Title: "Inequality & Nobility",
+                card3Text: "Metals replaced stone. Surpluses led to private property and chiefs, causing tribal communities to fragment.",
+                nodes: [
+                    { id: 1, tag: "2.5 million years ago", title: "Handy Man (Homo habilis)", desc: "The first of the Homo genus. Started making primitive stone tools (choppers). Lived in East Africa in groups.", fact: "The Paleolithic era begins with this ancestor." },
+                    { id: 2, tag: "1.5 million years ago", title: "Upright Man (Homo erectus)", desc: "Mastered fire, began building huts, and was the first to leave Africa to settle Eurasia.", fact: "Fire allowed humans to make food more nutritious." },
+                    { id: 3, tag: "40,000 years ago", title: "Wise Man (Homo sapiens)", desc: "Our direct ancestor. Appearance of articulate speech, tribal communities, and complex bone/stone tools.", fact: "This is when the Cro-Magnon human type emerges." },
+                    { id: 4, tag: "10,000 years ago", title: "Neolithic Revolution", desc: "The great transition from a foraging (hunting) economy to a producing (farming, herding) economy.", fact: "People moved to a sedentary lifestyle and built the first cities." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('historyCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-fact').innerText = t.labelFact;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            // Update info panel if something is selected
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 400;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const nodes = translations[currentLang].nodes;
+            const padding = 60;
+            const spacing = (canvas.width - padding * 2) / (nodes.length - 1);
+
+            // Draw Connection Line
+            ctx.beginPath();
+            ctx.moveTo(padding, canvas.height / 2);
+            ctx.lineTo(canvas.width - padding, canvas.height / 2);
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([10, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            canvasNodes = [];
+
+            nodes.forEach((node, i) => {
+                const x = padding + i * spacing;
+                const y = canvas.height / 2;
+                
+                // Outer Glow
+                const grad = ctx.createRadialGradient(x, y, 5, x, y, 25);
+                grad.addColorStop(0, 'rgba(217, 119, 6, 0.8)');
+                grad.addColorStop(1, 'rgba(217, 119, 6, 0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Node Circle
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(x, y, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Labels
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px Montserrat';
+                ctx.textAlign = 'center';
+                ctx.fillText(node.tag, x, y - 40);
+
+                canvasNodes.push({ x, y, r: 25, id: node.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => {
+            resizeCanvas();
+            setLang('ru');
+        };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

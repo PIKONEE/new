@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Ocean: Seas, Straits, Bays</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at bottom, #0ea5e9, #020617); color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+        .part-btn { transition: all 0.3s; }
+        .part-btn:hover { background: rgba(56, 189, 248, 0.2); transform: scale(1.05); }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-sky-500">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-300"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div class="lg:col-span-1 flex flex-col gap-4">
+            <h3 id="nav-title" class="heading-font text-lg text-sky-200 uppercase mb-4 tracking-widest"></h3>
+            <button onclick="showPart('ocean')" id="btn-ocean" class="part-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+            <button onclick="showPart('sea')" id="btn-sea" class="part-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+            <button onclick="showPart('strait')" id="btn-strait" class="part-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+            <button onclick="showPart('bay')" id="btn-bay" class="part-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+        </div>
+
+        <div class="lg:col-span-3 glass rounded-custom p-12 flex flex-col justify-center border-r-4 border-sky-400 relative overflow-hidden min-h-[500px]">
+            <div id="content-display" class="transition-all duration-500 transform">
+                <h3 id="info-title" class="heading-font text-5xl mb-8 text-white"></h3>
+                <div id="info-text" class="text-xl font-light leading-relaxed text-white/70 space-y-6"></div>
+            </div>
+            <!-- Background Ocean Glow -->
+            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-sky-500/10 blur-[120px] rounded-full"></div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Мировой океан", subtitle: "Классификация частей океана", navTitle: "Объекты",
+                parts: {
+                    ocean: { btn: "Океаны", title: "Океаны Земли", text: "Тихий, Атлантический, Индийский, Северный Ледовитый и Южный. Это огромные водные пространства, разделяющие материки." },
+                    sea: { btn: "Моря", title: "Моря", text: "Части океана, отделенные от него островами или полуостровами. Бывают окраинными (Берингово) и внутренними (Средиземное)." },
+                    strait: { btn: "Проливы", title: "Проливы", text: "Узкие водные пространства, разделяющие сушу и соединяющие водные бассейны. Пример: Берингов пролив." },
+                    bay: { btn: "Заливы", title: "Заливы", text: "Части океана или моря, глубоко вдающиеся в сушу, но имеющие свободный обмен водой с основным бассейном." }
+                }
+            },
+            kz: {
+                title: "Мұхиттар", subtitle: "Мұхит бөліктерінің жіктелуі", navTitle: "Объектілер",
+                parts: {
+                    ocean: { btn: "Мұхиттар", title: "Жер мұхиттары", text: "Тынық, Атлант, Үнді, Солтүстік Мұз және Оңтүстік. Материктерді бөліп тұрған орасан зор су кеңістігі." },
+                    sea: { btn: "Теңіздер", title: "Теңіздер", text: "Мұхиттың аралдармен немесе түбектермен бөлінген бөліктері. Шеткі және ішкі болып бөлінеді." },
+                    strait: { btn: "Бұғаздар", title: "Бұғаздар", text: "Құрлықты бөліп, су алаптарын жалғастыратын тар су кеңістігі. Мысалы: Беринг бұғазы." },
+                    bay: { btn: "Шығанақтар", title: "Шығанақтар", text: "Мұхиттың немесе теңіздің құрлыққа терең сұғына енген бөлігі." }
+                }
+            },
+            en: {
+                title: "World Ocean", subtitle: "Classification of Ocean Parts", navTitle: "Objects",
+                parts: {
+                    ocean: { btn: "Oceans", title: "Earth's Oceans", text: "Pacific, Atlantic, Indian, Arctic, and Southern. Huge bodies of water separating continents." },
+                    sea: { btn: "Seas", title: "Seas", text: "Parts of the ocean separated by islands or peninsulas. Categorized as marginal (e.g., Bering Sea) or internal (e.g., Mediterranean)." },
+                    strait: { btn: "Straits", title: "Straits", text: "Narrow waterways separating land masses and connecting water basins. e.g., Bering Strait." },
+                    bay: { btn: "Bays/Gulfs", title: "Bays", text: "Parts of the ocean or sea that extend deep into the land but maintain free water exchange with the main basin." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.showPart = function(p) {
+            const t = translations[currentLang].parts[p];
+            const content = document.getElementById('content-display');
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                document.getElementById('info-title').textContent = t.title;
+                document.getElementById('info-text').textContent = t.text;
+                content.style.opacity = '1';
+                content.style.transform = 'translateY(0)';
+            }, 300);
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('nav-title').textContent = t.navTitle;
+            document.getElementById('btn-ocean').textContent = t.parts.ocean.btn;
+            document.getElementById('btn-sea').textContent = t.parts.sea.btn;
+            document.getElementById('btn-strait').textContent = t.parts.strait.btn;
+            document.getElementById('btn-bay').textContent = t.parts.bay.btn;
+            showPart('ocean');
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - English -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster 33: My Working Day & Day Off</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы */
+        .header-card {
+            background-color: #6d28d9; /* Violet-700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(109, 40, 217, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #5b21b6; /* Violet-800 */
+            border-bottom: 3px solid #c4b5fd; /* Violet-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f5f3ff; /* Өте ашық күлгін */
+            border-left: 4px solid #a78bfa; /* Күлгін-400 */
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f1f5f9; /* Ашық сұр */
+            border-radius: 1rem;
+            border-top: 4px solid #64748b; /* Сұр */
+        }
+         .term {
+            font-weight: bold;
+            color: #5b21b6; /* violet-800 */
+        }
+        .mono {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #334155; /* slate-700 */
+        }
+        .item-name {
+            font-family: 'Kalam', cursive;
+            font-size: 1.5rem; /* 2xl */
+            font-weight: 700;
+            line-height: 1.1;
+            text-align: center;
+            color: #4c1d95; /* violet-900 */
+            margin-top: 0.5rem;
+        }
+        .item-icon {
+            font-size: 3rem; /* 5xl */
+            text-align: center;
+            display: block;
+        }
+        .example-sentence {
+            font-size: 1.1rem; /* text-lg */
+            font-weight: 500;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #6d28d9;
+            background-color: #ffffff;
+            color: #6d28d9;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #f5f3ff;
+        }
+        .lang-btn.active {
+            background-color: #6d28d9;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-100">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-en">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn active" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">МЕНІҢ ЖҰМЫС КҮНІМ ЖӘНЕ ДЕМАЛЫС КҮНІМ</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">MY WORKING DAY & DAY OFF</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">МОЙ РАБОЧИЙ ДЕНЬ И ВЫХОДНОЙ</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-gray-100">Күнделікті істер және бос уақыт.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-gray-100">Daily routines and free time.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-gray-100">Ежедневные дела и свободное время.</p>
+        </header>
+
+        <!-- 1. MY WORKING DAY (SCHOOL DAY) -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Менің жұмыс күнім (Мектеп күні)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. My Working Day (School Day)</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Мой рабочий день (Школьный день)</h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+
+                <div class="rule-card border-t-purple-300 text-center">
+                    <span class="item-icon">⏰</span>
+                    <p class="item-name">WAKE UP</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Ояну / Просыпаться)</i></p>
+                </div>
+                <div class="rule-card border-t-purple-300 text-center">
+                    <span class="item-icon">🍳</span>
+                    <p class="item-name">HAVE BREAKFAST</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Таңғы ас ішу / Завтракать)</i></p>
+                </div>
+                <div class="rule-card border-t-purple-300 text-center">
+                    <span class="item-icon">🏫</span>
+                    <p class="item-name">GO TO SCHOOL</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Мектепке бару / Идти в школу)</i></p>
+                </div>
+                <div class="rule-card border-t-purple-300 text-center">
+                    <span class="item-icon">🍎</span>
+                    <p class="item-name">HAVE LUNCH</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Түскі ас ішу / Обедать)</i></p>
+                </div>
+                <div class="rule-card border-t-purple-300 text-center">
+                    <span class="item-icon">📚</span>
+                    <p class="item-name">DO HOMEWORK</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Үй жұмысын істеу / Делать дз)</i></p>
+                </div>
+                <div class="rule-card border-t-purple-300 text-center">
+                    <span class="item-icon">🍽️</span>
+                    <p class="item-name">HAVE DINNER</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Кешкі ас ішу / Ужинать)</i></p>
+                </div>
+                <div class="rule-card border-t-purple-300 text-center">
+                    <span class="item-icon">📺</span>
+                    <p class="item-name">WATCH TV</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Теледидар көру / Смотреть ТВ)</i></p>
+                </div>
+                <div class="rule-card border-t-purple-300 text-center">
+                    <span class="item-icon">😴</span>
+                    <p class="item-name">GO TO BED</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Ұйықтауға жату / Ложиться спать)</i></p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 2. MY DAY OFF (WEEKEND) -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Менің демалыс күнім (Weekend)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. My Day Off (Weekend)</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Мой выходной (Weekend)</h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+
+                <div class="rule-card border-t-green-500 text-center">
+                    <span class="item-icon">⚽</span>
+                    <p class="item-name">PLAY FOOTBALL</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Футбол ойнау / Играть в футбол)</i></p>
+                </div>
+                <div class="rule-card border-t-green-500 text-center">
+                    <span class="item-icon">🌳</span>
+                    <p class="item-name">GO TO THE PARK</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Саябаққа бару / Идти в парк)</i></p>
+                </div>
+                <div class="rule-card border-t-green-500 text-center">
+                    <span class="item-icon">🧑‍🤝‍🧑</span>
+                    <p class="item-name">MEET FRIENDS</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Достармен кездесу / Встречаться с друзьями)</i></p>
+                </div>
+                <div class="rule-card border-t-green-500 text-center">
+                    <span class="item-icon">🎮</span>
+                    <p class="item-name">PLAY GAMES</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Ойын ойнау / Играть в игры)</i></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. USEFUL PHRASES -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Қолданылатын тіркестер (Present Simple)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Useful Phrases (Present Simple)</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Полезные фразы (Present Simple)</h2>
+
+            <div class="rule-card border-t-blue-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Күнделікті істер туралы айту үшін <span class="term" lang="kk">Present Simple</span> шағын қолданамыз.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    We use the <span class="term" lang="en">Present Simple</span> to talk about routines and habits.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Мы используем <span class="term" lang="ru">Present Simple</span> для описания рутины и привычек.
+                </p>
+
+                <div class="example-block border-l-blue-400">
+                    <p class="example-sentence"><span class="term">On weekdays, I</span> usually <span class="term">wake up</span> at 7 o'clock.</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Жұмыс күндері мен әдетте сағат 7-де оянамын.)</i></p>
+                    <p lang="ru" class="lang-content text-sm"><i>(В будние дни я обычно просыпаюсь в 7 часов.)</i></p>
+                </div>
+
+                <div class="example-block border-l-blue-400 mt-4">
+                    <p class="example-sentence"><span class="term">At the weekend, I</span> <span class="term">go to the park</span> with my friends.</p>
+                    <p lang="kk" class="lang-content text-sm"><i>(Демалыс күндері мен достарыммен саябаққа барамын.)</i></p>
+                    <p lang="ru" class="lang-content text-sm"><i>(На выходных я хожу в парк с друзьями.)</i></p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-gray-800">БАСТЫ ОЙ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-gray-800">SUMMARY</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-gray-800">ГЛАВНАЯ МЫСЛЬ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                <span class="term" lang="kk">"On weekdays"</span> (жұмыс күндері) - күнделікті істеріңізді айтыңыз.<br>
+                <span class="term" lang="kk">"At the weekend"</span> (демалыс күндері) - хоббиіңізді айтыңыз.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                Use <span class="term" lang="en">"On weekdays"</span> to talk about your daily routine.<br>
+                Use <span class="term" lang="en">"At the weekend"</span> to talk about your hobbies and free time.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                Используйте <span class="term" lang="ru">"On weekdays"</span> (В будни), чтобы рассказать о своей рутине.<br>
+                Используйте <span class="term" lang="ru">"At the weekend"</span> (На выходных), чтобы рассказать о хобби.
+            </p>
+        </footer>
+
+    </div>
+
+    
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

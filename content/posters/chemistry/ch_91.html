@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group VA Elements: Pnictogens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom right, #1e1b4b, #312e81, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #6366f1; color: white; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-indigo-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-indigo-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-indigo-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="groupCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-indigo-500">
+            <div id="info-content">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-indigo-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed font-light"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed font-light"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed font-light"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-indigo-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-indigo-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Пниктогены",
+                subtitle: "Общая характеристика элементов VА-группы",
+                canvasHeading: "Электронная конфигурация ns²np³",
+                canvasHint: "Нажмите, чтобы увидеть рост атомного радиуса в группе",
+                defaultTitle: "Элементы VA группы",
+                defaultText: "В состав группы входят Азот (N), Фосфор (P), Мышьяк (As), Сурьма (Sb) и Висмут (Bi). У них 5 электронов на внешнем слое.",
+                cards: [
+                    { title: "Закономерности", desc: "Сверху вниз радиус атомов увеличивается, неметаллические свойства ослабевают, а металлические — усиливаются." },
+                    { title: "Степени окисления", desc: "Характерны значения от -3 (в водородных соед.) до +5 (в высших оксидах и кислотах)." },
+                    { title: "Важность", desc: "Азот и Фосфор являются 'элементами жизни', входя в состав белков, ДНК и РНК." }
+                ],
+                quote: "«Азот — это парадокс: он окружает нас повсюду, но его так трудно заставить работать»",
+                author: "Дмитрий Прянишников"
+            },
+            kz: {
+                title: "Пниктогендер",
+                subtitle: "VА-топ элементтерінің жалпы сипаттамасы",
+                canvasHeading: "ns²np³ электрондық конфигурациясы",
+                canvasHint: "Топ бойынша атом радиусының өсуін көру үшін басыңыз",
+                defaultTitle: "VA топ элементтері",
+                defaultText: "Топ құрамына Азот (N), Фосфор (P), Мышьяк (As), Сүрме (Sb) және Висмут (Bi) кіреді. Сыртқы деңгейінде 5 электрон бар.",
+                cards: [
+                    { title: "Заңдылықтар", desc: "Жоғарыдан төмен қарай атом радиусы артады, бейметалдық қасиеттер әлсірейді." },
+                    { title: "Тотығу дәрежелері", desc: "-3-тен (сутектік қосылыстар) +5-ке дейін (жоғары оксидтер) сипатталады." },
+                    { title: "Маңызы", desc: "Азот пен Фосфор нәруыздар мен ДНҚ құрамына кіретін 'тіршілік элементтері'." }
+                ],
+                quote: "«Азот — парадокс: ол бізді қоршап тұр, бірақ оны жұмыс істету өте қиын»",
+                author: "Дмитрий Прянишников"
+            },
+            en: {
+                title: "Pnictogens",
+                subtitle: "General characteristics of Group VA elements",
+                canvasHeading: "Electronic Configuration ns²np³",
+                canvasHint: "Click to see atomic radius growth in the group",
+                defaultTitle: "Group VA Elements",
+                defaultText: "This group includes Nitrogen (N), Phosphorus (P), Arsenic (As), Antimony (Sb), and Bismuth (Bi). They have 5 valence electrons.",
+                cards: [
+                    { title: "Trends", desc: "From top to bottom, atomic radius increases, non-metallic properties weaken, and metallic properties strengthen." },
+                    { title: "Oxidation States", desc: "Ranges from -3 (in hydrides) to +5 (in highest oxides and acids)." },
+                    { title: "Biological Role", desc: "Nitrogen and Phosphorus are 'elements of life', vital for proteins, DNA, and RNA." }
+                ],
+                quote: "«Nitrogen is a paradox: it is everywhere around us, yet so hard to harness»",
+                author: "Dmitry Pryanishnikov"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('groupCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const elements = ['N', 'P', 'As', 'Sb', 'Bi'];
+            
+            elements.forEach((el, i) => {
+                const r = 20 + i * 15;
+                const x = cx;
+                const y = 60 + i * 85;
+                ctx.fillStyle = '#6366f1'; ctx.shadowBlur = 10; ctx.shadowColor = '#6366f1';
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'white'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center';
+                ctx.fillText(el, x, y + 5);
+            });
+        }
+
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

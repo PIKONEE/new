@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Братья Гракхи: Борьба за народ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #451a03, #1c1917, #020617);
+            color: #fff7ed;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(249, 115, 22, 0.15);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #ea580c;
+            color: white;
+            box-shadow: 0 0 30px rgba(234, 88, 12, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #ea580c;
+            background: linear-gradient(90deg, rgba(234, 88, 12, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ea580c; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-white to-red-400 uppercase">
+                Братья Гракхи
+            </h1>
+            <p id="sub-title" class="text-orange-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Защитники демоса и жертвы Сената</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-orange-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-orange-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-orange-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-orange-600 inline-block"></span>
+                Конфликт сословий
+            </h2>
+            <div class="relative flex-grow bg-black/40 rounded-[2.5rem] border border-orange-900/20 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="reformCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-orange-500/50 italic text-center uppercase tracking-widest">Нажмите на узлы для изучения хода реформ</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-orange-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Земля или гибель</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Победы Рима разорили его граждан. Пока легионеры воевали, их земли забирала знать. Братья Гракхи попытались вернуть землю народу, но столкнулись с яростью Сената. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚖️</span>
+                            <span id="hint-1" class="text-orange-200/60 font-bold uppercase text-xs tracking-widest">Аграрный закон</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-2" class="text-orange-200/60 font-bold uppercase text-xs tracking-widest">Кризис Республики</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-orange-950/40 text-orange-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-orange-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-orange-950/20 rounded-[2.5rem] border border-orange-900/30 shadow-xl">
+                        <strong class="text-orange-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-result">Последствие:</strong>
+                        <p id="info-fact" class="text-orange-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🚩</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-orange-500 uppercase">Тиберий Гракх</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">В 133 г. до н.э. был выбран народным трибуном. Предложил ограничить владение государственной землей 1000 югерами, а излишки раздать беднякам без права продажи.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🗡️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-red-500 uppercase">Гибель Тиберия</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Сенаторы обвинили Тиберия в стремлении к царской власти. Во время народного собрания произошла стычка, Тиберий и 300 его сторонников были убиты прямо на Капитолии.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-amber-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-amber-500 uppercase">Гай Гракх</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Младший брат Тиберия, продолжил его дело через 10 лет. Он ввел дешевый хлеб для бедноты и суды из всадников, но также пал жертвой заговора знати.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-orange-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-orange-100/70 leading-tight max-w-5xl mx-auto">
+            «Звери в лесах Италии имеют свои логова, а люди, сражающиеся за нее, не имеют даже куска земли, чтобы преклонить голову».
+        </p>
+        <span class="block mt-4 text-orange-500 uppercase tracking-widest text-sm">— Тиберий Гракх</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Братья Гракхи",
+                subtitle: "Защитники демоса и жертвы Сената",
+                visualTitle: "Конфликт сословий",
+                hint: "Нажмите на узлы для изучения хода реформ",
+                placeholderTitle: "Земля или гибель",
+                placeholderText: "Разорение крестьян ослабило армию Рима. Братья Гракхи вступили в смертельную борьбу с олигархией Сената. Выберите этап.",
+                labelResult: "Последствие:",
+                hint1: "Аграрный закон", hint2: "Кризис Республики",
+                card1Title: "Тиберий Гракх",
+                card1Text: "Первый трибун, бросивший вызов Сенату. Его закон о переделе земли должен был спасти римское ополчение.",
+                card2Title: "Гибель Тиберия",
+                card2Text: "Первое политическое убийство в истории Рима, показавшее, что мирные реформы больше невозможны.",
+                card3Title: "Гай Гракх",
+                card3Text: "Младший брат расширил борьбу, создав союз бедноты и всадников против аристократов-сенаторов.",
+                footerQuote: "«Звери в лесах Италии имеют свои логова, а люди, сражающиеся за нее, не имеют даже куска земли...»",
+                nodes: [
+                    { id: 1, tag: "Причина", title: "Разорение крестьян", desc: "Легионеры возвращались с войн и находили свои поля заросшими или проданными за долги. Вся земля Италии превращалась в гигантские пастбища богачей.", fact: "Разорение крестьян означало гибель римской армии, так как бедняков не брали в легионы." },
+                    { id: 2, tag: "133 г. до н.э.", title: "Аграрная реформа", desc: "Тиберий Гракх провел закон через народное собрание в обход Сената. Была создана комиссия по переделу земель, которая начала раздавать участки бедноте.", fact: "Закон запрещал продавать полученные участки, чтобы богачи не смогли их снова выкупить." },
+                    { id: 3, tag: "Оппозиция", title: "Ярость Сената", desc: "Сенаторы-землевладельцы не желали терять доходы. Они обвинили Гракха в тирании и организовали его убийство, используя деревянные скамьи как оружие.", fact: "Тело Тиберия было брошено в Тибр, как тело преступника." },
+                    { id: 4, tag: "123 г. до н.э.", title: "Реформы Гая", desc: "Гай Гракх стал трибуном и отомстил за брата. Он ввел продажу хлеба по низким ценам и начал строить дороги, создавая рабочие места для демоса.", fact: "Гай предложил дать римское гражданство всем италикам, что окончательно восстановило против него знать." },
+                    { id: 5, tag: "Итог", title: "Гражданская смута", desc: "Гай Гракх покончил с собой, когда его окружили враги. Около 3000 его сторонников были казнены без суда. Рим вошел в эпоху вековых кровавых раздоров.", fact: "На месте гибели Гракхов позже были установлены памятники, которые почитал весь народ." }
+                ]
+            },
+            kz: {
+                title: "Гракх ағайындылары",
+                subtitle: "Демос қорғаушылары және Сенат құрбандары",
+                visualTitle: "Таптар қақтығысы",
+                hint: "Реформалар барысын зерттеу үшін түйіндерді басыңыз",
+                placeholderTitle: "Жер немесе жойылу",
+                placeholderText: "Шаруалардың күйзелуі Рим әскерін әлсіретті. Гракх ағайындылары Сенат олигархиясына қарсы күреске шықты.",
+                labelResult: "Салдары:",
+                hint1: "Аграрлық заң", hint2: "Республика дағдарысы",
+                card1Title: "Тиберий Гракх",
+                card1Text: "Сенатқа қарсы шыққан алғашқы трибун. Оның жерді қайта бөлу туралы заңы Рим жасағын құтқаруға бағытталды.",
+                card2Title: "Тиберийдің қазасы",
+                card2Text: "Рим тарихындағы алғашқы саяси кісі өлтіру, бұл бейбіт реформалардың мүмкін еместігін көрсетті.",
+                card3Title: "Гай Гракх",
+                card3Text: "Тиберийдің інісі күресті жалғастырып, ақсүйектерге қарсы кедейлер мен салт аттылар одағын құрды.",
+                footerQuote: "«Италия ормандарындағы аңдардың өз індері бар, ал ол үшін соғысып жүрген адамдардың бас сүйер жері де жоқ».",
+                nodes: [
+                    { id: 1, tag: "Себеп", title: "Шаруалардың күйзелуі", desc: "Легионерлер соғыстан оралғанда өз жерлерінің бос жатқанын немесе қарыз үшін сатылып кеткенін көрді.", fact: "Шаруалардың күйзелуі Рим әскерінің әлсіреуін білдірді." },
+                    { id: 2, tag: "б.з.б. 133 ж.", title: "Аграрлық реформа", desc: "Тиберий Гракх Сенатты айналып өтіп, халық жиналысы арқылы заң қабылдады. Кедейлерге жер үлестіріле бастады.", fact: "Заң бойынша алынған жерлерді қайта сатуға тыйым салынды." },
+                    { id: 3, tag: "Оппозиция", title: "Сенаттың қаһары", desc: "Жер иесі сенаторлар табысынан айырылғысы келмеді. Олар Гракхты өлтіруді ұйымдастырды.", fact: "Тиберийдің денесі қылмыскер сияқты Тигр өзеніне тасталды." },
+                    { id: 4, tag: "б.з.б. 123 ж.", title: "Гай реформалары", desc: "Гай Гракх трибун болып сайланып, ағасының ісін жалғастырды. Ол нан бағасын арзандатты.", fact: "Гай барлық италиктерге Рим азаматтығын беруді ұсынды." },
+                    { id: 5, tag: "Қорытынды", title: "Азаматтық соғыстар", desc: "Гай Гракх жаулары қоршағанда өз-өзіне қол жұмсады. Рим жүзжылдық қанды қақтығыстар дәуіріне аяқ басты.", fact: "Гракхтар қаза тапқан жерде кейін халық құрметтейтін ескерткіштер орнатылды." }
+                ]
+            },
+            en: {
+                title: "The Gracchi Brothers",
+                subtitle: "Defenders of the Demos and Victims of the Senate",
+                visualTitle: "Conflict of Orders",
+                hint: "Click on nodes to study the reform process",
+                placeholderTitle: "Land or Death",
+                placeholderText: "The ruin of the peasantry weakened Rome's army. The Gracchi entered a deadly struggle with the Senate oligarchy. Select a phase.",
+                labelResult: "Consequence:",
+                hint1: "Agrarian Law", hint2: "Crisis of Republic",
+                card1Title: "Tiberius Gracchus",
+                card1Text: "The first tribune to defy the Senate directly. His land redistribution law aimed to save the citizen militia.",
+                card2Title: "Death of Tiberius",
+                card2Text: "The first political assassination in Roman history, signaling that peaceful reform was no longer possible.",
+                card3Title: "Gaius Gracchus",
+                card3Text: "The younger brother expanded the struggle, forming an alliance of the poor and the equestrians against the nobility.",
+                footerQuote: "«The wild beasts of Italy have their dens, but the men who fight for her have not a clod of earth to call their own.»",
+                nodes: [
+                    { id: 1, tag: "The Cause", title: "Peasant Ruin", desc: "Soldiers returned from overseas wars to find their farms overgrown or seized by creditors. Italy's land was turning into massive elite estates.", fact: "Peasant ruin meant the end of the Roman army, as only property holders were eligible to serve." },
+                    { id: 2, tag: "133 BC", title: "Agrarian Reform", desc: "Tiberius Gracchus bypassed the Senate and passed a law through the Assembly. A land commission began seizing and redistributing state land.", fact: "The law prohibited the sale of redistributed plots to prevent re-consolidation by the rich." },
+                    { id: 3, tag: "Opposition", title: "Senate Fury", desc: "Wealthy senators accused Tiberius of seeking kingship. During a riot, senators and their clients killed Tiberius with broken furniture.", fact: "Tiberius's body was thrown into the Tiber, a treatment reserved for criminals." },
+                    { id: 4, tag: "123 BC", title: "Gaius's Reforms", desc: "Gaius became tribune 10 years later. He established grain subsidies for the poor and juries controlled by the non-noble rich (equestrians).", fact: "Gaius's proposal to extend citizenship to all Italians finalized the noble opposition against him." },
+                    { id: 5, tag: "Outcome", title: "Civil Strife", desc: "Gaius committed suicide when trapped by an armed senatorial force. 3,000 of his supporters were executed without trial.", fact: "The death of the Gracchi began a century of political violence that eventually destroyed the Republic." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('reformCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-result').innerText = t.labelResult;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Connection Path (Timeline curve)
+            ctx.strokeStyle = 'rgba(234, 88, 12, 0.2)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(cx - 150, cy + 100);
+            ctx.quadraticCurveTo(cx, cy - 200, cx + 150, cy + 100);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx - 140, y: cy + 80, icon: "🏚️" }, // Peasant Ruin
+                { id: 2, x: cx - 60, y: cy - 40, icon: "⚖️" },  // Tiberius
+                { id: 3, x: cx + 20, y: cy - 80, icon: "🗡️" },  // Murder
+                { id: 4, x: cx + 100, y: cy - 20, icon: "🛡️" }, // Gaius
+                { id: 5, x: cx + 140, y: cy + 80, icon: "🚩" }  // Strife
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(234, 88, 12, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = (i === 2 || i === 4) ? '#ef4444' : '#ea580c';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#fed7aa';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

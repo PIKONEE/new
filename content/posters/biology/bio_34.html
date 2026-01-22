@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Растения</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #ecfdf5; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #059669 0%, #064e3b 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #064e3b; border-bottom: 3px solid #6ee7b7; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #059669; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #059669; background: white; color: #059669; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #059669; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-emerald-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Өсімдіктер</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Plants</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Растения</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-emerald-100">Өндіс органдарының құрамдары және функциялары</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-emerald-100">Plant organs - structures and functions</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-emerald-100">Органы растений - структуры и функции</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Өндіс Органдары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Plant Organs</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Органы растений</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 500 350" style="height: 300px; width: 100%;">
+                        <!-- Корни -->
+                        <line x1="250" y1="250" x2="200" y2="320" stroke="#8B4513" stroke-width="3"/>
+                        <line x1="250" y1="250" x2="250" y2="330" stroke="#8B4513" stroke-width="3"/>
+                        <line x1="250" y1="250" x2="300" y2="320" stroke="#8B4513" stroke-width="3"/>
+                        <circle cx="200" cy="330" r="4" fill="#654321"/>
+                        <circle cx="250" cy="330" r="4" fill="#654321"/>
+                        <circle cx="300" cy="330" r="4" fill="#654321"/>
+
+                        <!-- Стебель -->
+                        <line x1="250" y1="250" x2="250" y2="100" stroke="#228B22" stroke-width="6"/>
+
+                        <!-- Листья -->
+                        <ellipse cx="180" cy="150" rx="40" ry="25" fill="#32CD32" stroke="#228B22" stroke-width="2" transform="rotate(-30 180 150)"/>
+                        <ellipse cx="320" cy="130" rx="40" ry="25" fill="#32CD32" stroke="#228B22" stroke-width="2" transform="rotate(30 320 130)"/>
+
+                        <!-- Цветок -->
+                        <circle cx="250" cy="80" r="20" fill="#FF69B4"/>
+                        <circle cx="235" cy="65" r="7" fill="#FFB6C1"/>
+                        <circle cx="250" cy="55" r="7" fill="#FFB6C1"/>
+                        <circle cx="265" cy="65" r="7" fill="#FFB6C1"/>
+
+                        <!-- Подписи -->
+                        <text x="250" y="300" font-size="14" text-anchor="middle" font-weight="bold" fill="#654321">Түбіртегі</text>
+                        <text x="250" y="40" font-size="14" text-anchor="middle" font-weight="bold" fill="#FF69B4">Гүл</text>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-green-50 p-4 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-3">🌱 Түбіртегі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-3">🌱 Roots</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-3">🌱 Корни</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Функциялары:</strong> Су өндіс, мінерал білік өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Functions:</strong> Water absorption, mineral uptake</li>
+                            <li lang="ru" class="lang-content"><strong>Функции:</strong> Поглощение воды и минералов</li>
+
+                            <li lang="kk" class="lang-content"><strong>Құрамдары:</strong> Түбіршақ, түбіршақ сабақ</li>
+                            <li lang="en" class="lang-content"><strong>Structure:</strong> Root cap, root hair</li>
+                            <li lang="ru" class="lang-content"><strong>Структура:</strong> Корневой чехлик, волоски</li>
+
+                            <li lang="kk" class="lang-content"><strong>Түрлері:</strong> Түбіндік түбіртегі, орындық түбіртегі</li>
+                            <li lang="en" class="lang-content"><strong>Types:</strong> Tap roots, fibrous roots</li>
+                            <li lang="ru" class="lang-content"><strong>Типы:</strong> Стержневые, мочковатые</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-3">🌿 Сабақ</h4>
+                        <h4 lang="en" class="lang-content font-bold text-blue-900 mb-3">🌿 Stem</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-blue-900 mb-3">🌿 Стебель</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Функциялары:</strong> Өндіс тіктеу, тасымалдау</li>
+                            <li lang="en" class="lang-content"><strong>Functions:</strong> Support, transport</li>
+                            <li lang="ru" class="lang-content"><strong>Функции:</strong> Опора, транспорт</li>
+
+                            <li lang="kk" class="lang-content"><strong>Құрамдары:</strong> Епидермис, флоэм, ксилем</li>
+                            <li lang="en" class="lang-content"><strong>Structure:</strong> Epidermis, phloem, xylem</li>
+                            <li lang="ru" class="lang-content"><strong>Структура:</strong> Эпидермис, флоэм, ксилем</li>
+
+                            <li lang="kk" class="lang-content"><strong>Өндіктіңі:</strong> Травяной, ағас</li>
+                            <li lang="en" class="lang-content"><strong>Types:</strong> Herbaceous, woody</li>
+                            <li lang="ru" class="lang-content"><strong>Типы:</strong> Травянистые, древесные</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-3">🍃 Жапырақ</h4>
+                        <h4 lang="en" class="lang-content font-bold text-yellow-900 mb-3">🍃 Leaf</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-yellow-900 mb-3">🍃 Лист</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Функциялары:</strong> Фотосинтез, транспирация</li>
+                            <li lang="en" class="lang-content"><strong>Functions:</strong> Photosynthesis, transpiration</li>
+                            <li lang="ru" class="lang-content"><strong>Функции:</strong> Фотосинтез, транспирация</li>
+
+                            <li lang="kk" class="lang-content"><strong>Құрамдары:</strong> Пластина, ұлақы, жіне</li>
+                            <li lang="en" class="lang-content"><strong>Structure:</strong> Blade, petiole, vein</li>
+                            <li lang="ru" class="lang-content"><strong>Структура:</strong> Пластина, черешок, жилки</li>
+
+                            <li lang="kk" class="lang-content"><strong>Өндіктіңі:</strong> Жөндік жапырақ, құм жапырақ</li>
+                            <li lang="en" class="lang-content"><strong>Types:</strong> Simple, compound</li>
+                            <li lang="ru" class="lang-content"><strong>Типы:</strong> Простые, сложные</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-pink-50 p-4 rounded border border-pink-300">
+                        <h4 lang="kk" class="lang-content font-bold text-pink-900 mb-3">🌸 Гүл</h4>
+                        <h4 lang="en" class="lang-content font-bold text-pink-900 mb-3">🌸 Flower</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-pink-900 mb-3">🌸 Цветок</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Функциялары:</strong> Құндыру, өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Functions:</strong> Reproduction</li>
+                            <li lang="ru" class="lang-content"><strong>Функции:</strong> Размножение</li>
+
+                            <li lang="kk" class="lang-content"><strong>Құрамдары:</strong> Сепаль, петал, тәпе, түбік</li>
+                            <li lang="en" class="lang-content"><strong>Structure:</strong> Sepal, petal, stamen, pistil</li>
+                            <li lang="ru" class="lang-content"><strong>Структура:</strong> Чашелистик, лепесток, тычинка</li>
+
+                            <li lang="kk" class="lang-content"><strong>Өндіс:</strong> Жыныстық және асексуалды</li>
+                            <li lang="en" class="lang-content"><strong>Reproduction:</strong> Sexual, asexual</li>
+                            <li lang="ru" class="lang-content"><strong>Размножение:</strong> Половое, бесполое</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Өндіс Қызмет</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Plant Functions</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Функции растений</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-50 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">🌱 Фотосинтез</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Күн ордының энергиясы қоймалау</span>
+                            <span lang="en" class="lang-content">Convert sun energy to food</span>
+                            <span lang="ru" class="lang-content">Преобразование солнечной энергии</span>
+                        </p>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-2">💧 Транспортация</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Су және мінерал және органикалық құрамдарын</span>
+                            <span lang="en" class="lang-content">Transport water and nutrients</span>
+                            <span lang="ru" class="lang-content">Транспорт воды и питательных веществ</span>
+                        </p>
+                    </div>
+                    <div class="bg-yellow-50 p-3 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">🌾 Өндіс</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Шотындысы және спора өндіс</span>
+                            <span lang="en" class="lang-content">Sexual and asexual reproduction</span>
+                            <span lang="ru" class="lang-content">Половое и бесполое размножение</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #d1fae5; border-radius: 1rem; border-top: 4px solid #059669;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-emerald-800">Өндіс органдары арасында координациялық өндіктіңі өндіс жүргіндігінің негіз</p>
+            <p lang="en" class="lang-content text-md font-semibold text-emerald-800">Plant organs work together to create complex living systems</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-emerald-800">Органы растений работают вместе как единая система</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => switchLang('kk'));
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

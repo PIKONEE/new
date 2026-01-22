@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Continuous - Interactive English Poster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            padding: 12px 24px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .lang-btn:hover {
+            background: #f0f0ff;
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+
+        .formula-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .example-card {
+            background: #f8f9ff;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .example-card:hover {
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateX(5px);
+        }
+
+        .example-card strong {
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .usage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .usage-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .usage-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+        }
+
+        .usage-table tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        .usage-table tr:hover {
+            background: #f0f0ff;
+        }
+
+        .icon {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .rule-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .rule-box strong {
+            color: #ff6b6b;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .comparison-item h4 {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            background: #f8f9ff;
+            padding: 30px;
+            text-align: center;
+            border-top: 3px solid #667eea;
+        }
+
+        .lang-content {
+            display: none;
+        }
+
+        .lang-content.active {
+            display: block;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #764ba2;
+            transform: translateX(-5px);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div class="container">
+        <a href="javascript:history.back()" class="back-button">← Back</a>
+
+        <div class="header">
+            <h1 id="title">Past Continuous</h1>
+            <p id="subtitle">Прошедшее длительное время</p>
+        </div>
+
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+            <button class="lang-btn" onclick="switchLang('kk')">Қазақша</button>
+        </div>
+
+        <div class="content">
+            <!-- DEFINITION SECTION -->
+            <div class="section lang-content active" id="en-section">
+                <h2 class="section-title">📖 What is Past Continuous?</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin: 20px 0;">
+                    The <strong>Past Continuous</strong> (also called Past Progressive) is used to describe an action that was <strong>happening at a specific time in the past</strong>. The action was <strong>ongoing</strong> or <strong>in progress</strong> when something else happened.
+                </p>
+
+                <div class="formula-box">
+                    <span class="icon">⚙️</span>
+                    WAS / WERE + VERB-ING
+                </div>
+
+                <h3 class="section-title">📝 Structure</h3>
+                <div class="grid-2">
+                    <div class="example-card">
+                        <strong>✅ Positive:</strong><br>
+                        I was <u>playing</u> football<br>
+                        He was <u>reading</u> a book<br>
+                        They were <u>watching</u> TV
+                    </div>
+                    <div class="example-card">
+                        <strong>❌ Negative:</strong><br>
+                        I was NOT playing<br>
+                        He was NOT reading<br>
+                        They were NOT watching
+                    </div>
+                </div>
+
+                <div class="example-card">
+                    <strong>❓ Question:</strong><br>
+                    Was I playing? Yes, I was.<br>
+                    Were they watching? No, they weren't.
+                </div>
+
+                <h3 class="section-title">🎯 When to Use Past Continuous</h3>
+                <table class="usage-table">
+                    <thead>
+                        <tr>
+                            <th>Usage</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Action at a specific time in the past</strong></td>
+                            <td>At 3 o'clock, I was studying.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Two actions: long action (PC) interrupted by short action (PS)</strong></td>
+                            <td>I was sleeping WHEN the phone rang.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Two parallel actions happening simultaneously</strong></td>
+                            <td>While I was cooking, she was setting the table.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Setting the scene/background in a story</strong></td>
+                            <td>The sun was shining, birds were singing.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="section-title">📚 Examples in Context</h3>
+                <div class="example-card">
+                    <strong>Example 1:</strong><br>
+                    "What were you doing at 8 PM yesterday?"<br>
+                    "I <u>was watching</u> a movie."<br>
+                    <em>✓ An action in progress at a specific time</em>
+                </div>
+
+                <div class="example-card">
+                    <strong>Example 2:</strong><br>
+                    "I <u>was reading</u> a book <u>when</u> the lights went out."<br>
+                    <em>✓ A long action interrupted by a short action</em>
+                </div>
+
+                <div class="example-card">
+                    <strong>Example 3:</strong><br>
+                    "<u>While</u> she <u>was preparing</u> dinner, he <u>was doing</u> homework."<br>
+                    <em>✓ Two simultaneous actions</em>
+                </div>
+
+                <h3 class="section-title">⚡ Past Continuous vs Past Simple</h3>
+                <div class="comparison">
+                    <div class="comparison-item">
+                        <h4>🔵 Past Continuous</h4>
+                        Duration/Process<br>
+                        <strong>Was reading</strong><br>
+                        Focus on the activity<br>
+                        "While..." "At that time..."
+                    </div>
+                    <div class="comparison-item">
+                        <h4>🔴 Past Simple</h4>
+                        Completed action<br>
+                        <strong>Read</strong><br>
+                        Focus on completion<br>
+                        "Then..." "After..."
+                    </div>
+                </div>
+
+                <div class="rule-box">
+                    <strong>🌟 KEY RULE:</strong> When Past Continuous and Past Simple appear in the same sentence, use "WHEN" before the Past Simple (short action) and "WHILE" before the Past Continuous (long action).
+                    <br><br>
+                    ✓ "I <u>was playing</u> <u>WHEN</u> he <u>arrived</u>."<br>
+                    ✓ "<u>WHILE</u> I <u>was playing</u>, he <u>arrived</u>."
+                </div>
+
+                <h3 class="section-title">🎬 Signal Words (Keywords)</h3>
+                <div class="example-card">
+                    <strong>WHEN</strong> – before the interrupting action<br>
+                    <strong>WHILE</strong> – to show two parallel actions<br>
+                    <strong>AS</strong> – similar to "while"<br>
+                    <strong>AT THAT TIME</strong> – specific moment in past<br>
+                    <strong>ALL DAY / ALL NIGHT</strong> – duration
+                </div>
+            </div>
+
+            <!-- RUSSIAN SECTION -->
+            <div class="section lang-content" id="ru-section">
+                <h2 class="section-title">📖 Что такое Past Continuous?</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin: 20px 0;">
+                    <strong>Past Continuous</strong> (Прошедшее длительное время) описывает действие, которое <strong>происходило в определённый момент в прошлом</strong>. Действие было <strong>в процессе</strong> или <strong>в ходе</strong>, когда произошло другое событие.
+                </p>
+
+                <div class="formula-box">
+                    <span class="icon">⚙️</span>
+                    WAS / WERE + ГЛАГОЛ + -ING
+                </div>
+
+                <h3 class="section-title">📝 Структура</h3>
+                <div class="grid-2">
+                    <div class="example-card">
+                        <strong>✅ Утвердительная:</strong><br>
+                        Я был занят <u>игрой</u><br>
+                        Он был занят <u>чтением</u><br>
+                        Они были <u>заняты просмотром</u> ТВ
+                    </div>
+                    <div class="example-card">
+                        <strong>❌ Отрицательная:</strong><br>
+                        Я НЕ был занят игрой<br>
+                        Он НЕ был занят чтением<br>
+                        Они НЕ были заняты просмотром
+                    </div>
+                </div>
+
+                <div class="example-card">
+                    <strong>❓ Вопросительная:</strong><br>
+                    Был ли я занят игрой? Да<br>
+                    Были ли они заняты просмотром? Нет.
+                </div>
+
+                <h3 class="section-title">🎯 Когда использовать Past Continuous</h3>
+                <table class="usage-table">
+                    <thead>
+                        <tr>
+                            <th>Применение</th>
+                            <th>Пример</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Действие в определённый момент в прошлом</strong></td>
+                            <td>В 3 часа я был занят учёбой.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Длительное действие (PC), прерванное кратким действием (PS)</strong></td>
+                            <td>Я спал, КОГДА зазвонил телефон.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Два параллельных действия, происходящих одновременно</strong></td>
+                            <td>Пока я готовил, она накрывала стол.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Описание фона/атмосферы в рассказе</strong></td>
+                            <td>Солнце светило, птицы пели.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="section-title">📚 Примеры в контексте</h3>
+                <div class="example-card">
+                    <strong>Пример 1:</strong><br>
+                    "Что ты делал в 8 вечера вчера?"<br>
+                    "Я <u>смотрел</u> фильм."<br>
+                    <em>✓ Действие, происходящее в определённый момент</em>
+                </div>
+
+                <div class="example-card">
+                    <strong>Пример 2:</strong><br>
+                    "Я <u>читал</u> книгу, <u>когда</u> погас свет."<br>
+                    <em>✓ Длительное действие, прерванное коротким</em>
+                </div>
+
+                <div class="example-card">
+                    <strong>Пример 3:</strong><br>
+                    "<u>Пока</u> она <u>готовила</u> ужин, он <u>делал</u> домашнюю работу."<br>
+                    <em>✓ Два одновременных действия</em>
+                </div>
+
+                <h3 class="section-title">⚡ Past Continuous vs Past Simple</h3>
+                <div class="comparison">
+                    <div class="comparison-item">
+                        <h4>🔵 Past Continuous</h4>
+                        Длительность/Процесс<br>
+                        <strong>Был занят чтением</strong><br>
+                        Акцент на деятельность<br>
+                        "Пока..." "В то время как..."
+                    </div>
+                    <div class="comparison-item">
+                        <h4>🔴 Past Simple</h4>
+                        Завершённое действие<br>
+                        <strong>Прочитал</strong><br>
+                        Акцент на завершение<br>
+                        "Потом..." "После..."
+                    </div>
+                </div>
+
+                <div class="rule-box">
+                    <strong>🌟 КЛЮЧЕВОЕ ПРАВИЛО:</strong> Когда Past Continuous и Past Simple в одном предложении, используйте "КОГДА" перед Past Simple (коротким действием) и "ПОКА" перед Past Continuous (длительным действием).
+                </div>
+            </div>
+
+            <!-- KAZAKH SECTION -->
+            <div class="section lang-content" id="kk-section">
+                <h2 class="section-title">📖 Past Continuous дегеніміз не?</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin: 20px 0;">
+                    <strong>Past Continuous</strong> өткен уақыт ұзақ аспект дегендi білдіреді және <strong>өткен уақытта белгілі бір уақытта болып жатқан әрекетті</strong> сипаттайды. Әрекет <strong>ағымында болды</strong> немесе <strong>жүрісінде болды</strong>.
+                </p>
+
+                <div class="formula-box">
+                    <span class="icon">⚙️</span>
+                    WAS / WERE + ЕТІСТІК + -ING
+                </div>
+
+                <h3 class="section-title">📝 Құрылымы</h3>
+                <div class="grid-2">
+                    <div class="example-card">
+                        <strong>✅ Болымды:</strong><br>
+                        Мен ойын <u>ойнап</u> жатқанмын<br>
+                        Ол кітап <u>оқып</u> жатқанды<br>
+                        Олар ТБ <u>көре</u> жатқанды
+                    </div>
+                    <div class="example-card">
+                        <strong>❌ Теріс:</strong><br>
+                        Мен ойын ойнап жатқандық емесмін<br>
+                        Ол кітап оқып жатқандық емес<br>
+                        Олар ТБ көре жатқандық емес
+                    </div>
+                </div>
+
+                <div class="example-card">
+                    <strong>❓ Сұрау:</strong><br>
+                    Мен ойын ойнап жатқаны ба? Иә.<br>
+                    Олар ТБ көре жатқаны ба? Жоқ.
+                </div>
+
+                <h3 class="section-title">🎯 Past Continuous қашан қолданылады?</h3>
+                <table class="usage-table">
+                    <thead>
+                        <tr>
+                            <th>Қолдану</th>
+                            <th>Мысал</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Өткен уақытта белгілі бір уақытта болған әрекет</strong></td>
+                            <td>Сағат 3-де мен оқып жатқанмын.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Ұзақ әрекет (PC) қысқа әрекетпен (PS) ұстамасы</strong></td>
+                            <td>Мен ұйықтап жатқанда телефон қоңырау шықты.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Екі параллель әрекет бір мезгілде болғаны</strong></td>
+                            <td>Мен ас ішкі жатқанда, ол демалып жатқанды.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Сюжет фоны / атмосфера сипаттамасы</strong></td>
+                            <td>Күн ashing, құстар ашатар едi.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="section-title">📚 Контекстіндегі мысалдар</h3>
+                <div class="example-card">
+                    <strong>Мысал 1:</strong><br>
+                    "Кеше сағат 8-де сен не істеген бarding?"<br>
+                    "Мен фильм <u>көре</u> жатқанмын."<br>
+                    <em>✓ Белгілі бір уақытта болып жатқан әрекет</em>
+                </div>
+
+                <div class="example-card">
+                    <strong>Мысал 2:</strong><br>
+                    "Мен кітап <u>оқып</u> жатқанда, қараңғы болып қалды."<br>
+                    <em>✓ Ұзақ әрекет қысқа әрекетпен ұстамасы</em>
+                </div>
+
+                <div class="example-card">
+                    <strong>Мысал 3:</strong><br>
+                    "<u>Ал</u> ол үй істерін істеп жатқанда, мен сабақ істеп жатқанмын."<br>
+                    <em>✓ Екі бір мезгілде болған әрекет</em>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3 style="margin-bottom: 15px; color: #667eea;">🎓 Practice Makes Perfect!</h3>
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                Remember: Past Continuous describes the <strong>background action</strong> that was interrupted or happening at a specific time in the past. Master this tense and you'll greatly improve your English storytelling!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            // Hide all sections
+            document.getElementById('en-section').classList.remove('active');
+            document.getElementById('ru-section').classList.remove('active');
+            document.getElementById('kk-section').classList.remove('active');
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Show selected section and mark button as active
+            if (lang === 'en') {
+                document.getElementById('en-section').classList.add('active');
+                document.querySelectorAll('.lang-btn')[0].classList.add('active');
+            } else if (lang === 'ru') {
+                document.getElementById('ru-section').classList.add('active');
+                document.querySelectorAll('.lang-btn')[1].classList.add('active');
+            } else if (lang === 'kk') {
+                document.getElementById('kk-section').classList.add('active');
+                document.querySelectorAll('.lang-btn')[2].classList.add('active');
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            switchLang('en');
+        });
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

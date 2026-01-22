@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Борьба саков за независимость</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #1a1a1a; color: #e5e7eb; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .war-gradient {
+            background: linear-gradient(135deg, #450a0a 0%, #1a1a1a 100%);
+        }
+
+        .battle-card {
+            background: rgba(38, 38, 38, 0.8);
+            border-left: 4px solid #dc2626;
+            transition: all 0.3s ease;
+        }
+
+        .battle-card:hover {
+            background: rgba(55, 65, 81, 0.8);
+            transform: scale(1.02);
+            border-left-width: 12px;
+        }
+
+        .lang-active {
+            background-color: #dc2626;
+            color: white;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .hero-section {
+            background-image: radial-gradient(circle at center, rgba(220, 38, 38, 0.1) 0%, transparent 70%);
+        }
+
+        canvas {
+            filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.2));
+        }
+    </style>
+</head>
+<body class="war-gradient min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-red-900/30 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🛡️</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tighter text-red-500">Щит Великой Степи</h1>
+            </div>
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: expansion Visualization (Map) -->
+        <div class="hero-section rounded-[3rem] p-8 md:p-12 border border-red-900/20 shadow-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-6">
+                    <div id="badge" class="inline-block bg-red-600/20 text-red-500 border border-red-500/50 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Resistance Chronicle</div>
+                    <h2 id="viz-title" class="text-3xl md:text-5xl font-black leading-tight">Сила отпора</h2>
+                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
+                        Саки успешно противостояли крупнейшим империям мира. Их тактика «изнурения врага» и молниеносных атак делала степь неприступной крепостью.
+                    </p>
+                    <div class="flex space-x-4">
+                        <div class="p-4 bg-zinc-900/50 rounded-2xl border border-red-900/30">
+                            <div class="text-red-500 font-black text-xl">530 BC</div>
+                            <div id="date1" class="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Победа над Киром</div>
+                        </div>
+                        <div class="p-4 bg-zinc-900/50 rounded-2xl border border-red-900/30">
+                            <div class="text-red-500 font-black text-xl">329 BC</div>
+                            <div id="date2" class="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Битва на Яксарте</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 h-80 md:h-[450px]">
+                    <canvas id="warChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Great Battles (Plan) -->
+        <div class="space-y-12">
+            <h2 id="plan-title" class="text-2xl font-black text-center text-red-500 uppercase tracking-widest">Героические страницы</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Battle 1: Cyrus -->
+                <div class="battle-card p-10 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="text-5xl mb-6">👑</div>
+                        <h3 id="b1-t" class="text-xl font-bold mb-4 text-white uppercase">Царица Томирис</h3>
+                        <p id="b1-d" class="text-zinc-400 text-sm leading-relaxed">Победа над персидским царем Киром. Саки-массагеты заманили врага вглубь степи и полностью уничтожили его армию, защитив свои земли.</p>
+                    </div>
+                    <div class="mt-8 text-red-500 font-black text-xs uppercase tracking-widest">⚔️ 530 BC</div>
+                </div>
+
+                <!-- Battle 2: Darius -->
+                <div class="battle-card p-10 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="text-5xl mb-6">🏜️</div>
+                        <h3 id="b2-t" class="text-xl font-bold mb-4 text-white uppercase">Подвиг Ширака</h3>
+                        <p id="b2-d" class="text-zinc-400 text-sm leading-relaxed">Противостояние Дарию I. Простой пастух Ширак заманил персидское войско в безводную пустыню, пожертвовав собой ради спасения своего народа.</p>
+                    </div>
+                    <div class="mt-8 text-red-500 font-black text-xs uppercase tracking-widest">⚔️ 519 BC</div>
+                </div>
+
+                <!-- Battle 3: Alexander -->
+                <div class="battle-card p-10 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="text-5xl mb-6">⚡</div>
+                        <h3 id="b3-t" class="text-xl font-bold mb-4 text-white uppercase">Против Александра</h3>
+                        <p id="b3-d" class="text-zinc-400 text-sm leading-relaxed">Оборона против Македонского. В битве на Сырдарье (Яксарт) саки заставили великого полководца отказаться от идеи завоевания глубин Степи.</p>
+                    </div>
+                    <div class="mt-8 text-red-500 font-black text-xs uppercase tracking-widest">⚔️ 329 BC</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Section 3: Tactics (Wide highlight) -->
+        <div class="bg-zinc-900 rounded-[3rem] p-10 md:p-16 border border-zinc-800 shadow-inner relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-8xl mb-4">🏹</div>
+                    <div id="tactics-label" class="text-red-500 font-black text-xs uppercase tracking-[0.4em]">Saka Strategy</div>
+                </div>
+                <div class="md:col-span-8">
+                    <h3 id="tactics-title" class="text-3xl font-black text-white mb-6 uppercase">Тактика «Выжженной земли»</h3>
+                    <p id="tactics-desc" class="text-xl text-zinc-400 font-light leading-relaxed">
+                        Саки не вступали в решающий бой сразу. Они изматывали врага постоянными мелкими стычками, заманивали вглубь территорий и лишали провианта, используя мобильность конницы.
+                    </p>
+                </div>
+            </div>
+            <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-5 pointer-events-none">🛡️</div>
+        </div>
+
+    </main>
+
+    <footer class="py-24 bg-black border-t border-red-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-zinc-500">
+                «Свобода саков была оплачена кровью и величайшей хитростью, превратившей Степь в могилу для захватчиков.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-red-600 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Щит Великой Степи",
+                vizTitle: "Сила отпора",
+                vizDesc: "Саки успешно противостояли крупнейшим империям мира. Их тактика «изнурения врага» и молниеносных атак делала степь неприступной.",
+                badge: "Хроника сопротивления",
+                date1: "Победа над Киром", date2: "Битва на Яксарте",
+                planTitle: "Героические страницы",
+                b1T: "Царица Томирис", b1D: "Победа над персидским царем Киром. Саки-массагеты заманили врага вглубь степи и уничтожили его армию.",
+                b2T: "Подвиг Ширака", b2D: "Противостояние Дарию I. Пастух Ширак заманил персидское войско в безводную пустыню, пожертвовав собой.",
+                b3T: "Против Александра", b3D: "Оборона против Македонского. Битва на Яксарте заставила Александра отказаться от планов покорения Степи.",
+                tacticsTitle: "Тактика выжженной земли", tacticsDesc: "Саки изматывали врага мелкими стычками, заманивали вглубь территорий и лишали ресурсов, используя мощь конницы.",
+                tacticsLabel: "Стратегия саков",
+                footer: "«Свобода саков была оплачена кровью и величайшей хитростью, превратившей Степь в могилу для захватчиков.»",
+                chartLabels: ["Армия Кира", "Армия Дария I", "Фаланга Александра", "Сакская конница"],
+                chartTitle: "Сравнительная мощь и маневренность"
+            },
+            kz: {
+                title: "Ұлы Дала Қалқаны",
+                vizTitle: "Тойтарыс беру күші",
+                vizDesc: "Сақтар әлемдегі ең ірі империяларға сәтті қарсы тұрды. Олардың «жауды қажыту» тактикасы даланы алынбас қамалға айналдырды.",
+                badge: "Қарсыласу хроникасы",
+                date1: "Кирді жеңу", date2: "Яксарт шайқасы",
+                planTitle: "Ерлік беттері",
+                b1T: "Тұмар ханшайым", b1D: "Парсы патшасы Кирді жеңуі. Сақ-массагеттер жауды даланың тереңіне алдап кіргізіп, әскерін талқандады.",
+                b2T: "Шырақтың ерлігі", b2D: "Дарий I-ге қарсылық. Шырақ есімді бақташы парсы әскерін сусыз шөлге алдап апарып, халқы үшін жанын қиды.",
+                b3T: "Александрға қарсы", b3D: "Македондыққа қарсы қорғаныс. Яксарт шайқасы Александрды Даланы жаулап алу жоспарынан бас тартуға мәжбүр етті.",
+                tacticsTitle: "«Қолдан өртеу» тактикасы", tacticsDesc: "Сақтар жауды ұсақ қақтығыстармен қажытып, дала ішіне тартып, атты әскердің күшімен ресурстардан айырған.",
+                tacticsLabel: "Сақтар стратегиясы",
+                footer: "«Сақтардың бостандығы қанмен және Даланы басқыншылардың моласына айналдырған ұлы айламен келді.»",
+                chartLabels: ["Кир әскері", "Дарий I әскері", "Александр фалангасы", "Сақ атты әскері"],
+                chartTitle: "Салыстырмалы күш пен маневрлілік"
+            },
+            en: {
+                title: "Shield of the Great Steppe",
+                vizTitle: "Power of Resistance",
+                vizDesc: "The Sakas successfully resisted the world's largest empires. Their 'war of attrition' and lightning attacks made the steppe impenetrable.",
+                badge: "Chronicle of Resistance",
+                date1: "Victory over Cyrus", date2: "Jaxartes Battle",
+                planTitle: "Heroic Pages",
+                b1T: "Queen Tomyris", b1D: "Victory over the Persian King Cyrus. The Massagetae Sakas lured the enemy deep into the steppe and destroyed his army.",
+                b2T: "Shirak's Feat", b2D: "Resistance to Darius I. The shepherd Shirak lured the Persian army into a waterless desert, sacrificing himself.",
+                b3T: "Against Alexander", b3D: "Defense against the Great. The Battle of Jaxartes forced Alexander to abandon plans for conquering the Steppe.",
+                tacticsTitle: "Scorched Earth Tactics", tacticsDesc: "The Sakas exhausted the enemy with small skirmishes, lured them deep, and deprived them of resources using cavalry mobility.",
+                tacticsLabel: "Saka Strategy",
+                footer: "«The freedom of the Sakas was paid for with blood and great cunning, turning the Steppe into a grave for invaders.»",
+                chartLabels: ["Cyrus's Army", "Darius I's Army", "Alexander's Phalanx", "Saka Cavalry"],
+                chartTitle: "Comparative Power & Maneuverability"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('warChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [
+                        {
+                            label: lang === 'ru' ? 'Численность' : (lang === 'kz' ? 'Саны' : 'Size'),
+                            data: [95, 100, 80, 50],
+                            backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                            borderColor: '#dc2626',
+                            borderWidth: 2,
+                            pointRadius: 3
+                        },
+                        {
+                            label: lang === 'ru' ? 'Мобильность' : (lang === 'kz' ? 'Маневрлілік' : 'Mobility'),
+                            data: [30, 40, 60, 100],
+                            backgroundColor: 'rgba(251, 191, 36, 0.2)',
+                            borderColor: '#fbbf24',
+                            borderWidth: 2,
+                            pointRadius: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.1)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: {
+                                color: '#a1a1aa',
+                                font: { family: 'Inter', size: 12, weight: 'bold' }
+                            },
+                            ticks: { display: false },
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#e5e7eb' } },
+                        title: { display: true, text: translations[lang].chartTitle, color: '#dc2626', font: { size: 16 } }
+                    }
+                }
+            });
+        }
+
+        function setLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('date1').innerText = t.date1;
+            document.getElementById('date2').innerText = t.date2;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('b1-t').innerText = t.b1T; document.getElementById('b1-d').innerText = t.b1D;
+            document.getElementById('b2-t').innerText = t.b2T; document.getElementById('b2-d').innerText = t.b2D;
+            document.getElementById('b3-t').innerText = t.b3T; document.getElementById('b3-d').innerText = t.b3D;
+            document.getElementById('tactics-title').innerText = t.tacticsTitle;
+            document.getElementById('tactics-desc').innerText = t.tacticsDesc;
+            document.getElementById('tactics-label').innerText = t.tacticsLabel;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-lg text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-red-500 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

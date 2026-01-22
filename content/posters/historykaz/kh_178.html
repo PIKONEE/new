@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Основание укрепления Верный (Алматы)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .fort-gradient {
+            background: radial-gradient(circle at bottom left, #1e3a8a, #0f172a 90%);
+        }
+
+        .premium-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 3.5rem;
+            border: 2px solid rgba(14, 165, 233, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .premium-card:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.1);
+        }
+
+        .lang-active {
+            background-color: #38bdf8;
+            color: #0f172a;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 2.5rem;
+            background: rgba(2, 6, 23, 0.4);
+        }
+
+        .fact-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-bottom: 6px solid #38bdf8;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.4s ease;
+            height: 100%;
+        }
+
+        .fact-card:hover {
+            transform: translateY(-10px);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .fort-tag {
+            background: #082f49;
+            color: #7dd3fc;
+            padding: 4px 14px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="fort-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-sky-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-sky-400">Основание укрепления Верный (1854 г.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-sky-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Fortress Blueprint Analysis (Canvas) -->
+        <div class="premium-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-sky-500 text-sky-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Fortress Master Plan 1854</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic tracking-tighter">Чертеж Форпоста</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Верный строился как ключевой военный узел в предгорьях Заилийского Алатау. Нажмите на элементы плана, чтобы изучить архитектуру обороны и первые постройки.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[3rem] bg-sky-950/20 border-l-8 border-sky-500 shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-sky-300 mb-3 uppercase">Осмотр объекта</h3>
+                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на валы, ров или внутреннюю площадь укрепления.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="fortCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-sky-900 font-mono uppercase tracking-[0.4em]">Schematic Reconstruction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Core Historical Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- Strategic Context -->
+            <div class="fact-card">
+                <span class="fort-tag mb-4 inline-block" id="tag-1">Стратегия</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Выбор места</h3>
+                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    В **феврале 1854 года** отряд под командованием майора **М.Д. Перемышельского** прибыл в долину реки Алматы. Место было выбрано из-за обилия воды, пастбищ и стратегической близости к границам Кокандского ханства. Укрепление должно было обеспечить безопасность торговых путей и контроль над Старшим жузом.
+                </p>
+                <div class="text-[10px] font-black text-sky-500 uppercase tracking-widest italic">1854: Рождение Верного</div>
+            </div>
+
+            <!-- Construction -->
+            <div class="fact-card">
+                <span class="fort-tag mb-4 inline-block" id="tag-2">Строительство</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Устройство Крепости</h3>
+                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    Первоначально Верный был обнесен глубоким рвом и земляным валом с деревянным частоколом. Внутри располагались казармы, цейхгауз (арсенал), канцелярия и дома офицеров. Позже начали прибывать первые переселенцы из Сибири и центральных губерний России, формируя Большую и Малую станицы.
+                </p>
+                <div class="text-[10px] font-black text-sky-500 uppercase tracking-widest italic">Гарнизон: 470 человек</div>
+            </div>
+
+            <!-- Transformation -->
+            <div class="fact-card">
+                <span class="fort-tag mb-4 inline-block" id="tag-3">Развитие</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">От форта к городу</h3>
+                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    В **1867 году** укрепление официально получило статус города и стало административным центром Семиреченской области. Верный превратился в важнейший культурный и научный центр, откуда начинались экспедиции Ч. Валиханова и П. Семенова-Тян-Шанского. Город стал символом имперского присутствия в Тянь-Шане.
+                </p>
+                <div class="text-[10px] font-black text-sky-500 uppercase tracking-widest italic">1867: Центр Жетысу</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-20 bg-black border-t border-sky-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-600">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Укрепление Верный стало стальным замком на воротах Жетысу, открывшим путь к глубоким переменам в облике всего Юго-Восточного Казахстана.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-sky-800 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Основание укрепления Верный (1854 г.)",
+                vizTitle: "Чертеж Форпоста",
+                vizDesc: "Верный строился как военный узел. Нажмите на элементы плана на холсте для анализа архитектуры обороны и первых построек.",
+                badge: "Анализ мастер-плана 1854 года",
+                elementTitleDefault: "Осмотр объекта",
+                elementDescDefault: "Кликните на валы, ров или площадь укрепления на холсте справа.",
+                tag1: "Стратегия", tag2: "Строительство", tag3: "Развитие",
+                c1T: "Выбор места", c1D: "Майор Перемышельский выбрал долину реки Алматы из-за близости к воде и горам. Укрепление стало щитом против кокандских набегов и базой для освоения Жетысу.",
+                c2T: "Устройство Крепости", c2D: "Земляные валы и ров глубиной 2.5 метра защищали гарнизон. Внутри располагались деревянные казармы и штаб. Это был классический русский форпост середины XIX века.",
+                c3T: "От форта к городу", c3D: "В 1867 году Верный стал столицей Семиреченской области. Это повлекло за собой бурный рост каменного строительства и превращение форта в торговый мегаполис региона.",
+                footer: "«Верный стал стальным замком на воротах Жетысу, изменившим облик региона навсегда.»",
+                objects: {
+                    rampart: { name: "Оборонительный вал", text: "Земляная насыпь высотой до 3 метров, укрепленная дерном и деревянными конструкциями. Основной рубеж защиты от конных атак." },
+                    moat: { name: "Защитный ров", text: "Глубокая преграда перед валом. Препятствовал быстрому штурму и подкопам. Ширина рва составляла около 4-5 метров." },
+                    plaza: { name: "Центральная площадь", text: "Место построения гарнизона и расположения главных административных зданий: канцелярии и цейхгауза." }
+                }
+            },
+            kz: {
+                title: "Верный бекінісінің негізінің қалануы (1854 ж.)",
+                vizTitle: "Форпост сызбасы",
+                vizDesc: "Верный әскери торап ретінде салынды. Қорғаныс сәулеті мен алғашқы құрылыстарды талдау үшін сызбаны басыңыз.",
+                badge: "1854 жылғы бас жоспарды талдау",
+                elementTitleDefault: "Нысанды қарау",
+                elementDescDefault: "Кенептегі дуалдарды, орды немесе бекініс алаңын басыңыз.",
+                tag1: "Стратегия", tag2: "Құрылыс", tag3: "Даму",
+                c1T: "Орын таңдау", c1D: "Майор Перемышельский су мен тауға жақындығына байланысты Алматы өзенінің алқабын таңдады. Бекініс Қоқан шапқыншылығына қарсы қалқан болды.",
+                c2T: "Бекініс құрылымы", c2D: "Тереңдігі 2.5 метрлік ор мен топырақ дуалдар гарнизонды қорғады. Ішінде ағаш казармалар мен штаб орналасты. Бұл ХІХ ғ. ортасындағы классикалық форпост еді.",
+                c3T: "Форттан қалаға", c3D: "1867 жылы Верный Жетісу облысының орталығына айналды. Бұл тас құрылыстың жедел дамуына және форттың сауда мегаполисіне айналуына әкелді.",
+                footer: "«Верный Жетісу қақпасындағы болат құлып болып, аймақтың келбетін мәңгілікке өзгертті.»",
+                objects: {
+                    rampart: { name: "Қорғаныс дуалы", text: "Биіктігі 3 метрге дейінгі топырақ үйіндісі. Атты әскер шабуылынан қорғанудың негізгі шебі." },
+                    moat: { name: "Қорғаныс оры", text: "Дуал алдындағы терең кедергі. Тез шабуылдауға және лажсыз өтуге кедергі келтірді. Ордың ені 4-5 метрді құрады." },
+                    plaza: { name: "Орталық алаң", text: "Гарнизонның сапқа тұру орны және басты әкімшілік ғимараттардың орналасқан жері." }
+                }
+            },
+            en: {
+                title: "Foundation of Verny Fort (1854)",
+                vizTitle: "Outpost Blueprint",
+                vizDesc: "Verny was built as a military hub. Click on the plan elements on the canvas to analyze defense architecture and early structures.",
+                badge: "1854 Master Plan Analysis",
+                elementTitleDefault: "Inspect Object",
+                elementDescDefault: "Click on the ramparts, moat, or the central plaza on the canvas to the right.",
+                tag1: "Strategy", tag2: "Construction", tag3: "Development",
+                c1T: "Site Selection", c1D: "Major Peremyshelsky chose the Almaty River valley due to proximity to water and mountains. The fort served as a shield against Kokand raids and a base for exploring Zhetysu.",
+                c2T: "Fort Structure", c2D: "Earthen ramparts and a 2.5-meter deep moat protected the garrison. Inside were wooden barracks and headquarters. It was a classic mid-19th-century Russian outpost.",
+                c3T: "From Fort to City", c3D: "In 1867, Verny became the capital of the Semirechye Region. This led to rapid stone construction and the transformation of the fort into a regional trade metropolis.",
+                footer: "«Verny became a steel lock on the gates of Zhetysu, changing the look of the region forever.»",
+                objects: {
+                    rampart: { name: "Defense Rampart", text: "An earthen embankment up to 3 meters high, reinforced with turf and timber. The main line of defense against cavalry charges." },
+                    moat: { name: "Protective Moat", text: "A deep trench in front of the rampart. It prevented swift scaling and tunneling. The moat width was about 4-5 meters." },
+                    plaza: { name: "Central Plaza", text: "The staging area for the garrison and the location of main administrative buildings like the chancellery and armory." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('fortCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawFortPlan();
+        }
+
+        function drawFortPlan() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw River (stylized blue curve)
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 50);
+            ctx.bezierCurveTo(300 * scale, 100, 500 * scale, 400, 750 * scale, 450);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
+            ctx.lineWidth = 40 * scale;
+            ctx.stroke();
+
+            // 2. Fort Shape (Polygon)
+            ctx.beginPath();
+            ctx.moveTo(cx - 150 * scale, cy - 100 * scale);
+            ctx.lineTo(cx + 150 * scale, cy - 100 * scale);
+            ctx.lineTo(cx + 180 * scale, cy + 100 * scale);
+            ctx.lineTo(cx - 180 * scale, cy + 100 * scale);
+            ctx.closePath();
+            
+            // Outer Moat
+            ctx.strokeStyle = '#0ea5e9';
+            ctx.lineWidth = 10 * scale;
+            ctx.stroke();
+
+            // Rampart (Inner)
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 5 * scale;
+            ctx.strokeRect(cx - 130 * scale, cy - 80 * scale, 260 * scale, 160 * scale);
+
+            // 3. Buildings (Blocks)
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(cx - 110 * scale, cy - 60 * scale, 50 * scale, 30 * scale); // Barracks
+            ctx.fillRect(cx + 60 * scale, cy - 60 * scale, 50 * scale, 30 * scale);  // HQ
+            
+            // Plaza
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.1)';
+            ctx.fillRect(cx - 50 * scale, cy - 20 * scale, 100 * scale, 50 * scale);
+
+            // Labels
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText("ALMATY RIVER", 150 * scale, 80);
+            ctx.fillText("MOAT", cx, cy - 115 * scale);
+            ctx.fillText("PLAZA", cx, cy + 10 * scale);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            const distFromCenter = Math.sqrt((x - cx)**2 + (y - cy)**2);
+            let target = null;
+
+            if (distFromCenter < 50 * scale) target = 'plaza';
+            else if (distFromCenter < 140 * scale) target = 'rampart';
+            else if (distFromCenter < 200 * scale) target = 'moat';
+
+            if (target) {
+                const info = translations[currentLang].objects[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#38bdf8';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            // Security check for language existence
+            if (!t) return;
+
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

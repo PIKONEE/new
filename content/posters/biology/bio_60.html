@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химический состав растений</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #d1fae5; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #10b981 0%, #047857 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #047857; border-bottom: 3px solid #a7f3d0; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #10b981; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #10b981; background: white; color: #10b981; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #10b981; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; border: 2px dashed #10b981; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-emerald-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Өндіс Химиялық Құрамдары</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Chemical Composition of Plants</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Химический состав растений</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-emerald-100">Органикалық және органикасыз құрамдары - білік өндіс құрамдарының</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-emerald-100">Organic and inorganic components - essential nutrients</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-emerald-100">Органические и неорганические компоненты - питательные вещества</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Өндіс Химиялық Құрамдары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Plant Chemical Components</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Химические компоненты растений</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 700 350" style="height: 320px; width: 100%;">
+                        <!-- Водород -->
+                        <g>
+                            <circle cx="100" cy="80" r="25" fill="#FFB6C1" stroke="#FF1493" stroke-width="2"/>
+                            <text x="100" y="90" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">H</text>
+                            <text x="100" y="125" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">Водород</text>
+                            <text x="100" y="140" font-size="9" text-anchor="middle" fill="#666">(10%)</text>
+                        </g>
+
+                        <!-- Углерод -->
+                        <g>
+                            <circle cx="180" cy="80" r="25" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                            <text x="180" y="90" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">C</text>
+                            <text x="180" y="125" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">Углерод</text>
+                            <text x="180" y="140" font-size="9" text-anchor="middle" fill="#666">(45%)</text>
+                        </g>
+
+                        <!-- Азот -->
+                        <g>
+                            <circle cx="260" cy="80" r="25" fill="#90EE90" stroke="#228B22" stroke-width="2"/>
+                            <text x="260" y="90" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">N</text>
+                            <text x="260" y="125" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">Азот</text>
+                            <text x="260" y="140" font-size="9" text-anchor="middle" fill="#666">(1-5%)</text>
+                        </g>
+
+                        <!-- Кислород -->
+                        <g>
+                            <circle cx="340" cy="80" r="25" fill="#87CEEB" stroke="#4169E1" stroke-width="2"/>
+                            <text x="340" y="90" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">O</text>
+                            <text x="340" y="125" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">Кислород</text>
+                            <text x="340" y="140" font-size="9" text-anchor="middle" fill="#666">(40%)</text>
+                        </g>
+
+                        <!-- Фосфор -->
+                        <g>
+                            <circle cx="420" cy="80" r="25" fill="#FFB347" stroke="#FF8C00" stroke-width="2"/>
+                            <text x="420" y="90" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">P</text>
+                            <text x="420" y="125" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">Фосфор</text>
+                            <text x="420" y="140" font-size="9" text-anchor="middle" fill="#666">(0.1%)</text>
+                        </g>
+
+                        <!-- Калий -->
+                        <g>
+                            <circle cx="500" cy="80" r="25" fill="#DDA0DD" stroke="#8B008B" stroke-width="2"/>
+                            <text x="500" y="90" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">K</text>
+                            <text x="500" y="125" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">Калий</text>
+                            <text x="500" y="140" font-size="9" text-anchor="middle" fill="#666">(1%)</text>
+                        </g>
+
+                        <!-- Вода -->
+                        <g>
+                            <rect x="580" y="60" width="50" height="60" fill="#B0E0E6" stroke="#4169E1" stroke-width="2" rx="5"/>
+                            <text x="605" y="95" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">H₂O</text>
+                            <text x="605" y="125" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">Вода</text>
+                            <text x="605" y="140" font-size="9" text-anchor="middle" fill="#666">(70-90%)</text>
+                        </g>
+
+                        <!-- Органические вещества -->
+                        <text x="10" y="200" font-size="12" font-weight="bold" fill="#047857">Органические вещества:</text>
+
+                        <!-- Углеводы -->
+                        <g>
+                            <rect x="10" y="210" width="60" height="50" fill="#FFFACD" stroke="#FFD700" stroke-width="2" rx="3"/>
+                            <text x="40" y="232" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">Углеводы</text>
+                            <text x="40" y="250" font-size="9" text-anchor="middle" fill="#666">C, H, O</text>
+                        </g>
+
+                        <!-- Белки -->
+                        <g>
+                            <rect x="80" y="210" width="60" height="50" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2" rx="3"/>
+                            <text x="110" y="232" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">Белки</text>
+                            <text x="110" y="250" font-size="9" text-anchor="middle" fill="#666">C,H,O,N</text>
+                        </g>
+
+                        <!-- Жиры -->
+                        <g>
+                            <rect x="150" y="210" width="60" height="50" fill="#90EE90" stroke="#228B22" stroke-width="2" rx="3"/>
+                            <text x="180" y="232" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">Жиры</text>
+                            <text x="180" y="250" font-size="9" text-anchor="middle" fill="#666">C, H, O</text>
+                        </g>
+
+                        <!-- Нуклеиновые кислоты -->
+                        <g>
+                            <rect x="220" y="210" width="60" height="50" fill="#87CEEB" stroke="#4169E1" stroke-width="2" rx="3"/>
+                            <text x="250" y="232" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">Нуклеин.</text>
+                            <text x="250" y="245" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">кислоты</text>
+                            <text x="250" y="260" font-size="9" text-anchor="middle" fill="#666">ДНК, РНК</text>
+                        </g>
+
+                        <!-- Витамины -->
+                        <g>
+                            <rect x="290" y="210" width="60" height="50" fill="#FFD700" stroke="#DAA520" stroke-width="2" rx="3"/>
+                            <text x="320" y="232" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">Витамины</text>
+                            <text x="320" y="250" font-size="9" text-anchor="middle" fill="#666">A, B, C</text>
+                        </g>
+
+                        <!-- Минеральные вещества -->
+                        <text x="380" y="200" font-size="12" font-weight="bold" fill="#047857">Минеральные вещества:</text>
+
+                        <!-- Макроэлементы -->
+                        <g>
+                            <rect x="380" y="210" width="70" height="50" fill="#D3D3D3" stroke="#696969" stroke-width="2" rx="3"/>
+                            <text x="415" y="230" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">Макрограмм</text>
+                            <text x="415" y="245" font-size="9" text-anchor="middle" fill="#666">N,P,K,Ca,Mg</text>
+                            <text x="415" y="260" font-size="8" text-anchor="middle" fill="#666">(1-100%)</text>
+                        </g>
+
+                        <!-- Микроэлементы -->
+                        <g>
+                            <rect x="460" y="210" width="70" height="50" fill="#A9A9A9" stroke="#505050" stroke-width="2" rx="3"/>
+                            <text x="495" y="230" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">Микроэл.</text>
+                            <text x="495" y="245" font-size="9" text-anchor="middle" fill="#fff">Fe,Zn,Cu,Mn</text>
+                            <text x="495" y="260" font-size="8" text-anchor="middle" fill="#fff">(0.001%)</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-emerald-50 p-4 rounded border border-emerald-300">
+                        <h4 lang="kk" class="lang-content font-bold text-emerald-900 mb-3">🧬 Органикалық Құрамдары</h4>
+                        <h4 lang="en" class="lang-content font-bold text-emerald-900 mb-3">🧬 Organic Components</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-emerald-900 mb-3">🧬 Органические компоненты</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Углеводы (40-50%):</strong> Глюкоза, крахмал, клетчатка - энергия және конструкции</li>
+                            <li lang="en" class="lang-content"><strong>Carbohydrates (40-50%):</strong> Energy and structure</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Углеводы (40-50%):</strong> Энергия и структура</li>
+
+                            <li lang="kk" class="lang-content"><strong>Белки (1-5%):</strong> Ферменты, белік, квндыру - функциялар орындау</li>
+                            <li lang="en" class="lang-content"><strong>Proteins (1-5%):</strong> Enzymes, antibodies, growth</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Белки (1-5%):</strong> Ферменты, антитела, рост</li>
+
+                            <li lang="kk" class="lang-content"><strong>Жиры (5-15%):</strong> Энергия, щитова - сақтау, мембрана құрау</li>
+                            <li lang="en" class="lang-content"><strong>Fats (5-15%):</strong> Energy storage, membranes</li>
+                            <li lang="ru" class="lang-content"><strong>Жиры (5-15%):</strong> Запас энергии, мембраны</li>
+
+                            <li lang="kk" class="lang-content"><strong>ДНК/РНК:</strong> Генетикалық ақпарат - ынамдау</li>
+                            <li lang="en" class="lang-content"><strong>DNA/RNA:</strong> Genetic information</strong></li>
+                            <li lang="ru" class="lang-content"><strong>ДНК/РНК:</strong> Генетическая информация</li>
+
+                            <li lang="kk" class="lang-content"><strong>Витамины:</strong> Регуляторлық - метаболизм</li>
+                            <li lang="en" class="lang-content"><strong>Vitamins:</strong> Regulatory molecules</li>
+                            <li lang="ru" class="lang-content"><strong>Витамины:</strong> Регуляция процессов</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-teal-50 p-4 rounded border border-teal-300">
+                        <h4 lang="kk" class="lang-content font-bold text-teal-900 mb-3">⛏️ Минеральдық Құрамдары</h4>
+                        <h4 lang="en" class="lang-content font-bold text-teal-900 mb-3">⛏️ Mineral Components</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-teal-900 mb-3">⛏️ Минеральные компоненты</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Вода (H₂O, 70-90%):</strong> Ертіндігі, транспорт, температура реттеу</li>
+                            <li lang="en" class="lang-content"><strong>Water (70-90%):</strong> Solvent, transport, cooling</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Вода (70-90%):</strong> Растворитель, транспорт, охлаждение</li>
+
+                            <li lang="kk" class="lang-content"><strong>Азот (N):</strong> Белік құрау, хлорофилл - маңызды</li>
+                            <li lang="en" class="lang-content"><strong>Nitrogen (N):</strong> Proteins, chlorophyll</li>
+                            <li lang="ru" class="lang-content"><strong>Азот (N):</strong> Белки, хлорофилл</li>
+
+                            <li lang="kk" class="lang-content"><strong>Фосфор (P):</strong> ДНК, энергия (АТФ) - маңызды</li>
+                            <li lang="en" class="lang-content"><strong>Phosphorus (P):</strong> DNA, ATP energy</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Фосфор (P):</strong> ДНК, энергия (АТФ)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Калий (K):</strong> Осмотикалық түйік, ферментативтік - қызмет</li>
+                            <li lang="en" class="lang-content"><strong>Potassium (K):</strong> Osmotic balance, enzyme</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Калий (K):</strong> Осмотический баланс, ферменты</li>
+
+                            <li lang="kk" class="lang-content"><strong>Микроэлементтер (Fe, Zn, Cu, Mn):</strong> Хлорофилл, ферменттер - қызмет</li>
+                            <li lang="en" class="lang-content"><strong>Microelements:</strong> Chlorophyll, enzymes</li>
+                            <li lang="ru" class="lang-content"><strong>Микроэлементы:</strong> Хлорофилл, ферменты</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Химиялық Құрамдарының Маңызы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Importance of Chemical Composition</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Значение химического состава</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-100 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">⚡ Энергия</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Углеводы және жиры - энергия ұтыну. АТФ - клеткалық энергия</span>
+                            <span lang="en" class="lang-content">Carbs and fats provide energy. ATP is cellular energy</span>
+                            <span lang="ru" class="lang-content">Углеводы и жиры - источник энергии. АТФ - клеточная энергия</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-100 p-3 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-2">🧬 Өндіс</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Білік - өндіс құрау. ДНК - генетикалық ақпарат құрау</span>
+                            <span lang="en" class="lang-content">Proteins build structures. DNA carries genetic info</span>
+                            <span lang="ru" class="lang-content">Белки строят структуры. ДНК хранит информацию</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-100 p-3 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">⚙️ Функция</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Ферменттер - метаболизм жүргіндігі. Витамины - регуляция</span>
+                            <span lang="en" class="lang-content">Enzymes regulate metabolism. Vitamins regulate processes</span>
+                            <span lang="ru" class="lang-content">Ферменты регулируют обмен. Витамины - регуляция</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #a7f3d0; border-radius: 1rem; border-top: 4px solid #10b981;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-emerald-800">Өндіс химиялық құрамдарының түсіністігі - өндіс ағымдарындағы процесстердің механизмасын түсіндіреді. Органикалық және органикасыз құрамдарының сыбайластығы - өндіс өндіс функциясының негізі</p>
+            <p lang="en" class="lang-content text-md font-semibold text-emerald-800">Chemical composition determines plant functions. Organic and inorganic components work together</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-emerald-800">Химический состав определяет функции растения. Все компоненты работают вместе</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

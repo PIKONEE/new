@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mountain vs Plain Rivers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at bottom, #1e3a8a, #111827); color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #60a5fa; color: white; font-weight: 800; }
+        .mode-btn { transition: all 0.3s; }
+        .mode-btn.active { background: rgba(96, 165, 250, 0.3); border-color: #60a5fa; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-blue-500/30">
+        <div><h1 id="main-title" class="heading-font text-3xl uppercase tracking-tighter text-blue-300"></h1></div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+        <div class="lg:col-span-1 glass rounded-custom p-8 flex flex-col gap-4">
+            <h3 class="heading-font text-lg text-blue-300 uppercase mb-4">Relief Type</h3>
+            <button onclick="setMode('mountain')" id="btn-mountain" class="mode-btn p-4 glass rounded-2xl text-left text-sm font-bold uppercase border border-white/10 active"></button>
+            <button onclick="setMode('plain')" id="btn-plain" class="mode-btn p-4 glass rounded-2xl text-left text-sm font-bold uppercase border border-white/10"></button>
+        </div>
+        
+        <div class="lg:col-span-3 glass rounded-custom p-6 relative flex flex-col items-center justify-center min-h-[500px]">
+            <canvas id="typeCanvas" class="w-full h-full"></canvas>
+            <div id="info-overlay" class="absolute bottom-8 left-8 p-6 glass rounded-2xl border-l-4 border-blue-400 max-w-md">
+                <h4 id="info-title" class="heading-font text-xl text-blue-200 mb-2"></h4>
+                <p id="info-text" class="text-xs text-white/80 leading-relaxed"></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: { title: "Типы Рек", btnM: "Горная река", btnP: "Равнинная река", 
+                modes: {
+                    mountain: { t: "Горная река", d: "Течет в узкой, глубокой долине (ущелье). Скорость течения высокая. Русло прямолинейное, каменистое, часто с порогами и водопадами." },
+                    plain: { t: "Равнинная река", d: "Течет в широкой долине. Скорость течения низкая. Русло извилистое (меандры), дно песчаное или илистое." }
+                }
+            },
+            kz: { title: "Өзен Түрлері", btnM: "Тау өзені", btnP: "Жазық өзені",
+                modes: {
+                    mountain: { t: "Тау өзені", d: "Тар, терең аңғармен (шатқал) ағады. Ағыс жылдамдығы жоғары. Арнасы түзу, тасты, жиі шоңғалдар мен сарқырамалар болады." },
+                    plain: { t: "Жазық өзені", d: "Кең аңғармен ағады. Ағыс жылдамдығы төмен. Арнасы ирелең (меандрлар), түбі құмды немесе лайлы." }
+                }
+            },
+            en: { title: "River Types", btnM: "Mountain River", btnP: "Plain River",
+                modes: {
+                    mountain: { t: "Mountain River", d: "Flows in a narrow, deep valley (gorge). High flow velocity. Channel is straight, rocky, often with rapids and waterfalls." },
+                    plain: { t: "Plain River", d: "Flows in a wide valley. Low flow velocity. Channel is meandering, bottom is sandy or silty." }
+                }
+            }
+        };
+        let currentLang = 'ru', currentMode = 'mountain', canvas, ctx;
+        let particles = [];
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.setMode = function(m) { 
+            currentMode = m; 
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(m === 'mountain' ? 'btn-mountain' : 'btn-plain').classList.add('active');
+            particles = [];
+            updateUI(); 
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('btn-mountain').textContent = t.btnM;
+            document.getElementById('btn-plain').textContent = t.btnP;
+            const d = t.modes[currentMode];
+            document.getElementById('info-title').textContent = d.t;
+            document.getElementById('info-text').textContent = d.d;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const w = canvas.width, h = canvas.height;
+
+            if(currentMode === 'mountain') {
+                // Steep slope
+                ctx.fillStyle = '#57534e'; // Rock color
+                ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(0, h*0.2); ctx.lineTo(w, h*0.8); ctx.lineTo(w, h); ctx.fill();
+                
+                // Water
+                ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 3;
+                particles.forEach(p => {
+                    p.x += 4; p.y += 2.4; // Fast diagonal
+                    if(p.x > w) { p.x = 0; p.y = h*0.2 + Math.random()*20; }
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x-10, p.y-6); ctx.stroke();
+                });
+            } else {
+                // Wide valley
+                ctx.fillStyle = '#15803d'; // Grass
+                ctx.fillRect(0,0,w,h);
+                
+                // Meander
+                ctx.fillStyle = '#0ea5e9';
+                ctx.beginPath();
+                ctx.moveTo(0, h*0.5);
+                for(let i=0; i<=w; i+=10) ctx.lineTo(i, h*0.5 + Math.sin(i*0.015)*100);
+                ctx.lineTo(w, h*0.5+50); // width
+                for(let i=w; i>=0; i-=10) ctx.lineTo(i, h*0.5 + Math.sin(i*0.015)*100 + 40);
+                ctx.fill();
+
+                // Particles
+                ctx.fillStyle = 'white';
+                particles.forEach(p => {
+                    p.x += 1; // Slow
+                    if(p.x > w) p.x = 0;
+                    const y = h*0.5 + Math.sin(p.x*0.015)*100 + 20;
+                    ctx.beginPath(); ctx.arc(p.x, y, 2, 0, Math.PI*2); ctx.fill();
+                });
+            }
+
+            // Fill particles if empty
+            if(particles.length < 50) particles.push({x: Math.random()*w, y: Math.random()*h});
+            
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('typeCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;
+            setLang('ru'); draw();
+        };
+        window.onresize = function() {
+             if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+             }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

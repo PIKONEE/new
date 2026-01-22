@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заттың мөлшері. Моль. Молярлық масса</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #047857; border-bottom: 3px solid #dcfce7; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #059669; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #059669; background: white; color: #059669; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #059669; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: center; font-size: 11px; }
+        th { background-color: #059669; color: white; }
+        .formula-box { background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%); padding: 20px; border-radius: 0.75rem; border-left: 5px solid #059669; margin: 15px 0; }
+        .calculation-box { background: #f0fdf4; padding: 15px; border-radius: 0.75rem; border-left: 4px solid #059669; margin: 10px 0; font-family: 'Courier New', monospace; font-size: 13px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-green-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Заттың Мөлшері, Моль, Молярлық Масса!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Amount of Substance, Mole, Molar Mass!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Количество вещества, моль, молярная масса!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-green-100">Моль - 6.02×10²³ бөлшектің саны (Авогадро сандары). Молярлық масса = молекулалық масса (г/моль). 1 моль су = 18 грамм. ХИМИЯНЫҢ НЕГІЗДЕРІ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-green-100">Mole - 6.02×10²³ particles (Avogadro's number). Molar mass = molecular mass (g/mol). 1 mole of water = 18 grams. FOUNDATION OF CHEMISTRY!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-green-100">Моль - 6,02×10²³ частиц (число Авогадро). Молярная масса = молекулярная масса (г/моль). 1 моль воды = 18 граммов. ОСНОВА ХИМИИ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. АВОГАДРО САНЫ ДІҢ ҰҒЫМЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. AVOGADRO'S NUMBER CONCEPT</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Число Авогадро - основной понятие</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div style="background: #f0fdf4; padding: 20px; border-radius: 0.75rem; border-left: 5px solid #059669;">
+                        <p lang="kk" class="lang-content text-sm font-bold mb-3">🔢 АВОГАДРО САНЫ:</p>
+                        <p lang="kk" class="lang-content text-sm">NA = <strong>6.02 × 10²³ бөлшік/моль</strong></p>
+                        <p lang="kk" class="lang-content text-sm mt-2">Әрі моль болса:</p>
+                        <p lang="kk" class="lang-content text-sm">• 6.02 × 10²³ атом</p>
+                        <p lang="kk" class="lang-content text-sm">• 6.02 × 10²³ молекула</p>
+                        <p lang="kk" class="lang-content text-sm">• 6.02 × 10²³ иондар</p>
+                        <p lang="kk" class="lang-content text-sm mt-2" style="color: #059669; font-weight: bold;">МАҒЫНАСЫ: өте үлкен сан!</p>
+
+                        <p lang="en" class="lang-content text-sm font-bold mb-3" style="margin-top: 15px;">🔢 AVOGADRO'S NUMBER:</p>
+                        <p lang="en" class="lang-content text-sm">NA = <strong>6.02 × 10²³ particles/mol</strong></p>
+                        <p lang="en" class="lang-content text-sm mt-2">One mole contains:</p>
+                        <p lang="en" class="lang-content text-sm">• 6.02 × 10²³ atoms</p>
+                        <p lang="en" class="lang-content text-sm">• 6.02 × 10²³ molecules</p>
+                        <p lang="en" class="lang-content text-sm">• 6.02 × 10²³ ions</p>
+                        <p lang="en" class="lang-content text-sm mt-2" style="color: #059669; font-weight: bold;">MEANING: extremely large number!</p>
+
+                        <p lang="ru" class="lang-content text-sm font-bold mb-3" style="margin-top: 15px;">🔢 ЧИСЛО АВОГАДРО:</p>
+                        <p lang="ru" class="lang-content text-sm">NA = <strong>6,02 × 10²³ частиц/моль</strong></p>
+                        <p lang="ru" class="lang-content text-sm mt-2">Один моль содержит:</p>
+                        <p lang="ru" class="lang-content text-sm">• 6,02 × 10²³ атомов</p>
+                        <p lang="ru" class="lang-content text-sm">• 6,02 × 10²³ молекул</p>
+                        <p lang="ru" class="lang-content text-sm">• 6,02 × 10²³ ионов</p>
+                        <p lang="ru" class="lang-content text-sm mt-2" style="color: #059669; font-weight: bold;">ЗНАЧЕНИЕ: огромное число!</p>
+                    </div>
+
+                    <div style="background: #f0fdf4; padding: 20px; border-radius: 0.75rem; border-left: 5px solid #059669;">
+                        <p lang="kk" class="lang-content text-sm font-bold mb-3">⚛️ САЛЫСТЫРМА:</p>
+                        <p lang="kk" class="lang-content text-sm">Бұл сан неше ұлықтыққа келсе:</p>
+                        <p lang="kk" class="lang-content text-sm mt-2"><strong>6.02 × 10²³</strong> =</p>
+                        <p lang="kk" class="lang-content text-sm">602000000000000000000000</p>
+                        <p lang="kk" class="lang-content text-sm mt-2" style="color: #059669; font-weight: bold;">Барлық құмындағы құмның саны!</p>
+
+                        <p lang="en" class="lang-content text-sm font-bold mb-3" style="margin-top: 15px;">⚛️ COMPARISON:</p>
+                        <p lang="en" class="lang-content text-sm">This number is so huge:</p>
+                        <p lang="en" class="lang-content text-sm mt-2"><strong>6.02 × 10²³</strong> =</p>
+                        <p lang="en" class="lang-content text-sm">602000000000000000000000</p>
+                        <p lang="en" class="lang-content text-sm mt-2" style="color: #059669; font-weight: bold;">All sand grains on Earth!</p>
+
+                        <p lang="ru" class="lang-content text-sm font-bold mb-3" style="margin-top: 15px;">⚛️ СРАВНЕНИЕ:</p>
+                        <p lang="ru" class="lang-content text-sm">Это число огромно:</p>
+                        <p lang="ru" class="lang-content text-sm mt-2"><strong>6,02 × 10²³</strong> =</p>
+                        <p lang="ru" class="lang-content text-sm">602000000000000000000000</p>
+                        <p lang="ru" class="lang-content text-sm mt-2" style="color: #059669; font-weight: bold;">Все песчинки на Земле!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. МОЛЯРЛЫҚ МАССА - ТАБЛИЦА ЖӘНЕ ЕСЕПТЕМЕЛЕР</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. MOLAR MASS - TABLE & CALCULATIONS</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Молярная масса - таблица и расчёты</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto mb-4">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">Заттың атауы</th>
+                            <th lang="kk" class="lang-content">Формула</th>
+                            <th lang="kk" class="lang-content">Молярлық масса (M)</th>
+                            <th lang="kk" class="lang-content">1 моль = ?</th>
+
+                            <th lang="en" class="lang-content">Substance</th>
+                            <th lang="en" class="lang-content">Formula</th>
+                            <th lang="en" class="lang-content">Molar mass (M)</th>
+                            <th lang="en" class="lang-content">1 mole = ?</th>
+
+                            <th lang="ru" class="lang-content">Вещество</th>
+                            <th lang="ru" class="lang-content">Формула</th>
+                            <th lang="ru" class="lang-content">Молярная масса (M)</th>
+                            <th lang="ru" class="lang-content">1 моль = ?</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Су</td>
+                            <td lang="kk" class="lang-content">H₂O</td>
+                            <td lang="kk" class="lang-content"><strong>18 г/моль</strong></td>
+                            <td lang="kk" class="lang-content">18 грамм</td>
+
+                            <td lang="en" class="lang-content">Water</td>
+                            <td lang="en" class="lang-content">H₂O</td>
+                            <td lang="en" class="lang-content"><strong>18 g/mol</strong></td>
+                            <td lang="en" class="lang-content">18 grams</td>
+
+                            <td lang="ru" class="lang-content">Вода</td>
+                            <td lang="ru" class="lang-content">H₂O</td>
+                            <td lang="ru" class="lang-content"><strong>18 г/моль</strong></td>
+                            <td lang="ru" class="lang-content">18 граммов</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Углекислый газ</td>
+                            <td lang="kk" class="lang-content">CO₂</td>
+                            <td lang="kk" class="lang-content"><strong>44 г/моль</strong></td>
+                            <td lang="kk" class="lang-content">44 грамм</td>
+
+                            <td lang="en" class="lang-content">Carbon dioxide</td>
+                            <td lang="en" class="lang-content">CO₂</td>
+                            <td lang="en" class="lang-content"><strong>44 g/mol</strong></td>
+                            <td lang="en" class="lang-content">44 grams</td>
+
+                            <td lang="ru" class="lang-content">Углекислый газ</td>
+                            <td lang="ru" class="lang-content">CO₂</td>
+                            <td lang="ru" class="lang-content"><strong>44 г/моль</strong></td>
+                            <td lang="ru" class="lang-content">44 грамма</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Ас тұзы</td>
+                            <td lang="kk" class="lang-content">NaCl</td>
+                            <td lang="kk" class="lang-content"><strong>58.5 г/моль</strong></td>
+                            <td lang="kk" class="lang-content">58.5 грамм</td>
+
+                            <td lang="en" class="lang-content">Table salt</td>
+                            <td lang="en" class="lang-content">NaCl</td>
+                            <td lang="en" class="lang-content"><strong>58.5 g/mol</strong></td>
+                            <td lang="en" class="lang-content">58.5 grams</td>
+
+                            <td lang="ru" class="lang-content">Поваренная соль</td>
+                            <td lang="ru" class="lang-content">NaCl</td>
+                            <td lang="ru" class="lang-content"><strong>58,5 г/моль</strong></td>
+                            <td lang="ru" class="lang-content">58,5 граммов</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="calculation-box">
+                        <p lang="kk" class="lang-content"><strong>📝 ЕСЕПТЕМЕ 1: Суды (H₂O) есептеу</strong></p>
+                        <p lang="kk" class="lang-content">Сұраңыз: 36 грамм су құрылған нешеше моль?</p>
+                        <p lang="kk" class="lang-content">n = m / M = 36 / 18 = <strong>2 моль</strong> ✓</p>
+
+                        <p lang="en" class="lang-content" style="margin-top: 10px;"><strong>📝 CALCULATION 1: Water (H₂O)</strong></p>
+                        <p lang="en" class="lang-content">Question: How many moles in 36 grams of water?</p>
+                        <p lang="en" class="lang-content">n = m / M = 36 / 18 = <strong>2 moles</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content" style="margin-top: 10px;"><strong>📝 РАСЧЁТ 1: Вода (H₂O)</strong></p>
+                        <p lang="ru" class="lang-content">Вопрос: сколько молей в 36 граммах воды?</p>
+                        <p lang="ru" class="lang-content">n = m / M = 36 / 18 = <strong>2 моля</strong> ✓</p>
+                    </div>
+
+                    <div class="calculation-box">
+                        <p lang="kk" class="lang-content"><strong>📝 ЕСЕПТЕМЕ 2: CO₂ массасын табу</strong></p>
+                        <p lang="kk" class="lang-content">Сұраңыз: 3 моль CO₂ нешеше грамм?</p>
+                        <p lang="kk" class="lang-content">m = n × M = 3 × 44 = <strong>132 грамм</strong> ✓</p>
+
+                        <p lang="en" class="lang-content" style="margin-top: 10px;"><strong>📝 CALCULATION 2: Mass of CO₂</strong></p>
+                        <p lang="en" class="lang-content">Question: How many grams in 3 moles of CO₂?</p>
+                        <p lang="en" class="lang-content">m = n × M = 3 × 44 = <strong>132 grams</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content" style="margin-top: 10px;"><strong>📝 РАСЧЁТ 2: Масса CO₂</strong></p>
+                        <p lang="ru" class="lang-content">Вопрос: сколько граммов в 3 молях CO₂?</p>
+                        <p lang="ru" class="lang-content">m = n × M = 3 × 44 = <strong>132 грамма</strong> ✓</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. НЕГІЗДЕГІ ФОРМУЛАЛАР</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. FUNDAMENTAL FORMULAS</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Основные формулы</h2>
+
+            <div class="rule-card">
+                <div class="formula-box">
+                    <p lang="kk" class="lang-content text-sm font-bold mb-2">1️⃣ Молектің мөлшері:</p>
+                    <p lang="kk" class="lang-content text-sm"><strong>n = m / M</strong></p>
+                    <p lang="kk" class="lang-content text-sm" style="color: #666;">n - моль саны, m - масса (г), M - молярлық масса (г/моль)</p>
+
+                    <p lang="en" class="lang-content text-sm font-bold mb-2" style="margin-top: 15px;">1️⃣ Amount of substance:</p>
+                    <p lang="en" class="lang-content text-sm"><strong>n = m / M</strong></p>
+                    <p lang="en" class="lang-content text-sm" style="color: #666;">n - number of moles, m - mass (g), M - molar mass (g/mol)</p>
+
+                    <p lang="ru" class="lang-content text-sm font-bold mb-2" style="margin-top: 15px;">1️⃣ Количество вещества:</p>
+                    <p lang="ru" class="lang-content text-sm"><strong>n = m / M</strong></p>
+                    <p lang="ru" class="lang-content text-sm" style="color: #666;">n - количество молей, m - масса (г), M - молярная масса (г/моль)</p>
+
+                    <p lang="kk" class="lang-content text-sm font-bold mb-2" style="margin-top: 15px;">2️⃣ Массаны табу:</p>
+                    <p lang="kk" class="lang-content text-sm"><strong>m = n × M</strong></p>
+                    <p lang="kk" class="lang-content text-sm" style="color: #666;">n - моль саны, M - молярлық масса</p>
+
+                    <p lang="en" class="lang-content text-sm font-bold mb-2" style="margin-top: 15px;">2️⃣ Finding mass:</p>
+                    <p lang="en" class="lang-content text-sm"><strong>m = n × M</strong></p>
+                    <p lang="en" class="lang-content text-sm" style="color: #666;">n - number of moles, M - molar mass</p>
+
+                    <p lang="ru" class="lang-content text-sm font-bold mb-2" style="margin-top: 15px;">2️⃣ Нахождение массы:</p>
+                    <p lang="ru" class="lang-content text-sm"><strong>m = n × M</strong></p>
+                    <p lang="ru" class="lang-content text-sm" style="color: #666;">n - количество молей, M - молярная масса</p>
+
+                    <p lang="kk" class="lang-content text-sm font-bold mb-2" style="margin-top: 15px;">3️⃣ Бөлшектер саны:</p>
+                    <p lang="kk" class="lang-content text-sm"><strong>N = n × NA</strong></p>
+                    <p lang="kk" class="lang-content text-sm" style="color: #666;">N - бөлшектер саны, NA - Авогадро саны (6.02×10²³)</p>
+
+                    <p lang="en" class="lang-content text-sm font-bold mb-2" style="margin-top: 15px;">3️⃣ Number of particles:</p>
+                    <p lang="en" class="lang-content text-sm"><strong>N = n × NA</strong></p>
+                    <p lang="en" class="lang-content text-sm" style="color: #666;">N - number of particles, NA - Avogadro's number (6.02×10²³)</p>
+
+                    <p lang="ru" class="lang-content text-sm font-bold mb-2" style="margin-top: 15px;">3️⃣ Количество частиц:</p>
+                    <p lang="ru" class="lang-content text-sm"><strong>N = n × NA</strong></p>
+                    <p lang="ru" class="lang-content text-sm" style="color: #666;">N - количество частиц, NA - число Авогадро (6,02×10²³)</p>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #dcfce7; border-radius: 1rem; border-top: 4px solid #059669;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Заттың мөлшері - моль арқылы өлшенеді. 1 моль = 6.02×10²³ бөлшік (Авогадро сандары). Молярлық масса = молекулалық масса сандық мәні (г/моль). Бір моль судың массасы 18 грамм, бір моль CO₂-нің массасы 44 грамм. Негіздегі формулалар: n=m/M, m=n×M, N=n×NA. ХИМИЯНЫҢ ҚҰРЫЛЫМЫ!</p>
+            <p lang="en" class="lang-content text-sm">Amount of substance measured in moles. 1 mole = 6.02×10²³ particles (Avogadro's number). Molar mass = molecular mass value (g/mol). One mole of water = 18 grams, one mole of CO₂ = 44 grams. Key formulas: n=m/M, m=n×M, N=n×NA. FOUNDATION OF CHEMISTRY!</p>
+            <p lang="ru" class="lang-content text-sm">Количество вещества измеряется в молях. 1 моль = 6,02×10²³ частиц (число Авогадро). Молярная масса = значение молекулярной массы (г/моль). Один моль воды = 18 граммов, один моль CO₂ = 44 грамма. Ключевые формулы: n=m/M, m=n×M, N=n×NA. ОСНОВА ХИМИИ!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

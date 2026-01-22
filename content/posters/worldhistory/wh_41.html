@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Театр Диониса: Рождение Драмы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #312e81, #1e1b4b, #020617);
+            color: #fdf4ff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #8b5cf6;
+            color: white;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #8b5cf6;
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #8b5cf6; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-white to-blue-500 uppercase">
+                Театр Диониса
+            </h1>
+            <p id="sub-title" class="text-purple-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Под покровительством бога вина и радости</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-purple-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-purple-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-purple-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-purple-600 inline-block"></span>
+                Устройство сцены
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-purple-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="theatreCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-purple-500/50 italic text-center uppercase tracking-widest">Нажмите на части театра для изучения их назначения</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-purple-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Великие Дионисии</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Театр для греков был не развлечением, а школой жизни и религиозным долгом. Представления шли несколько дней, и на них собирался весь город. Нажмите на схему слева.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🎭</span>
+                            <span id="hint-1" class="text-purple-200/60 font-bold uppercase text-xs tracking-widest">Трагедия и Комедия</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-2" class="text-purple-200/60 font-bold uppercase text-xs tracking-widest">Архитектура сцены</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-purple-950/40 text-purple-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-purple-950/40 rounded-[2.5rem] border border-purple-500/20 shadow-xl">
+                        <strong class="text-purple-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-role">Роль в театре:</strong>
+                        <p id="info-fact" class="text-purple-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-purple-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">😰</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-purple-400 uppercase">Трагедия</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Слово означает «песнь козлов» (спутников Диониса). Трагедии ставили серьезные вопросы о роке, долге и воле богов. Самые известные авторы: <strong>Эсхил, Софокл, Еврипид</strong>.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🤣</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-indigo-400 uppercase">Комедия</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Веселое представление, часто высмеивавшее политиков, философов и общественные пороки. Королем комедии считался <strong>Аристофан</strong>.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-blue-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🎭</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Маски и Котурны</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Актеры (только мужчины) носили крупные маски с выразительной мимикой и обувь на толстой подошве — <strong>котурны</strong>, чтобы их было видно с самых дальних рядов.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-purple-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-purple-100/70 leading-tight max-w-5xl mx-auto">
+            «Театр — это зеркало, где народ видит свою душу и учится мудрости через сострадание и смех».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Театр Диониса",
+                subtitle: "Рождение Драмы",
+                visualTitle: "Устройство сцены",
+                hint: "Нажмите на части театра для изучения",
+                placeholderTitle: "Великие Дионисии",
+                placeholderText: "Театр Диониса под открытым небом вмещал до 17 тысяч зрителей. Узнайте, как было устроено это чудо архитектуры и культуры.",
+                labelRole: "Роль в театре:",
+                hint1: "Трагедия и Комедия", hint2: "Архитектура сцены",
+                card1Title: "Трагедия",
+                card1Text: "Высокий жанр о борьбе человека с судьбой. Трагедия очищала души зрителей через страх и сострадание (катарсис).",
+                card2Title: "Комедия",
+                card2Text: "Смех как оружие демократии. Комедии Аристофана не щадили даже самых могущественных стратегов Афин.",
+                card3Title: "Маски и Котурны",
+                card3Text: "Маска усиливала голос и эмоцию, а котурны делали актера величественнее, превращая его в полубога на сцене.",
+                footerQuote: "«Театр — это зеркало, где народ видит свою душу и учится мудрости через сострадание и смех».",
+                nodes: [
+                    { id: 1, tag: "Центр", title: "Орхестра", desc: "Круглая площадка в центре театра, на которой выступали хор и актеры. В центре орхестры всегда находился алтарь бога Диониса.", fact: "Хор был обязательным участником: он комментировал события и выражал мнение автора." },
+                    { id: 2, tag: "Зрители", title: "Театрон", desc: "Места для зрителей, вырубленные прямо в склоне холма Акрополя. Ряды располагались полукругом, один выше другого, обеспечивая отличную видимость и акустику.", fact: "Билет в театр стоил денег, но беднякам государство выдавало специальную сумму (феорикон) для посещения." },
+                    { id: 3, tag: "Сцена", title: "Скена", desc: "Пристройка за орхестрой. Первоначально это была палатка для переодевания, но позже она превратилась в каменное здание, изображавшее дворец или храм.", fact: "От этого слова произошло наше современное слово 'сцена'." },
+                    { id: 4, tag: "Актер", title: "Протагонист", desc: "Главный актер. В раннем театре актер был один, позже их стало три. Они исполняли все роли, меняя маски прямо по ходу пьесы.", fact: "Актеры в Афинах пользовались огромным уважением и освобождались от налогов." },
+                    { id: 5, tag: "Магия", title: "Механе", desc: "Специальный кран для подъема актеров, изображавших богов. Отсюда пошло выражение 'Бог из машины' (Deus ex machina) — внезапная развязка сюжета.", fact: "Греки были мастерами театральных спецэффектов, используя бронзовые листы для имитации грома." }
+                ]
+            },
+            kz: {
+                title: "Дионис театры",
+                subtitle: "Драманың тууы",
+                visualTitle: "Сахна құрылымы",
+                hint: "Театр бөліктерін зерттеу үшін басыңыз",
+                placeholderTitle: "Ұлы Дионисиялар",
+                placeholderText: "Дионис театры 17 мыңға дейін көрермен сыйдырған. Сәулет пен мәдениеттің осы ғажайыбы қалай жасалғанын біліңіз.",
+                labelRole: "Театрдағы рөлі:",
+                hint1: "Трагедия мен Комедия", hint2: "Сахна сәулеті",
+                card1Title: "Трагедия",
+                card1Text: "Адамның тағдырмен күресі туралы жанр. Көрермендердің жанын тазарту (катарсис) құралы саналды.",
+                card2Title: "Комедия",
+                card2Text: "Күлкі — демократия қаруы. Аристофан комедиялары тіпті ең мықты стратегтерді де сынаған.",
+                card3Title: "Маскалар мен Котурндар",
+                card3Text: "Маска дауысты күшейтсе, котурндар актерді еңселі етіп көрсетті.",
+                footerQuote: "«Театр — халық өз жанын көретін және аяушылық пен күлкі арқылы даналыққа үйренетін айна».",
+                nodes: [
+                    { id: 1, tag: "Орталық", title: "Орхестра", desc: "Театр ортасындағы дөңгелек алаң. Мұнда хор мен актерлер өнер көрсеткен.", fact: "Хор міндетті қатысушы болды." },
+                    { id: 2, tag: "Көрермендер", title: "Театрон", desc: "Акрополь беткейіндегі көрермен орындары. Олар жарты шеңбер түрінде орналасқан.", fact: "Кедейлерге театрға бару үшін мемлекет ақша бөлген (феорикон)." },
+                    { id: 3, tag: "Сахна", title: "Скена", desc: "Орхестра артындағы ғимарат. Бұл жерде актерлер киімін ауыстырған.", fact: "'Сцена' сөзі осы атаудан шыққан." },
+                    { id: 4, tag: "Актер", title: "Протагонист", desc: "Басты актер. Олар маскаларды ауыстырып, барлық рөлдерді орындаған.", fact: "Актерлер салықтан босатылған." },
+                    { id: 5, tag: "Сиқыр", title: "Механе", desc: "Құдайларды бейнелейтін актерлерді көтеруге арналған кран.", fact: "'Машинадан шыққан құдай' тіркесі осыдан қалған." }
+                ]
+            },
+            en: {
+                title: "Theatre of Dionysus",
+                subtitle: "Birth of Drama",
+                visualTitle: "Stage Layout",
+                hint: "Click on theatre parts to study them",
+                placeholderTitle: "The Great Dionysia",
+                placeholderText: "The open-air Theatre of Dionysus held up to 17,000 spectators. Explore the layout of this architectural and cultural miracle.",
+                labelRole: "Role in Theatre:",
+                hint1: "Tragedy & Comedy", hint2: "Stage Architecture",
+                card1Title: "Tragedy",
+                card1Text: "The word means 'goat song'. Tragedies addressed fate, duty, and gods. Key authors: Sophocles, Euripides.",
+                card2Title: "Comedy",
+                card2Text: "Laughter as a democratic weapon. Aristophanes' plays mocked even the most powerful leaders of Athens.",
+                card3Title: "Masks & Buskins",
+                card3Text: "Actors wore expressive masks and high-soled shoes (cothurni) to be seen from the furthest rows.",
+                footerQuote: "«The theatre is a mirror where the people see their soul and learn wisdom through compassion and laughter.»",
+                nodes: [
+                    { id: 1, tag: "Center", title: "Orchestra", desc: "The circular floor at the center where the chorus danced and actors performed. An altar to Dionysus stood in the middle.", fact: "The chorus acted as a bridge between the audience and the story, commenting on the action." },
+                    { id: 2, tag: "Audience", title: "Theatron", desc: "Seating built into the slopes of the Acropolis. Tiers were arranged in a semi-circle for perfect sightlines and acoustics.", fact: "While tickets cost money, the state provided a fund (Theorikon) for poor citizens to attend." },
+                    { id: 3, tag: "Stage", title: "Skene", desc: "The building behind the orchestra. Originally a hut for costume changes, it became a stone backdrop for plays.", fact: "Our modern word 'scene' originates from this Greek term." },
+                    { id: 4, tag: "Actor", title: "Protagonist", desc: "The first actor. Originally only one, eventually three actors played all roles by changing masks during the play.", fact: "Actors were highly respected in Athens and were exempt from military service." },
+                    { id: 5, tag: "Magic", title: "Mechane", desc: "A crane used to lower actors representing gods onto the stage. This gave rise to the term 'Deus ex machina'.", fact: "Greeks used bronze sheets to mimic the sound of thunder behind the skene." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('theatreCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-role').innerText = t.labelRole;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Semi-circle Theatron (Rows)
+            ctx.strokeStyle = 'rgba(139, 92, 246, 0.2)';
+            ctx.lineWidth = 2;
+            for(let r=80; r<240; r+=30) {
+                ctx.beginPath();
+                ctx.arc(cx, cy - 50, r, 0.1 * Math.PI, 0.9 * Math.PI, false);
+                ctx.stroke();
+            }
+
+            // Draw Orchestra
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.beginPath();
+            ctx.arc(cx, cy + 50, 60, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#8b5cf6';
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx, y: cy + 50, icon: "⭕" },      // Orchestra
+                { id: 2, x: cx - 180, y: cy - 20, icon: "👥" }, // Theatron
+                { id: 3, x: cx, y: cy + 150, icon: "🏛️" },     // Skene
+                { id: 4, x: cx - 40, y: cy + 70, icon: "🎭" },  // Actors
+                { id: 5, x: cx + 180, y: cy + 140, icon: "🏗️" } // Mechane
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core Point
+                ctx.fillStyle = (i === 1) ? '#4338ca' : '#8b5cf6';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#a5b4fc';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Казахстан в период Октябрьской революции</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .october-theme {
+            background: linear-gradient(to bottom right, #fef2f2, #f1f5f9);
+        }
+
+        .soviet-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #991b1b;
+            box-shadow: 0 10px 30px -5px rgba(153, 27, 27, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .soviet-card:hover {
+            transform: translateY(-5px);
+            border-color: #dc2626;
+        }
+
+        .revolutionary-glow {
+            box-shadow: 0 0 25px rgba(153, 27, 27, 0.2);
+        }
+
+        .btn-active {
+            background-color: #991b1b;
+            color: white;
+            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.3);
+        }
+
+        canvas {
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+        }
+    </style>
+</head>
+<body class="october-theme text-slate-900 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-red-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🚩</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-red-900">Октябрь 1917</h1>
+            </div>
+            <div class="flex bg-red-100/50 p-1 rounded-full border border-red-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
+        
+        <!-- Section 1: Detailed Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-red-800 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Great Turning Point</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase text-red-900">Крах старого мира</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    Октябрьский переворот в Петрограде отозвался в Казахстане борьбой за каждый город. Процесс установления советской власти растянулся на 4 месяца, столкнув сторонников «диктатуры пролетариата» и сторонников национальной автономии.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="establishmentChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Chronology Focus -->
+        <div class="bg-red-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl revolutionary-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">🗓️</div>
+                    <div id="chrono-label" class="text-red-300 font-black text-sm uppercase tracking-[0.3em]">Critical Timeline</div>
+                </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="chrono-title" class="text-3xl font-black tracking-tight uppercase text-red-200">Хроника власти</h3>
+                    <p id="chrono-desc" class="text-xl text-red-50 font-light leading-relaxed">
+                        Октябрь 1917: Перовск (Кызылорда) — первый советский город. Ноябрь 1917: Победа в Ташкенте. Январь 1918: Установление власти в Оренбурге после боев с Дутовым. Март 1918: Советская власть дошла до Верного (Алматы).
+                    </p>
+                </div>
+            </div>
+            <div class="absolute -top-10 -right-10 text-[15rem] opacity-5 pointer-events-none rotate-12">⚔️</div>
+        </div>
+
+        <!-- Section 3: Deep Dive into Forces -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-700">
+                <div class="text-5xl mb-4">⚒️</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Советы и Декреты</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">Большевики опирались на Декрет о мире и Декрет о земле. Это обеспечило им поддержку солдат и безземельных жатаков, уставших от войны и колониализма.</p>
+            </div>
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-900">
+                <div class="text-5xl mb-4">🦅</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Алаш-Орда</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">На декабрьском съезде 1917 года была провозглашена Алашская автономия. Лидеры Алаш не признали СНК Ленина, считая их диктатурой одной партии.</p>
+            </div>
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-slate-800">
+                <div class="text-5xl mb-4">⛓️</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Противостояние</h4>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">Установление власти Советов часто сопровождалось разгоном местных земств и казахских комитетов, что стало прологом к масштабной Гражданской войне.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-slate-900 text-slate-400">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Октябрь 1917 года расколол казахское общество на два лагеря: одни искали спасения в мировой революции, другие — в национальной государственности».
+            </p>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-red-800">October Revolution Impact on Kazakhstan</div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Октябрь 1917",
+                vizTitle: "Крах старого мира",
+                vizDesc: "Установление Советской власти в Казахстане заняло период с октября 1917 г. по март 1918 г. Основными методами стали политическая агитация и вооруженное подавление сопротивления.",
+                statusBadge: "Великий перелом",
+                chronoTitle: "Хроника власти Советов",
+                chronoDesc: "Власть переходила к Советам поэтапно: Перовск (октябрь), Ташкент (ноябрь), Букеевская Орда (декабрь), Оренбург (январь), Верный (март).",
+                fact1T: "Советы и Декреты", fact1D: "Декрет 'О праве народов на самоопределение' стал мощным оружием большевиков, хотя на практике он часто игнорировался местными советами.",
+                fact2T: "Альтернатива Алаш", fact2D: "В декабре 1917 г. в Оренбурге II съезд казахов провозгласил автономию Алаш, чтобы защитить народ от анархии и гражданской войны.",
+                fact3T: "Социальный раскол", fact3D: "Революция разделила аул: часть молодежи и бедноты поддержала красных, в то время как элита и духовенство сплотились вокруг Алаш.",
+                footer: "«Октябрь 1917 года расколол казахское общество на два лагеря: одни искали спасения в мировой революции, другие — в национальной государственности».",
+                chartLabels: ["Октябрь-Ноябрь 1917", "Декабрь 1917", "Январь-Февраль 1918", "Март 1918"],
+                chartTitle: "Темпы установления власти Советов (регионы)"
+            },
+            kz: {
+                title: "Қазан 1917",
+                vizTitle: "Ескі әлемнің күйреуі",
+                vizDesc: "Қазақстанда Кеңес өкіметінің орнауы 1917 жылдың қазанынан 1918 жылдың наурызына дейінгі кезеңді қамтыды. Негізгі әдістер — саяси үгіт-насихат және қарулы күрес болды.",
+                statusBadge: "Ұлы бетбұрыс",
+                chronoTitle: "Кеңес билігінің хроникасы",
+                chronoDesc: "Билік Кеңестерге кезең-кезеңмен өтті: Перовск (қазан), Ташкент (қараша), Бөкей Ордасы (желтоқсан), Орынбор (қаңтар), Верный (наурыз).",
+                fact1T: "Кеңестер мен Декреттер", fact1D: "«Халықтардың өзін-өзі билеу құқығы» туралы декрет большевиктердің қуатты қаруы болды, бірақ іс жүзінде ол жиі орындалмады.",
+                fact2T: "Алаш баламасы", fact2D: "1917 ж. желтоқсанда Орынборда өткен II съезд халықты азаматтық соғыстан қорғау үшін Алаш автономиясын жариялады.",
+                fact3T: "Әлеуметтік жіктелу", fact3D: "Төңкеріс ауылды екіге бөлді: кедейлер мен жастардың бір бөлігі қызылдарды қолдаса, зиялылар мен дінбасылар Алаш төңірегіне топтасты.",
+                footer: "«1917 жылғы Қазан төңкерісі қазақ қоғамын екіге бөлді: бірі әлемдік революциядан, екіншісі ұлттық мемлекеттіліктен құтқару іздеді».",
+                chartLabels: ["Қазан-Қараша 1917", "Желтоқсан 1917", "Қаңтар-Ақпан 1918", "Наурыз 1918"],
+                chartTitle: "Кеңес өкіметінің орнау қарқыны (аймақтар)"
+            },
+            en: {
+                title: "October 1917",
+                vizTitle: "Collapse of Old World",
+                vizDesc: "The establishment of Soviet power in Kazakhstan lasted from October 1917 to March 1918. The methods included political agitation and the armed suppression of opponents.",
+                statusBadge: "The Great Turning Point",
+                chronoTitle: "Soviet Power Chronology",
+                chronoDesc: "Power shifted to Soviets in stages: Perovsk (October), Tashkent (November), Bukey Horde (December), Orenburg (January), Vernyi (March).",
+                fact1T: "Soviets & Decrees", fact1D: "The 'Decree on the Rights of Peoples' was a potent tool for the Bolsheviks, although often ignored by local councils in practice.",
+                fact2T: "Alash Alternative", fact2D: "In December 1917, the 2nd All-Kazakh Congress proclaimed Alash Autonomy to protect the people from growing anarchy and civil war.",
+                fact3T: "Social Split", fact3D: "The revolution divided the village: part of the youth and poor supported the Reds, while the elite and clergy united around Alash.",
+                footer: "«October 1917 split Kazakh society: some sought salvation in global revolution, others in national statehood.»",
+                chartLabels: ["Oct-Nov 1917", "Dec 1917", "Jan-Feb 1918", "March 1918"],
+                chartTitle: "Soviet Power Establishment Pace (regions)"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('establishmentChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        label: '% of Territory',
+                        data: [15, 40, 85, 100],
+                        borderColor: '#991b1b',
+                        backgroundColor: 'rgba(153, 27, 27, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 5,
+                        pointRadius: 8,
+                        pointBackgroundColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    }
+                }
+            });
+        }
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('chrono-title').innerText = t.chronoTitle;
+            document.getElementById('chrono-desc').innerText = t.chronoDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-red-800 hover:bg-red-50 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => changeLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

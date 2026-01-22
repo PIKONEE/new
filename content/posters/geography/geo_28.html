@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Currents</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #1e3a8a; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; }
+        .lang-btn.active { background: #93c5fd; color: #1e3a8a; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-blue-400">
+        <div><h1 id="main-title" class="heading-font text-3xl uppercase tracking-tighter text-blue-200"></h1></div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center justify-center min-h-[500px]">
+            <canvas id="currentCanvas" class="w-full h-full"></canvas>
+            <div class="flex gap-4 mt-4 text-xs font-bold uppercase tracking-widest">
+                <span class="text-red-400">Warm / Теплые</span>
+                <span class="text-blue-400">Cold / Холодные</span>
+            </div>
+        </div>
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-blue-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-blue-200"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/90 space-y-6"></div>
+        </div>
+    </main>
+    <script>
+        const translations = {
+            ru: { title: "Океанические Течения", infoTitle: "Реки в Океане", infoText: "Течения — это горизонтальные перемещения водных масс. Теплые течения (Гольфстрим) несут воды от экватора к полюсам (красные). Холодные (Перуанское) — от полюсов к экватору (синие). Они влияют на климат материков." },
+            kz: { title: "Мұхит Ағыстары", infoTitle: "Мұхиттағы өзендер", infoText: "Ағыстар — су массаларының көлденең қозғалысы. Жылы ағыстар (Гольфстрим) экватордан полюстерге (қызыл), ал суық ағыстар (Перу) полюстерден экваторға (көк) бағытталады. Олар климатқа әсер етеді." },
+            en: { title: "Ocean Currents", infoTitle: "Rivers in the Ocean", infoText: "Currents are horizontal movements of water. Warm currents (Gulf Stream) flow from equator to poles (red). Cold currents (Peruvian) flow from poles to equator (blue). They affect global climate." }
+        };
+        let currentLang = 'ru', canvas, ctx;
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('info-title').textContent = t.infoTitle;
+            document.getElementById('info-text').textContent = t.infoText;
+        }
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const t = Date.now() * 0.05;
+
+            // Simplified Map (Continents)
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(w*0.1, h*0.2, w*0.2, h*0.4); // Americas approx
+            ctx.fillRect(w*0.4, h*0.2, w*0.2, h*0.3); // Europe/Africa
+            ctx.fillRect(w*0.7, h*0.2, w*0.2, h*0.3); // Asia
+
+            // Particles logic
+            // Gulf Stream (Warm)
+            drawFlow(w*0.35, h*0.5, w*0.5, h*0.2, '#f87171', t);
+            // Kuroshio (Warm)
+            drawFlow(w*0.8, h*0.5, w*0.9, h*0.3, '#f87171', t+100);
+            // Peru (Cold)
+            drawFlow(w*0.2, h*0.8, w*0.15, h*0.5, '#60a5fa', t+50);
+            
+            requestAnimationFrame(draw);
+        }
+        function drawFlow(x1, y1, x2, y2, c, t) {
+            ctx.strokeStyle = c; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(x1, y1);
+            // Bezier curve
+            ctx.quadraticCurveTo((x1+x2)/2, y2, x2, y2);
+            ctx.stroke();
+            
+            // Particle
+            const dist = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+            const p = (t % 100) / 100;
+            const mx = (1-p)*(1-p)*x1 + 2*(1-p)*p*((x1+x2)/2) + p*p*x2;
+            const my = (1-p)*(1-p)*y1 + 2*(1-p)*p*y2 + p*p*y2;
+            
+            ctx.fillStyle = c; ctx.beginPath(); ctx.arc(mx, my, 4, 0, Math.PI*2); ctx.fill();
+        }
+        window.onload = function() {
+            canvas = document.getElementById('currentCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500;
+            setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

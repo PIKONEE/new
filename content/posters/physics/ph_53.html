@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Энергия. Энергияның сақталу заңы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #fef08a 0%, #fef3c7 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #ca8a04 0%, #78350f 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #78350f; border-bottom: 3px solid #fef3c7; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #ca8a04; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #ca8a04; background: white; color: #ca8a04; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #ca8a04; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #ca8a04; color: white; }
+        .illustration { background: linear-gradient(135deg, #fef3c7 0%, #fef08a 100%); padding: 25px; border-radius: 1rem; margin: 15px 0; text-align: center; }
+        svg { max-width: 100%; height: auto; }
+        .info-box { background: linear-gradient(135deg, #fef3c7 0%, #fef08a 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #ca8a04; margin: 10px 0; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .example-card { background: #fef9e7; padding: 12px; border-radius: 0.5rem; border-left: 3px solid #ca8a04; font-size: 11px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-yellow-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Энергия және Сақталу Заңы</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Energy and Law of Conservation</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Энергия и закон сохранения</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-yellow-100">Энергия = жұмыстың қабілеттілігі. Кинетикалық энергия (қозғалыс), потенциалды энергия (орналасу). E_сағ = E_кин + E_пот = const! ТОЛЫҚ ТЕОРИЯ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-yellow-100">Energy = ability to do work. Kinetic energy (motion), potential energy (position). E_total = E_kin + E_pot = const! COMPLETE THEORY!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-yellow-100">Энергия = способность совершать работу. Кинетическая энергия (движение), потенциальная энергия (положение). E_общ = E_кин + E_пот = const! ПОЛНАЯ ТЕОРИЯ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ЭНЕРГИЯ ТҮРЛЕРІ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. TYPES OF ENERGY</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Виды энергии</h2>
+
+            <div class="rule-card">
+                <p lang="kk" class="lang-content text-sm"><strong>⚡ КИНЕТИКАЛЫҚ ЭНЕРГИЯ:</strong> E_кин = (m × v²) / 2</p>
+                <p lang="kk" class="lang-content text-sm">• Қозғалыс энергиясы | Массасы және жылдамдығынан байланысты</p>
+                <p lang="kk" class="lang-content text-sm">• Мысал: Доп ұшып барғанда, аралықта жүргенде, ағындағы су</p>
+
+                <p lang="en" class="lang-content text-sm"><strong>⚡ KINETIC ENERGY:</strong> E_kin = (m × v²) / 2</p>
+                <p lang="en" class="lang-content text-sm">• Energy of motion | Depends on mass and velocity</p>
+                <p lang="en" class="lang-content text-sm">• Example: Flying ball, moving car, flowing water</p>
+
+                <p lang="ru" class="lang-content text-sm"><strong>⚡ КИНЕТИЧЕСКАЯ ЭНЕРГИЯ:</strong> E_кин = (m × v²) / 2</p>
+                <p lang="ru" class="lang-content text-sm">• Энергия движения | Зависит от массы и скорости</p>
+                <p lang="ru" class="lang-content text-sm">• Пример: Летящий мяч, движущийся автомобиль, текущая вода</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>📍 ПОТЕНЦИАЛДЫ ЭНЕРГИЯ:</strong> E_пот = m × g × h</p>
+                <p lang="kk" class="lang-content text-sm">• Орналасуға энергиясы | Массасы, ауырыңғылау, биіктігінен байланысты</p>
+                <p lang="kk" class="lang-content text-sm">• Мысал: Төбеде тұрған дене, шыршында сәке, суға датчик</p>
+
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>📍 POTENTIAL ENERGY:</strong> E_pot = m × g × h</p>
+                <p lang="en" class="lang-content text-sm">• Energy of position | Depends on mass, gravity, height</p>
+                <p lang="en" class="lang-content text-sm">• Example: Body on top, apple on tree, dam with water</p>
+
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>📍 ПОТЕНЦИАЛЬНАЯ ЭНЕРГИЯ:</strong> E_пот = m × g × h</p>
+                <p lang="ru" class="lang-content text-sm">• Энергия положения | Зависит от массы, гравитации, высоты</p>
+                <p lang="ru" class="lang-content text-sm">• Пример: Тело на вершине, яблоко на дереве, вода в плотине</p>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ЭНЕРГИЯНЫҢ САҚТАЛУ ЗАҢЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. LAW OF ENERGY CONSERVATION</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Закон сохранения энергии</h2>
+
+            <div class="rule-card">
+                <p lang="kk" class="lang-content text-lg font-bold mb-4" style="color: #78350f; text-align: center;">E_сағ = E_кин + E_пот = const</p>
+                <p lang="en" class="lang-content text-lg font-bold mb-4" style="color: #78350f; text-align: center;">E_total = E_kin + E_pot = const</p>
+                <p lang="ru" class="lang-content text-lg font-bold mb-4" style="color: #78350f; text-align: center;">E_общ = E_кин + E_пот = const</p>
+
+                <p lang="kk" class="lang-content text-sm"><strong>✅ АНЫҚТАМАСЫ:</strong> Жиынтық энергия өзгермейді, біреуі азайса екіншісі өсінеді. Энергия жоқ болмайды, тек түрі өзгеді.</p>
+                <p lang="en" class="lang-content text-sm"><strong>✅ DEFINITION:</strong> Total energy doesn't change, if one decreases other increases. Energy doesn't disappear, only changes form.</p>
+                <p lang="ru" class="lang-content text-sm"><strong>✅ ОПРЕДЕЛЕНИЕ:</strong> Полная энергия не изменяется, если одна уменьшается другая увеличивается. Энергия не исчезает, только меняет вид.</p>
+
+                <div class="grid-3" style="margin-top: 15px;">
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>📌 МЫСАЛ:</strong> Дене төбеден құлам</p>
+                        <p lang="kk" class="lang-content">E_пот = 100 Дж (максимум)</p>
+                        <p lang="kk" class="lang-content">E_кин = 0 Дж (міндіміндіміс)</p>
+                        <p lang="kk" class="lang-content">↓ құлайды ↓</p>
+                        <p lang="kk" class="lang-content">E_пот = 50 Дж (жартысы)</p>
+                        <p lang="kk" class="lang-content">E_кин = 50 Дж (жартысы)</p>
+                        <p lang="kk" class="lang-content">↓құлайды ↓</p>
+                        <p lang="kk" class="lang-content">E_пот = 0 Дж (жоқ)</p>
+                        <p lang="kk" class="lang-content">E_кин = 100 Дж (барлығы)</p>
+
+                        <p lang="en" class="lang-content"><strong>📌 EXAMPLE:</strong> Body falls from top</p>
+                        <p lang="en" class="lang-content">E_pot = 100 J (max)</p>
+                        <p lang="en" class="lang-content">E_kin = 0 J (min)</p>
+                        <p lang="en" class="lang-content">↓falling↓</p>
+                        <p lang="en" class="lang-content">E_pot = 50 J (half)</p>
+                        <p lang="en" class="lang-content">E_kin = 50 J (half)</p>
+                        <p lang="en" class="lang-content">↓falling↓</p>
+                        <p lang="en" class="lang-content">E_pot = 0 J (none)</p>
+                        <p lang="en" class="lang-content">E_kin = 100 J (all)</p>
+
+                        <p lang="ru" class="lang-content"><strong>📌 ПРИМЕР:</strong> Тело падает с вершины</p>
+                        <p lang="ru" class="lang-content">E_пот = 100 Дж (макс)</p>
+                        <p lang="ru" class="lang-content">E_кин = 0 Дж (мин)</p>
+                        <p lang="ru" class="lang-content">↓падает↓</p>
+                        <p lang="ru" class="lang-content">E_пот = 50 Дж (половина)</p>
+                        <p lang="ru" class="lang-content">E_кин = 50 Дж (половина)</p>
+                        <p lang="ru" class="lang-content">↓падает↓</p>
+                        <p lang="ru" class="lang-content">E_пот = 0 Дж (нет)</p>
+                        <p lang="ru" class="lang-content">E_кин = 100 Дж (всё)</p>
+                    </div>
+
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>🔄 ТРАНСФОРМАЦИЯ:</strong></p>
+                        <p lang="kk" class="lang-content">• Су тұтқын → E_пот</p>
+                        <p lang="kk" class="lang-content">• Су құлайды → E_кін</p>
+                        <p lang="kk" class="lang-content">• Турбина өндіктігінің → E_электр</p>
+                        <p lang="kk" class="lang-content">• Лампа → E_жылу</p>
+                        <p lang="kk" class="lang-content">• Барлығы сақталды!</p>
+
+                        <p lang="en" class="lang-content"><strong>🔄 TRANSFORMATION:</strong></p>
+                        <p lang="en" class="lang-content">• Water in dam → E_pot</p>
+                        <p lang="en" class="lang-content">• Water falls → E_kin</p>
+                        <p lang="en" class="lang-content">• Turbine → E_electric</p>
+                        <p lang="en" class="lang-content">• Lamp → E_heat</p>
+                        <p lang="en" class="lang-content">• All conserved!</p>
+
+                        <p lang="ru" class="lang-content"><strong>🔄 ТРАНСФОРМАЦИЯ:</strong></p>
+                        <p lang="ru" class="lang-content">• Вода в плотине → E_пот</p>
+                        <p lang="ru" class="lang-content">• Вода падает → E_кин</p>
+                        <p lang="ru" class="lang-content">• Турбина → E_электр</p>
+                        <p lang="ru" class="lang-content">• Лампа → E_тепло</p>
+                        <p lang="ru" class="lang-content">• Всё сохранено!</p>
+                    </div>
+
+                    <div class="example-card">
+                        <p lang="kk" class="lang-content"><strong>⚠️ ШЫНАЙЫ:</strong></p>
+                        <p lang="kk" class="lang-content">• Үйкеліс → E_жылу</p>
+                        <p lang="kk" class="lang-content">• Ауырыңғылау → E_жылу</p>
+                        <p lang="kk" class="lang-content">• Дыбысы → E_жылу</p>
+                        <p lang="kk" class="lang-content">Ішінде сақталды, тек түрі өзгеді!</p>
+
+                        <p lang="en" class="lang-content"><strong>⚠️ IN REALITY:</strong></p>
+                        <p lang="en" class="lang-content">• Friction → E_heat</p>
+                        <p lang="en" class="lang-content">• Resistance → E_heat</p>
+                        <p lang="en" class="lang-content">• Sound → E_heat</p>
+                        <p lang="en" class="lang-content">Still conserved, just changes form!</p>
+
+                        <p lang="ru" class="lang-content"><strong>⚠️ В ДЕЙСТВИТЕЛЬНОСТИ:</strong></p>
+                        <p lang="ru" class="lang-content">• Трение → E_тепло</p>
+                        <p lang="ru" class="lang-content">• Сопротивление → E_тепло</p>
+                        <p lang="ru" class="lang-content">• Звук → E_тепло</p>
+                        <p lang="ru" class="lang-content">Всё сохранено, просто меняет форму!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fef3c7; border-radius: 1rem; border-top: 4px solid #ca8a04;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Энергия = жұмыстың қабілеттілігі. Екі түрі: кинетикалық (қозғалыс) және потенциалды (орналасу). Жиынтық энергия сақталды (E = const). Түрі өзгеме де сақталды! Энергия - табиғаттың ең маңызды ресурсы!</p>
+            <p lang="en" class="lang-content text-sm">Energy = ability to do work. Two types: kinetic (motion) and potential (position). Total energy is conserved (E = const). Changes form but conserved! Energy is nature's most important resource!</p>
+            <p lang="ru" class="lang-content text-sm">Энергия = способность совершать работу. Два вида: кинетическая (движение) и потенциальная (положение). Полная энергия сохраняется (E = const). Меняет форму но сохраняется! Энергия - самый важный ресурс природы!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

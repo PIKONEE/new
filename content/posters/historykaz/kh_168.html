@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ликвидация ханской власти в Казахстане</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .blueprint-bg {
+            background-color: #f1f5f9;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+
+        .premium-card {
+            background: white;
+            border-radius: 3.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 40px 100px -20px rgba(15, 23, 42, 0.1);
+        }
+
+        .lang-active {
+            background-color: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2rem;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 2.5rem;
+            border-left: 8px solid #0f172a;
+            padding: 2.5rem;
+            transition: all 0.5s ease;
+        }
+
+        .reform-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="blueprint-bg min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-slate-900 text-center">Ликвидация ханской власти (1822–1824 гг.)</h1>
+            <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Administrative Pyramid (Canvas) -->
+        <div class="premium-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block bg-slate-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Imperial Admin Model</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-slate-900 leading-tight uppercase italic">Чертеж Нового Порядка</h2>
+                    <p id="viz-desc" class="text-lg text-slate-500 font-light leading-relaxed">
+                        Реформы Сперанского и Эссена демонтировали систему ханского правления. Нажмите на уровни пирамиды, чтобы изучить новую административную структуру.
+                    </p>
+                    
+                    <div id="info-panel" class="info-panel shadow-lg transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-slate-900 mb-3 uppercase">Изучите иерархию</h3>
+                        <p id="element-desc" class="text-slate-600 text-sm leading-relaxed italic">Кликните на уровни Пирамиды управления на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="pyramidCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-slate-400 font-mono uppercase tracking-[0.4em]">Administrative Structure of 1822 Reform</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Reform Content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <!-- 1822 Reform (Middle Zhuz) -->
+            <div class="premium-card p-10 space-y-6">
+                <div class="mb-4"><span class="reform-badge" id="tag-1">Средний Жуз</span></div>
+                <h3 id="c1-t" class="text-2xl font-black uppercase text-slate-900 italic">«Устав о сибирских киргизах»</h3>
+                <p id="c1-d" class="text-slate-600 text-sm leading-relaxed">
+                    Разработан **М. Сперанским** в 1822 году. Ханская власть ликвидирована. Территория разделена на **внешние округа**. Центром стал город Омск. Главное нововведение: учреждение должности **Ага-султана**, который избирался только султанами на 3 года и наделялся чиновничьими полномочиями.
+                </p>
+                <div class="pt-4 border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Судебная реформа: разделение на 3 категории.</div>
+            </div>
+
+            <!-- 1824 Reform (Junior Zhuz) -->
+            <div class="premium-card p-10 space-y-6 border-t-8 border-slate-800">
+                <div class="mb-4"><span class="reform-badge" id="tag-2">Младший Жуз</span></div>
+                <h3 id="c2-t" class="text-2xl font-black uppercase text-slate-900 italic">«Устав об оренбургских киргизах»</h3>
+                <p id="c2-d" class="text-slate-600 text-sm leading-relaxed">
+                    Разработан **П. Эссеном** в 1824 году. Последний хан Младшего жуза **Шергазы** был вызван в Оренбург и отстранен от власти. Территория разделена на Западную, Среднюю и Восточную части, управляемые султанами-правителями, назначаемыми из Оренбурга.
+                </p>
+                <div class="pt-4 border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Ликвидация самостоятельности Младшего жуза.</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Ликвидация ханской власти (1822–1824 гг.)",
+                vizTitle: "Чертеж Нового Порядка",
+                vizDesc: "Реформы XIX века демонтировали ханскую систему. Нажмите на уровни пирамиды для изучения новой имперской администрации.",
+                badge: "Анализ имперской модели",
+                elementTitleDefault: "Изучите иерархию",
+                elementDescDefault: "Кликните на уровни Пирамиды управления на холсте справа.",
+                tag1: "Средний Жуз", tag2: "Младший Жуз",
+                c1T: "«Устав о сибирских киргизах»", c1D: "М. Сперанский (1822). Ликвидация ханства в Среднем жузе. Создание округов и волостей. Выборные должности Ага-султанов.",
+                c2T: "«Устав об оренбургских киргизах»", c2D: "П. Эссен (1824). Отмена ханской власти в Младшем жузе. Назначение султанов-правителей напрямую из Оренбурга.",
+                levels: {
+                    okrug: { name: "Округ (Ага-султан)", text: "Высшая единица управления. Ага-султан избирался султанами. При нем состоял окружной приказ (2 русских заседателя и 2 казаха)." },
+                    volost: { name: "Волость (Волостной управитель)", text: "Состояла из 10–12 аулов. Должность волостного управителя была наследственной и утверждалась губернатором." },
+                    aul: { name: "Аул (Аульный старшина)", text: "Низшее звено. Включал 50–70 кибиток. Старшина избирался общиной на 3 года." }
+                }
+            },
+            kz: {
+                title: "Хандық биліктің жойылуы (1822–1824 жж.)",
+                vizTitle: "Жаңа тәртіп жобасы",
+                vizDesc: "XIX ғасырдағы реформалар хандық жүйені бөлшектеді. Жаңа империялық әкімшілікті зерттеу үшін пирамида деңгейлерін басыңыз.",
+                badge: "Империялық модельді талдау",
+                elementTitleDefault: "Иерархияны зерттеңіз",
+                elementDescDefault: "Оң жақтағы кенептегі Басқару пирамидасының деңгейлерін басыңыз.",
+                tag1: "Орта Жүз", tag2: "Кіші Жүз",
+                c1T: "«Сібір қырғыздары туралы жарғы»", c1D: "М. Сперанский (1822). Орта жүздегі хандықты жою. Округтер мен болыстарды құру. Сайланбалы Аға сұлтан лауазымы.",
+                c2T: "«Орынбор қырғыздары туралы жарғы»", c2D: "П. Эссен (1824). Кіші жүздегі хандық билікті тоқтату. Орынбордан сұлтан-билеушілерді тікелей тағайындау.",
+                levels: {
+                    okrug: { name: "Округ (Аға сұлтан)", text: "Жоғарғы басқару бірлігі. Аға сұлтанды сұлтандар сайлады. Округтік приказда 2 орыс заседателі мен 2 қазақ болды." },
+                    volost: { name: "Болыс (Болыс басқарушысы)", text: "10–12 ауылдан тұрды. Болыс басқарушысының лауазымы мұрагерлік сипатта болды және губернатор бекітті." },
+                    aul: { name: "Ауыл (Ауыл старшыны)", text: "Төменгі буын. 50–70 шаңырақтан тұрды. Старшынды қауым 3 жылға сайлады." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('pyramidCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawPyramid();
+        }
+
+        function drawPyramid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            const levels = [
+                { id: 'okrug', y: 80, w: 150, h: 100, color: '#0f172a' },
+                { id: 'volost', y: 200, w: 350, h: 100, color: '#334155' },
+                { id: 'aul', y: 320, w: 550, h: 100, color: '#64748b' }
+            ];
+
+            levels.forEach(lvl => {
+                ctx.beginPath();
+                ctx.moveTo(cx - (lvl.w / 2) * scale, (lvl.y + lvl.h) * scale);
+                ctx.lineTo(cx + (lvl.w / 2) * scale, (lvl.y + lvl.h) * scale);
+                ctx.lineTo(cx + (lvl.w / 4) * scale, lvl.y * scale);
+                ctx.lineTo(cx - (lvl.w / 4) * scale, lvl.y * scale);
+                ctx.closePath();
+                
+                ctx.fillStyle = lvl.color + '15';
+                ctx.fill();
+                ctx.strokeStyle = lvl.color;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.fillStyle = lvl.color;
+                ctx.font = 'bold 12px Montserrat';
+                ctx.textAlign = 'center';
+                ctx.fillText(lvl.id.toUpperCase(), cx, (lvl.y + lvl.h/2 + 5) * scale);
+            });
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const y = (e.clientY - rect.top) / (canvas.height / 500);
+            
+            let found = null;
+            if (y > 80 && y < 180) found = 'okrug';
+            else if (y >= 200 && y < 300) found = 'volost';
+            else if (y >= 320 && y < 420) found = 'aul';
+
+            if (found) {
+                const info = translations[currentLang].levels[found];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#0f172a';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-800 transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экологические группы растений</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #dbeafe; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #0369a1; border-bottom: 3px solid #7dd3fc; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #0284c7; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #0284c7; background: white; color: #0284c7; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #0284c7; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #0284c7; color: white; }
+        tr:nth-child(even) { background-color: #f0f9ff; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-sky-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Экологиялық Өндіс Топтары</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Ecological Plant Groups</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Экологические группы растений</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-sky-100">3 негіздік топ: Гидрофиттер, Мезофиттер, Ксерофиттер - су және температура адаптация</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-sky-100">3 main groups: Hydrophytes, Mesophytes, Xerophytes - water and temperature adaptation</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-sky-100">3 главные группы: Гидрофиты, Мезофиты, Ксерофиты - адаптация к воде и температуре</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Су түрту бойынша классификация</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Classification by Water Requirement</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Классификация по потреблению воды</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">Топ</th>
+                            <th lang="kk" class="lang-content">Ортасы</th>
+                            <th lang="kk" class="lang-content">Суы</th>
+                            <th lang="kk" class="lang-content">Мысалдары</th>
+                            <th lang="kk" class="lang-content">Адаптация</th>
+
+                            <th lang="en" class="lang-content">Group</th>
+                            <th lang="en" class="lang-content">Habitat</th>
+                            <th lang="en" class="lang-content">Water</th>
+                            <th lang="en" class="lang-content">Examples</th>
+                            <th lang="en" class="lang-content">Adaptation</th>
+
+                            <th lang="ru" class="lang-content">Группа</th>
+                            <th lang="ru" class="lang-content">Среда</th>
+                            <th lang="ru" class="lang-content">Вода</th>
+                            <th lang="ru" class="lang-content">Примеры</th>
+                            <th lang="ru" class="lang-content">Адаптация</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>Гидрофиттер</strong><br/>💧 Сулық</td>
+                            <td lang="kk" class="lang-content">Өзендер, көлдер, құшын</td>
+                            <td lang="kk" class="lang-content">100% су ішінде (постоянно мокрые)</td>
+                            <td lang="kk" class="lang-content">Кувшинка (lotus), манды (algae), қамыш (reed), мәре (willow)</td>
+                            <td lang="kk" class="lang-content">• Сарыт жапырақ<br/>• Аэренхима (ауа өреген)<br/>• Слабая корневая система<br/>• Отсутствие кутикулы</td>
+
+                            <td lang="en" class="lang-content"><strong>Hydrophytes</strong><br/>💧 Water</td>
+                            <td lang="en" class="lang-content">Rivers, lakes, swamps</td>
+                            <td lang="en" class="lang-content">100% in water (constantly wet)</td>
+                            <td lang="en" class="lang-content">Water lily, algae, reed, willow</td>
+                            <td lang="en" class="lang-content">• Thin leaves<br/>• Aerenchyma (air tissues)<br/>• Weak roots<br/>• No cuticle</td>
+
+                            <td lang="ru" class="lang-content"><strong>Гидрофиты</strong><br/>💧 Водные</td>
+                            <td lang="ru" class="lang-content">Реки, озёра, болота</td>
+                            <td lang="ru" class="lang-content">100% в воде (постоянно мокрые)</td>
+                            <td lang="ru" class="lang-content">Кувшинка, водоросли, камыш, ива</td>
+                            <td lang="ru" class="lang-content">• Тонкие листья<br/>• Аэренхима (воздушные ткани)<br/>• Слабые корни<br/>• Без кутикулы</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>Мезофиттер</strong><br/>🌳 Умеренная</td>
+                            <td lang="kk" class="lang-content">Орман, жуынды, өндіс</td>
+                            <td lang="kk" class="lang-content">Қалыпты су (50-100% ересінде)</td>
+                            <td lang="kk" class="lang-content">Дуб (oak), сосна (pine), шөп (grass), өндіс (plant)</td>
+                            <td lang="kk" class="lang-content">• Қалыңсақ жапырақ<br/>• Глубокие корни<br/>• Сбалансированные черты<br/>• Средняя кутикула</td>
+
+                            <td lang="en" class="lang-content"><strong>Mesophytes</strong><br/>🌳 Moderate</td>
+                            <td lang="en" class="lang-content">Forests, meadows, gardens</td>
+                            <td lang="en" class="lang-content">Normal water (50-100% available)</td>
+                            <td lang="en" class="lang-content">Oak, pine, grass, most plants</td>
+                            <td lang="en" class="lang-content">• Normal leaves<br/>• Deep roots<br/>• Balanced traits<br/>• Medium cuticle</td>
+
+                            <td lang="ru" class="lang-content"><strong>Мезофиты</strong><br/>🌳 Умеренные</td>
+                            <td lang="ru" class="lang-content">Леса, луга, сады</td>
+                            <td lang="ru" class="lang-content">Нормальная вода (50-100% доступна)</td>
+                            <td lang="ru" class="lang-content">Дуб, сосна, трава, большинство растений</td>
+                            <td lang="ru" class="lang-content">• Нормальные листья<br/>• Глубокие корни<br/>• Сбалансированные черты<br/>• Средняя кутикула</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>Ксерофиттер</strong><br/>🌵 Құмды</td>
+                            <td lang="kk" class="lang-content">Пустыня, саванна, шпіл</td>
+                            <td lang="kk" class="lang-content">Төмін су (0-30% ересінде)</td>
+                            <td lang="kk" class="lang-content">Сағай (cactus), қара (aloe), эвкалипт (eucalyptus)</td>
+                            <td lang="kk" class="lang-content">• Қалың жапырақ (суккулентты)<br/>• Воск құрылымы<br/>• Шипи көздік защиты<br/>• Глубокие, распростёр корни</td>
+
+                            <td lang="en" class="lang-content"><strong>Xerophytes</strong><br/>🌵 Dry</td>
+                            <td lang="en" class="lang-content">Desert, savanna, steppe</td>
+                            <td lang="en" class="lang-content">Low water (0-30% available)</td>
+                            <td lang="en" class="lang-content">Cactus, aloe, eucalyptus, acacia</td>
+                            <td lang="en" class="lang-content">• Thick leaves (succulent)<br/>• Waxy coating<br/>• Spines for protection<br/>• Deep spreading roots</td>
+
+                            <td lang="ru" class="lang-content"><strong>Ксерофиты</strong><br/>🌵 Сухие</td>
+                            <td lang="ru" class="lang-content">Пустыня, саванна, степь</td>
+                            <td lang="ru" class="lang-content">Мало воды (0-30% доступна)</td>
+                            <td lang="ru" class="lang-content">Кактус, алоэ, эвкалипт, акация</td>
+                            <td lang="ru" class="lang-content">• Толстые листья (суккулентные)<br/>• Восковой слой<br/>• Шипы для защиты<br/>• Глубокие распростёртые корни</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3 lang="kk" class="lang-content text-2xl font-bold mt-6 mb-4 text-sky-900">Дополнительные экологические группы</h3>
+                <h3 lang="en" class="lang-content text-2xl font-bold mt-6 mb-4 text-sky-900">Additional Ecological Groups</h3>
+                <h3 lang="ru" class="lang-content text-2xl font-bold mt-6 mb-4 text-sky-900">Дополнительные экологические группы</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded border-l-4 border-blue-500">
+                        <h4 lang="kk" class="lang-content font-bold mb-3">🌞 Светолюбивые (Гелиофиты)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-3">🌞 Sun-loving (Heliophytes)</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-3">🌞 Светолюбивые (Гелиофиты)</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">⭐ Нужен полный свет (15000+ люкс)</li>
+                            <li lang="en" class="lang-content">⭐ Need full light (15000+ lux)</li>
+                            <li lang="ru" class="lang-content">⭐ Нужен полный свет (15000+ люкс)</li>
+
+                            <li lang="kk" class="lang-content">📍 Мысалдар: подсолнечник, табак, хлопок, пшеница</li>
+                            <li lang="en" class="lang-content">📍 Examples: sunflower, tobacco, cotton, wheat</li>
+                            <li lang="ru" class="lang-content">📍 Примеры: подсолнечник, табак, хлопок</li>
+
+                            <li lang="kk" class="lang-content">🔬 Мүшелері: маленькие листья, много хлорофилла, вертикальные ориентация</li>
+                            <li lang="en" class="lang-content">🔬 Features: small leaves, lots of chlorophyll, vertical orientation</li>
+                            <li lang="ru" class="lang-content">🔬 Черты: маленькие листья, много хлорофилла</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-purple-50 p-4 rounded border-l-4 border-purple-500">
+                        <h4 lang="kk" class="lang-content font-bold mb-3">🌲 Тенелюбивые (Сциофиты)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-3">🌲 Shade-loving (Sciophytes)</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-3">🌲 Тенелюбивые (Сциофиты)</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">⭐ Адаптирована к тени (500-5000 люкс)</li>
+                            <li lang="en" class="lang-content">⭐ Adapted to shade (500-5000 lux)</li>
+                            <li lang="ru" class="lang-content">⭐ Адаптированы к тени (500-5000 люкс)</li>
+
+                            <li lang="kk" class="lang-content">📍 Мысалдар: мхи, папоротники, орхидеи, ландыш</li>
+                            <li lang="en" class="lang-content">📍 Examples: mosses, ferns, orchids, lily-of-valley</li>
+                            <li lang="ru" class="lang-content">📍 Примеры: мхи, папоротники, орхидеи</li>
+
+                            <li lang="kk" class="lang-content">🔬 Мүшелері: большие тонкие листья, меньше хлорофилла, горизонтальная ориентация</li>
+                            <li lang="en" class="lang-content">🔬 Features: large thin leaves, less chlorophyll, horizontal orientation</li>
+                            <li lang="ru" class="lang-content">🔬 Черты: большие тонкие листья, мало хлорофилла</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-indigo-50 p-4 rounded border-l-4 border-indigo-500">
+                        <h4 lang="kk" class="lang-content font-bold mb-3">🌤️ Теневыносливые (Гемиофиты)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-3">🌤️ Shade-tolerant (Hemiophytes)</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-3">🌤️ Теневыносливые (Гемиофиты)</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">⭐ Могут расти в свете и тени (5000-15000 люкс)</li>
+                            <li lang="en" class="lang-content">⭐ Can grow in light and shade (5000-15000 lux)</li>
+                            <li lang="ru" class="lang-content">⭐ Растут на свету и в тени (5000-15000 люкс)</li>
+
+                            <li lang="kk" class="lang-content">📍 Мысалдар: малина, черёмуха, берёза, дуб</li>
+                            <li lang="en" class="lang-content">📍 Examples: raspberry, bird cherry, birch, oak</li>
+                            <li lang="ru" class="lang-content">📍 Примеры: малина, черёмуха, берёза, дуб</li>
+
+                            <li lang="kk" class="lang-content">🔬 Мүшелері: среднего размера листья, адаптивные черты</li>
+                            <li lang="en" class="lang-content">🔬 Features: medium-sized leaves, adaptive traits</li>
+                            <li lang="ru" class="lang-content">🔬 Черты: среднего размера листья, адаптивные</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Температуралық топтар</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Temperature Groups</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Температурные группы</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-cyan-50 p-4 rounded border-l-4 border-cyan-600">
+                        <h4 lang="kk" class="lang-content font-bold mb-3">❄️ Психрофиты (Холодолюбивые)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-3">❄️ Psychrophytes (Cold-loving)</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-3">❄️ Психрофиты (Холодолюбивые)</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content"><strong>Температура:</strong> -10°C to 0°C</li>
+                            <li lang="en" class="lang-content"><strong>Temperature:</strong> -10°C to 0°C</li>
+                            <li lang="ru" class="lang-content"><strong>Температура:</strong> -10°C до 0°C</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Мхи (сфагнум), лишайники, березка карликовая, морошка</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Mosses (sphagnum), lichens, dwarf birch, cloudberry</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> мхи, лишайники, карликовая берёза</li>
+
+                            <li lang="kk" class="lang-content"><strong>Среда:</strong> Арктика, тундра, высокие горы (>3000м)</li>
+                            <li lang="en" class="lang-content"><strong>Habitat:</strong> Arctic, tundra, high mountains (>3000m)</li>
+                            <li lang="ru" class="lang-content"><strong>Среда:</strong> Арктика, тундра, высокие горы</li>
+
+                            <li lang="kk" class="lang-content"><strong>Адаптация:</strong> Карликовая форма, толстые кутикула, низкий рост</li>
+                            <li lang="en" class="lang-content"><strong>Adaptation:</strong> Dwarf form, thick cuticle, low growth</li>
+                            <li lang="ru" class="lang-content"><strong>Адаптация:</strong> карликовая форма, толстая кутикула</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded border-l-4 border-green-600">
+                        <h4 lang="kk" class="lang-content font-bold mb-3">🌡️ Мезотермы (Умеренно-теплолюбивые)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-3">🌡️ Mesotherms (Moderate-warm)</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-3">🌡️ Мезотермы (Умеренно-теплолюбивые)</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content"><strong>Температура:</strong> 0-30°C (оптимум 15-25°C)</li>
+                            <li lang="en" class="lang-content"><strong>Temperature:</strong> 0-30°C (optimum 15-25°C)</li>
+                            <li lang="ru" class="lang-content"><strong>Температура:</strong> 0-30°C (оптимум 15-25°C)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Дуб, сосна, тополь, пшеница, рожь, яблоко</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Oak, pine, poplar, wheat, rye, apple</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> дуб, сосна, тополь, пшеница, яблоко</li>
+
+                            <li lang="kk" class="lang-content"><strong>Среда:</strong> Умеренная зона (40-60° широта), леса, степи</li>
+                            <li lang="en" class="lang-content"><strong>Habitat:</strong> Temperate zone (40-60° latitude), forests, steppes</li>
+                            <li lang="ru" class="lang-content"><strong>Среда:</strong> умеренная зона, леса, степи</li>
+
+                            <li lang="kk" class="lang-content"><strong>Адаптация:</strong> Листопадность, семена, переживание холода</li>
+                            <li lang="en" class="lang-content"><strong>Adaptation:</strong> Deciduousness, seeds, cold tolerance</li>
+                            <li lang="ru" class="lang-content"><strong>Адаптация:</strong> листопадность, семена, переживание холода</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-orange-50 p-4 rounded border-l-4 border-orange-600">
+                        <h4 lang="kk" class="lang-content font-bold mb-3">☀️ Термофиты (Теплолюбивые)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-3">☀️ Thermophytes (Heat-loving)</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-3">☀️ Термофиты (Теплолюбивые)</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content"><strong>Температура:</strong> >20°C (оптимум 25-35°C)</li>
+                            <li lang="en" class="lang-content"><strong>Temperature:</strong> >20°C (optimum 25-35°C)</li>
+                            <li lang="ru" class="lang-content"><strong>Температура:</strong> >20°C (оптимум 25-35°C)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Какао, кокосовая пальма, ваниль, сахарный тростник, манго</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Cocoa, coconut palm, vanilla, sugar cane, mango</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> какао, кокос, ваниль, сахарный тростник</li>
+
+                            <li lang="kk" class="lang-content"><strong>Среда:</strong> Тропики (< 20° широта), экваториальные леса</li>
+                            <li lang="en" class="lang-content"><strong>Habitat:</strong> Tropics (<20° latitude), rainforests</li>
+                            <li lang="ru" class="lang-content"><strong>Среда:</strong> тропики, экваториальные леса</li>
+
+                            <li lang="kk" class="lang-content"><strong>Адаптация:</strong> Вечнозеленость, тонкая кутикула, любят влаги</li>
+                            <li lang="en" class="lang-content"><strong>Adaptation:</strong> Evergreen, thin cuticle, love humidity</li>
+                            <li lang="ru" class="lang-content"><strong>Адаптация:</strong> вечнозелёность, тонкая кутикула</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #7dd3fc; border-radius: 1rem; border-top: 4px solid #0284c7;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-sky-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-sky-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-sky-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-sky-800">Экологиялық өндіс топтары: Гидрофиттер (су), Мезофиттер (умеренные), Ксерофиттер (құмды) - су бойынша. Светолюбивые/Тенелюбивые - жарық. Психрофиты/Мезотермы/Термофиты - температура. Адаптация миллионлеуі жыл.</p>
+            <p lang="en" class="lang-content text-md font-semibold text-sky-800">Ecological plant groups: Hydrophytes (water), Mesophytes (moderate), Xerophytes (dry) by water. Sun/Shade-loving by light. Psychrophytes/Mesotherms/Thermophytes by temperature. Adaptations evolved over millions of years.</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-sky-800">Экологические группы растений: Гидрофиты (водные), Мезофиты (умеренные), Ксерофиты (сухие) по воде. Светолюбивые/Тенелюбивые по свету. Психрофиты/Мезотермы/Термофиты по температуре. Адаптации эволюционировали миллионы лет.</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

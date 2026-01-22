@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant as a Whole Organism</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background: #022c22; color: #ecfccb; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2rem; }
+        canvas { border-radius: 1.5rem; }
+        .lang-btn.active { background: #4ade80; color: #022c22; font-weight: 800; }
+        .pulse-line { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b border-green-500/30">
+        <div>
+            <h1 id="main-title" class="font-Montserrat text-3xl md:text-5xl uppercase tracking-tighter text-green-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden min-h-[500px]">
+            <h2 id="canvas-heading" class="font-Montserrat text-xl text-green-200 uppercase mb-4 tracking-widest opacity-70"></h2>
+            <canvas id="sysCanvas" class="w-full h-full bg-black/20"></canvas>
+            <div class="absolute bottom-8 left-8 flex flex-col gap-2">
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-400"></span> <span class="text-[10px] uppercase text-white/50">Water Flow (Up)</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-pink-400"></span> <span class="text-[10px] uppercase text-white/50">Organic Flow (Down)</span></div>
+            </div>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-green-500">
+            <h3 id="info-title" class="font-Montserrat text-3xl mb-6 text-green-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Единый Организм", subtitle: "Взаимосвязь органов растения",
+                canvasHeading: "Физиологическая система",
+                defaultTitle: "Целостность системы",
+                defaultText: "Растение — это не набор органов, а единая живая система. Корни зависят от сахаров, производимых листьями, а листья не могут жить без воды, добываемой корнями. Связь осуществляется через проводящие ткани и гормоны (фитогормоны)."
+            },
+            kz: {
+                title: "Біртұтас Ағза", subtitle: "Өсімдік мүшелерінің байланысы",
+                canvasHeading: "Физиологиялық жүйе",
+                defaultTitle: "Жүйе тұтастығы",
+                defaultText: "Өсімдік — мүшелер жиынтығы емес, біртұтас тірі жүйе. Тамырлар жапырақ өндіретін қантқа мұқтаж, ал жапырақтар тамыр табатын сусыз өмір сүре алмайды. Байланыс өткізгіш ұлпалар мен фитогормондар арқылы жүзеге асады."
+            },
+            en: {
+                title: "Unified Organism", subtitle: "Interconnection of Plant Organs",
+                canvasHeading: "Physiological System",
+                defaultTitle: "System Integrity",
+                defaultText: "A plant is not a set of organs, but a unified living system. Roots depend on sugars produced by leaves, while leaves cannot survive without water absorbed by roots. Connection is maintained via vascular tissues and phytohormones."
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx, particles = [];
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+        }
+
+        function draw() {
+            const w = canvas.width, h = canvas.height;
+            const t = Date.now() * 0.001;
+            ctx.clearRect(0,0,w,h);
+
+            // Plant Skeleton
+            ctx.strokeStyle = '#4d7c0f'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(w/2, h*0.9); ctx.quadraticCurveTo(w/2, h*0.5, w/2, h*0.2); ctx.stroke(); // Stem
+            
+            // Roots
+            ctx.strokeStyle = '#a16207'; ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.moveTo(w/2, h*0.9); ctx.lineTo(w/2-50, h); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(w/2, h*0.9); ctx.lineTo(w/2+50, h); ctx.stroke();
+
+            // Leaf
+            ctx.fillStyle = '#4ade80';
+            ctx.beginPath(); ctx.ellipse(w/2+60, h*0.4, 60, 20, 0.3, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(w/2-60, h*0.5, 60, 20, -0.3, 0, Math.PI*2); ctx.fill();
+
+            // Particles logic
+            if(Math.random() > 0.9) particles.push({x: w/2, y: h, type: 'up', life: 100}); // Water
+            if(Math.random() > 0.9) particles.push({x: w/2 + (Math.random()>0.5?60:-60), y: h*0.4, type: 'down', life: 100}); // Sugar
+
+            particles.forEach((p, i) => {
+                p.life--;
+                if(p.type === 'up') {
+                    p.y -= 2;
+                    ctx.fillStyle = '#60a5fa';
+                } else {
+                    p.y += 2; 
+                    p.x += (w/2 - p.x) * 0.02; // Move to stem
+                    ctx.fillStyle = '#f472b6';
+                }
+                ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
+                if(p.life <= 0) particles.splice(i, 1);
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            canvas = document.getElementById('sysCanvas'); ctx = canvas.getContext('2d');
+            const resize = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500; };
+            window.addEventListener('resize', resize); resize();
+            setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

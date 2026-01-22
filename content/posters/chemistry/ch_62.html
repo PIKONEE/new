@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matter: Amorphous and Crystalline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #064e3b, #065f46, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #10b981; color: #064e3b; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-emerald-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-emerald-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-emerald-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="structCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-emerald-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-emerald-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-emerald-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-emerald-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-emerald-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-emerald-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-emerald-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-emerald-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-emerald-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-snug"></p>
+        <cite id="author" class="text-emerald-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Порядок и Хаос",
+                subtitle: "Аморфные и кристаллические вещества",
+                canvasHeading: "Модель внутренней структуры",
+                canvasHint: "Нажмите, чтобы переключить структуру (Кристалл / Аморфное)",
+                defaultTitle: "Два состояния твердого тела",
+                defaultText: "Твердые вещества делятся на кристаллические (строгий порядок) и аморфные (хаотичное расположение частиц). Это определяет их физические свойства, такие как плавление.",
+                cards: [
+                    { title: "Кристаллы", desc: "Имеют строго определенную температуру плавления. Характеризуются наличием кристаллической решетки и дальним порядком." },
+                    { title: "Аморфные тела", desc: "Не имеют четкой Тплавления (размягчаются в интервале температур). Имеют только ближний порядок. Пример: стекло, смола, янтарь." },
+                    { title: "Свойства", desc: "Кристаллы часто анизотропны (свойства зависят от направления), аморфные тела — изотропны." }
+                ],
+                quote: "«Кристалл — это застывшая музыка порядка в бесконечном хаосе материи»",
+                author: "Пьер Кюри"
+            },
+            kz: {
+                title: "Тәртіп пен Хаос",
+                subtitle: "Аморфты және кристалды заттар",
+                canvasHeading: "Ішкі құрылым моделі",
+                canvasHint: "Құрылымды өзгерту үшін басыңыз (Кристалл / Аморфты)",
+                defaultTitle: "Қатты дененің екі күйі",
+                defaultText: "Қатты заттар кристалды (қатаң тәртіп) және аморфты (бөлшектердің ретсіз орналасуы) болып бөлінеді.",
+                cards: [
+                    { title: "Кристалдар", desc: "Нақты балқу температурасы болады. Кристалл торының болуымен және алыс тәртіппен сипатталады." },
+                    { title: "Аморфты денелер", desc: "Нақты балқу температурасы жоқ. Тек жақын тәртіпке ие. Мысалы: шыны, шайыр, кәріптас." },
+                    { title: "Қасиеттері", desc: "Кристалдар жиі анизотропты, ал аморфты денелер — изотропты болады." }
+                ],
+                quote: "«Кристалл — бұл материяның шексіз хаосындағы тәртіптің қатып қалған музыкасы»",
+                author: "Пьер Кюри"
+            },
+            en: {
+                title: "Order & Chaos",
+                subtitle: "Amorphous and Crystalline Substances",
+                canvasHeading: "Internal Structure Model",
+                canvasHint: "Click to toggle structure (Crystal / Amorphous)",
+                defaultTitle: "Two States of Solid Matter",
+                defaultText: "Solids are categorized into crystalline (strict order) and amorphous (disordered particles). This determines physical properties like melting behavior.",
+                cards: [
+                    { title: "Crystals", desc: "Have a specific melting point. Characterized by a crystal lattice and long-range order." },
+                    { title: "Amorphous Bodies", desc: "Lack a sharp melting point (soften over a range). Only have short-range order. e.g., glass, resin, amber." },
+                    { title: "Properties", desc: "Crystals are often anisotropic (direction-dependent), while amorphous solids are isotropic." }
+                ],
+                quote: "«A crystal is the frozen music of order in the infinite chaos of matter»",
+                author: "Pierre Curie"
+            }
+        };
+
+        let currentLang = 'ru';
+        let mode = 'crystal';
+        const canvas = document.getElementById('structCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const size = 50;
+
+            if (mode === 'crystal') {
+                for(let x=-3; x<=3; x++) {
+                    for(let y=-3; y<=3; y++) {
+                        const px = cx + x*size, py = cy + y*size;
+                        ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(px, py, 12, 0, Math.PI*2); ctx.fill();
+                        ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.strokeRect(px-size/2, py-size/2, size, size);
+                    }
+                }
+            } else {
+                for(let i=0; i<50; i++) {
+                    const x = cx + (Math.sin(i*0.5)*150) + (Math.random()*10);
+                    const y = cy + (Math.cos(i*0.3)*150) + (Math.random()*10);
+                    ctx.fillStyle = '#a78bfa'; ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.fill();
+                }
+            }
+        }
+
+        canvas.addEventListener('click', () => { mode = mode === 'crystal' ? 'amorphous' : 'crystal'; draw(); });
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Political Map of the World</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #0f172a, #000000);
+            color: white; min-height: 100vh; overflow-x: hidden;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .rounded-custom { border-radius: 2rem; }
+        canvas { cursor: grab; }
+        canvas:active { cursor: grabbing; }
+        .lang-btn.active { background: #38bdf8; color: #0f172a; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-6 flex flex-col md:flex-row justify-between items-center border-b border-sky-500/30">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-sky-600 rounded-full flex items-center justify-center text-2xl">🌍</div>
+            <div>
+                <h1 id="main-title" class="heading-font text-2xl md:text-4xl uppercase tracking-tighter text-sky-400"></h1>
+                <p id="sub-title" class="mt-1 text-white/50 font-light tracking-widest text-[10px] uppercase"></p>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        <div class="lg:col-span-8 glass rounded-custom p-4 relative flex flex-col items-center justify-center min-h-[500px]">
+            <canvas id="globeCanvas"></canvas>
+            <div class="absolute bottom-6 flex gap-4 text-[10px] text-white/30 uppercase tracking-[0.3em]">
+                <span id="hint-rotate">Drag to rotate</span>
+            </div>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-8 flex flex-col justify-center border-l-4 border-sky-500">
+            <div id="info-content">
+                <div id="flag-icon" class="text-6xl mb-4">🏳️</div>
+                <h3 id="info-title" class="heading-font text-3xl mb-4 text-white"></h3>
+                <div id="info-text" class="text-sm font-light leading-relaxed text-white/70 space-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass rounded-custom p-8">
+            <h4 id="card1-title" class="heading-font text-lg mb-3 text-sky-400 uppercase"></h4>
+            <div id="card1-desc" class="text-white/50 text-xs leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-8">
+            <h4 id="card2-title" class="heading-font text-lg mb-3 text-sky-400 uppercase"></h4>
+            <div id="card2-desc" class="text-white/50 text-xs leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-8">
+            <h4 id="card3-title" class="heading-font text-lg mb-3 text-sky-400 uppercase"></h4>
+            <div id="card3-desc" class="text-white/50 text-xs leading-relaxed"></div>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Политическая Карта",
+                subtitle: "Страны, столицы и границы",
+                hintRotate: "Вращайте глобус и нажимайте на города",
+                defaultTitle: "Геополитика",
+                defaultText: "Политическая карта мира отражает территориально-политическое деление земного шара. На ней показаны границы государств, их столицы и крупнейшие города.",
+                cities: {
+                    astana: { name: "Астана", flag: "🇰🇿", text: "Столица Казахстана. Город будущего в самом сердце Евразии." },
+                    tokyo: { name: "Токио", flag: "🇯🇵", text: "Столица Японии. Крупнейший мегаполис мира, центр технологий." },
+                    london: { name: "Лондон", flag: "🇬🇧", text: "Столица Великобритании. Мировой финансовый и культурный центр." },
+                    ny: { name: "Нью-Йорк", flag: "🇺🇸", text: "Крупнейший город США. Экономическая столица мира." },
+                    brasilia: { name: "Бразилиа", flag: "🇧🇷", text: "Столица Бразилии, город-самолет, объект наследия ЮНЕСКО." }
+                },
+                cards: [
+                    { title: "Суверенитет", desc: "Независимость государства во внешних и верховенство во внутренних делах." },
+                    { title: "Границы", desc: "Линии, определяющие пределы государственной территории (суши, вод, недр)." },
+                    { title: "Столицы", desc: "Главные города государств, где находятся высшие органы власти." }
+                ]
+            },
+            kz: {
+                title: "Саяси Карта",
+                subtitle: "Елдер, астаналар және шекаралар",
+                hintRotate: "Глобусты айналдырыңыз және қалаларды басыңыз",
+                defaultTitle: "Геосаясат",
+                defaultText: "Әлемнің саяси картасы жер шарының аумақтық-саяси бөлінісін көрсетеді. Онда мемлекеттік шекаралар мен астаналар бейнеленген.",
+                cities: {
+                    astana: { name: "Астана", flag: "🇰🇿", text: "Қазақстанның астанасы. Еуразия жүрегіндегі болашақ қаласы." },
+                    tokyo: { name: "Токио", flag: "🇯🇵", text: "Жапония астанасы. Әлемдегі ең ірі мегаполис, технология орталығы." },
+                    london: { name: "Лондон", flag: "🇬🇧", text: "Ұлыбритания астанасы. Әлемдік қаржы және мәдени орталық." },
+                    ny: { name: "Нью-Йорк", flag: "🇺🇸", text: "АҚШ-тың ең ірі қаласы. Әлемнің экономикалық астанасы." },
+                    brasilia: { name: "Бразилиа", flag: "🇧🇷", text: "Бразилия астанасы, ұшақ қала, ЮНЕСКО мұрасы." }
+                },
+                cards: [
+                    { title: "Егемендік", desc: "Мемлекеттің сыртқы істердегі тәуелсіздігі және ішкі істердегі үстемдігі." },
+                    { title: "Шекаралар", desc: "Мемлекеттік аумақтың шегін анықтайтын сызықтар." },
+                    { title: "Астаналар", desc: "Жоғарғы билік органдары орналасқан мемлекеттің бас қалалары." }
+                ]
+            },
+            en: {
+                title: "Political Map",
+                subtitle: "Countries, Capitals, and Borders",
+                hintRotate: "Rotate the globe and click cities",
+                defaultTitle: "Geopolitics",
+                defaultText: "The political map of the world reflects the territorial-political division of the globe. It shows state borders, capitals, and major cities.",
+                cities: {
+                    astana: { name: "Astana", flag: "🇰🇿", text: "Capital of Kazakhstan. The city of the future in the heart of Eurasia." },
+                    tokyo: { name: "Tokyo", flag: "🇯🇵", text: "Capital of Japan. The world's largest megalopolis, a tech hub." },
+                    london: { name: "London", flag: "🇬🇧", text: "Capital of the UK. A global financial and cultural center." },
+                    ny: { name: "New York", flag: "🇺🇸", text: "Largest city in the USA. The economic capital of the world." },
+                    brasilia: { name: "Brasilia", flag: "🇧🇷", text: "Capital of Brazil, the airplane city, a UNESCO heritage site." }
+                },
+                cards: [
+                    { title: "Sovereignty", desc: "Independence in foreign affairs and supremacy in internal affairs." },
+                    { title: "Borders", desc: "Lines defining the limits of state territory." },
+                    { title: "Capitals", desc: "Principal cities where the seat of government is located." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        let canvas, ctx;
+        let rotation = 0;
+        let isDragging = false;
+        let lastX = 0;
+
+        const points = [
+            { id: 'astana', lat: 51, lon: 71, color: '#facc15' },
+            { id: 'london', lat: 51, lon: 0, color: '#f87171' },
+            { id: 'tokyo', lat: 35, lon: 139, color: '#f472b6' },
+            { id: 'ny', lat: 40, lon: -74, color: '#60a5fa' },
+            { id: 'brasilia', lat: -15, lon: -47, color: '#4ade80' }
+        ];
+
+        window.setLang = function(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('hint-rotate').textContent = t.hintRotate;
+
+            const infoTitle = document.getElementById('info-title');
+            // If showing default text or empty
+            if (!infoTitle.getAttribute('data-active')) {
+                infoTitle.textContent = t.defaultTitle;
+                document.getElementById('info-text').textContent = t.defaultText;
+                document.getElementById('flag-icon').textContent = "🏳️";
+            } else {
+                // Update currently selected city info in new lang
+                const id = infoTitle.getAttribute('data-active');
+                if (t.cities[id]) {
+                    infoTitle.textContent = t.cities[id].name;
+                    document.getElementById('info-text').textContent = t.cities[id].text;
+                }
+            }
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').textContent = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').textContent = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+        }
+
+        function draw() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const r = Math.min(canvas.width, canvas.height) * 0.35;
+
+            // Globe
+            const g = ctx.createRadialGradient(cx - r*0.5, cy - r*0.5, r*0.1, cx, cy, r);
+            g.addColorStop(0, '#1e40af');
+            g.addColorStop(1, '#020617');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+
+            // Grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for(let i=0; i<360; i+=30) {
+                // Fix: ensure radius is positive
+                let radX = r * Math.cos((rotation + i) * Math.PI / 180);
+                if (radX < 0) radX = -radX; 
+                ctx.ellipse(cx, cy, radX, r, 0, 0, Math.PI*2);
+            }
+            ctx.stroke();
+
+            // Latitude lines
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, r, r*0.3, 0, 0, Math.PI*2);
+            ctx.ellipse(cx, cy, r, r*0.7, 0, 0, Math.PI*2);
+            ctx.stroke();
+
+            // Points
+            points.forEach(p => {
+                let lon = p.lon + rotation;
+                while(lon > 180) lon -= 360; while(lon < -180) lon += 360;
+                
+                if (lon > -90 && lon < 90) {
+                    const x = cx + r * Math.cos(p.lat * Math.PI/180) * Math.sin(lon * Math.PI/180);
+                    const y = cy - r * Math.sin(p.lat * Math.PI/180);
+                    
+                    ctx.fillStyle = p.color;
+                    ctx.shadowBlur = 15; ctx.shadowColor = p.color;
+                    ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2); ctx.fill();
+                    ctx.shadowBlur = 0;
+                    
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 10px Inter';
+                    ctx.fillText(p.id.toUpperCase(), x + 10, y + 3);
+                }
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('globeCanvas');
+            if (canvas) {
+                ctx = canvas.getContext('2d');
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+                
+                canvas.addEventListener('mousedown', (e) => { isDragging = true; lastX = e.clientX; });
+                window.addEventListener('mouseup', () => isDragging = false);
+                window.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        rotation += (e.clientX - lastX) * 0.5;
+                        lastX = e.clientX;
+                    }
+                });
+
+                canvas.addEventListener('click', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+                    const cx = canvas.width/2, cy = canvas.height/2;
+                    const r = Math.min(canvas.width, canvas.height) * 0.35;
+
+                    points.forEach(p => {
+                        let lon = p.lon + rotation;
+                        while(lon > 180) lon -= 360; while(lon < -180) lon += 360;
+                        if (lon > -90 && lon < 90) {
+                            const x = cx + r * Math.cos(p.lat * Math.PI/180) * Math.sin(lon * Math.PI/180);
+                            const y = cy - r * Math.sin(p.lat * Math.PI/180);
+                            if (Math.sqrt((mx-x)**2 + (my-y)**2) < 20) {
+                                const data = translations[currentLang].cities[p.id];
+                                const el = document.getElementById('info-title');
+                                el.textContent = data.name;
+                                el.setAttribute('data-active', p.id);
+                                document.getElementById('info-text').textContent = data.text;
+                                document.getElementById('flag-icon').textContent = data.flag;
+                            }
+                        }
+                    });
+                });
+
+                setLang('ru');
+                draw();
+            }
+        };
+
+        window.onresize = function() {
+            if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+            }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

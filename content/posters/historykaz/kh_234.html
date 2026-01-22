@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парадоксы эпохи Застоя</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f1f5f9; overflow-x: hidden; }
+        .poster-border { border: 20px solid #1e293b; position: relative; }
+        .official-side { background: rgba(56, 189, 248, 0.05); border-right: 1px solid rgba(255,255,255,0.1); }
+        .hidden-side { background: rgba(244, 63, 94, 0.05); }
+        .lang-active { background: #38bdf8; color: #0f172a; font-weight: 900; }
+        .stamp-official { transform: rotate(-5deg); border: 3px solid #38bdf8; color: #38bdf8; padding: 5px 10px; font-weight: 900; text-transform: uppercase; display: inline-block; }
+        .stamp-reality { transform: rotate(5deg); border: 3px solid #f43f5e; color: #f43f5e; padding: 5px 10px; font-weight: 900; text-transform: uppercase; display: inline-block; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Управление -->
+    <div class="fixed top-12 right-12 z-50 flex gap-2 bg-slate-900/90 backdrop-blur p-2 rounded-2xl border border-white/10 shadow-2xl">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-4 py-2 rounded-xl text-xs transition-all">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-4 py-2 rounded-xl text-xs transition-all opacity-50 hover:opacity-100 text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-4 py-2 rounded-xl text-xs transition-all opacity-50 hover:opacity-100 text-white">EN</button>
+    </div>
+
+    <div class="max-w-6xl mx-auto poster-border bg-slate-900 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
+        
+        <!-- Header -->
+        <header class="p-12 text-center border-b border-white/10 bg-slate-800/50">
+            <h1 id="title" class="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4 italic">Противоречия Развития</h1>
+            <p id="subtitle" class="text-xl text-slate-400 font-light tracking-widest uppercase">Две стороны одной эпохи (1964-1986)</p>
+        </header>
+
+        <!-- Main Content (Dual view) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+            
+            <!-- Официальная сторона -->
+            <div class="official-side p-12 space-y-10">
+                <div class="stamp-official">Фасад стабильности</div>
+                <h2 id="off-t" class="text-3xl font-black uppercase text-sky-400">Успехи и Достижения</h2>
+                <ul class="space-y-6 text-lg text-slate-300">
+                    <li id="off-1">🔹 Строительство уникальных объектов: Медео, Капчагай, новые микрорайоны Алма-Аты.</li>
+                    <li id="off-2">🔹 Рост промышленности в 3.8 раза. Казахстан — витрина СССР в Азии.</li>
+                    <li id="off-3">🔹 "Золотой век" Кунаева: время относительного спокойствия и уверенности в завтрашнем дне.</li>
+                </ul>
+                <div class="h-64 mt-10">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Реальная сторона -->
+            <div class="hidden-side p-12 space-y-10">
+                <div class="stamp-reality">Скрытый кризис</div>
+                <h2 id="real-t" class="text-3xl font-black uppercase text-rose-500">Системные Тупики</h2>
+                <ul class="space-y-6 text-lg text-slate-300">
+                    <li id="real-1">🔸 "Экономика дефицита": Деньги у людей были, а товаров на полках — нет.</li>
+                    <li id="real-2">🔸 Кадровый застой: Элита старела, блокируя путь молодым специалистам.</li>
+                    <li id="real-3">🔸 Утрата управления: Реальные доходы падали, а отчеты в центр становились все краше.</li>
+                </ul>
+                <div class="h-64 mt-10">
+                    <canvas id="shortageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <footer class="p-8 text-center bg-black/40 text-slate-500 text-[10px] uppercase font-bold tracking-[1em]">
+            Digital Museum • Contradictions Section • 1964-1986
+        </footer>
+    </div>
+
+    <script>
+        const content = {
+            ru: {
+                title: "Противоречия Развития", subtitle: "Две стороны одной эпохи (1964-1986)",
+                offT: "Успехи и Достижения", off1: "🔹 Строительство уникальных объектов: Медео, Капчагай, новые микрорайоны Алма-Аты.", off2: "🔹 Рост промышленности в 3.8 раза. Казахстан — витрина СССР в Азии.", off3: "🔹 'Золотой век' Кунаева: время относительного спокойствия и уверенности.",
+                realT: "Системные Тупики", real1: "🔸 'Экономика дефицита': Деньги у людей были, а товаров на полках — нет.", real2: "🔸 Кадровый застой: Элита старела, блокируя путь молодым специалистам.", real3: "🔸 Утрата управления: Реальные доходы падали, а отчеты в центр росли."
+            },
+            kz: {
+                title: "Даму қайшылықтары", subtitle: "Бір дәуірдің екі беті (1964-1986)",
+                offT: "Жетістіктер мен табыстар", off1: "🔹 Бірегей нысандар салу: Медеу, Қапшағай, Алматының жаңа шағын аудандары.", off2: "🔹 Өнеркәсіптің 3.8 есе өсуі. Қазақстан — КСРО-ның Азиядағы витринасы.", off3: "🔹 Қонаевтың «алтын ғасыры»: салыстырмалы тыныштық пен сенімділік кезеңі.",
+                realT: "Жүйелі тығырықтар", real1: "🔸 «Тапшылық экономикасы»: Адамдарда ақша болды, бірақ сөрелерде тауар болмады.", real2: "🔸 Кадрлық тоқырау: Элита ескіріп, жас мамандардың жолын бөгеді.", real3: "🔸 Басқаруды жоғалту: Нақты табыс төмендеді, ал орталыққа берілген есептер жақсарды."
+            },
+            en: {
+                title: "Development Paradoxes", subtitle: "Two sides of one era (1964-1986)",
+                offT: "Success & Achievements", off1: "🔹 Construction of unique sites: Medeo, Kapchagai, Almaty's new districts.", off2: "🔹 Industrial growth by 3.8 times. Kazakhstan as the USSR's Asian showcase.", off3: "🔹 Kunaev's 'Golden Age': a time of relative calm and future confidence.",
+                realT: "Systemic Deadlocks", real1: "🔸 'Shortage Economy': People had money, but shop shelves were empty.", real2: "🔸 Cadre Stagnation: The elite aged, blocking the way for young specialists.", real3: "🔸 Loss of Control: Real incomes fell while official reports to the center improved."
+            }
+        };
+
+        let charts = [];
+
+        function setLang(lang) {
+            document.querySelectorAll('.fixed button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('subtitle').innerText = t.subtitle;
+            document.getElementById('off-t').innerText = t.offT;
+            document.getElementById('off-1').innerText = t.off1;
+            document.getElementById('off-2').innerText = t.off2;
+            document.getElementById('off-3').innerText = t.off3;
+            document.getElementById('real-t').innerText = t.realT;
+            document.getElementById('real-1').innerText = t.real1;
+            document.getElementById('real-2').innerText = t.real2;
+            document.getElementById('real-3').innerText = t.real3;
+            renderCharts();
+        }
+
+        function renderCharts() {
+            charts.forEach(c => c.destroy());
+            const ctx1 = document.getElementById('growthChart').getContext('2d');
+            charts.push(new Chart(ctx1, {
+                type: 'line',
+                data: { labels: ['64', '70', '75', '80', '85'], datasets: [{ label: 'Пром. индекс', data: [10, 45, 70, 85, 100], borderColor: '#38bdf8', tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            }));
+            const ctx2 = document.getElementById('shortageChart').getContext('2d');
+            charts.push(new Chart(ctx2, {
+                type: 'bar',
+                data: { labels: ['64', '70', '75', '80', '85'], datasets: [{ label: 'Дефицит %', data: [5, 15, 40, 70, 95], backgroundColor: '#f43f5e' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            }));
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

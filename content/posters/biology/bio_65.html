@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Передвижение воды и питательных веществ в растении</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fce7f3; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #ec4899 0%, #831843 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #831843; border-bottom: 3px solid #fbcfe8; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #ec4899; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #ec4899; background: white; color: #ec4899; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #ec4899; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; border: 2px dashed #ec4899; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-pink-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Су және Өндіс Өткезі</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Water & Nutrient Transport</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Передвижение воды и питательных веществ</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-pink-100">Ксилем және флоэм - өндіс транспортнық системасы</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-pink-100">Xylem and phloem - plant transport systems</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-pink-100">Ксилем и флоэм - система транспорта растения</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Ксилем және Флоэм</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Xylem and Phloem</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Ксилем и флоэм</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 700 380" style="height: 340px; width: 100%;">
+                        <!-- Сравнительная таблица -->
+                        <!-- Ксилем слева -->
+                        <g>
+                            <rect x="20" y="50" width="310" height="310" fill="#E0F2FE" stroke="#0284c7" stroke-width="2" rx="5"/>
+                            <text x="175" y="75" font-size="13" font-weight="bold" text-anchor="middle" fill="#333">КСИЛЕМ (сосуды)</text>
+
+                            <text x="30" y="100" font-size="11" font-weight="bold" fill="#333">Функция:</text>
+                            <text x="30" y="118" font-size="10" fill="#333">• Транспорт воды и минералов</text>
+                            <text x="30" y="135" font-size="10" fill="#333">• От корней к листьям</text>
+
+                            <text x="30" y="160" font-size="11" font-weight="bold" fill="#333">Структура:</text>
+                            <text x="30" y="178" font-size="10" fill="#333">• Трахеи (сосуды) - мёртвые клетки</text>
+                            <text x="30" y="195" font-size="10" fill="#333">• Трахеиды - для поддержки</text>
+                            <text x="30" y="212" font-size="10" fill="#333">• Одревеснённые клеточные стенки</text>
+
+                            <text x="30" y="237" font-size="11" font-weight="bold" fill="#333">Механизм:</text>
+                            <text x="30" y="255" font-size="10" fill="#333">• Корневое давление (от корней)</text>
+                            <text x="30" y="272" font-size="10" fill="#333">• Испарение листьями (тяга вверх)</text>
+                            <text x="30" y="289" font-size="10" fill="#333">• Капиллярность в микротрубках</text>
+
+                            <text x="30" y="314" font-size="11" font-weight="bold" fill="#333">Направление:</text>
+                            <text x="30" y="332" font-size="10" fill="#333">• ВВЕРХ (корни → листья)</text>
+                            <text x="30" y="349" font-size="10" fill="#333">• Однонаправленно</text>
+                        </g>
+
+                        <!-- Флоэм справа -->
+                        <g>
+                            <rect x="370" y="50" width="310" height="310" fill="#FCE7F3" stroke="#ec4899" stroke-width="2" rx="5"/>
+                            <text x="525" y="75" font-size="13" font-weight="bold" text-anchor="middle" fill="#333">ФЛОЭМ (ситовидные трубки)</text>
+
+                            <text x="380" y="100" font-size="11" font-weight="bold" fill="#333">Функция:</text>
+                            <text x="380" y="118" font-size="10" fill="#333">• Транспорт органических веществ</text>
+                            <text x="380" y="135" font-size="10" fill="#333">• От листьев ко всем частям</text>
+
+                            <text x="380" y="160" font-size="11" font-weight="bold" fill="#333">Структура:</text>
+                            <text x="380" y="178" font-size="10" fill="#333">• Ситовидные трубки - живые клетки</text>
+                            <text x="380" y="195" font-size="10" fill="#333">• Клетки-спутницы - помощь</text>
+                            <text x="380" y="212" font-size="10" fill="#333">• Нежные клеточные стенки</text>
+
+                            <text x="380" y="237" font-size="11" font-weight="bold" fill="#333">Механизм:</text>
+                            <text x="380" y="255" font-size="10" fill="#333">• Активный транспорт (энергия АТФ)</text>
+                            <text x="380" y="272" font-size="10" fill="#333">• Осмотическое давление</text>
+                            <text x="380" y="289" font-size="10" fill="#333">• Волны перистальтики</text>
+
+                            <text x="380" y="314" font-size="11" font-weight="bold" fill="#333">Направление:</text>
+                            <text x="380" y="332" font-size="10" fill="#333">• ВВЕРХ И ВНИЗ (двусторонний)</text>
+                            <text x="380" y="349" font-size="10" fill="#333">• Живая система</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-blue-50 p-4 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-3">💧 Ксилемде Су Өткезі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-blue-900 mb-3">💧 Water Transport in Xylem</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-blue-900 mb-3">💧 Транспорт воды в ксилеме</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>1. Корневое давление:</strong> Активный транспорт в корне создаёт давление</li>
+                            <li lang="en" class="lang-content"><strong>1. Root pressure:</strong> Active transport creates pressure</strong></li>
+                            <li lang="ru" class="lang-content"><strong>1. Корневое давление:</strong> Активный транспорт в корне</li>
+
+                            <li lang="kk" class="lang-content"><strong>2. Испарение листьями:</strong> Транспирация создаёт отрицательное давление (сосущая сила)</li>
+                            <li lang="en" class="lang-content"><strong>2. Leaf evaporation:</strong> Transpiration pull (negative pressure)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>2. Испарение листьями:</strong> Тяга испарения создаёт отрицательное давление</li>
+
+                            <li lang="kk" class="lang-content"><strong>3. Капиллярность:</strong> Узкие сосуды → вода поднимается</li>
+                            <li lang="en" class="lang-content"><strong>3. Capillarity:</strong> Narrow vessels help water rise</strong></li>
+                            <li lang="ru" class="lang-content"><strong>3. Капиллярность:</strong> Узкие сосуды помогают воде подняться</li>
+
+                            <li lang="kk" class="lang-content"><strong>4. Скорость:</strong> 1-2 метра в час (в хвойных деревьях)</li>
+                            <li lang="en" class="lang-content"><strong>4. Speed:</strong> 1-2 meters per hour</strong></li>
+                            <li lang="ru" class="lang-content"><strong>4. Скорость:</strong> 1-2 метра в час</li>
+
+                            <li lang="kk" class="lang-content"><strong>5. Пассивный процесс:</strong> Без энергии (АТФ) после поглощения</li>
+                            <li lang="en" class="lang-content"><strong>5. Passive process:</strong> No ATP needed (after uptake)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>5. Пассивный процесс:</strong> Без энергии (после поглощения)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-pink-50 p-4 rounded border border-pink-300">
+                        <h4 lang="kk" class="lang-content font-bold text-pink-900 mb-3">🌾 Флоэмде Өндіс Өткезі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-pink-900 mb-3">🌾 Nutrient Transport in Phloem</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-pink-900 mb-3">🌾 Транспорт органических веществ</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>1. Источник:</strong> Листья (производство сахара - фотосинтез)</li>
+                            <li lang="en" class="lang-content"><strong>1. Source:</strong> Leaves (sugar production)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>1. Источник:</strong> Листья (сахар из фотосинтеза)</li>
+
+                            <li lang="kk" class="lang-content"><strong>2. Активный загрузка:</strong> Клетки-спутницы → сахар в ситовидные трубки (АТФ)</li>
+                            <li lang="en" class="lang-content"><strong>2. Active loading:</strong> Companion cells pump sugar (ATP)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>2. Активная загрузка:</strong> Вспомогательные клетки перекачивают сахар</li>
+
+                            <li lang="kk" class="lang-content"><strong>3. Осмотическое давление:</strong> ↑ Сахара → ↑ Давления → вода входит</li>
+                            <li lang="en" class="lang-content"><strong>3. Osmotic pressure:</strong> Sugar increase → pressure increase</strong></li>
+                            <li lang="ru" class="lang-content"><strong>3. Осмотическое давление:</strong> ↑ Сахара → ↑ давления</li>
+
+                            <li lang="kk" class="lang-content"><strong>4. Движение:</strong> Давление перемещает содержимое (волны перистальтики)</li>
+                            <li lang="en" class="lang-content"><strong>4. Movement:</strong> Pressure creates movement (peristalsis waves)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>4. Движение:</strong> Давление создаёт движение (волны перистальтики)</li>
+
+                            <li lang="kk" class="lang-content"><strong>5. Скорость:</strong> 10-100 см в час (быстрее, чем ксилем!)</li>
+                            <li lang="en" class="lang-content"><strong>5. Speed:</strong> 10-100 cm per hour (faster than xylem!)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>5. Скорость:</strong> 10-100 см в час (быстрее ксилема!)</li>
+
+                            <li lang="kk" class="lang-content"><strong>6. Назначение:</strong> Питание корней, клубней, семян, плодов</li>
+                            <li lang="en" class="lang-content"><strong>6. Destination:</strong> Feed roots, tubers, seeds, fruits</strong></li>
+                            <li lang="ru" class="lang-content"><strong>6. Направление:</strong> Питает корни, клубни, семена, плоды</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Өндіс Таратты</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Organic Matter Distribution</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Распределение органических веществ</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-yellow-100 p-3 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">🍃 Веге Органдары</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Өндіс сақтау, өндіс құрау. Сақтау: крахмал, белок</span>
+                            <span lang="en" class="lang-content">Storage and growth. Starch, proteins stored</span>
+                            <span lang="ru" class="lang-content">Хранение и рост. Крахмал, белки запасаются</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-green-100 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">🌱 Өндіс органдары</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Семена, плоды - сахар, жиры, белки</span>
+                            <span lang="en" class="lang-content">Seeds, fruits - sugars, fats, proteins</span>
+                            <span lang="ru" class="lang-content">Семена, плоды - сахара, жиры, белки</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-red-100 p-3 rounded border border-red-300">
+                        <h4 lang="kk" class="lang-content font-bold text-red-900 mb-2">🌳 Хранилище Органдары</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Клубни, луковицы, корневища - крахмал</span>
+                            <span lang="en" class="lang-content">Tubers, bulbs - starch storage</span>
+                            <span lang="ru" class="lang-content">Клубни, луковицы - крахмал</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-100 p-3 rounded border border-purple-300">
+                        <h4 lang="kk" class="lang-content font-bold text-purple-900 mb-2">💪 Дыхание</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Дыхание сахара - энергия (АТФ)</span>
+                            <span lang="en" class="lang-content">Sugar respiration - energy (ATP)</span>
+                            <span lang="ru" class="lang-content">Дыхание сахара - энергия (АТФ)</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fbcfe8; border-radius: 1rem; border-top: 4px solid #ec4899;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-pink-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-pink-800">Ксилем және флоэм - өндіс транспортной системасы. Ксилем - су құрау, флоэм - органикалық құрамдарын өткізу. Екеуінің сыбайластығы - өндіс өндіс органдарының қызметі</p>
+            <p lang="en" class="lang-content text-md font-semibold text-pink-800">Xylem and phloem form plant's transport system. Xylem carries water, phloem carries nutrients. Both essential for plant survival</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-pink-800">Ксилем и флоэм - транспортная система растения. Ксилем - вода, флоэм - питательные вещества. Оба необходимы для выживания</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

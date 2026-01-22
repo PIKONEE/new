@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Great Plains of South America</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; min-height: 100vh; }
+        .header-font { font-family: 'Playfair Display', serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #38bdf8; color: #0f172a; }
+        canvas { border-radius: 1.5rem; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="flex justify-between items-center mb-8 border-b border-sky-800 pb-4">
+        <div>
+            <h1 id="main-title" class="header-font text-4xl text-sky-400"></h1>
+            <p id="sub-title" class="text-sky-600 uppercase text-xs tracking-widest mt-1"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.updateL('ru')" id="btn-ru" class="lang-btn px-3 py-1 rounded text-xs font-bold transition">RU</button>
+            <button onclick="window.setL('kz')" id="btn-kz" class="lang-btn px-3 py-1 rounded text-xs font-bold transition">KZ</button>
+            <button onclick="window.setL('en')" id="btn-en" class="lang-btn px-3 py-1 rounded text-xs font-bold transition">EN</button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-1 space-y-4">
+            <div class="glass p-6 rounded-custom cursor-pointer hover:bg-sky-900/20 transition" onclick="setRiver('amazon')">
+                <div class="text-xs text-sky-500 uppercase font-bold mb-1">North</div>
+                <h3 class="text-xl font-bold">Amazon Lowland</h3>
+                <p class="text-xs text-gray-400 mt-2">Largest plain in the world (5M km²)</p>
+            </div>
+            <div class="glass p-6 rounded-custom cursor-pointer hover:bg-sky-900/20 transition" onclick="setRiver('lplata')">
+                <div class="text-xs text-sky-500 uppercase font-bold mb-1">South</div>
+                <h3 class="text-xl font-bold">La Plata Lowland</h3>
+                <p class="text-xs text-gray-400 mt-2">Fertile plains, Parana river basin</p>
+            </div>
+            <div class="glass p-6 rounded-custom cursor-pointer hover:bg-sky-900/20 transition" onclick="setRiver('orinoco')">
+                <div class="text-xs text-sky-500 uppercase font-bold mb-1">North-West</div>
+                <h3 class="text-xl font-bold">Orinoco Lowland</h3>
+                <p class="text-xs text-gray-400 mt-2">Savannas and Angel Falls area</p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 relative h-[500px] glass rounded-custom p-2">
+            <canvas id="plainCanvas" class="w-full h-full bg-[#062c44]"></canvas>
+            <div class="absolute bottom-6 right-6 text-right">
+                <div class="text-4xl font-bold text-sky-300" id="stat-val">6,400 km</div>
+                <div class="text-xs uppercase text-sky-600 tracking-widest" id="stat-label">Length</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const txt = {
+            ru: { t: "Равнинный Восток", s: "Великие низменности", d: "Амазонка", val: "6992 км" },
+            kz: { t: "Шығыс Жазықтары", s: "Ұлы ойпаттар", d: "Амазонка", val: "6992 км" },
+            en: { t: "Eastern Plains", s: "Great Lowlands", d: "Amazon", val: "6,992 km" }
+        };
+
+        let lang = 'ru', river = 'amazon';
+        let cvs, cx;
+        let flowOffset = 0;
+
+        window.updateL = (l) => { lang = l; ui(); }
+        window.setL = (l) => window.updateL(l);
+        window.setRiver = (r) => { river = r; };
+
+        function ui() {
+            document.getElementById('main-title').textContent = txt[lang].t;
+            document.getElementById('sub-title').textContent = txt[lang].s;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.001;
+            flowOffset -= 1;
+            cx.clearRect(0,0,w,h);
+
+            // Plain background (Green gradient)
+            const g = cx.createLinearGradient(0, 0, 0, h);
+            g.addColorStop(0, '#065f46'); g.addColorStop(1, '#064e3b');
+            cx.fillStyle = g; cx.fillRect(0,0,w,h);
+
+            cx.strokeStyle = '#38bdf8';
+            cx.lineWidth = 10;
+            cx.lineCap = 'round';
+            cx.setLineDash([20, 15]);
+            cx.lineDashOffset = flowOffset;
+
+            cx.beginPath();
+            if (river === 'amazon') {
+                cx.moveTo(0, h*0.5); 
+                for(let i=0; i<w; i+=20) cx.lineTo(i, h*0.5 + Math.sin(i*0.02)*50);
+                document.getElementById('stat-val').textContent = "6,992 km";
+                document.getElementById('stat-label').textContent = lang==='ru'?"Длина":"Length";
+            } else if (river === 'lplata') {
+                cx.moveTo(w*0.5, 0);
+                cx.quadraticCurveTo(w*0.5, h*0.5, w*0.8, h);
+                document.getElementById('stat-val').textContent = "3.1M km²";
+                document.getElementById('stat-label').textContent = lang==='ru'?"Площадь":"Area";
+            } else {
+                cx.moveTo(w*0.2, h*0.2);
+                cx.quadraticCurveTo(w*0.6, h*0.2, w*0.8, 0);
+                document.getElementById('stat-val').textContent = "979 m";
+                document.getElementById('stat-label').textContent = lang==='ru'?"Водопад":"Waterfall";
+            }
+            cx.stroke();
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('plainCanvas'); cx = cvs.getContext('2d');
+            cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight;
+            ui(); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

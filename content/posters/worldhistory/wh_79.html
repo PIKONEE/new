@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Священная Римская империя: Первый Рейх</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #451a03, #1c1917, #000000);
+            color: #fef3c7;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .serif { font-family: 'Playfair Display', serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #ea580c;
+            color: white;
+            box-shadow: 0 0 30px rgba(234, 88, 12, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #ea580c;
+            background: linear-gradient(90deg, rgba(234, 88, 12, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ea580c; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-white to-red-500 uppercase">
+                Первый Рейх
+            </h1>
+            <p id="sub-title" class="text-orange-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase italic">Sacrum Imperium Romanum</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-orange-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-orange-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-orange-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-orange-600 inline-block"></span>
+                Карта Империи Оттона
+            </h2>
+            <div class="relative flex-grow bg-black/40 rounded-[2.5rem] border border-orange-900/20 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="hreCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-orange-500/50 italic text-center uppercase tracking-widest">Нажмите на узлы власти для изучения истории империи</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-orange-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Священная держава</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        После распада империи Карла Великого восточные земли стали основой Германии. В 962 году король Оттон I воссоздал империю, объединив Германию и Италию. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🦅</span>
+                            <span id="hint-1" class="text-orange-200/60 font-bold uppercase text-xs tracking-widest">Власть императоров</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🇻</span>
+                            <span id="hint-2" class="text-orange-200/60 font-bold uppercase text-xs tracking-widest">Святой Престол</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-orange-950/40 text-orange-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-orange-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-orange-950/20 rounded-[2.5rem] border border-orange-900/30 shadow-xl">
+                        <strong class="text-orange-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-state">Государственный акт:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👑</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-orange-500 uppercase">Оттон I Великий</h3>
+            <p id="card1-text" class="text-stone-400 text-sm leading-relaxed">В <strong>962 году</strong> германский король Оттон I захватил Рим и заставил папу короновать его императором. Он мечтал восстановить былое величие Рима под властью германского меча.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⛪</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Имперская Церковь</h3>
+            <p id="card2-text" class="text-stone-400 text-sm leading-relaxed">Оттон опирался на епископов и аббатов, давая им земли и права графов. В отличие от герцогов, они не могли передать власть по наследству, оставаясь верными слугами императора.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-red-500 uppercase">Битва на реке Лех</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">В 955 году Оттон нанес сокрушительное поражение кочевникам-венграм. Это остановило их набеги на Европу и сделало Оттона самым авторитетным защитником христианства.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-amber-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl serif italic text-amber-100/70 leading-tight max-w-5xl mx-auto">
+            «Священная Римская империя: попытка объединить небо и землю под сенью германского орла».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Священная Римская империя",
+                subtitle: "Первый Рейх: Возрождение имперской идеи",
+                visualTitle: "Карта Империи Оттона",
+                hint: "Нажмите на узлы власти для изучения истории",
+                placeholderTitle: "Священная держава",
+                placeholderText: "В X веке родилась новая сила, объединившая германские земли и северную Италию. Изучите, как ковалось могущество новой империи.",
+                labelState: "Государственный акт:",
+                hint1: "Власть императоров", hint2: "Святой Престол",
+                card1Title: "Оттон I Великий",
+                card1Text: "Человек, восстановивший титул императора Запада и создавший мощную систему управления через духовенство.",
+                card2Title: "Имперская Церковь",
+                card2Text: "Епископы как государственные чиновники — уникальная особенность Священной Римской империи.",
+                card3Title: "Защита Европы",
+                card3Text: "Победа над венграми (955 г.) закрепила за Оттоном статус верховного лидера христианского мира.",
+                footerQuote: "«Священная Римская империя: попытка объединить небо и землю под сенью германского орла».",
+                nodes: [
+                    { id: 1, tag: "Германия", title: "Саксонская династия", desc: "Центр новой державы. Короли Саксонии (Оттон I, II, III) сумели подчинить себе других германских племенных герцогов, создав единое Германское королевство.", fact: "Именно при Оттоне I название 'Германия' стало официально использоваться в документах." },
+                    { id: 2, tag: "962 год", title: "Коронация в Риме", desc: "Папа Иоанн XII призвал Оттона на помощь против врагов. В благодарность он возложил на короля корону императора. Так началась история Священной Римской империи.", fact: "С этого момента считалось, что германский король имеет право на императорскую корону только после посещения Рима." },
+                    { id: 3, tag: "Италия", title: "Борьба за Рим", desc: "Для императоров владение Италией и Римом было вопросом престижа и сакральной власти. Но итальянские города и папы часто сопротивлялись германскому владычеству.", fact: "Походы через Альпы в Италию стоили империи огромных ресурсов и жизней рыцарей." },
+                    { id: 4, tag: "Экспансия", title: "Натиск на восток", desc: "При Оттонах началось активное продвижение христианства и германского влияния на земли славян за реку Эльба. Создавались новые епископства (например, в Магдебурге).", fact: "Миссионеры шли вслед за рыцарями, крестя полабских славян." },
+                    { id: 5, tag: "Символ", title: "Копье Лонгина", desc: "Священная реликвия, которой владел Оттон I. Считалось, что это копье принадлежало центуриону, пронзившему Христа, и дает его владельцу непобедимость.", fact: "Святое Копье стало одной из главных регалий императоров Священной Римской империи." }
+                ]
+            },
+            kz: {
+                title: "Қасиетті Рим империясы",
+                subtitle: "Бірінші Рейх: Империялық идеяның жаңғыруы",
+                visualTitle: "Оттон империясының картасы",
+                hint: "Тарихты зерттеу үшін билік түйіндерін басыңыз",
+                placeholderTitle: "Қасиетті мемлекет",
+                placeholderText: "X ғасырда герман жерлері мен Солтүстік Италияны біріктірген жаңа күш пайда болды. Жаңа империяның қалай құрылғанын зерттеңіз.",
+                labelState: "Мемлекеттік акт:",
+                hint1: "Императорлар билігі", hint2: "Қасиетті Тақ",
+                card1Title: "Ұлы Оттон I",
+                card1Text: "Батыс императоры атағын қайта жаңғыртқан және дінбасылар арқылы басқару жүйесін құрған тұлға.",
+                card2Title: "Империялық Шіркеу",
+                card2Text: "Епископтардың мемлекеттік шенеуніктер ретінде қызмет етуі — империяның бірегей ерекшелігі.",
+                card3Title: "Еуропаны қорғау",
+                card3Text: "955 жылғы венгрлерді жеңу Оттонның христиан әлеміндегі көшбасшылық мәртебесін бекітті.",
+                footerQuote: "«Қасиетті Рим империясы: герман бүркітінің аясында көк пен жерді біріктіру әрекеті».",
+                nodes: [
+                    { id: 1, tag: "Германия", title: "Саксон әулеті", desc: "Жаңа державаның орталығы. Саксония патшалары герман герцогтарын бағындырып, біртұтас патшалық құрды.", fact: "Оттон I тұсында 'Германия' атауы ресми құжаттарда қолданыла бастады." },
+                    { id: 2, tag: "962 жыл", title: "Римдегі тәж кию", desc: "Рим Папасы Оттонға император тәжін кигізді. Осылайша Қасиетті Рим империясының тарихы басталды.", fact: "Осы сәттен бастап герман патшасы тек Римге барғаннан кейін ғана император бола алатын еді." },
+                    { id: 3, tag: "Италия", title: "Рим үшін күрес", desc: "Италия мен Римге иелік ету императорлар үшін бедел мәселесі болды. Бірақ Италия қалалары бұған жиі қарсылық көрсетті.", fact: "Альпі арқылы Италияға жасалған жорықтар империя үшін өте шығынды болды." },
+                    { id: 4, tag: "Экспансия", title: "Шығысқа жорық", desc: "Оттондар тұсында Эльба өзенінің арғы жағындағы славян жерлеріне христиандық пен герман ықпалын тарату басталды.", fact: "Миссионерлер рыцарьлармен бірге жүріп, жергілікті халықты шоқындырды." },
+                    { id: 5, tag: "Нышан", title: "Лонгин найзасы", desc: "Оттон I иелік еткен қасиетті жәдігер. Бұл найза иесіне жеңілмейтін күш береді деп есептелген.", fact: "Қасиетті Найза империяның басты жәдігерлерінің біріне айналды." }
+                ]
+            },
+            en: {
+                title: "Holy Roman Empire",
+                subtitle: "The First Reich: Revival of the Imperial Idea",
+                visualTitle: "Map of Otto's Empire",
+                hint: "Click on power nodes to study the history",
+                placeholderTitle: "The Sacred Power",
+                placeholderText: "In the 10th century, a new force united Germanic lands and Northern Italy. Explore how this new empire's might was forged.",
+                labelState: "State Act:",
+                hint1: "Power of Emperors", hint2: "The Holy See",
+                card1Title: "Otto I the Great",
+                card1Text: "The ruler who restored the title of Emperor of the West and established control via the clergy.",
+                card2Title: "Imperial Church",
+                card2Text: "Using bishops as state administrators was a unique defining feature of the Holy Roman Empire.",
+                card3Title: "Defending Europe",
+                card3Text: "The victory over the Magyars in 955 solidified Otto's status as the supreme leader of Christendom.",
+                footerQuote: "«The Holy Roman Empire: an attempt to unite Heaven and Earth under the shadow of the German eagle.»",
+                nodes: [
+                    { id: 1, tag: "Germany", title: "Ottonian Dynasty", desc: "The core of the new realm. Saxon kings (Otto I, II, III) successfully centralized power over the tribal German dukes.", fact: "The term 'Germany' began to appear formally in documents during Otto I's reign." },
+                    { id: 2, tag: "962 AD", title: "Coronation in Rome", desc: "Pope John XII appealed to Otto for protection. In return, he crowned Otto as Emperor, initiating the HRE's long history.", fact: "From then on, it was established that the German King had a claim to the Imperial crown only upon being crowned in Rome." },
+                    { id: 3, tag: "Italy", title: "Struggle for Rome", desc: "Controlling Italy was a matter of sacred prestige for the Emperors, though popes and Italian cities often resisted German rule.", fact: "Repeated campaigns across the Alps into Italy drained the Empire's manpower and gold." },
+                    { id: 4, tag: "Expansion", title: "Ostkolonisation", desc: "Under the Ottos, Christianity and Germanic influence pushed eastward into Slavic lands beyond the Elbe river.", fact: "New bishoprics, such as Magdeburg, were founded to convert and administrative the newly won Slavic territories." },
+                    { id: 5, tag: "Symbol", title: "Holy Lance", desc: "A sacred relic owned by Otto I, believed to be the spear of the centurion who pierced Christ, granting its owner invincibility.", fact: "The Holy Lance became one of the most important pieces of the Imperial Regalia." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('hreCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-state').innerText = t.labelState;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Central Europe
+            ctx.fillStyle = 'rgba(234, 88, 12, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 100, cy - 150); // North
+            ctx.lineTo(cx + 100, cy - 150);
+            ctx.lineTo(cx + 80, cy + 150);  // South
+            ctx.lineTo(cx - 80, cy + 150);
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx - 20, y: cy - 100, icon: "⚔️" }, // Germany
+                { id: 2, x: cx, y: cy + 100, icon: "👑" },     // Rome
+                { id: 3, x: cx + 40, y: cy + 30, icon: "🏰" },  // Italy/Lombardy
+                { id: 4, x: cx + 120, y: cy - 40, icon: "👣" }, // East
+                { id: 5, x: cx - 60, y: cy - 20, icon: "🏺" }   // Relic/Aachen-like
+            ];
+
+            // Connect Germany to Rome
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#ea580c';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(nodesData[0].x, nodesData[0].y);
+            ctx.lineTo(nodesData[1].x, nodesData[1].y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(234, 88, 12, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 1) ? '#991b1b' : '#ea580c';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#fde68a';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

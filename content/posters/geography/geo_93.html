@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Southern Continents: Gondwana Legacy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background: #451a03; color: white; font-family: 'Inter'; min-height: 100vh; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #f59e0b; color: #451a03; }
+        canvas { cursor: pointer; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <header class="glass rounded-custom p-6 mb-8 flex justify-between items-center border-b border-orange-500/30">
+        <h1 id="title" class="text-3xl font-montserrat text-orange-400"></h1>
+        <div class="flex gap-2"><button onclick="setL('ru')" id="btn-ru" class="lang-btn px-4 py-1 rounded text-xs">RU</button><button onclick="setL('en')" id="btn-en" class="lang-btn px-4 py-1 rounded text-xs">EN</button></div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="glass rounded-custom p-8 relative h-[500px] flex items-center justify-center">
+            <canvas id="gondwanaCanvas" class="w-full h-full"></canvas>
+            <div class="absolute top-4 left-4 text-xs text-orange-300 font-bold uppercase tracking-widest">Gondwana Fragments</div>
+        </div>
+
+        <div class="flex flex-col gap-6 justify-center">
+            <div class="glass p-8 rounded-custom border-l-4 border-orange-600">
+                <h2 id="h-info" class="text-2xl font-bold mb-4 text-orange-200"></h2>
+                <p id="t-info" class="text-sm leading-relaxed text-white/80"></p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass p-4 rounded-xl hover:bg-orange-900/30 transition">
+                    <span class="text-2xl">🌍</span> <span class="font-bold text-sm block mt-2">Africa</span>
+                    <span class="text-[10px] text-gray-400">Core of Gondwana</span>
+                </div>
+                <div class="glass p-4 rounded-xl hover:bg-orange-900/30 transition">
+                    <span class="text-2xl">🌿</span> <span class="font-bold text-sm block mt-2">S. America</span>
+                    <span class="text-[10px] text-gray-400">Wettest</span>
+                </div>
+                <div class="glass p-4 rounded-xl hover:bg-orange-900/30 transition">
+                    <span class="text-2xl">🦘</span> <span class="font-bold text-sm block mt-2">Australia</span>
+                    <span class="text-[10px] text-gray-400">Driest</span>
+                </div>
+                <div class="glass p-4 rounded-xl hover:bg-orange-900/30 transition">
+                    <span class="text-2xl">🧊</span> <span class="font-bold text-sm block mt-2">Antarctica</span>
+                    <span class="text-[10px] text-gray-400">Coldest</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: { t: "ЮЖНЫЕ МАТЕРИКИ", h: "Наследие Гондваны", d: "Четыре материка: Южная Америка, Африка, Австралия и Антарктида. Их объединяет общее геологическое прошлое (суперконтинент Гондвана), преобладание равнинного рельефа и жаркий климат (кроме Антарктиды)." },
+            en: { t: "SOUTHERN CONTINENTS", h: "Gondwana Legacy", d: "Four continents: South America, Africa, Australia, and Antarctica. United by geological past (Gondwana supercontinent), predominant plains, and hot climate (except Antarctica)." }
+        };
+
+        let cx, cvs;
+        window.setL = (l) => {
+            const d = content[l] || content['en'];
+            document.getElementById('title').textContent = d.t;
+            document.getElementById('h-info').textContent = d.h;
+            document.getElementById('t-info').textContent = d.d;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.0005;
+            cx.clearRect(0,0,w,h);
+            const cx_ = w/2, cy_ = h/2;
+
+            // Connecting lines (Gondwana unity)
+            cx.strokeStyle = 'rgba(251, 191, 36, 0.2)'; cx.lineWidth = 2;
+            cx.beginPath();
+            cx.moveTo(cx_, cy_); cx.lineTo(cx_-100, cy_-50); // SA
+            cx.moveTo(cx_, cy_); cx.lineTo(cx_+20, cy_-80); // Africa
+            cx.moveTo(cx_, cy_); cx.lineTo(cx_+120, cy_+20); // Aus
+            cx.moveTo(cx_, cy_); cx.lineTo(cx_, cy_+100); // Ant
+            cx.stroke();
+
+            // Nodes
+            drawNode(cx_-100, cy_-50, '#10b981', 'SA');
+            drawNode(cx_+20, cy_-80, '#f59e0b', 'AFR');
+            drawNode(cx_+120, cy_+20, '#ef4444', 'AUS');
+            drawNode(cx_, cy_+100, '#94a3b8', 'ANT');
+
+            requestAnimationFrame(draw);
+        }
+
+        function drawNode(x, y, c, l) {
+            cx.fillStyle = c; cx.shadowBlur = 15; cx.shadowColor = c;
+            cx.beginPath(); cx.arc(x, y, 30, 0, Math.PI*2); cx.fill(); cx.shadowBlur = 0;
+            cx.fillStyle = 'black'; cx.font = 'bold 10px Inter'; cx.textAlign = 'center';
+            cx.fillText(l, x, y+3);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('gondwanaCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            setL('ru'); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biosphere: The Earth's Living Shell</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #064e3b, #022c22, #000);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; }
+        .lang-btn.active { background: #10b981; color: white; font-weight: 800; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        .animate-pulse-green { animation: pulse-green 2s infinite; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-emerald-500/30">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-3xl animate-pulse-green">🌿</div>
+            <div>
+                <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-emerald-400"></h1>
+                <p id="sub-title" class="mt-1 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-7 glass rounded-custom p-8 flex flex-col relative overflow-hidden min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-emerald-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="bioCanvas" class="w-full h-full bg-black/30"></canvas>
+            <p id="canvas-hint" class="mt-4 text-center text-[10px] text-white/30 uppercase tracking-[0.5em]"></p>
+        </div>
+
+        <div class="lg:col-span-5 glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-emerald-500">
+            <h3 id="info-title" class="heading-font text-4xl mb-6 text-emerald-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+            <div class="mt-10 p-6 bg-emerald-500/10 rounded-3xl border border-emerald-500/20">
+                <div class="text-[10px] uppercase text-emerald-400 mb-2 font-bold tracking-widest" id="label-limits">Limits of Life</div>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div><div class="text-xs opacity-50">Atmosphere</div><div class="font-bold text-emerald-200">~20 km</div></div>
+                    <div><div class="text-xs opacity-50">Hydrosphere</div><div class="font-bold text-emerald-200">11 km</div></div>
+                    <div><div class="text-xs opacity-50">Lithosphere</div><div class="font-bold text-emerald-200">~4 km</div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-8"><h4 id="c1-t" class="heading-font text-emerald-400 mb-2"></h4><p id="c1-d" class="text-sm text-white/60"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="c2-t" class="heading-font text-emerald-400 mb-2"></h4><p id="c2-d" class="text-sm text-white/60"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="c3-t" class="heading-font text-emerald-400 mb-2"></h4><p id="c3-d" class="text-sm text-white/60"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Биосфера", subtitle: "Сфера жизни на Земле",
+                canvasHeading: "Модель границ жизни", canvasHint: "Жизнь проникает во все оболочки Земли",
+                labelLimits: "Границы биосферы",
+                defaultTitle: "Живая оболочка",
+                defaultText: "Биосфера — это земная оболочка, в которой обитают живые организмы и которая создана ими. Она охватывает нижнюю часть атмосферы, всю гидросферу и верхнюю часть литосферы.",
+                cards: [
+                    { t: "Эдуард Зюсс", d: "Австрийский геолог, который в 1875 году ввел термин 'биосфера' в научный оборот." },
+                    { t: "В.И. Вернадский", d: "Создатель целостного учения о биосфере как о глобальной системе и живой силе планеты." },
+                    { t: "Компоненты", d: "Живое вещество (организмы), косное (камни, газы), биокосное (почва) и биогенное (нефть, мел)." }
+                ]
+            },
+            kz: {
+                title: "Биосфера", subtitle: "Жердегі тіршілік қабаты",
+                canvasHeading: "Тіршілік шекараларының моделі", canvasHint: "Тіршілік барлық қабықтарға енеді",
+                labelLimits: "Биосфера шекаралары",
+                defaultTitle: "Тірі қабық",
+                defaultText: "Биосфера — тірі организмдер қоныстанған және олардың іс-әрекеті нәтижесінде өзгерген Жер қабығы. Ол атмосфераның төменгі бөлігін, бүкіл гидросфераны және литосфераның жоғарғы бөлігін қамтиды.",
+                cards: [
+                    { t: "Эдуард Зюсс", d: "1875 жылы 'биосфера' терминін ғылымға енгізген австриялық геолог." },
+                    { t: "В.И. Вернадский", d: "Биосфера туралы ілімнің негізін қалаушы, оны планетаның тірі күші ретінде сипаттады." },
+                    { t: "Компоненттер", d: "Тірі зат (организмдер), өлі зат (тастар), биоөлі зат (топырақ) және биогенді зат (мұнай)." }
+                ]
+            },
+            en: {
+                title: "The Biosphere", subtitle: "Earth's Sphere of Life",
+                canvasHeading: "Limits of Life Model", canvasHint: "Life permeates all Earth's shells",
+                labelLimits: "Biosphere Limits",
+                defaultTitle: "The Living Shell",
+                defaultText: "The biosphere is the Earth's shell inhabited by living organisms and shaped by their activities. it encompasses the lower atmosphere, the entire hydrosphere, and the upper part of the lithosphere.",
+                cards: [
+                    { t: "Eduard Suess", d: "The Austrian geologist who coined the term 'biosphere' in 1875." },
+                    { t: "V. Vernadsky", d: "The founder of the modern teaching of the biosphere as a global planetary system." },
+                    { t: "Components", d: "Living matter (organisms), inert matter (rocks), bio-inert (soil), and biogenic (oil, coal)." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('label-limits').textContent = t.labelLimits;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('c1-t').textContent = t.cards[0].t; document.getElementById('c1-d').textContent = t.cards[0].d;
+            document.getElementById('c2-t').textContent = t.cards[1].t; document.getElementById('c2-d').textContent = t.cards[1].d;
+            document.getElementById('c3-t').textContent = t.cards[2].t; document.getElementById('c3-d').textContent = t.cards[2].d;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const time = Date.now() * 0.001;
+
+            // Layers
+            // Atmosphere
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.2)'; ctx.fillRect(0, 0, w, h*0.5);
+            // Hydrosphere (Blue)
+            ctx.fillStyle = '#1e40af'; ctx.fillRect(0, h*0.5, w*0.4, h*0.3);
+            // Lithosphere (Brown)
+            ctx.fillStyle = '#422006'; ctx.fillRect(w*0.4, h*0.5, w*0.6, h*0.5);
+            ctx.fillRect(0, h*0.8, w*0.4, h*0.2);
+
+            // "Life" particles floating
+            ctx.fillStyle = '#4ade80';
+            for(let i=0; i<40; i++) {
+                const px = (Math.sin(i*7 + time)*w + w)%w;
+                const py = (Math.cos(i*3 + time)*h + h)%h;
+                // Only draw in biosphere limits (approx)
+                if(py > h*0.1 && py < h*0.9) {
+                    ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI*2); ctx.fill();
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('bioCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight || 500;
+            setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egypt: Civilizations & Sand</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #1f1408, #000);
+            color: #fcd34d;
+            min-height: 100vh;
+        }
+        .title-font { font-family: 'Cinzel', serif; }
+        .glass {
+            background: rgba(30, 20, 10, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .rounded-xl { border-radius: 1.5rem; }
+        .lang-btn { transition: 0.3s; opacity: 0.5; }
+        .lang-btn:hover, .lang-btn.active { opacity: 1; text-shadow: 0 0 10px #fbbf24; }
+        canvas { border-radius: 1rem; }
+        
+        .stat-value { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body class="p-4 lg:p-8 flex flex-col gap-6">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="glass rounded-xl p-6 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div class="relative z-10 flex items-center gap-4">
+            <span class="text-4xl">𓂀</span>
+            <div>
+                <h1 id="title" class="title-font text-3xl md:text-5xl text-amber-400 font-bold tracking-widest"></h1>
+                <p id="subtitle" class="text-amber-200/60 text-xs tracking-[0.3em] uppercase"></p>
+            </div>
+        </div>
+        <div class="flex gap-4 mt-4 md:mt-0 relative z-10">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn font-bold text-amber-400">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn font-bold text-amber-400">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn font-bold text-amber-400">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
+        <!-- Interactive Map -->
+        <div class="lg:col-span-8 glass rounded-xl p-2 relative min-h-[500px] flex flex-col">
+            <canvas id="egyptCanvas" class="w-full h-full object-cover"></canvas>
+            
+            <!-- Floating Stats -->
+            <div class="absolute top-6 left-6 flex flex-col gap-2">
+                <div class="glass px-4 py-2 rounded-lg border-l-4 border-blue-500">
+                    <span class="text-[10px] uppercase text-white/50 block">Nile Length</span>
+                    <span class="text-xl font-bold text-blue-400">6,650 km</span>
+                </div>
+                <div class="glass px-4 py-2 rounded-lg border-l-4 border-amber-500">
+                    <span class="text-[10px] uppercase text-white/50 block">Desert Area</span>
+                    <span class="text-xl font-bold text-amber-400">96%</span>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-6 right-6 text-right opacity-60 text-xs">
+                <p>Click map to reveal regions</p>
+            </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            <!-- Main Info -->
+            <div class="glass rounded-xl p-8 flex-grow border-t-4 border-amber-500/50">
+                <h2 id="section-title" class="title-font text-2xl text-amber-100 mb-4"></h2>
+                <p id="section-desc" class="text-sm text-amber-100/80 leading-relaxed font-light"></p>
+                
+                <div class="mt-8 grid grid-cols-2 gap-4">
+                    <div class="p-3 bg-black/40 rounded-lg text-center">
+                        <div class="text-2xl mb-1">🛳️</div>
+                        <div class="text-[10px] text-white/40 uppercase">Suez Canal</div>
+                        <div class="font-bold text-white">$9.4B / year</div>
+                    </div>
+                    <div class="p-3 bg-black/40 rounded-lg text-center">
+                        <div class="text-2xl mb-1">👥</div>
+                        <div class="text-[10px] text-white/40 uppercase">Population</div>
+                        <div class="font-bold text-white">110M+</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Cards -->
+            <div class="grid grid-cols-1 gap-4">
+                <div class="glass p-4 rounded-xl cursor-pointer hover:bg-white/5 transition-all flex items-center gap-4" onclick="triggerAnim('pyramid')">
+                    <span class="text-2xl">▲</span>
+                    <div>
+                        <h4 class="font-bold text-amber-200 text-sm">Historical Legacy</h4>
+                        <p class="text-[10px] text-amber-200/50">Pyramids of Giza</p>
+                    </div>
+                </div>
+                <div class="glass p-4 rounded-xl cursor-pointer hover:bg-white/5 transition-all flex items-center gap-4" onclick="triggerAnim('nile')">
+                    <span class="text-2xl">🌊</span>
+                    <div>
+                        <h4 class="font-bold text-blue-200 text-sm">Life Source</h4>
+                        <p class="text-[10px] text-blue-200/50">The Nile Delta</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const data = {
+            ru: {
+                title: "ЕГИПЕТ", subtitle: "Дар Нила",
+                infoTitle: "Геополитический узел",
+                infoText: "Египет — трансконтинентальное государство, связывающее северо-восток Африки и Синайский полуостров Азии. Это колыбель одной из древнейших цивилизаций. Экономика держится на трех китах: туризм, доходы от Суэцкого канала и сельское хозяйство в долине Нила.",
+            },
+            kz: {
+                title: "МЫСЫР", subtitle: "Ніл сыйы",
+                infoTitle: "Геосаяси түйін",
+                infoText: "Мысыр — Африканың солтүстік-шығысы мен Азияның Синай түбегін байланыстыратын трансқұрлықтық мемлекет. Бұл ежелгі өркениеттердің бірінің бесігі. Экономика үш негізге сүйенеді: туризм, Суэц каналы және Ніл аңғарындағы ауыл шаруашылығы.",
+            },
+            en: {
+                title: "EGYPT", subtitle: "Gift of the Nile",
+                infoTitle: "Geopolitical Hub",
+                infoText: "Egypt is a transcontinental country linking northeast Africa with the Sinai Peninsula in Asia. It is a cradle of civilization. The economy rests on tourism, Suez Canal revenues, and agriculture in the Nile Valley.",
+            }
+        };
+
+        let currentLang = 'ru', animState = 'nile';
+        let canvas, ctx;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateText();
+        }
+
+        window.triggerAnim = function(type) {
+            animState = type;
+        }
+
+        function updateText() {
+            const t = data[currentLang];
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('section-title').textContent = t.infoTitle;
+            document.getElementById('section-desc').textContent = t.infoText;
+        }
+
+        function draw() {
+            const w = canvas.width;
+            const h = canvas.height;
+            const t = Date.now() * 0.001;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Desert Base
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, '#ea580c');
+            grad.addColorStop(1, '#fde047');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Pattern (Sand Dunes)
+            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            for(let i=0; i<h; i+=20) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                for(let j=0; j<w; j+=10) ctx.lineTo(j, i + Math.sin(j*0.02 + i)*5);
+                ctx.lineTo(w, i+20); ctx.lineTo(0, i+20);
+                ctx.fill();
+            }
+
+            if (animState === 'nile') {
+                // The River Nile
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 15 + Math.sin(t)*2; // Pulsing water level
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(w/2, h);
+                ctx.quadraticCurveTo(w/2 + 50, h*0.7, w/2 - 20, h*0.4);
+                ctx.quadraticCurveTo(w/2 - 40, h*0.3, w/2, h*0.15); // Delta start
+                ctx.stroke();
+
+                // Delta
+                ctx.fillStyle = '#15803d'; // Greenery
+                ctx.beginPath();
+                ctx.moveTo(w/2, h*0.2);
+                ctx.lineTo(w*0.3, 0);
+                ctx.lineTo(w*0.7, 0);
+                ctx.fill();
+
+                // River flow particles
+                ctx.fillStyle = 'white';
+                for(let i=0; i<10; i++) {
+                    const p = (t * 0.5 + i * 0.1) % 1;
+                    // Simple path approximation for particles
+                    const y = h * (1-p);
+                    const x = w/2 + Math.sin(y*0.01)*20; 
+                    if(y > h*0.15) { ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill(); }
+                }
+            } else {
+                // Pyramids Mode
+                ctx.fillStyle = '#0f172a'; // Night Sky
+                ctx.fillRect(0, 0, w, h*0.6);
+                
+                // Stars
+                ctx.fillStyle = 'white';
+                for(let i=0; i<50; i++) {
+                     if(Math.random() > 0.95) ctx.fillRect(Math.random()*w, Math.random()*h*0.6, 2, 2);
+                }
+
+                // Great Pyramid
+                const pyW = 200;
+                const pyH = 150;
+                const px = w/2 - 100;
+                const py = h*0.7;
+                
+                // Shadow side
+                ctx.fillStyle = '#78350f';
+                ctx.beginPath(); ctx.moveTo(w/2, py-pyH); ctx.lineTo(w/2, py); ctx.lineTo(px+pyW, py-20); ctx.fill();
+                // Light side
+                ctx.fillStyle = '#d97706';
+                ctx.beginPath(); ctx.moveTo(w/2, py-pyH); ctx.lineTo(w/2, py); ctx.lineTo(px, py-20); ctx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            canvas = document.getElementById('egyptCanvas');
+            ctx = canvas.getContext('2d');
+            
+            const resize = () => {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+            };
+            window.addEventListener('resize', resize);
+            resize();
+
+            setLang('ru');
+            requestAnimationFrame(draw);
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plains of the Land</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #14532d, #064e3b, #022c22);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #4ade80; color: #064e3b; font-weight: 800; }
+        .type-btn { transition: all 0.3s; }
+        .type-btn:hover { background: rgba(255,255,255,0.1); }
+        .type-btn.active { background: #22c55e; border-color: #22c55e; color: #022c22; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-green-500">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-green-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+        <div class="lg:col-span-1 glass rounded-custom p-8 flex flex-col gap-4">
+            <h3 id="nav-title" class="heading-font text-lg text-green-300 uppercase mb-4 tracking-widest"></h3>
+            <button onclick="window.setMode('low')" id="btn-low" class="type-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+            <button onclick="window.setMode('high')" id="btn-high" class="type-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+            <button onclick="window.setMode('plateau')" id="btn-plateau" class="type-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+        </div>
+
+        <div class="lg:col-span-3 glass rounded-custom p-8 flex flex-col items-center justify-center relative min-h-[500px]">
+            <canvas id="plainsCanvas" class="w-full h-full"></canvas>
+            <div id="info-overlay" class="absolute bottom-8 left-8 right-8 p-6 glass rounded-3xl border-t-4 border-green-500">
+                <h4 id="info-title" class="heading-font text-2xl text-green-300 mb-2"></h4>
+                <p id="info-text" class="text-white/70 font-light leading-relaxed"></p>
+                <p id="height-val" class="mt-2 font-mono text-green-400 font-bold"></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Равнины Суши", subtitle: "Рельеф без гор", navTitle: "Виды равнин",
+                types: {
+                    low: { btn: "Низменность", title: "Низменность", text: "Участки суши с высотой не более 200 м над уровнем моря. Часто заболочены или покрыты лесами.", h: "0 - 200 м" },
+                    high: { btn: "Возвышенность", title: "Возвышенность", text: "Равнины с высотой от 200 до 500 м. Имеют холмистый рельеф, расчлененный речными долинами.", h: "200 - 500 м" },
+                    plateau: { btn: "Плоскогорье", title: "Плоскогорье", text: "Высокие равнины (более 500 м) с плоской или волнистой поверхностью, отделенные уступами.", h: "> 500 м" }
+                }
+            },
+            kz: {
+                title: "Құрлық Жазықтары", subtitle: "Таусыз жер бедері", navTitle: "Жазық түрлері",
+                types: {
+                    low: { btn: "Ойпат", title: "Ойпат", text: "Теңіз деңгейінен биіктігі 200 м-ден аспайтын құрлық бөліктері. Жиі батпақты немесе орманды келеді.", h: "0 - 200 м" },
+                    high: { btn: "Қырат", title: "Қырат", text: "Биіктігі 200-ден 500 м-ге дейінгі жазықтар. Өзен аңғарларымен тілімденген төбелі рельефі бар.", h: "200 - 500 м" },
+                    plateau: { btn: "Таулы үстірт", title: "Таулы үстірт", text: "Биік жазықтар (500 м-ден жоғары), беті тегіс немесе толқынды, жарқабақтармен бөлінген.", h: "> 500 м" }
+                }
+            },
+            en: {
+                title: "Land Plains", subtitle: "Relief without mountains", navTitle: "Plain Types",
+                types: {
+                    low: { btn: "Lowland", title: "Lowland", text: "Land areas not exceeding 200m above sea level. Often swampy or forested.", h: "0 - 200 m" },
+                    high: { btn: "Upland", title: "Upland", text: "Plains with height from 200 to 500m. Have hilly relief dissected by river valleys.", h: "200 - 500 m" },
+                    plateau: { btn: "Plateau", title: "Plateau", text: "High plains (over 500m) with flat or rolling surface, separated by escarpments.", h: "> 500 m" }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        let currentMode = 'low';
+        let canvas, ctx;
+
+        window.setLang = function(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        window.setMode = function(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${mode}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('nav-title').textContent = t.navTitle;
+            document.getElementById('btn-low').textContent = t.types.low.btn;
+            document.getElementById('btn-high').textContent = t.types.high.btn;
+            document.getElementById('btn-plateau').textContent = t.types.plateau.btn;
+
+            const m = t.types[currentMode];
+            document.getElementById('info-title').textContent = m.title;
+            document.getElementById('info-text').textContent = m.text;
+            document.getElementById('height-val').textContent = m.h;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const skyH = h * 0.4;
+            
+            // Sky
+            const g = ctx.createLinearGradient(0, 0, 0, h);
+            g.addColorStop(0, '#bae6fd'); g.addColorStop(0.5, '#e0f2fe'); g.addColorStop(1, '#15803d');
+            ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+
+            // Terrain shape
+            ctx.fillStyle = '#166534';
+            ctx.beginPath();
+            ctx.moveTo(0, h);
+            
+            let heightFactor = 0.8; // Low
+            if(currentMode === 'high') heightFactor = 0.6;
+            if(currentMode === 'plateau') heightFactor = 0.4;
+
+            for(let i=0; i<=w; i+=10) {
+                let y = h * heightFactor; 
+                // Noise
+                y += Math.sin(i*0.02) * (currentMode === 'plateau' ? 5 : 20);
+                // Plateau drop
+                if(currentMode === 'plateau' && i > w*0.8) y += (i - w*0.8)*2; 
+                ctx.lineTo(i, y);
+            }
+            ctx.lineTo(w, h);
+            ctx.fill();
+
+            // Sea Level line reference
+            ctx.strokeStyle = '#3b82f6';
+            ctx.setLineDash([5,5]);
+            ctx.beginPath(); ctx.moveTo(0, h*0.9); ctx.lineTo(w, h*0.9); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#3b82f6'; ctx.font = '10px Inter'; ctx.fillText('Sea Level / Теңіз деңгейі', 10, h*0.9 - 5);
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('plainsCanvas');
+            if(canvas) {
+                ctx = canvas.getContext('2d');
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+                setLang('ru');
+                setMode('low');
+                draw();
+            }
+        };
+        window.onresize = function() {
+             if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+             }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

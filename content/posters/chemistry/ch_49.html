@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structure of the Electron Shell</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #1e1b4b, #0f172a, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-sky-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-6 self-start tracking-widest"></h2>
+            <canvas id="electronCanvas" class="w-full h-[450px] bg-black/20"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em]"></p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-sky-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-sky-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+            <div class="mt-8 p-6 bg-sky-500/10 rounded-2xl border border-sky-500/20 text-center">
+                <span class="text-3xl heading-font text-white">N = 2n<sup>2</sup></span>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-sky-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-sky-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Облака Атома",
+                subtitle: "Строение электронной оболочки атома",
+                canvasHeading: "Квантовая модель уровней",
+                canvasHint: "Нажмите, чтобы увидеть вращение электронов на уровнях",
+                defaultTitle: "Электронное облако",
+                defaultText: "Электронная оболочка — это совокупность всех электронов атома. Они располагаются на энергетических уровнях в соответствии с их энергией.",
+                cards: [
+                    { title: "Эн. уровни ($n$)", desc: "Слои, на которых находятся электроны. Макс. число электронов на уровне вычисляется по формуле $2n^2$." },
+                    { title: "Подуровни", desc: "Уровни делятся на подуровни: $s, p, d, f$. Они отличаются формой электронных орбиталей (сфера, гантель и др.)." },
+                    { title: "Валентные e⁻", desc: "Электроны внешнего уровня. Именно они определяют химические свойства и способность к образованию связей." }
+                ],
+                quote: "«Электрон — это не просто частица, это волна вероятности в океане пространства»",
+                author: "Нильс Бор"
+            },
+            kz: {
+                title: "Атом Бұлттары",
+                subtitle: "Атомның электрондық қабықшасының құрылысы",
+                canvasHeading: "Деңгейлердің кванттық моделі",
+                canvasHint: "Деңгейлердегі электрондардың айналуын көру үшін басыңыз",
+                defaultTitle: "Электрондық бұлт",
+                defaultText: "Электрондық қабықша — атомның барлық электрондарының жиынтығы. Олар өз энергияларына сәйкес энергетикалық деңгейлерде орналасады.",
+                cards: [
+                    { title: "Эн. деңгейлер ($n$)", desc: "Электрондар орналасқан қабаттар. Деңгейдегі макс. электрондар саны $2n^2$ формуласымен есептеледі." },
+                    { title: "Деңгейшелер", desc: "Деңгейлер $s, p, d, f$ деңгейшелерге бөлінеді. Олар электрондық орбитальдардың пішінімен ерекшеленеді." },
+                    { title: "Валенттік e⁻", desc: "Сыртқы деңгейдегі электрондар. Дәл солар химиялық қасиеттерді және байланыс түзу қабілетін анықтайды." }
+                ],
+                quote: "«Электрон — жай бөлшек емес, ол кеңістік мұхитындағы ықтималдық толқыны»",
+                author: "Нильс Бор"
+            },
+            en: {
+                title: "Atomic Clouds",
+                subtitle: "Structure of the atom's electron shell",
+                canvasHeading: "Quantum Level Model",
+                canvasHint: "Click to see electron rotation on energy levels",
+                defaultTitle: "Electron Cloud",
+                defaultText: "The electron shell is the collection of all electrons in an atom. They are organized into energy levels based on their energy states.",
+                cards: [
+                    { title: "Energy Levels ($n$)", desc: "Shells where electrons reside. Max electron capacity per shell is calculated as $2n^2$." },
+                    { title: "Subshells", desc: "Levels are divided into subshells: $s, p, d, f$, differing in the shape of electron orbitals." },
+                    { title: "Valence e⁻", desc: "Electrons on the outermost shell. They define chemical properties and the ability to form bonds." }
+                ],
+                quote: "«The electron is not just a particle; it is a wave of probability in the ocean of space»",
+                author: "Niels Bohr"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('electronCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            drawOrbits();
+        }
+
+        function drawOrbits() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.001;
+
+            // Nucleus
+            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(cx, cy, 15, 0, Math.PI*2); ctx.fill();
+
+            // Shells
+            [80, 140, 200].forEach((r, idx) => {
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.1)'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+                const eCount = (idx + 1) * 2;
+                for(let i=0; i<eCount; i++) {
+                    const ang = time * (1.5 / (idx + 1)) + (i * Math.PI * 2 / eCount);
+                    ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(cx + Math.cos(ang)*r, cy + Math.sin(ang)*r, 4, 0, Math.PI*2); ctx.fill();
+                }
+            });
+            requestAnimationFrame(drawOrbits);
+        }
+
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

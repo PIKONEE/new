@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эпоха бронзы и ее особенности</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .bronze-bg {
+            background-color: #fdfaf6;
+            background-image: radial-gradient(circle at top right, #fff7ed 0%, #fdfaf6 100%);
+        }
+
+        .sun-gradient {
+            background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+        }
+
+        .mosaic-card {
+            background: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 4px 20px -2px rgba(180, 83, 9, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #ffedd5;
+        }
+
+        .mosaic-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px -10px rgba(180, 83, 9, 0.1);
+            border-color: #fbbf24;
+        }
+
+        .lang-active {
+            background-color: #d97706;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.3);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 20px rgba(217, 119, 6, 0.2);
+        }
+
+        canvas {
+            filter: drop-shadow(0 10px 15px rgba(180, 83, 9, 0.15));
+        }
+    </style>
+</head>
+<body class="bronze-bg text-stone-900 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header Area -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-orange-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl">☀️</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tighter text-orange-900">Эпоха Бронзы</h1>
+            </div>
+            <div class="flex bg-orange-50 p-1 rounded-2xl border border-orange-100">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        
+        <!-- Section 1: Hero & Map (Radial Chart) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            <!-- Summary Intro -->
+            <div class="lg:col-span-5 flex flex-col justify-center">
+                <div id="badge" class="inline-block bg-orange-100 text-orange-700 px-4 py-1 rounded-full text-xs font-black uppercase mb-6 tracking-widest w-fit">Great Metallurgy Era</div>
+                <h2 id="viz-title" class="text-4xl md:text-5xl font-black text-stone-900 mb-8 leading-none glow-text">Эпоха великих открытий</h2>
+                <p id="viz-desc" class="text-xl text-stone-600 font-light leading-relaxed">
+                    Бронза — это сплав меди и олова. Открытие этого металла позволило создавать прочные инструменты и оружие, что привело к бурному росту хозяйства и культуры.
+                </p>
+                <div class="mt-10 grid grid-cols-2 gap-6">
+                    <div class="border-l-4 border-orange-500 pl-4">
+                        <div class="text-2xl font-black text-orange-600">2800-900</div>
+                        <div id="stat1" class="text-xs uppercase font-bold text-stone-400">гг. до н.э.</div>
+                    </div>
+                    <div class="border-l-4 border-orange-500 pl-4">
+                        <div class="text-2xl font-black text-orange-600">30+</div>
+                        <div id="stat2" class="text-xs uppercase font-bold text-stone-400">Поселений в КЗ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Radar Map -->
+            <div class="lg:col-span-7 bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-orange-50">
+                <h3 id="chart-title" class="text-center font-bold text-stone-400 uppercase tracking-widest mb-6">Сравнение эпох: Камень vs Бронза</h3>
+                <div class="h-80 md:h-[400px]">
+                    <canvas id="evolutionRadar"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Mosaic Plan (Asymmetric Grid) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- Long Vertical Card: Metallurgy -->
+            <div class="md:row-span-2 sun-gradient p-10 rounded-[3rem] text-white flex flex-col justify-between relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="text-6xl mb-8">🛠️</div>
+                    <h3 id="card1-t" class="text-3xl font-black mb-6 leading-tight">Секрет Бронзы</h3>
+                    <p id="card1-d" class="text-orange-50 text-lg font-light leading-relaxed">
+                        Сплав 90% меди и 10% олова сделал инструменты твердыми. Люди научились добывать руду в огромных масштабах (Жезказган, Риддер).
+                    </p>
+                </div>
+                <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-10 rotate-12">⚒️</div>
+            </div>
+
+            <!-- Wide Card: Culture -->
+            <div class="md:col-span-2 mosaic-card p-10 flex flex-col md:flex-row gap-10 items-center">
+                <div class="shrink-0 text-center">
+                    <div class="text-7xl mb-2">🏺</div>
+                    <div id="culture-label" class="text-xs font-black text-orange-500 uppercase tracking-widest">Andronovo</div>
+                </div>
+                <div>
+                    <h3 id="card2-t" class="text-2xl font-bold mb-4 text-stone-900">Андроновская культура</h3>
+                    <p id="card2-d" class="text-stone-600 leading-relaxed">Крупнейшая культура эпохи. Люди жили в полуземлянках, занимались мотыжным земледелием и отгонным скотоводством. Характерная черта — богатый геометрический орнамент на сосудах.</p>
+                </div>
+            </div>
+
+            <!-- Small Square: Chariots -->
+            <div class="mosaic-card p-8 text-center flex flex-col justify-center border-b-8 border-orange-500">
+                <div class="text-5xl mb-4">🏹</div>
+                <h4 id="card3-t" class="font-black text-stone-800 uppercase text-sm mb-2">Военное дело</h4>
+                <p id="card3-d" class="text-xs text-stone-500">Появление боевых колесниц и бронзовых наконечников копий и стрел.</p>
+            </div>
+
+            <!-- Small Square: Sun Worship -->
+            <div class="mosaic-card p-8 text-center flex flex-col justify-center border-b-8 border-amber-400">
+                <div class="text-5xl mb-4">☀️</div>
+                <h4 id="card4-t" class="font-black text-stone-800 uppercase text-sm mb-2">Верования</h4>
+                <p id="card4-d" class="text-xs text-stone-500">Культ солнца и огня. Рисунки «солнцеголовых» божеств в урочище Тамгалы.</p>
+            </div>
+
+            <!-- Wide Card Bottom: Social -->
+            <div class="md:col-span-2 bg-stone-900 p-10 rounded-[3rem] text-white flex flex-col md:flex-row items-center gap-10 shadow-2xl">
+                <div class="flex-1">
+                    <h3 id="card5-t" class="text-2xl font-bold mb-4">Общественное устройство</h3>
+                    <p id="card5-d" class="text-stone-400">На смену родовому равенству приходит социальное расслоение. Выделяются вожди, жрецы и воины-колесничие.</p>
+                </div>
+                <div class="text-6xl grayscale opacity-50 shrink-0">🤝</div>
+            </div>
+
+            <!-- Square Bottom: Jewelry -->
+            <div class="mosaic-card p-8 text-center flex flex-col justify-center border-t-8 border-orange-200">
+                <div class="text-5xl mb-4">💍</div>
+                <h4 id="card6-t" class="font-black text-stone-800 uppercase text-sm mb-2">Ювелирное искусство</h4>
+                <p id="card6-d" class="text-xs text-stone-500">Первые золотые и бронзовые украшения, спиралевидные кольца и подвески.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-stone-50 border-t border-orange-100">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-stone-800/80">
+                «Бронза — это металл, который сплавил воедино технологии, силу и первые проблески великих государств степи.»
+            </p>
+            <div class="mt-12 flex justify-center space-x-3">
+                <div class="w-12 h-1 bg-orange-200 rounded-full"></div>
+                <div class="w-12 h-1 bg-orange-500 rounded-full"></div>
+                <div class="w-12 h-1 bg-orange-200 rounded-full"></div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Эпоха Бронзы",
+                vizTitle: "Эпоха великих открытий",
+                vizDesc: "Бронза — это сплав меди и олова. Открытие этого металла позволило создавать прочные инструменты и оружие, что привело к бурному росту хозяйства и культуры.",
+                chartTitle: "Сравнение: Каменный век vs Бронза",
+                badge: "Эпоха металлургии",
+                stat1: "гг. до н.э.", stat2: "Поселений в КЗ",
+                card1T: "Секрет Бронзы", card1D: "Сплав 90% меди и 10% олова сделал инструменты твердыми. Люди научились добывать руду в огромных масштабах (Жезказган, Риддер).",
+                card2T: "Андроновская культура", card2D: "Крупнейшая культура эпохи. Люди жили в полуземлянках, занимались земледелием и отгонным скотоводством. Характерны орнаментированные сосуды.",
+                card3T: "Военное дело", card3D: "Появление боевых колесниц и бронзовых наконечников копий и стрел.",
+                card4T: "Верования", card4D: "Культ солнца и огня. Рисунки «солнцеголовых» божеств в урочище Тамгалы.",
+                card5T: "Общественное устройство", card5D: "На смену родовому равенству приходит социальное расслоение. Выделяются вожди, жрецы и воины.",
+                card6T: "Ювелирное искусство", card6D: "Первые золотые и бронзовые украшения, спиралевидные кольца и подвески.",
+                footer: "«Бронза — это металл, который сплавил воедино технологии, силу и первые проблески великих государств степи.»",
+                radarLabels: ["Металлургия", "Строительство", "Земледелие", "Военное дело", "Ювелирное дело", "Общество"]
+            },
+            kz: {
+                title: "Қола дәуірі",
+                vizTitle: "Ұлы жаңалықтар дәуірі",
+                vizDesc: "Қола — мыс пен қалайының қоспасы. Бұл металды игеру мықты құралдар мен қару-жарақ жасауға мүмкіндік берді, бұл шаруашылық пен мәдениеттің қарқынды дамуына әкелді.",
+                chartTitle: "Салыстыру: Тас дәуірі vs Қола",
+                badge: "Металлургия дәуірі",
+                stat1: "б.з.б. жж.", stat2: "ҚР-дағы қоныстар",
+                card1T: "Қола құпиясы", card1D: "90% мыс пен 10% қалайы қоспасы құралдарды қатты етті. Адамдар руданы үлкен масштабта өндіруді үйренді (Жезқазған, Риддер).",
+                card2T: "Андронов мәдениеті", card2D: "Дәуірдің ең ірі мәдениеті. Адамдар жартылай жер үйлерде тұрып, егіншілікпен және жайылымдық мал шаруашылығымен айналысты.",
+                card3T: "Әскери іс", card3D: "Соғыс арбаларының және қоладан жасалған найза мен жебе ұштарының пайда болуы.",
+                card4T: "Сенім-нанымдар", card4D: "Күн мен отқа табыну. Тамғалы шатқалындағы «күнбасты» құдайлардың суреттері.",
+                card5T: "Әлеуметтік құрылым", card5D: "Рулық теңдіктің орнына әлеуметтік жіктелу келді. Көсемдер, абыздар мен жауынгерлер бөлініп шықты.",
+                card6T: "Зергерлік өнер", card6D: "Алғашқы алтын және қола әшекейлер, спираль тәрізді сақиналар мен алқалар.",
+                footer: "«Қола — технологияны, күшті және даланың ұлы мемлекеттерінің алғашқы белгілерін бір арнаға тоғыстырған металл.»",
+                radarLabels: ["Металлургия", "Құрылыс", "Егіншілік", "Әскери іс", "Зергерлік өнер", "Қоғам"]
+            },
+            en: {
+                title: "The Bronze Age",
+                vizTitle: "Age of Great Discoveries",
+                vizDesc: "Bronze is an alloy of copper and tin. The discovery of this metal allowed for the creation of durable tools and weapons, leading to rapid economic and cultural growth.",
+                chartTitle: "Comparison: Stone Age vs Bronze",
+                badge: "Age of Metallurgy",
+                stat1: "BC years", stat2: "Settlements in KZ",
+                card1T: "The Secret of Bronze", card1D: "An alloy of 90% copper and 10% tin made tools hard. People learned to mine ore on a massive scale (Zhezkazgan, Ridder).",
+                card2T: "Andronovo Culture", card2D: "The largest culture of the era. People lived in semi-dugouts, practiced farming and transhumant cattle breeding.",
+                card3T: "Military Affairs", card3D: "The emergence of war chariots and bronze spearheads and arrowheads.",
+                card4T: "Beliefs", card4D: "The cult of the sun and fire. Drawings of 'sun-headed' deities in the Tamgaly gorge.",
+                card5T: "Social Structure", card5D: "Tribal equality was replaced by social stratification. Leaders, priests, and chariot warriors emerged.",
+                card6T: "Jewelry Art", card6D: "First gold and bronze jewelry, spiral rings, and pendants.",
+                footer: "«Bronze is the metal that fused technology, power, and the first glimpses of the great states of the steppe together.»",
+                radarLabels: ["Metallurgy", "Construction", "Farming", "Military", "Jewelry", "Society"]
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('evolutionRadar').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: translations[lang].radarLabels,
+                    datasets: [
+                        {
+                            label: lang === 'ru' ? 'Каменный век' : (lang === 'kz' ? 'Тас дәуірі' : 'Stone Age'),
+                            data: [30, 20, 50, 40, 20, 30],
+                            backgroundColor: 'rgba(168, 162, 158, 0.2)',
+                            borderColor: '#a8a29e',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: lang === 'ru' ? 'Эпоха Бронзы' : (lang === 'kz' ? 'Қола дәуірі' : 'Bronze Age'),
+                            data: [95, 80, 75, 90, 85, 80],
+                            backgroundColor: 'rgba(217, 119, 6, 0.4)',
+                            borderColor: '#d97706',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#d97706',
+                            pointRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(180, 83, 9, 0.1)' },
+                            grid: { color: 'rgba(180, 83, 9, 0.1)' },
+                            pointLabels: {
+                                font: { family: 'Inter', size: 13, weight: 'bold' },
+                                color: '#78350f'
+                            },
+                            ticks: { display: false },
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
+        function setLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('chart-title').innerText = t.chartTitle;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('stat1').innerText = t.stat1;
+            document.getElementById('stat2').innerText = t.stat2;
+            document.getElementById('card1-t').innerText = t.card1T; document.getElementById('card1-d').innerText = t.card1D;
+            document.getElementById('card2-t').innerText = t.card2T; document.getElementById('card2-d').innerText = t.card2D;
+            document.getElementById('card3-t').innerText = t.card3T; document.getElementById('card3-d').innerText = t.card3D;
+            document.getElementById('card4-t').innerText = t.card4T; document.getElementById('card4-d').innerText = t.card4D;
+            document.getElementById('card5-t').innerText = t.card5T; document.getElementById('card5-d').innerText = t.card5D;
+            document.getElementById('card6-t').innerText = t.card6T; document.getElementById('card6-d').innerText = t.card6D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-xl text-sm font-bold text-orange-600 hover:bg-orange-100 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

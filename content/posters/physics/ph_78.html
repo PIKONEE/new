@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плавление және бәндіктігінің - Т-график</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #cffafe 0%, #a5f3fc 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #0e7490; border-bottom: 3px solid #a5f3fc; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #0891b2; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #0891b2; background: white; color: #0891b2; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #0891b2; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #0891b2; color: white; }
+        .info-box { background: linear-gradient(135deg, #a5f3fc 0%, #cffafe 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #0891b2; margin: 10px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .phase-card { background: #ecf9ff; padding: 15px; border-radius: 0.5rem; border-left: 4px solid #0891b2; font-size: 11px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-cyan-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Плавление және Бәндіктігінің</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Melting and Freezing</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Плавление и отвердевание</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-cyan-100">T-график және λ формула. Қатты → сұйық → газ. ФАЗАЛЫК ӨЗГЕРУ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-cyan-100">T-graph and λ formula. Solid → liquid → gas. PHASE TRANSITION!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-cyan-100">Т-график и λ формула. Твёрдое → жидкое → газ. ФАЗОВЫЙ ПЕРЕХОД!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ФАЗАЛЫҚ ӨЗГЕРУ АНЫҚТАМАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. PHASE TRANSITION DEFINITION</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Определение фазового перехода</h2>
+
+            <div class="rule-card">
+                <div class="grid-2">
+                    <div class="phase-card">
+                        <p lang="kk" class="lang-content"><strong>❄️ ПЛАВЛЕНИЕ (Solid → Liquid)</strong></p>
+                        <p lang="kk" class="lang-content">• Температура ұстықтарлығына (T_плав)</p>
+                        <p lang="kk" class="lang-content">• Төмен орындалды құрамасындағы</p>
+                        <p lang="kk" class="lang-content">• Молекулалар ағындарындағы</p>
+                        <p lang="kk" class="lang-content">• Әндіктігінің ең үлкен О (λ)</p>
+
+                        <p lang="en" class="lang-content"><strong>❄️ MELTING (Solid → Liquid)</strong></p>
+                        <p lang="en" class="lang-content">• Temperature increases (T_melt)</p>
+                        <p lang="en" class="lang-content">• Crystal structure breaks</p>
+                        <p lang="en" class="lang-content">• Molecules move freely</p>
+                        <p lang="en" class="lang-content">• Requires latent heat (λ)</p>
+
+                        <p lang="ru" class="lang-content"><strong>❄️ ПЛАВЛЕНИЕ (Твёрдое → Жидкое)</strong></p>
+                        <p lang="ru" class="lang-content">• Температура повышается (T_плав)</p>
+                        <p lang="ru" class="lang-content">• Кристаллическая структура ломается</p>
+                        <p lang="ru" class="lang-content">• Молекулы движутся свободно</p>
+                        <p lang="ru" class="lang-content">• Требует скрытую теплоту (λ)</p>
+                    </div>
+
+                    <div class="phase-card">
+                        <p lang="kk" class="lang-content"><strong>🔥 ӨНДІКТІГІНІҢ (Liquid → Solid)</strong></p>
+                        <p lang="kk" class="lang-content">• Температура төмен болады</p>
+                        <p lang="kk" class="lang-content">• Молекулалар бәндіктігінің</p>
+                        <p lang="kk" class="lang-content">• Кристальдық құрамасындағы</p>
+                        <p lang="kk" class="lang-content">• Q = λ × m (энергия бөлінсін)</p>
+
+                        <p lang="en" class="lang-content"><strong>🔥 FREEZING (Liquid → Solid)</strong></p>
+                        <p lang="en" class="lang-content">• Temperature decreases</p>
+                        <p lang="en" class="lang-content">• Molecules arrange orderly</p>
+                        <p lang="en" class="lang-content">• Crystal structure forms</p>
+                        <p lang="en" class="lang-content">• Q = λ × m (heat released)</p>
+
+                        <p lang="ru" class="lang-content"><strong>🔥 ОТВЕРДЕВАНИЕ (Жидкое → Твёрдое)</strong></p>
+                        <p lang="ru" class="lang-content">• Температура понижается</p>
+                        <p lang="ru" class="lang-content">• Молекулы упорядочиваются</p>
+                        <p lang="ru" class="lang-content">• Кристаллическая структура</p>
+                        <p lang="ru" class="lang-content">• Q = λ × m (тепло выделяется)</p>
+                    </div>
+                </div>
+
+                <p style="text-align: center; font-weight: bold; color: #0e7490; font-size: 18px; margin: 20px 0;">
+                    Q = λ × m  (λ = удельная теплота плавления/отвердевания)
+                </p>
+
+                <div class="overflow-x-auto" style="margin-top: 15px;">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">МАТЕРИАЛ</th>
+                            <th lang="kk" class="lang-content">T_плав (°C)</th>
+                            <th lang="kk" class="lang-content">λ (кДж/кг)</th>
+
+                            <th lang="en" class="lang-content">MATERIAL</th>
+                            <th lang="en" class="lang-content">T_melt (°C)</th>
+                            <th lang="en" class="lang-content">λ (kJ/kg)</th>
+
+                            <th lang="ru" class="lang-content">МАТЕРИАЛ</th>
+                            <th lang="ru" class="lang-content">T_плав (°C)</th>
+                            <th lang="ru" class="lang-content">λ (кДж/кг)</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Мұз</td>
+                            <td lang="kk" class="lang-content">0</td>
+                            <td lang="kk" class="lang-content">334</td>
+
+                            <td lang="en" class="lang-content">Ice</td>
+                            <td lang="en" class="lang-content">0</td>
+                            <td lang="en" class="lang-content">334</td>
+
+                            <td lang="ru" class="lang-content">Лёд</td>
+                            <td lang="ru" class="lang-content">0</td>
+                            <td lang="ru" class="lang-content">334</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Мыс</td>
+                            <td lang="kk" class="lang-content">1083</td>
+                            <td lang="kk" class="lang-content">209</td>
+
+                            <td lang="en" class="lang-content">Copper</td>
+                            <td lang="en" class="lang-content">1083</td>
+                            <td lang="en" class="lang-content">209</td>
+
+                            <td lang="ru" class="lang-content">Медь</td>
+                            <td lang="ru" class="lang-content">1083</td>
+                            <td lang="ru" class="lang-content">209</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ТЕМПЕРАТУРА-УАҚЫТ ГРАФИК</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. TEMPERATURE-TIME GRAPH</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. График температуры-времени</h2>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>📈 ГРАФИК СИПАТТАМАСЫ:</strong></p>
+                <p lang="kk" class="lang-content text-sm">1. ҚАТТЫ: Т артады (40°C дан -10°C-қа) - линия өндіктігінең (1 минут)</p>
+                <p lang="kk" class="lang-content text-sm">2. ПЛАВЛЕННЯ: Т = 0°C (тұрақты) - горизонталь сызық (10 минут) - енгізіу λ!</p>
+                <p lang="kk" class="lang-content text-sm">3. СҰЙЫҚ: Т артады (0°C дан 50°C-қа) - линия өндіктігінең (5 минут)</p>
+
+                <p lang="en" class="lang-content text-sm"><strong>📈 GRAPH FEATURES:</strong></p>
+                <p lang="en" class="lang-content text-sm">1. SOLID: T increases (-10°C to 0°C) - sloped line (1 min)</p>
+                <p lang="en" class="lang-content text-sm">2. MELTING: T = 0°C (constant) - horizontal (10 min) - needs λ!</p>
+                <p lang="en" class="lang-content text-sm">3. LIQUID: T increases (0°C to 50°C) - sloped line (5 min)</p>
+
+                <p lang="ru" class="lang-content text-sm"><strong>📈 ГРАФИК ХАРАКТЕРИСТИК:</strong></p>
+                <p lang="ru" class="lang-content text-sm">1. ТВЁРДОЕ: Т растёт (-10°C до 0°C) - наклонная (1 мин)</p>
+                <p lang="ru" class="lang-content text-sm">2. ПЛАВЛЕНИЕ: Т = 0°C (const) - горизонталь (10 мин) - требует λ!</p>
+                <p lang="ru" class="lang-content text-sm">3. ЖИДКОЕ: Т растёт (0°C до 50°C) - наклонная (5 мин)</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #a5f3fc; border-radius: 1rem; border-top: 4px solid #0891b2;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-cyan-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-cyan-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-cyan-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Плавления және өндіктігінің - фазалық өзгеру. T-график хоризонталь төресек - плавлення! Q = λ × m энергия қажет. Мұз (0°C, 334 кДж), мыс (1083°C, 209 кДж). Физика фазасы!</p>
+            <p lang="en" class="lang-content text-sm">Melting and freezing are phase transitions. T-graph flat section = melting! Q = λ × m energy needed. Ice (0°C, 334 kJ), copper (1083°C, 209 kJ). Physics of phases!</p>
+            <p lang="ru" class="lang-content text-sm">Плавление и отвердевание - фазовые переходы. Т-график плоская часть = плавление! Q = λ × m энергия нужна. Лёд (0°C, 334 кДж), медь (1083°C, 209 кДж). Физика фаз!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

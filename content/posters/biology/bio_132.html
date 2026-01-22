@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Respiration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #451a03; color: #fed7aa; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .rounded-custom { border-radius: 2rem; }
+        canvas { border-radius: 1.5rem; }
+        .lang-btn.active { background: #f97316; color: #451a03; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="space-y-8">
+        <header>
+            <h1 class="text-5xl font-Montserrat text-orange-400 mb-2" id="title"></h1>
+            <div class="h-1 w-20 bg-orange-600 rounded"></div>
+        </header>
+
+        <div class="glass p-8 rounded-custom">
+            <p id="desc" class="text-lg leading-relaxed opacity-90"></p>
+            
+            <div class="mt-8 grid grid-cols-2 gap-4 text-xs font-bold uppercase tracking-widest text-orange-300/60">
+                <div class="border border-white/10 p-4 rounded-xl">24/7 Process</div>
+                <div class="border border-white/10 p-4 rounded-xl">Mitochondria</div>
+            </div>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="setL('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs">RU</button>
+            <button onclick="setL('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs">KZ</button>
+            <button onclick="setL('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs">EN</button>
+        </div>
+    </div>
+
+    <div class="h-[600px] glass p-4 rounded-custom flex items-center justify-center bg-black/20">
+        <canvas id="respCanvas" class="w-full h-full"></canvas>
+    </div>
+
+    <script>
+        const db = {
+            ru: { t: "Дыхание Растений", d: "Процесс, обратный фотосинтезу. Растения дышат круглосуточно, поглощая кислород и выделяя углекислый газ. В митохондриях происходит окисление органических веществ с выделением энергии, необходимой для роста и развития." },
+            kz: { t: "Өсімдік тынысы", d: "Фотосинтезге кері процесс. Өсімдіктер тәулік бойы тыныс алып, оттегі жұтады және көмірқышқыл газын бөледі. Митохондрияларда энергия бөлінуімен органикалық заттардың тотығуы жүреді." },
+            en: { t: "Plant Respiration", d: "The reverse of photosynthesis. Plants respire 24/7, absorbing oxygen and releasing CO2. In mitochondria, organic matter is oxidized to release energy needed for growth." }
+        };
+
+        let lang='ru', cx, cvs;
+
+        window.setL = (l) => {
+            lang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+            document.getElementById('title').textContent = db[l].t;
+            document.getElementById('desc').textContent = db[l].d;
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.001;
+            cx.clearRect(0,0,w,h);
+
+            // Mitochondria Shape
+            const cx_ = w/2, cy_ = h/2;
+            cx.fillStyle = '#7c2d12';
+            cx.beginPath(); cx.ellipse(cx_, cy_, 120, 200, 0.2, 0, Math.PI*2); cx.fill();
+            cx.strokeStyle = '#ea580c'; cx.lineWidth = 4; cx.stroke();
+
+            // Cristae (folds)
+            cx.strokeStyle = '#fdba74'; cx.lineWidth = 2;
+            for(let i=0; i<10; i++) {
+                const y = cy_ - 150 + i*30;
+                cx.beginPath(); 
+                cx.moveTo(cx_-80, y); 
+                cx.quadraticCurveTo(cx_, y + Math.sin(t+i)*20, cx_+80, y); 
+                cx.stroke();
+            }
+
+            // Energy Sparks (ATP)
+            for(let i=0; i<5; i++) {
+                const x = cx_ + (Math.random()-0.5)*150;
+                const y = cy_ + (Math.random()-0.5)*300;
+                cx.fillStyle = '#facc15';
+                cx.beginPath(); cx.arc(x, y, 4 + Math.sin(t*10 + i)*2, 0, Math.PI*2); cx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('respCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            setL('ru'); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

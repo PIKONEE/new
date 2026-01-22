@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natural Complexes: Interdependence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at center, #064e3b, #022c22, #000); color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #10b981; color: white; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b border-emerald-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-emerald-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col relative overflow-hidden min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-emerald-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="complexCanvas" class="w-full h-full bg-black/20"></canvas>
+            <p id="canvas-hint" class="mt-4 text-center text-[10px] text-white/30 uppercase tracking-[0.5em]"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-emerald-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-emerald-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-8"><h4 id="c1-t" class="heading-font text-emerald-400 mb-2"></h4><p id="c1-d" class="text-sm text-white/60"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="c2-t" class="heading-font text-emerald-400 mb-2"></h4><p id="c2-d" class="text-sm text-white/60"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="c3-t" class="heading-font text-emerald-400 mb-2"></h4><p id="c3-d" class="text-sm text-white/60"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Природные комплексы", subtitle: "Взаимосвязь компонентов природы",
+                canvasHeading: "Матрица взаимодействия", canvasHint: "Нажмите на компоненты, чтобы увидеть связи",
+                defaultTitle: "Единство ПК",
+                defaultText: "Природный комплекс — это участок земной поверхности, где рельеф, климат, воды, почвы и живые организмы взаимодействуют как единое целое. Изменение одного звена ведет к изменению всего комплекса.",
+                nodes: {
+                    relief: { t: "Рельеф", d: "Основа комплекса. Определяет распределение тепла и влаги." },
+                    climate: { t: "Климат", d: "Определяет режим вод, характер почв и видовой состав организмов." },
+                    waters: { t: "Воды", d: "Участвуют в круговороте веществ и формировании рельефа." },
+                    bios: { t: "Жизнь", d: "Организмы создают почву и меняют газовый состав атмосферы." }
+                },
+                cards: [
+                    { t: "Ландшафт", d: "Совокупность всех компонентов на определенной территории. Бывают антропогенными и естественными." },
+                    { t: "Целостность", d: "Главное свойство ПК. Означает неразрывную связь между всеми элементами системы." },
+                    { t: "Энергия", d: "Движущей силой всех процессов в природном комплексе является энергия Солнца и внутреннее тепло Земли." }
+                ]
+            },
+            kz: {
+                title: "Табиғат кешендері", subtitle: "Табиғат компоненттерінің өзара байланысы",
+                canvasHeading: "Өзара әрекеттесу матрицасы", canvasHint: "Байланыстарды көру үшін компоненттерді басыңыз",
+                defaultTitle: "ТК бірлігі",
+                defaultText: "Табиғат кешені — бедері, климаты, сулары, топырағы және тірі организмдері бір тұтас ретінде әрекеттесетін жер бетінің бөлігі.",
+                nodes: {
+                    relief: { t: "Рельеф", d: "Кешеннің негізі. Жылу мен ылғалдың таралуын анықтайды." },
+                    climate: { t: "Климат", d: "Су режимін, топырақ сипатын және организмдер құрамын анықтайды." },
+                    waters: { t: "Сулар", d: "Зат айналымына және рельефтің қалыптасуына қатысады." },
+                    bios: { t: "Тіршілік", d: "Организмдер топырақ түзеді және атмосфера құрамын өзгертеді." }
+                },
+                cards: [
+                    { t: "Ландшафт", d: "Белгілі бір аумақтағы барлық компоненттердің жиынтығы." },
+                    { t: "Тұтастық", d: "ТК-нің басты қасиеті. Жүйенің барлық элементтері арасындағы тығыз байланыс." },
+                    { t: "Энергия", d: "Табиғат кешеніндегі барлық процестердің қозғаушы күші — Күн энергиясы." }
+                ]
+            },
+            en: {
+                title: "Natural Complexes", subtitle: "Interdependence of Nature Components",
+                canvasHeading: "Interaction Matrix", canvasHint: "Click components to see connections",
+                defaultTitle: "Unity of NC",
+                defaultText: "A natural complex is an area where relief, climate, water, soil, and life interact as a single system. A change in one link leads to a change in the entire complex.",
+                nodes: {
+                    relief: { t: "Relief", d: "The foundation. It dictates heat and moisture distribution." },
+                    climate: { t: "Climate", d: "Determines water regimes, soil types, and species composition." },
+                    waters: { t: "Waters", d: "Part of the nutrient cycle and landform shaping." },
+                    bios: { t: "Biosphere", d: "Organisms create soil and transform the atmospheric gas composition." }
+                },
+                cards: [
+                    { t: "Landscape", d: "The combination of all components in a specific area. Can be natural or man-made." },
+                    { t: "Integrity", d: "The key property of NC. Means the unbreakable link between all system elements." },
+                    { t: "Energy", d: "Solar radiation and Earth's internal heat are the primary drivers of all NC processes." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx, nodes = [];
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('c1-t').textContent = t.cards[0].t; document.getElementById('c1-d').textContent = t.cards[0].d;
+            document.getElementById('c2-t').textContent = t.cards[1].t; document.getElementById('c2-d').textContent = t.cards[1].d;
+            document.getElementById('c3-t').textContent = t.cards[2].t; document.getElementById('c3-d').textContent = t.cards[2].d;
+            draw();
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const cx = canvas.width/2, cy = canvas.height/2;
+            const time = Date.now() * 0.001;
+
+            nodes = [
+                {id: 'relief', x: cx, y: cy-120, c: '#78350f', label: translations[currentLang].nodes.relief.t},
+                {id: 'climate', x: cx+120, y: cy, c: '#fbbf24', label: translations[currentLang].nodes.climate.t},
+                {id: 'waters', x: cx, y: cy+120, c: '#0ea5e9', label: translations[currentLang].nodes.waters.t},
+                {id: 'bios', x: cx-120, y: cy, c: '#10b981', label: translations[currentLang].nodes.bios.t}
+            ];
+
+            // Rotating lines
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.setLineDash([10,10]);
+            nodes.forEach(n => {
+                ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(n.x, n.y); ctx.stroke();
+            });
+            ctx.setLineDash([]);
+
+            nodes.forEach(n => {
+                ctx.fillStyle = n.c; ctx.shadowBlur = 20; ctx.shadowColor = n.c;
+                ctx.beginPath(); ctx.arc(n.x, n.y + Math.sin(time + n.x)*5, 45, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'white'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center';
+                ctx.fillText(n.label.toUpperCase(), n.x, n.y + Math.sin(time + n.x)*5 + 5);
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('complexCanvas'); ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500;
+            canvas.addEventListener('click', e => {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+                nodes.forEach(n => {
+                    if(Math.sqrt((mx-n.x)**2 + (my-n.y)**2) < 50) {
+                        const d = translations[currentLang].nodes[n.id];
+                        document.getElementById('info-title').textContent = d.t;
+                        document.getElementById('info-text').textContent = d.d;
+                    }
+                });
+            });
+            setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

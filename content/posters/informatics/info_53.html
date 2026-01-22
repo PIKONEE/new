@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Схемы в повседневной жизни</title>
+    <style>
+        :root {
+            --primary-color: #0d9488; /* Teal-600 */
+            --primary-light: #f0fdfa; /* Teal-50 */
+            --primary-border: #14b8a6; /* Teal-500 */
+            --text-main: #334155;     /* Slate-700 */
+            --text-header: #0f172a;   /* Slate-900 */
+            --bg-body: #f1f5f9;       /* Slate-100 */
+            --bg-card: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .poster-container {
+            background-color: var(--bg-card);
+            width: 100%;
+            max-width: 900px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 8px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--primary-light);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid #ccfbf1;
+            position: relative;
+        }
+
+        .icon-wrapper {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 90px;
+            height: 90px;
+            background-color: #99f6e4; /* Teal-200 */
+            color: #0f766e; /* Teal-700 */
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--text-header);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .decorative-line {
+            width: 100px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+            margin: 20px auto 0;
+        }
+
+        /* Content */
+        .content {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .section-card {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 30px;
+            border-left: 8px solid var(--primary-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-color: var(--primary-border);
+        }
+
+        .section-header-group {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0f766e; /* Teal-700 */
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #115e59; /* Teal-800 */
+            margin-top: 5px;
+            display: block;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-text {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            color: #475569;
+        }
+
+        .list-container {
+            background-color: #f0fdfa; /* Teal-50 */
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .list-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .bullet {
+            min-width: 12px;
+            height: 12px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            margin-top: 6px;
+            transform: rotate(45deg);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-header);
+            padding: 40px;
+            text-align: center;
+            margin: 0 40px 40px;
+            border-radius: 16px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--primary-border);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 15px;
+        }
+
+        .footer-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Controls */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 800;
+            color: #64748b;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .btn:hover {
+            background-color: #ccfbf1;
+            color: var(--primary-color);
+            border-color: var(--primary-border);
+        }
+
+        .btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
+        }
+
+        @media (max-width: 700px) {
+            .title { font-size: 1.8rem; }
+            .content { padding: 20px; }
+            .controls { position: static; justify-content: center; margin-bottom: 30px; }
+            .header { padding-top: 20px; padding-bottom: 30px; }
+            .section-card { padding: 20px; }
+            .footer { margin: 0 20px 30px; padding: 30px 20px; }
+            .footer-text { font-size: 1.1rem; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="poster-container">
+        <!-- Controls (No Print Button) -->
+        <div class="header">
+            <div class="controls">
+                <button class="btn active" onclick="setLang('ru')">RU</button>
+                <button class="btn" onclick="setLang('kz')">KZ</button>
+                <button class="btn" onclick="setLang('en')">EN</button>
+            </div>
+
+            <div class="icon-wrapper">
+                <!-- SVG Icon: Map -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                    <line x1="8" y1="2" x2="8" y2="18"></line>
+                    <line x1="16" y1="6" x2="16" y2="22"></line>
+                </svg>
+            </div>
+            <h1 class="title" id="main-title">Схемы в нашей жизни</h1>
+            <div class="decorative-line"></div>
+        </div>
+
+        <div class="content">
+            <!-- Section 1 -->
+            <div class="section-card">
+                <div class="section-header-group">
+                    <h2 class="section-title" id="sec1-title">1. ЗАЧЕМ НУЖНЫ СХЕМЫ?</h2>
+                    <span class="section-subtitle" id="sec1-sub">🗺️ Навигация и порядок</span>
+                </div>
+                <p class="section-text" id="sec1-text">
+                    Схемы — это упрощенные карты реальности. Они помогают нам быстро ориентироваться в пространстве, понимать устройство вещей и действовать правильно без лишних слов.
+                </p>
+                <div class="list-container" id="sec1-list">
+                    <!-- List items injected by JS -->
+                </div>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="section-card">
+                <div class="section-header-group">
+                    <h2 class="section-title" id="sec2-title">2. ВИДЫ СХЕМ ВОКРУГ НАС</h2>
+                    <span class="section-subtitle" id="sec2-sub">🏙️ От метро до инструкций</span>
+                </div>
+                <p class="section-text" id="sec2-text">
+                    Мы сталкиваемся со схемами каждый день, даже не замечая этого. Они экономят наше время и обеспечивают безопасность.
+                </p>
+                <div class="list-container" id="sec2-list">
+                    <!-- List items injected by JS -->
+                </div>
+            </div>
+
+            <!-- Section 3 (New Detailed Section) -->
+            <div class="section-card">
+                <div class="section-header-group">
+                    <h2 class="section-title" id="sec3-title">3. КАК ЧИТАТЬ СХЕМЫ?</h2>
+                    <span class="section-subtitle" id="sec3-sub">🔑 Ключ к пониманию</span>
+                </div>
+                <p class="section-text" id="sec3-text">
+                    Любая схема имеет свой язык. Чтобы её понять, нужно найти «легенду» — расшифровку условных знаков и цветов.
+                </p>
+                <div class="list-container" id="sec3-list">
+                    <!-- List items injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-title" id="footer-title">ГЛАВНАЯ МЫСЛЬ</div>
+            <p class="footer-text" id="footer-text">Схема — это универсальный язык, который понимают все, независимо от страны и возраста.</p>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: {
+                mainTitle: "Схемы в нашей жизни",
+
+                sec1Title: "1. ЗАЧЕМ НУЖНЫ СХЕМЫ?",
+                sec1Sub: "🗺️ Навигация и порядок",
+                sec1Text: "Схемы — это упрощенные карты реальности. Они помогают нам быстро ориентироваться в пространстве, понимать устройство вещей и действовать правильно без лишних слов.",
+                sec1List: [
+                    "<b>Экономия времени:</b> Мгновенный поиск нужного маршрута.",
+                    "<b>Безопасность:</b> Быстрый выход из здания при тревоге.",
+                    "<b>Наглядность:</b> Сложное устройство становится простым."
+                ],
+
+                sec2Title: "2. ВИДЫ СХЕМ ВОКРУГ НАС",
+                sec2Sub: "🏙️ От метро до инструкций",
+                sec2Text: "Мы сталкиваемся со схемами каждый день, даже не замечая этого. Они экономят наше время и обеспечивают безопасность.",
+                sec2List: [
+                    "<b>Транспортные:</b> Карты метро, автобусных маршрутов, GPS.",
+                    "<b>Планы зданий:</b> Эвакуационные выходы («План эвакуации»).",
+                    "<b>Инструкции:</b> Схемы сборки мебели (LEGO, IKEA) или техники."
+                ],
+
+                sec3Title: "3. КАК ЧИТАТЬ СХЕМЫ?",
+                sec3Sub: "🔑 Ключ к пониманию",
+                sec3Text: "Любая схема имеет свой язык. Чтобы её понять, нужно найти «легенду» — расшифровку условных знаков и цветов.",
+                sec3List: [
+                    "<b>Найди «Вы здесь»:</b> Точка отсчета твоего положения.",
+                    "<b>Изучи легенду:</b> Что значат красные стрелки или синие линии?",
+                    "<b>Следи за масштабом:</b> Оцени реальное расстояние."
+                ],
+
+                footerTitle: "ГЛАВНАЯ МЫСЛЬ",
+                footerText: "Схема — это универсальный язык, который понимают все, независимо от страны и возраста."
+            },
+            kz: {
+                mainTitle: "Біздің өміріміздегі схемалар",
+
+                sec1Title: "1. СХЕМАЛАР НЕ ҮШІН КЕРЕК?",
+                sec1Sub: "🗺️ Навигация және тәртіп",
+                sec1Text: "Схемалар — шындықтың жеңілдетілген карталары. Олар кеңістікте тез бағдарлауға, заттардың құрылымын түсінуге және артық сөзсіз дұрыс әрекет етуге көмектеседі.",
+                sec1List: [
+                    "<b>Уақытты үнемдеу:</b> Қажетті бағытты лезде табу.",
+                    "<b>Қауіпсіздік:</b> Дабыл кезінде ғимараттан тез шығу.",
+                    "<b>Көрнекілік:</b> Күрделі құрылғы қарапайым болып көрінеді."
+                ],
+
+                sec2Title: "2. АЙНАЛАМЫЗДАҒЫ СХЕМА ТҮРЛЕРІ",
+                sec2Sub: "🏙️ Метродан нұсқаулықтарға дейін",
+                sec2Text: "Біз схемалармен күн сайын кездесеміз, тіпті оны байқамаймыз. Олар біздің уақытымызды үнемдейді және қауіпсіздікті қамтамасыз етеді.",
+                sec2List: [
+                    "<b>Көлік:</b> Метро карталары, автобус бағыттары, GPS.",
+                    "<b>Ғимарат жоспарлары:</b> Эвакуациялық шығу жолдары.",
+                    "<b>Нұсқаулықтар:</b> Жиһаз немесе техника құрастыру схемалары."
+                ],
+
+                sec3Title: "3. СХЕМАЛАРДЫ ҚАЛАЙ ОҚУ КЕРЕК?",
+                sec3Sub: "🔑 Түсіну кілті",
+                sec3Text: "Кез келген схеманың өз тілі бар. Оны түсіну үшін «аңызды» (легенда) — шартты белгілер мен түстердің мағынасын табу керек.",
+                sec3List: [
+                    "<b>«Сіз осындасыз» белгісін тап:</b> Сенің орналасқан жерің.",
+                    "<b>Аңызды зертте:</b> Қызыл көрсеткілер немесе көк сызықтар нені білдіреді?",
+                    "<b>Масштабқа назар аудар:</b> Нақты қашықтықты бағала."
+                ],
+
+                footerTitle: "БАСТЫ ОЙ",
+                footerText: "Схема — бұл еліне және жасына қарамастан барлығы түсінетін әмбебап тіл."
+            },
+            en: {
+                mainTitle: "Diagrams in Our Life",
+
+                sec1Title: "1. WHY DO WE NEED DIAGRAMS?",
+                sec1Sub: "🗺️ Navigation & Order",
+                sec1Text: "Diagrams are simplified maps of reality. They help us navigate space quickly, understand how things work, and act correctly without extra words.",
+                sec1List: [
+                    "<b>Time saving:</b> Instantly finding the right route.",
+                    "<b>Safety:</b> Quick exit from a building during an alarm.",
+                    "<b>Clarity:</b> Complex devices become simple."
+                ],
+
+                sec2Title: "2. TYPES OF DIAGRAMS AROUND US",
+                sec2Sub: "🏙️ From metro to manuals",
+                sec2Text: "We encounter diagrams every day without even noticing. They save our time and ensure safety.",
+                sec2List: [
+                    "<b>Transport:</b> Metro maps, bus routes, GPS.",
+                    "<b>Building plans:</b> Evacuation exits ('Evacuation Plan').",
+                    "<b>Instructions:</b> Assembly diagrams (LEGO, IKEA) or tech manuals."
+                ],
+
+                sec3Title: "3. HOW TO READ DIAGRAMS?",
+                sec3Sub: "🔑 Key to understanding",
+                sec3Text: "Any diagram has its own language. To understand it, you need to find the 'legend' — the decoding of symbols and colors.",
+                sec3List: [
+                    "<b>Find 'You are here':</b> The starting point of your location.",
+                    "<b>Study the legend:</b> What do red arrows or blue lines mean?",
+                    "<b>Watch the scale:</b> Estimate the real distance."
+                ],
+
+                footerTitle: "MAIN THOUGHT",
+                footerText: "A diagram is a universal language that everyone understands, regardless of country or age."
+            }
+        };
+
+        function setLang(lang) {
+            // Update Text fields
+            document.getElementById('main-title').innerText = content[lang].mainTitle;
+
+            document.getElementById('sec1-title').innerText = content[lang].sec1Title;
+            document.getElementById('sec1-sub').innerText = content[lang].sec1Sub;
+            document.getElementById('sec1-text').innerText = content[lang].sec1Text;
+            updateList('sec1-list', content[lang].sec1List);
+
+            document.getElementById('sec2-title').innerText = content[lang].sec2Title;
+            document.getElementById('sec2-sub').innerText = content[lang].sec2Sub;
+            document.getElementById('sec2-text').innerText = content[lang].sec2Text;
+            updateList('sec2-list', content[lang].sec2List);
+
+            document.getElementById('sec3-title').innerText = content[lang].sec3Title;
+            document.getElementById('sec3-sub').innerText = content[lang].sec3Sub;
+            document.getElementById('sec3-text').innerText = content[lang].sec3Text;
+            updateList('sec3-list', content[lang].sec3List);
+
+            document.getElementById('footer-title').innerText = content[lang].footerTitle;
+            document.getElementById('footer-text').innerText = content[lang].footerText;
+
+            // Update Buttons State
+            document.querySelectorAll('.btn').forEach(btn => {
+                if (btn.innerText.toLowerCase() === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function updateList(elementId, items) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `<div class="bullet"></div><span>${item}</span>`;
+                container.appendChild(div);
+            });
+        }
+
+        // Initialize with Russian
+        setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

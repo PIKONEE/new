@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гомер: Бессмертная Илиада</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #450a0a, #1a1a1a, #000000);
+            color: #fef3c7;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #991b1b;
+            color: #fef3c7;
+            box-shadow: 0 0 30px rgba(153, 27, 27, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #991b1b;
+            background: linear-gradient(90deg, rgba(153, 27, 27, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-400 to-yellow-500 uppercase">
+                Поэма «Илиада»
+            </h1>
+            <p id="sub-title" class="text-red-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Гнев Ахиллеса и величие Трои</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-red-900/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-red-950 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-red-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-red-700 inline-block"></span>
+                Круг эпических событий
+            </h2>
+            <div class="relative flex-grow bg-black/50 rounded-[2.5rem] border border-red-900/20 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="iliadCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-red-500/50 italic text-center uppercase tracking-widest">Нажмите на сцены, чтобы прочесть историю Гнева и Подвига</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-red-700 mb-8 font-black uppercase leading-tight" id="placeholder-title">Слово Гомера</h3>
+                    <p class="text-stone-300 leading-relaxed text-lg" id="placeholder-text">
+                        «Илиада» — это не вся Троянская война, а лишь 51 день последнего, десятого года осады. В центре внимания — гнев величайшего воина ахейцев Ахиллеса. Нажмите на узлы схемы, чтобы изучить путь героя.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚔️</span>
+                            <span id="hint-1" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Героический дух</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-2" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Воля богов</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-red-950/40 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-red-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-stone-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-red-950/20 rounded-[2.5rem] border border-red-900/30 shadow-xl">
+                        <strong class="text-red-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-epic">Эпическая деталь:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📜</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-red-500 uppercase">Стиль и ритм</h3>
+            <p id="card1-text" class="text-stone-400 text-sm leading-relaxed">Поэма написана <strong>гекзаметром</strong> — особым шестистопным размером, который звучит торжественно и мерно, как шум морского прибоя. В ней часто встречаются повторы и постоянные эпитеты: «быстроногий Ахиллес», «шлемоблещущий Гектор».</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-orange-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⚡</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-orange-400 uppercase">Олимпийские боги</h3>
+            <p id="card2-text" class="text-stone-400 text-sm leading-relaxed">В «Илиаде» боги — полноправные участники событий. <strong>Афина</strong> и <strong>Гера</strong> помогают грекам, <strong>Аполлон</strong> и <strong>Афродита</strong> защищают троянцев, а Зевс взвешивает жребии героев на золотых весах.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🎭</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-stone-200 uppercase">Человечность эпоса</h3>
+            <p id="card3-text" class="text-stone-400 text-sm leading-relaxed">Гомер с одинаковым сочувствием описывает и греков, и троянцев. Трагедия войны показана не через сухие факты, а через боль утраты, прощание Гектора с Андромахой и горе отца — царя Приама.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-red-950 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-red-100/70 leading-tight max-w-5xl mx-auto">
+            «Гнев, богиня, воспой Ахиллеса, Пелеева сына...»
+        </p>
+        <span class="block mt-4 text-red-600 uppercase tracking-widest text-sm">— Первая строка «Илиады»</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Поэма «Илиада»",
+                subtitle: "Гнев Ахиллеса и величие Трои",
+                visualTitle: "Круг эпических событий",
+                hint: "Нажмите на сцены, чтобы прочесть историю Гнева и Подвига",
+                placeholderTitle: "Слово Гомера",
+                placeholderText: "Эпос Гомера — фундамент античной культуры. Это история о доблести, роке и человеческих чувствах на фоне войны. Выберите сцену на круге.",
+                labelEpic: "Эпическая деталь:",
+                hint1: "Героический дух", hint2: "Воля богов",
+                card1Title: "Стиль и ритм",
+                card1Text: "Гекзаметр придает поэме торжественность. Постоянные эпитеты помогают слушателю мгновенно узнать героя и его главную черту.",
+                card2Title: "Олимпийские боги",
+                card2Text: "Бессмертные боги спорят, ссорятся и помогают своим любимцам, подчеркивая, что судьба человека — в руках высших сил.",
+                card3Title: "Человечность",
+                card3Text: "Гомер не делит мир на своих и чужих. Его герои страдают и любят одинаково, что делает поэму вечной ценностью человечества.",
+                footerQuote: "«Гнев, богиня, воспой Ахиллеса, Пелеева сына...»",
+                nodes: [
+                    { id: 1, tag: "Завязка", title: "Ссора с Агамемноном", desc: "Ахейский вождь Агамемнон отнимает у Ахиллеса пленницу Брисеиду. Разгневанный Ахиллес отказывается участвовать в битвах, обрекая греков на поражения.", fact: "Именно с этого момента начинается сюжет поэмы — 'Гнев, богиня, воспой...'." },
+                    { id: 2, tag: "Перелом", title: "Смерть Патрокла", desc: "Лучший друг Ахиллеса, Патрокл, надевает его доспехи, чтобы спасти греков, но гибнет от руки троянского царевича Гектора.", fact: "Горе Ахиллеса превращает его обиду в ярость и жажду мести." },
+                    { id: 3, tag: "Кульминация", title: "Поединок героев", desc: "Ахиллес возвращается в бой в новых доспехах, выкованных богом Гефестом. В жестоком поединке у стен Трои он убивает Гектора.", fact: "Щит Ахиллеса — знаменитое описание в поэме, символизирующее всё устройство мира." },
+                    { id: 4, tag: "Развязка", title: "Приам у Ахиллеса", desc: "Старый царь Приам тайно пробирается в лагерь греков, чтобы вымолить тело сына. Ахиллес, тронутый горем отца, отдает тело Гектора.", fact: "Эта сцена — вершина гуманизма Гомера, примирение врагов перед лицом смерти." },
+                    { id: 5, tag: "Финал", title: "Погребение Гектора", desc: "Поэма заканчивается не падением Трои, а торжественным погребением 'шлемоблещущего' Гектора. Война продолжается, но эпический гнев утих.", fact: "События с троянским конем и гибелью Ахиллеса описаны в других, более поздних сказаниях." }
+                ]
+            },
+            kz: {
+                title: "«Илиада» жыры",
+                subtitle: "Ахиллестің қаһары мен Троя ұлылығы",
+                visualTitle: "Эпикалық оқиғалар шеңбері",
+                hint: "Қаһар мен ерлік тарихын оқу үшін көріністерді басыңыз",
+                placeholderTitle: "Гомер сөзі",
+                placeholderText: "Гомердің эпосы — антикалық мәдениеттің негізі. Бұл соғыс аясындағы ерлік, тағдыр және адам сезімдері туралы хикая. Шеңберден көріністі таңдаңыз.",
+                labelEpic: "Эпикалық мәлімет:",
+                hint1: "Батырлық рух", hint2: "Құдайлар еркі",
+                card1Title: "Стиль мен ырғақ",
+                card1Text: "Гекзаметр жырға салтанаттылық береді. Тұрақты эпитеттер тыңдаушыға батырды бірден тануға көмектеседі.",
+                card2Title: "Олимп құдайлары",
+                card2Text: "Өлмейтін құдайлар дауласып, өз сүйіктілеріне көмектеседі, бұл адам тағдырының жоғарғы күштердің қолында екенін көрсетеді.",
+                card3Title: "Адамгершілік",
+                card3Text: "Гомер әлемді өз-өзге деп бөлмейді. Оның кейіпкерлері бірдей қайғырып, бірдей сүйеді.",
+                footerQuote: "«Қаһарын жырла, құдайым, Пелей ұлы Ахиллестің...»",
+                nodes: [
+                    { id: 1, tag: "Басталуы", title: "Агамемнонмен араздасу", desc: "Ахейліктер көсемі Агамемнон Ахиллестің тұтқын қызын тартып алады. Ашуланған Ахиллес соғысқа қатысудан бас тартады.", fact: "Дәл осы сәттен жырдың желісі басталады." },
+                    { id: 2, tag: "Бұрылыс", title: "Патроклдың қазасы", desc: "Ахиллестің ең жақын досы Патрокл гректерді құтқару үшін оның сауытын киіп шығады, бірақ Гектордың қолынан қаза табады.", fact: "Ахиллестің қайғысы оны кек алуға мәжбүр етеді." },
+                    { id: 3, tag: "Шырқау шегі", title: "Батырлар жекпе-жегі", desc: "Ахиллес Гефест құдай соққан жаңа сауытпен ұрысқа оралады. Троя қабырғасы түбінде Гекторды өлтіреді.", fact: "Ахиллестің қалқаны — бүкіл әлем құрылымын бейнелейтін жырдағы әйгілі сипаттама." },
+                    { id: 4, tag: "Шешімі", title: "Приамның келуі", desc: "Қарт Приам патша ұлының денесін сұрап алу үшін гректер лагеріне жасырын келеді. Ахиллес әкенің қайғысына ортақтасып, денені береді.", fact: "Бұл көрініс — жаулардың өлім алдындағы татуласуы, Гомер гуманизмінің шыңы." },
+                    { id: 5, tag: "Соңы", title: "Гекторды жерлеу", desc: "Жыр Трояның құлауымен емес, Гекторды салтанатты жерлеумен аяқталады. Соғыс жалғасуда, бірақ эпикалық қаһар басылды.", fact: "Троя аты мен Ахиллестің қазасы кейінгі аңыздарда жазылған." }
+                ]
+            },
+            en: {
+                title: "Poem «The Iliad»",
+                subtitle: "Achilles' Wrath and the Grandeur of Troy",
+                visualTitle: "The Epic Cycle",
+                hint: "Click on scenes to read the story of Wrath and Valor",
+                placeholderTitle: "Homer's Word",
+                placeholderText: "Homer's epic is the foundation of Western culture. It's a story of courage, fate, and human emotion set against the backdrop of war.",
+                labelEpic: "Epic Detail:",
+                hint1: "Heroic Spirit", hint2: "Will of Gods",
+                card1Title: "Style & Rhythm",
+                card1Text: "The hexameter gives the poem a grand, rhythmic feel. Epithets help the audience instantly identify characters and their traits.",
+                card2Title: "Olympian Gods",
+                card2Text: "The immortals intervene, argue, and help their favorites, highlighting that human destiny lies with the divine.",
+                card3Title: "Humanity",
+                card3Text: "Homer treats both sides with compassion. His characters suffer and love equally, making the epic a timeless human treasure.",
+                footerQuote: "«Sing, Goddess, the wrath of Achilles, Peleus' son...»",
+                nodes: [
+                    { id: 1, tag: "Exposition", title: "Quarrel with Agamemnon", desc: "King Agamemnon seizes Briseis, a captive woman, from Achilles. Enraged, Achilles withdraws from the war, leading to Greek defeats.", fact: "This 'Wrath' is the central theme and starting point of the entire epic." },
+                    { id: 2, tag: "Turning Point", title: "Death of Patroclus", desc: "Achilles' dearest companion, Patroclus, enters battle in Achilles' armor but is slain by the Trojan prince Hector.", fact: "Grief transforms Achilles' resentment into a blinding fury for revenge." },
+                    { id: 3, tag: "Climax", title: "Duel of the Heroes", desc: "Achilles returns in divine armor forged by Hephaestus. In a brutal duel outside Troy, he kills Hector.", fact: "The Shield of Achilles is a famous 'ekphrasis' representing the whole ancient world." },
+                    { id: 4, tag: "Resolution", title: "Priam's Plea", desc: "Old King Priam secretly visits Achilles to ransom his son's body. Moved by the father's grief, Achilles relents.", fact: "This scene represents the peak of Homeric humanity, where enemies weep together." },
+                    { id: 5, tag: "Ending", title: "Burial of Hector", desc: "The poem ends not with Troy's fall, but with the funeral rites of 'tamer of horses' Hector. The war goes on, but the wrath is resolved.", fact: "The Trojan Horse and Achilles' own death are not part of the Iliad but belong to the wider cycle." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('iliadCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-epic').innerText = t.labelEpic;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = 140;
+
+            // Draw Central Shield (Achilles Shield representation)
+            const shieldGrad = ctx.createRadialGradient(cx, cy, 20, cx, cy, 180);
+            shieldGrad.addColorStop(0, '#78350f');
+            shieldGrad.addColorStop(0.5, '#b45309');
+            shieldGrad.addColorStop(1, '#000000');
+            ctx.fillStyle = shieldGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 180, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Decorative rings on shield
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath(); ctx.arc(cx, cy, 100, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, 60, 0, Math.PI * 2); ctx.stroke();
+            ctx.setLineDash([]);
+
+            const nodesData = [
+                { id: 1, angle: -Math.PI/2, icon: "😠" }, // Top
+                { id: 2, angle: -Math.PI/6, icon: "🩸" }, // Right-ish
+                { id: 3, angle: Math.PI/6, icon: "🗡️" },  // Bottom-right
+                { id: 4, angle: 5*Math.PI/6, icon: "🤝" }, // Bottom-left
+                { id: 5, angle: 7*Math.PI/6, icon: "🔥" }  // Top-left
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const x = cx + Math.cos(pos.angle) * radius;
+                const y = cy + Math.sin(pos.angle) * radius;
+                
+                // Glow
+                const grad = ctx.createRadialGradient(x, y, 5, x, y, 40);
+                grad.addColorStop(0, 'rgba(220, 38, 38, 0.4)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(x, y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core Circle
+                ctx.fillStyle = '#dc2626';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fef3c7';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Icon text
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, x, y);
+
+                // Label
+                ctx.fillStyle = '#fca5a5';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), x, y + 45);
+
+                canvasNodes.push({ x, y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

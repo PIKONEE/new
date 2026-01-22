@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тюркский каганат: Великая империя кочевников</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .khaganate-gradient {
+            background: radial-gradient(circle at top right, #1e3a8a, #020617 80%);
+        }
+
+        .imperial-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 2.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .imperial-card:hover {
+            transform: translateY(-8px);
+            border-color: #fbbf24;
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.1);
+        }
+
+        .lang-active {
+            background-color: #fbbf24;
+            color: #020617;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 2rem;
+            background: #0f172a;
+        }
+
+        .gold-border {
+            border-left: 6px solid #fbbf24;
+        }
+
+        .scroll-reveal {
+            animation: reveal 0.8s ease-out forwards;
+        }
+
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .rune-glow {
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="khaganate-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header (No emoji in title) -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-blue-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-blue-400">Тюркский каганат (552–603 гг.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-blue-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Runic Stele (Custom Canvas) -->
+        <div class="imperial-card p-8 md:p-12 border-blue-500/20">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-blue-400 text-blue-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Chronicle of the Empire</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight italic">Голос предков: Руническая Стела</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Тюрки создали уникальное письмо. Исследуйте интерактивную стелу (Кул-Тегин), нажимая на её части, чтобы раскрыть историю становления Каганата.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-blue-950/20 border-l-8 border-blue-500 shadow-lg transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-blue-300 mb-3 uppercase">Начните расшифровку</h3>
+                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic">Нажмите на вершину (дракон), руны на камне или основание стелы.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 bg-slate-900 p-4 rounded-[3.5rem] flex items-center justify-center relative min-h-[500px] shadow-inner border border-blue-900/20">
+                    <canvas id="steleCanvas"></canvas>
+                    <div class="absolute bottom-8 right-10 text-[10px] text-blue-800 font-mono uppercase tracking-widest">Historical Artifact Reconstruction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Empire Content (The Plan) -->
+        <div class="space-y-12">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-blue-500">Основы Державы</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                
+                <!-- Foundation & Bumin Khagan -->
+                <div class="imperial-card p-10 flex flex-col justify-between border-t-8 border-blue-600">
+                    <div>
+                        <div class="text-5xl mb-6">👑</div>
+                        <h3 id="c1-t" class="text-2xl font-bold mb-4 uppercase text-blue-300">552 год: Великая победа</h3>
+                        <p id="c1-d" class="text-slate-300 text-sm leading-relaxed mb-6">
+                            Основателем государства стал **Бумын-каган**. В 552 году тюрки нанесли сокрушительное поражение Жужанскому каганату (аварам), после чего Бумын принял титул «ильхан». К середине VI века тюрки объединили все тюркоязычные племена Центральной Азии под властью рода **Ашина**.
+                        </p>
+                        <div class="p-4 bg-blue-900/30 rounded-2xl border border-blue-500/20 text-xs font-mono text-blue-200">
+                            Ключевой род: Ашина (Благородный волк).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expansion & Ishtemi -->
+                <div class="imperial-card p-10 flex flex-col justify-between border-t-8 border-amber-600">
+                    <div>
+                        <div class="text-5xl mb-6">🌍</div>
+                        <h3 id="c2-t" class="text-2xl font-bold mb-4 uppercase text-amber-500">Экспансия на Запад</h3>
+                        <p id="c2-d" class="text-slate-300 text-sm leading-relaxed mb-6">
+                            Младший брат Бумына — **Иштеми-каган** (западный правитель) совершил грандиозный поход к берегам Каспия и Черного моря. Тюрки заключили военно-торговый союз с Византией против Ирана (Сасанидов), чтобы полностью контролировать Великий Шелковый путь.
+                        </p>
+                        <div class="p-4 bg-amber-900/30 rounded-2xl border border-amber-500/20 text-xs font-mono text-amber-200">
+                            Геополитика: Посольства Маниаха (568 г.) в Константинополь.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Hierarchy -->
+                <div class="md:col-span-2 imperial-card p-10 md:p-14 flex flex-col md:flex-row items-center gap-10 bg-slate-900/80">
+                    <div class="shrink-0 text-7xl">🤝</div>
+                    <div>
+                        <h3 id="c3-t" class="text-2xl font-bold mb-4 uppercase text-white tracking-tight">Общественное устройство (Ель)</h3>
+                        <p id="c3-d" class="text-slate-400 text-lg leading-relaxed">
+                            Государство тюрков называлось **«Ель»** (народ-государство). Во главе стоял Каган — священный правитель. Общество делилось на: **Беков** (знать), **Будун** (свободные общинники) и **Татов** (зависимое оседлое население). Тюрки первыми ввели систему жесткой иерархии в управлении огромными территориями.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-blue-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-500">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-400">
+                «Тюркский каганат стал фундаментом современной цивилизации Евразии, впервые объединив Восток и Запад в единое политическое и культурное пространство.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-blue-700 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Тюркский каганат (552–603 гг.)",
+                vizTitle: "Голос предков: Руническая Стела",
+                vizDesc: "Тюрки создали уникальное письмо. Исследуйте интерактивную стелу, нажимая на её части, чтобы раскрыть историю Империи.",
+                badge: "Хроника Тюркского Мира",
+                elementTitleDefault: "Начните расшифровку",
+                elementDescDefault: "Кликните на вершину стелы, руны или основание.",
+                planTitle: "Основы Державы",
+                c1T: "552 год: Великая победа", c1D: "Бумын-каган объединил тюрков и разгромил жужаней. Это стало началом великой эры тюркского господства в Центральной Азии.",
+                c2T: "Экспансия на Запад", c2D: "Иштеми-каган расширил границы до Черного моря. Тюрки стали мировыми игроками, заключая союзы с Византией и контролируя торговлю.",
+                c3T: "Устройство Ель", c3D: "Государство-армия. Иерархия от кагана до рядового кочевника была основой стабильности и военной мощи тюркского мира.",
+                footer: "«Тюркский каганат стал фундаментом современной цивилизации Евразии, объединив Восток и Запад в единое пространство.»",
+                elements: {
+                    top: { name: "Вершина (Дракон)", text: "Верхняя часть стелы украшена изображениями драконов или волчицы Ашина. Символизирует божественное происхождение власти и защиту Неба (Тенгри)." },
+                    runes: { name: "Тюркские руны", text: "Орхоно-енисейское письмо. Стелы ставились в честь великих вождей (Кул-Тегин, Бильге-каган) и описывали их подвиги ради народа." },
+                    base: { name: "Основание (Черепаха)", text: "Каменная черепаха (Биши) — символ вечности и незыблемости государства. Считалось, что история каганата будет стоять так же долго, как мир." }
+                }
+            },
+            kz: {
+                title: "Түрік қағанаты (552–603 жж.)",
+                vizTitle: "Ата-баба дауысы: Руна тасы",
+                vizDesc: "Түріктер бірегей жазу жүйесін жасады. Қағанат тарихын білу үшін стеланың бөліктерін басыңыз.",
+                badge: "Түркі әлемінің шежіресі",
+                elementTitleDefault: "Жазуды оқуды бастаңыз",
+                elementDescDefault: "Стеланың жоғарғы жағын, руналарды немесе табан тасты басыңыз.",
+                planTitle: "Мемлекет негіздері",
+                c1T: "552 жыл: Ұлы жеңіс", c1D: "Бумын қаған түріктердің басын біріктіріп, жужандарды талқандады. Бұл Орталық Азиядағы түрік үстемдігінің бастауы болды.",
+                c2T: "Батысқа экспансия", c2D: "Іштемі қаған шекараны Қара теңізге дейін жеткізді. Түріктер Византиямен одақтасып, әлемдік сауданы бақылады.",
+                c3T: "Ел құрылымы", c3D: "Мемлекет-әскер. Қағаннан бастап қарапайым көшпеліге дейінгі иерархия түрік әлемінің тұрақтылығы мен қуатының негізі болды.",
+                footer: "«Түрік қағанаты Шығыс пен Батысты біртұтас кеңістікке біріктіріп, Еуразияның заманауи өркениетінің негізіне айналды.»",
+                elements: {
+                    top: { name: "Төбесі (Айдаһар)", text: "Стеланың жоғарғы жағы айдаһарлармен немесе Ашина бөрісімен безендірілген. Бұл биліктің тәңірлік тегін және Көк Тәңірінің жебеуін білдіреді." },
+                    runes: { name: "Түрік руналары", text: "Орхон-Енисей жазуы. Стелалар ұлы көсемдердің (Күлтегін, Білге қаған) құрметіне қойылып, олардың ел үшін жасаған ерліктерін баяндаған." },
+                    base: { name: "Табан тас (Тасбақа)", text: "Тасбақа (Биши) — мемлекеттің мәңгілігі мен мызғымастығының символы. Қағанат тарихы әлем сияқты мәңгі тұрады деп есептелген." }
+                }
+            },
+            en: {
+                title: "Turkic Khaganate (552–603 AD)",
+                vizTitle: "Voice of Ancestors: Runic Stele",
+                vizDesc: "The Turks created a unique script. Explore the interactive stele to reveal the history of the First Empire.",
+                badge: "Chronicle of the Turkic World",
+                elementTitleDefault: "Start decoding",
+                elementDescDefault: "Click on the top of the stele, the runes, or the base.",
+                planTitle: "Empire Foundations",
+                c1T: "552 AD: The Great Victory", c1D: "Bumin Khagan united the Turks and crushed the Rourans. This marked the beginning of a great era of Turkic dominance in Central Asia.",
+                c2T: "Westward Expansion", c2D: "Ishtemi Khagan expanded the borders to the Black Sea. The Turks became global players, allying with Byzantium.",
+                c3T: "The 'El' Structure", c3D: "A nation-army state. The hierarchy from Khagan to commoner was the key to stability and military might.",
+                footer: "«The Turkic Khaganate became the foundation of modern Eurasian civilization, uniting East and West into a single space.»",
+                elements: {
+                    top: { name: "The Top (Dragon)", text: "The upper part of the stele is decorated with dragons or the Ashina wolf. It symbolizes the divine origin of power and protection of Heaven (Tengri)." },
+                    runes: { name: "Turkic Runes", text: "Orkhon-Yenisei script. Stelae were erected in honor of great leaders (Kul Tegin, Bilge Khagan) to describe their deeds for the people." },
+                    base: { name: "The Base (Turtle)", text: "The stone turtle (Bishi) is a symbol of eternity and the unshakable nature of the state. It was believed history would stand as long as the world." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('steleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+            drawStele();
+        }
+
+        function drawStele() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const scale = canvas.height / 500;
+            const cx = canvas.width / 2;
+
+            // 1. Draw Base (Turtle-ish)
+            ctx.beginPath();
+            ctx.moveTo(cx - 100 * scale, 480 * scale);
+            ctx.quadraticCurveTo(cx, 440 * scale, cx + 100 * scale, 480 * scale);
+            ctx.lineTo(cx + 80 * scale, 500 * scale);
+            ctx.lineTo(cx - 80 * scale, 500 * scale);
+            ctx.closePath();
+            ctx.fillStyle = '#334155';
+            ctx.fill();
+            ctx.strokeStyle = '#475569';
+            ctx.stroke();
+
+            // 2. Draw Main Stele Body
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(cx - 60 * scale, 120 * scale, 120 * scale, 330 * scale);
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(cx - 60 * scale, 120 * scale, 120 * scale, 330 * scale);
+
+            // 3. Draw Stele Top (Triangular/Dragon)
+            ctx.beginPath();
+            ctx.moveTo(cx - 60 * scale, 120 * scale);
+            ctx.lineTo(cx, 40 * scale);
+            ctx.lineTo(cx + 60 * scale, 120 * scale);
+            ctx.closePath();
+            ctx.fillStyle = '#475569';
+            ctx.fill();
+            ctx.stroke();
+
+            // 4. Draw Runes (Abstract lines)
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
+            ctx.lineWidth = 3;
+            for(let y = 150 * scale; y < 400 * scale; y += 25 * scale) {
+                ctx.beginPath();
+                ctx.moveTo(cx - 40 * scale, y);
+                ctx.lineTo(cx + 40 * scale, y);
+                ctx.setLineDash([5, 10]);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+
+            // Labels for guidance
+            ctx.fillStyle = '#475569';
+            ctx.font = "10px Inter";
+            ctx.textAlign = "center";
+            ctx.fillText("TAP LAYERS TO TRANSLATE", cx, 420 * scale);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseY = e.clientY - rect.top;
+            const scale = canvas.height / 500;
+
+            let zone = null;
+            if (mouseY < 120 * scale) {
+                zone = 'top';
+            } else if (mouseY >= 120 * scale && mouseY < 440 * scale) {
+                zone = 'runes';
+            } else if (mouseY >= 440 * scale) {
+                zone = 'base';
+            }
+
+            if (zone) {
+                const info = translations[currentLang].elements[zone];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (zone === 'runes' ? '#fbbf24' : (zone === 'top' ? '#60a5fa' : '#475569'));
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-lg text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-blue-400 transition-all";
+            });
+
+            resizeCanvas();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

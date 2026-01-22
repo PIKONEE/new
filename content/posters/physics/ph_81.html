@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плавылудың ұзақ жылусы - Удельная теплота плавления</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #e0f2fe 0%, #bae6fd 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #0284c7 0%, #0c4a6e 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #0c4a6e; border-bottom: 3px solid #bae6fd; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #0284c7; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #0284c7; background: white; color: #0284c7; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #0284c7; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #0284c7; color: white; }
+        .info-box { background: linear-gradient(135deg, #bae6fd 0%, #e0f2fe 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #0284c7; margin: 10px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: #f0f9ff; padding: 15px; border-radius: 0.5rem; border-left: 4px solid #0284c7; font-size: 11px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-sky-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Плавылудың ұзақ жылусы</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Specific Heat of Melting</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Удельная теплота плавления</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-sky-100">λ = Q / m формуласы. 1 кг қатты затты ериту үшін қажет жылу. ФАЗАЛЫҚ ӨЗГЕРУ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-sky-100">λ = Q / m formula. Heat needed to melt 1 kg solid. PHASE TRANSITION!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-sky-100">λ = Q / m формула. Тепло для плавления 1 кг. ФАЗОВЫЙ ПЕРЕХОД!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. АНЫҚТАМАСЫ ЖӘНЕ ФОРМУЛАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. DEFINITION AND FORMULA</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Определение и формула</h2>
+
+            <div class="rule-card">
+                <p lang="kk" class="lang-content text-sm"><strong>🔥 ПЛАВЫЛУДЫҢ ҰЗАҚ ЖЫЛУСЫ (λ):</strong> Тұрақты температурада 1 кг қатты затты толығымен сұйық күйге ауыстыру үшін қажет болатын жылу мөлшері.</p>
+                <p lang="en" class="lang-content text-sm"><strong>🔥 SPECIFIC HEAT OF MELTING (λ):</strong> Heat required to completely melt 1 kg of solid at constant temperature.</p>
+                <p lang="ru" class="lang-content text-sm"><strong>🔥 УДЕЛЬНАЯ ТЕПЛОТА ПЛАВЛЕНИЯ (λ):</strong> Количество теплоты, необходимое для полного плавления 1 кг вещества при постоянной температуре.</p>
+
+                <p style="text-align: center; font-weight: bold; color: #0c4a6e; font-size: 18px; margin: 15px 0;">
+                    λ = Q / m  немесе  Q = λ × m
+                </p>
+
+                <div class="overflow-x-auto" style="margin-top: 15px;">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ПАРАМЕТР</th>
+                            <th lang="kk" class="lang-content">ӨЛШЕМ</th>
+                            <th lang="kk" class="lang-content">СИПАТТАМАСЫ</th>
+
+                            <th lang="en" class="lang-content">PARAMETER</th>
+                            <th lang="en" class="lang-content">UNIT</th>
+                            <th lang="en" class="lang-content">DESCRIPTION</th>
+
+                            <th lang="ru" class="lang-content">ПАРАМЕТР</th>
+                            <th lang="ru" class="lang-content">ЕДИНИЦА</th>
+                            <th lang="ru" class="lang-content">ОПИСАНИЕ</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">λ (Лямбда)</td>
+                            <td lang="kk" class="lang-content">кДж/кг</td>
+                            <td lang="kk" class="lang-content">Ұзақ жылусы</td>
+
+                            <td lang="en" class="lang-content">λ (Lambda)</td>
+                            <td lang="en" class="lang-content">kJ/kg</td>
+                            <td lang="en" class="lang-content">Specific heat</td>
+
+                            <td lang="ru" class="lang-content">λ (Лямбда)</td>
+                            <td lang="ru" class="lang-content">кДж/кг</td>
+                            <td lang="ru" class="lang-content">Удельная теплота</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Q</td>
+                            <td lang="kk" class="lang-content">Дж (Джоуль)</td>
+                            <td lang="kk" class="lang-content">Жылу мөлшері</td>
+
+                            <td lang="en" class="lang-content">Q</td>
+                            <td lang="en" class="lang-content">J (Joule)</td>
+                            <td lang="en" class="lang-content">Heat quantity</td>
+
+                            <td lang="ru" class="lang-content">Q</td>
+                            <td lang="ru" class="lang-content">Дж (Джоуль)</td>
+                            <td lang="ru" class="lang-content">Количество тепла</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">m</td>
+                            <td lang="kk" class="lang-content">кг</td>
+                            <td lang="kk" class="lang-content">Затты масса</td>
+
+                            <td lang="en" class="lang-content">m</td>
+                            <td lang="en" class="lang-content">kg</td>
+                            <td lang="en" class="lang-content">Mass of substance</td>
+
+                            <td lang="ru" class="lang-content">m</td>
+                            <td lang="ru" class="lang-content">кг</td>
+                            <td lang="ru" class="lang-content">Масса вещества</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ТҮРЛІ МАТЕРИАЛДАРДЫҢ ҰЗАҚ ЖЫЛУСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. SPECIFIC HEAT OF VARIOUS MATERIALS</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Удельная теплота различных материалов</h2>
+
+            <div class="rule-card">
+                <div class="grid-2">
+                    <div class="card">
+                        <p lang="kk" class="lang-content"><strong>❄️ МҰЗДЫҢ ҰЗАҚ ЖЫЛУСЫ</strong></p>
+                        <p lang="kk" class="lang-content">λ = 334 кДж/кг</p>
+                        <p lang="kk" class="lang-content">T_плав = 0°C</p>
+                        <p lang="kk" class="lang-content">Ең жоғары ұзақ жылусы</p>
+                        <p lang="kk" class="lang-content">Ең көп энергия қажет</p>
+
+                        <p lang="en" class="lang-content"><strong>❄️ ICE SPECIFIC HEAT</strong></p>
+                        <p lang="en" class="lang-content">λ = 334 kJ/kg</p>
+                        <p lang="en" class="lang-content">T_melt = 0°C</p>
+                        <p lang="en" class="lang-content">Highest specific heat</p>
+                        <p lang="en" class="lang-content">Most energy needed</p>
+
+                        <p lang="ru" class="lang-content"><strong>❄️ УДЕЛЬНАЯ ТЕПЛОТА ЛЬДА</strong></p>
+                        <p lang="ru" class="lang-content">λ = 334 кДж/кг</p>
+                        <p lang="ru" class="lang-content">T_плав = 0°C</p>
+                        <p lang="ru" class="lang-content">Самая высокая</p>
+                        <p lang="ru" class="lang-content">Больше всего энергии</p>
+                    </div>
+
+                    <div class="card">
+                        <p lang="kk" class="lang-content"><strong>🔥 МЕТАЛЛДАРДЫҢ ҰЗАҚ ЖЫЛУСЫ</strong></p>
+                        <p lang="kk" class="lang-content">• Мыс: 209 кДж/кг (1083°C)</p>
+                        <p lang="kk" class="lang-content">• Темір: 260 кДж/кг (1537°C)</p>
+                        <p lang="kk" class="lang-content">• Қалайы: 59 кДж/кг (231°C)</p>
+                        <p lang="kk" class="lang-content">• Төмен ұзақ жылусы</p>
+
+                        <p lang="en" class="lang-content"><strong>🔥 METALS SPECIFIC HEAT</strong></p>
+                        <p lang="en" class="lang-content">• Copper: 209 kJ/kg (1083°C)</p>
+                        <p lang="en" class="lang-content">• Iron: 260 kJ/kg (1537°C)</p>
+                        <p lang="en" class="lang-content">• Tin: 59 kJ/kg (231°C)</p>
+                        <p lang="en" class="lang-content">• Lower specific heat</p>
+
+                        <p lang="ru" class="lang-content"><strong>🔥 УДЕЛЬНАЯ ТЕПЛОТА МЕТАЛЛОВ</strong></p>
+                        <p lang="ru" class="lang-content">• Медь: 209 кДж/кг (1083°C)</p>
+                        <p lang="ru" class="lang-content">• Железо: 260 кДж/кг (1537°C)</p>
+                        <p lang="ru" class="lang-content">• Олово: 59 кДж/кг (231°C)</p>
+                        <p lang="ru" class="lang-content">• Нижняя удельная теплота</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. ЕСЕПТЕУ МЫСАЛДАРЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. CALCULATION EXAMPLES</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Примеры расчётов</h2>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>МЫСАЛ 1: Мұз еритіңіз</strong></p>
+                <p lang="kk" class="lang-content text-sm">m = 2 кг, λ = 334 кДж/кг</p>
+                <p lang="kk" class="lang-content text-sm">Q = λ × m = 334 × 2 = <strong>668 кДж</strong></p>
+
+                <p lang="en" class="lang-content text-sm"><strong>EXAMPLE 1: Melt ice</strong></p>
+                <p lang="en" class="lang-content text-sm">m = 2 kg, λ = 334 kJ/kg</p>
+                <p lang="en" class="lang-content text-sm">Q = λ × m = 334 × 2 = <strong>668 kJ</strong></p>
+
+                <p lang="ru" class="lang-content text-sm"><strong>ПРИМЕР 1: Растопить лёд</strong></p>
+                <p lang="ru" class="lang-content text-sm">m = 2 кг, λ = 334 кДж/кг</p>
+                <p lang="ru" class="lang-content text-sm">Q = λ × m = 334 × 2 = <strong>668 кДж</strong></p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 10px;"><strong>МЫСАЛ 2: Металлдың массасын табыңыз</strong></p>
+                <p lang="kk" class="lang-content text-sm">Q = 1045 кДж, λ = 209 кДж/кг (мыс)</p>
+                <p lang="kk" class="lang-content text-sm">m = Q / λ = 1045 / 209 = <strong>5 кг</strong></p>
+
+                <p lang="en" class="lang-content text-sm" style="margin-top: 10px;"><strong>EXAMPLE 2: Find metal mass</strong></p>
+                <p lang="en" class="lang-content text-sm">Q = 1045 kJ, λ = 209 kJ/kg (copper)</p>
+                <p lang="en" class="lang-content text-sm">m = Q / λ = 1045 / 209 = <strong>5 kg</strong></p>
+
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 10px;"><strong>ПРИМЕР 2: Найти массу металла</strong></p>
+                <p lang="ru" class="lang-content text-sm">Q = 1045 кДж, λ = 209 кДж/кг (медь)</p>
+                <p lang="ru" class="lang-content text-sm">m = Q / λ = 1045 / 209 = <strong>5 кг</strong></p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #bae6fd; border-radius: 1rem; border-top: 4px solid #0284c7;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-sky-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-sky-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-sky-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Плавылудың ұзақ жылусы (λ) - фазалық өзгеру үшін қажет энергия. Q = λ × m формуласы. Мұз 334 кДж/кг, металлдар төмен (59-260 кДж/кг). Плавление = энергия сақтау!</p>
+            <p lang="en" class="lang-content text-sm">Specific heat of melting (λ) = energy for phase transition. Q = λ × m formula. Ice 334 kJ/kg, metals lower (59-260 kJ/kg). Melting = energy conservation!</p>
+            <p lang="ru" class="lang-content text-sm">Удельная теплота плавления (λ) = энергия для фазового перехода. Q = λ × m формула. Лёд 334 кДж/кг, металлы ниже (59-260 кДж/кг). Плавление = сохранение энергии!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

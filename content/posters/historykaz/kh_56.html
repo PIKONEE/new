@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хан Хакназар: Великое Возрождение</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .restoration-gradient {
+            background: radial-gradient(circle at bottom left, #064e3b, #0f172a 90%);
+        }
+
+        .imperial-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 3rem;
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .imperial-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 0 50px rgba(16, 185, 129, 0.1);
+        }
+
+        .lang-active {
+            background-color: #10b981;
+            color: #064e3b;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: rgba(2, 6, 23, 0.4);
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-left: 4px solid #10b981;
+            padding: 2.5rem;
+            border-radius: 2rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateX(10px);
+            background: rgba(30, 41, 59, 0.8);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="restoration-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-emerald-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-emerald-400">Хан Хакназар (1538–1580 гг.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-emerald-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Diplomatic Web (Canvas) -->
+        <div class="imperial-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-emerald-500 text-emerald-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Restoration Strategy Map</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Нексус Единства</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Хакназар восстановил ханство после «Великой смуты». Нажмите на узлы дипломатической сети, чтобы изучить его внешнюю политику и возвращение земель.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-emerald-950/30 border-l-8 border-emerald-500 shadow-2xl transition-all duration-500">
+                        <h3 id="node-title" class="text-xl font-bold text-emerald-300 mb-3 uppercase tracking-tighter">Исследуйте политику</h3>
+                        <p id="node-desc" class="text-slate-300 text-sm leading-relaxed italic font-light">Кликните на точки влияния на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="nexusCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-emerald-900 font-mono uppercase tracking-[0.4em]">Strategic Restoration Network</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed History Content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div class="info-card">
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Конец смуты</h3>
+                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">Хакназар пришел к власти в период глубокого кризиса. Он сумел прекратить междоусобные войны между султанами и объединить разрозненные казахские роды в единый политический кулак.</p>
+            </div>
+            <div class="info-card">
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Дипломатия с Русью</h3>
+                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">В 1570-е годы активно развивал связи с Иваном Грозным. Россия видела в Хакназаре мощного союзника против Сибирского ханства и Ногайской Орды.</p>
+            </div>
+            <div class="info-card">
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Титул правителя</h3>
+                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">За свои успехи в объединении земель он именовался в летописях как **«Хан казахов и киргизов»**. Его авторитет признавали все кочевые элиты региона.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-emerald-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-600">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
+                «Хакназар-хан стал реаниматором казахской мощи, вернув народу веру в единство и достоинство великой державы.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-emerald-800 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Хан Хакназар (1538–1580 гг.)",
+                vizTitle: "Нексус Единства",
+                vizDesc: "Хакназар восстановил ханство после «Великой смуты». Нажмите на узлы сети, чтобы изучить возвращение территорий.",
+                badge: "Анализ стратегии возрождения",
+                nodeTitleDefault: "Исследуйте политику",
+                nodeDescDefault: "Кликните на точки влияния на холсте справа.",
+                c1T: "Конец смуты", c1D: "Хакназар прекратил 20-летнюю череду усобиц. При нем в состав ханства вернулись земли Центрального Казахстана и Сарыарки.",
+                c2T: "Дипломатия с Русью", c2D: "Установление торговых и политических связей с Московским царством. Первые казахские посольства прибыли к Ивану IV.",
+                c3T: "Титул правителя", c3D: "Современники называли его 'Хан казахов и киргизов'. Это подчеркивало его роль как лидера всего кочевого мира региона.",
+                footer: "«Хакназар-хан стал реаниматором казахской мощи, вернув народу веру в единство великой державы.»",
+                nodes: {
+                    nogai: { name: "Присоединение Ногаев", text: "Хакназар воспользовался кризисом в Ногайской Орде и присоединил западные казахские роды, расширив границы до Волги." },
+                    sibir: { name: "Борьба с Сибирью", text: "Успешные походы против хана Кучума. Хакназар защитил северные границы и укрепил влияние казахов в лесостепи." },
+                    south: { name: "Южный союз", text: "Союз с узбекским ханом Абдуллахом II против Ташкента. Это позволило закрепиться на берегах Сырдарьи." }
+                }
+            },
+            kz: {
+                title: "Хақназар хан (1538–1580 жж.)",
+                vizTitle: "Бірлік Нексусы",
+                vizDesc: "Хақназар хандықты «Ұлы берекесіздіктен» кейін қалпына келтірді. Дипломатиялық желі түйіндерін басып, жерлерді қайтару жолын зерттеңіз.",
+                badge: "Қайта өрлеу стратегиясын талдау",
+                nodeTitleDefault: "Саясатты зерттеңіз",
+                nodeDescDefault: "Оң жақтағы кенептегі ықпал ету нүктелерін басыңыз.",
+                c1T: "Берекесіздіктің аяқталуы", c1D: "Хақназар 20 жылдық өзара тартысты тоқтатты. Оның тұсында Орталық Қазақстан мен Сарыарқа жерлері хандық құрамына қайта оралды.",
+                c2T: "Русьпен дипломатия", c2D: "Мәскеу патшалығымен сауда және саяси байланыстар орнату. Иван IV-ге алғашқы қазақ елшіліктері барды.",
+                c3T: "Билеуші лауазымы", c3D: "Замандастары оны 'Қазақ пен қырғыздың ханы' деп атаған. Бұл оның аймақтағы бүкіл көшпелі әлемнің көсемі ретіндегі рөлін көрсетті.",
+                footer: "«Хақназар хан қазақ қуатын қайта тірілтуші болып, халыққа ұлы державаның бірлігі мен қадір-қасиетіне деген сенімді қайтарды.»",
+                nodes: {
+                    nogai: { name: "Ноғайларды қосу", text: "Хақназар Ноғай Ордасындағы дағдарысты пайдаланып, батыс қазақ руларын қосып алды, шекараны Еділге дейін кеңейтті." },
+                    sibir: { name: "Сібірмен күрес", text: "Көшім ханға қарсы сәтті жорықтар. Хақназар солтүстік шекараны қорғап, қазақтардың ықпалын нығайтты." },
+                    south: { name: "Оңтүстік одақ", text: "Ташкентке қарсы өзбек ханы Абдуллах II-мен одақ. Бұл Сырдария жағалауында бекуге мүмкіндік берді." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('nexusCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawNexus();
+        }
+
+        function drawNexus() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Central Core (Haknazar)
+            ctx.beginPath();
+            ctx.arc(cx, cy, 50 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+            ctx.fill();
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText("HAKNAZAR", cx, cy + 5);
+
+            // Connection Points
+            const points = [
+                { id: 'nogai', x: cx - 180 * scale, y: cy - 100 * scale, label: "NOGAI" },
+                { id: 'sibir', x: cx + 180 * scale, y: cy - 100 * scale, label: "SIBIR" },
+                { id: 'south', x: cx, y: cy + 180 * scale, label: "BUKHARA" }
+            ];
+
+            points.forEach(p => {
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(p.x, p.y);
+                ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 40 * scale, 0, Math.PI * 2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+                ctx.strokeStyle = '#10b981';
+                ctx.stroke();
+                ctx.fillStyle = '#10b981';
+                ctx.font = 'bold 9px Inter';
+                ctx.fillText(p.label, p.x, p.y + 5);
+            });
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.sqrt((x-(cx-180*scale))**2 + (y-(cy-100*scale))**2) < 45*scale) target = 'nogai';
+            else if (Math.sqrt((x-(cx+180*scale))**2 + (y-(cy-100*scale))**2) < 45*scale) target = 'sibir';
+            else if (Math.sqrt((x-cx)**2 + (y-(cy+180*scale))**2) < 45*scale) target = 'south';
+
+            if (target) {
+                const info = translations[currentLang].nodes[target];
+                document.getElementById('node-title').innerText = info.name;
+                document.getElementById('node-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#10b981';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('node-title').innerText = t.nodeTitleDefault;
+            document.getElementById('node-desc').innerText = t.nodeDescDefault;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Vapor and Clouds - Enhanced Visuals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #020617;
+            color: #0c4a6e;
+            min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #0ea5e9; color: white; font-weight: 800; }
+        .cloud-btn { transition: all 0.3s; color: white; }
+        .cloud-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .cloud-btn.active { background: #0ea5e9; color: white; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); border-color: transparent; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t-2 border-white/10">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-bold uppercase tracking-widest text-[10px]"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+        <!-- Navigation -->
+        <div class="lg:col-span-1 glass rounded-custom p-8 flex flex-col gap-4">
+            <h3 id="nav-title" class="heading-font text-lg text-sky-300 uppercase mb-4 tracking-widest"></h3>
+            <button onclick="setCloud('cirrus')" id="btn-cirrus" class="cloud-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/10"></button>
+            <button onclick="setCloud('cumulus')" id="btn-cumulus" class="cloud-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/10"></button>
+            <button onclick="setCloud('stratus')" id="btn-stratus" class="cloud-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/10"></button>
+            
+            <div class="mt-auto pt-6 border-t border-white/10 opacity-40">
+                <p class="text-[10px] uppercase tracking-widest text-white">Высота / Altitude / Биіктік</p>
+                <div class="flex justify-between text-[9px] mt-2 text-white font-mono">
+                    <span>12km</span>
+                    <span>6km</span>
+                    <span>0km</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation View -->
+        <div class="lg:col-span-3 glass rounded-custom p-4 flex flex-col relative min-h-[550px] overflow-hidden">
+            <canvas id="cloudCanvas" class="w-full h-full"></canvas>
+            
+            <div id="info-overlay" class="absolute bottom-8 left-8 right-8 p-6 glass rounded-3xl border-l-4 border-sky-400 transition-all duration-500 opacity-0 transform translate-y-4">
+                <h4 id="info-title" class="heading-font text-2xl text-sky-400 mb-2"></h4>
+                <p id="info-text" class="text-white/80 font-light leading-relaxed"></p>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 group hover:bg-sky-500/5 transition-all">
+            <h4 id="c1-t" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <p id="c1-d" class="text-white/50 text-sm leading-relaxed"></p>
+        </div>
+        <div class="glass rounded-custom p-10 group hover:bg-sky-500/5 transition-all">
+            <h4 id="c2-t" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <p id="c2-d" class="text-white/50 text-sm leading-relaxed"></p>
+        </div>
+        <div class="glass rounded-custom p-10 group hover:bg-sky-500/5 transition-all">
+            <h4 id="card-hydro" class="heading-font text-xl mb-4 text-sky-400">Круговорот</h4>
+            <p id="c3-d" class="text-white/50 text-sm leading-relaxed"></p>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Облака и Пар", subtitle: "Водяной цикл атмосферы", navTitle: "Классификация",
+                types: {
+                    cirrus: { btn: "Перистые", title: "Перистые (Cirrus)", text: "Верхний ярус (выше 6 км). Нежные, белые, волокнистые нити. Состоят исключительно из кристаллов льда. Напоминают птичьи перья или конские хвосты." },
+                    cumulus: { btn: "Кучевые", title: "Кучевые (Cumulus)", text: "Средний и нижний ярус. Плотные облака с куполообразными вершинами и плоским основанием. Напоминают вату или горы." },
+                    stratus: { btn: "Слоистые", title: "Слоистые (Stratus)", text: "Нижний ярус (до 2 км). Однообразный серый слой, закрывающий все небо. Приносят моросящий дождь или снежную крупу." }
+                },
+                cards: [
+                    { t: "Влажность", d: "Воздух всегда содержит невидимый водяной пар. При охлаждении он превращается в туман или облако (точка росы)." },
+                    { t: "Ярусность", d: "Облака делятся по высоте: верхние (6+ км), средние (2-6 км) и нижние (до 2 км)." },
+                    { t: "Конденсация", d: "Превращение пара в жидкость. Частицы пара собираются вокруг ядер конденсации (пылинок), образуя капли." }
+                ]
+            },
+            kz: {
+                title: "Бұлттар мен Бу", subtitle: "Атмосфераның су айналымы", navTitle: "Классификация",
+                types: {
+                    cirrus: { btn: "Шарбы", title: "Шарбы бұлттар (Cirrus)", text: "Жоғарғы қабат (6 км-ден жоғары). Нәзік, ақ, талшықты жіптер. Тек мұз кристалдарынан тұрады. Құс қауырсынына ұқсайды." },
+                    cumulus: { btn: "Будақ", title: "Будақ бұлттар (Cumulus)", text: "Орта және төменгі қабат. Күмбез тәрізді төбесі мен тегіс табаны бар тығыз бұлттар. Мақтаға немесе тауларға ұқсайды." },
+                    stratus: { btn: "Қабатты", title: "Қабатты бұлттар (Stratus)", text: "Төменгі қабат (2 км-ге дейін). Бүкіл аспанды торлайтын біркелкі сұр қабат. Сүр жаңбыр немесе қар әкеледі." }
+                },
+                cards: [
+                    { t: "Ылғалдылық", d: "Ауада әрқашан көрінбейтін су буы болады. Суыған кезде ол тұманға немесе бұлтқа айналады (шық нүктесі)." },
+                    { t: "Қабаттылық", d: "Бұлттар биіктігіне қарай бөлінеді: жоғарғы (6+ км), ортаңғы (2-6 км) және төменгі (2 км дейін)." },
+                    { t: "Конденсация", d: "Будың сұйықтыққа айналуы. Бу бөлшектері шаң айналасына жиналып, тамшылар түзеді." }
+                ]
+            },
+            en: {
+                title: "Clouds & Vapor", subtitle: "The Water Cycle of Atmosphere", navTitle: "Classification",
+                types: {
+                    cirrus: { btn: "Cirrus", title: "Cirrus Clouds", text: "High altitude (above 6 km). Delicate, white, fibrous strands. Composed entirely of ice crystals. Resemble feathers or 'mare's tails'." },
+                    cumulus: { btn: "Cumulus", title: "Cumulus Clouds", text: "Middle and lower altitudes. Dense clouds with puffy dome-tops and flat bases. Look like cauliflower or giant cotton balls." },
+                    stratus: { btn: "Stratus", title: "Stratus Clouds", text: "Low altitude (up to 2 km). Uniform gray layer covering the whole sky. They produce drizzle or light snow." }
+                },
+                cards: [
+                    { t: "Humidity", d: "Air always contains invisible water vapor. When cooled, it turns into mist or clouds (dew point)." },
+                    { t: "Altitude Tiers", d: "Clouds are categorized by height: High (6+ km), Middle (2-6 km), and Low (below 2 km)." },
+                    { t: "Condensation", d: "The change of vapor into liquid. Vapor particles gather around nuclei (dust) to form droplets." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', currentCloud = 'cumulus', canvas, ctx;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        window.setCloud = function(type) {
+            currentCloud = type;
+            document.querySelectorAll('.cloud-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${type}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('nav-title').textContent = t.navTitle;
+            
+            document.getElementById('btn-cirrus').textContent = t.types.cirrus.btn;
+            document.getElementById('btn-cumulus').textContent = t.types.cumulus.btn;
+            document.getElementById('btn-stratus').textContent = t.types.stratus.btn;
+
+            const data = t.types[currentCloud];
+            document.getElementById('info-title').textContent = data.title;
+            document.getElementById('info-text').textContent = data.text;
+            document.getElementById('info-overlay').style.opacity = '1';
+            document.getElementById('info-overlay').style.transform = 'translateY(0)';
+
+            document.getElementById('c1-t').textContent = t.cards[0].t; document.getElementById('c1-d').textContent = t.cards[0].d;
+            document.getElementById('c2-t').textContent = t.cards[1].t; document.getElementById('c2-d').textContent = t.cards[1].d;
+            document.getElementById('c3-d').textContent = t.cards[2].d;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const time = Date.now() * 0.001;
+
+            // Background sky based on cloud type
+            let skyGrad = ctx.createLinearGradient(0,0,0,h);
+            if(currentCloud === 'stratus') {
+                skyGrad.addColorStop(0, '#475569'); skyGrad.addColorStop(1, '#94a3b8');
+            } else {
+                skyGrad.addColorStop(0, '#0ea5e9'); skyGrad.addColorStop(1, '#bae6fd');
+            }
+            ctx.fillStyle = skyGrad; ctx.fillRect(0,0,w,h);
+
+            // Draw Height Lines
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.setLineDash([5,5]);
+            ctx.beginPath(); ctx.moveTo(0, h*0.33); ctx.lineTo(w, h*0.33); ctx.moveTo(0, h*0.66); ctx.lineTo(w, h*0.66); ctx.stroke();
+            ctx.setLineDash([]);
+
+            if (currentCloud === 'cirrus') {
+                // High altitude wispy ice clouds
+                ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.globalAlpha = 0.5;
+                for(let i=0; i<15; i++) {
+                    const x = (w*0.1 + i*60 + time*5) % (w+100) - 50;
+                    const y = h*0.15 + Math.sin(time*0.5 + i)*25;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.bezierCurveTo(x+30, y-20, x+60, y+20, x+120, y-10);
+                    ctx.stroke();
+                }
+            } else if (currentCloud === 'cumulus') {
+                // Puffy textured clouds
+                const cx = w/2 + Math.sin(time*0.3)*30;
+                const cy = h*0.55;
+                ctx.globalAlpha = 1;
+                drawPuffyCloud(cx, cy, 70, '#ffffff', '#e2e8f0');
+            } else if (currentCloud === 'stratus') {
+                // Uniform low grey blanket
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillRect(0, h*0.7, w, h*0.15);
+                ctx.fillStyle = 'rgba(100,116,139,0.4)';
+                ctx.fillRect(0, h*0.75, w, h*0.1);
+            }
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(draw);
+        }
+
+        function drawPuffyCloud(x, y, size, color, shadow) {
+            ctx.fillStyle = color;
+            ctx.shadowBlur = 40; ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            
+            const drawCircle = (ox, oy, r) => {
+                ctx.beginPath(); ctx.arc(x+ox, y+oy, r, 0, Math.PI*2); ctx.fill();
+            }
+
+            // Central masses
+            drawCircle(0, 0, size);
+            drawCircle(-size*0.7, size*0.2, size*0.8);
+            drawCircle(size*0.7, size*0.2, size*0.8);
+            drawCircle(-size*1.3, size*0.4, size*0.6);
+            drawCircle(size*1.3, size*0.4, size*0.6);
+            
+            // Highlight
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            drawCircle(-size*0.3, -size*0.3, size*0.4);
+            
+            ctx.shadowBlur = 0;
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('cloudCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;
+            setLang('ru'); draw();
+        };
+        
+        window.onresize = function() {
+            if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+            }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

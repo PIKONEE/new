@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кимакский каганат (IX–XI вв.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .nordic-gradient {
+            background: radial-gradient(circle at top left, #1e3a8a, #0f172a 90%);
+        }
+
+        .kimak-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 3rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .kimak-panel:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 0 50px rgba(96, 165, 250, 0.1);
+        }
+
+        .lang-active {
+            background-color: #60a5fa;
+            color: #0f172a;
+            box-shadow: 0 0 25px rgba(96, 165, 250, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: rgba(2, 6, 23, 0.5);
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-top: 4px solid #3b82f6;
+            padding: 2rem;
+            border-radius: 2rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px);
+            background: rgba(30, 41, 59, 0.8);
+            border-color: #60a5fa;
+        }
+
+        .term-badge {
+            background: #1e3a8a;
+            color: #93c5fd;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .river-glow {
+            filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.4));
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="nordic-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header (Strict text, no emoji) -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-blue-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.3em] text-blue-400">Кимакский каганат (IX – начало XI вв.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-blue-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Udyel Map (Custom Canvas) -->
+        <div class="kimak-panel p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-blue-500/50 text-blue-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Administrative Map Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Система 11 уделов</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Кимаки создали уникальную для кочевников систему управления, разделив каганат на 11 административных областей. Нажмите на точки на карте бассейна Иртыша, чтобы узнать о столице и управлении.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-blue-950/20 border-l-8 border-blue-500 shadow-2xl transition-all duration-500">
+                        <h3 id="role-title" class="text-xl font-bold text-blue-300 mb-3 uppercase tracking-tighter">Исследуйте карту</h3>
+                        <p id="role-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на точки влияния вдоль реки Иртыш.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="udyelCanvas" class="river-glow"></canvas>
+                    <div class="absolute top-8 left-10 text-[10px] text-blue-800 font-mono uppercase tracking-[0.3em]">Irtysh River System & Udyels</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed History Content -->
+        <div class="space-y-12">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-blue-500">Держава Семи Племен</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Ethnicity & Tribes -->
+                <div class="info-card">
+                    <div class="mb-4"><span class="term-badge" id="tag-1">Этногенез</span></div>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Союз семи племен</h3>
+                    <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        По сведениям историка Гардизи, ядро каганата составляли 7 племен: **эймуры**, **имаки**, **татары**, **баядуры**, **кипчаки**, **ланиказы** и **аджлады**. Самым сильным и многочисленным племенем были **кипчаки**, которые позже создадут собственную державу.
+                    </p>
+                    <div class="text-[11px] font-bold text-blue-500 uppercase tracking-widest">XI в. — лидерство кипчаков</div>
+                </div>
+
+                <!-- Power Structure -->
+                <div class="info-card">
+                    <div class="mb-4"><span class="term-badge" id="tag-2">Власть</span></div>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Титулатура и Иерархия</h3>
+                    <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Верховный правитель носил титул **Каган** (с 840 г., после падения Уйгурского каганата). Власть передавалась по наследству. Удельные правители назывались **шад-тутуками**. Кимакская система была крайне бюрократизированной: на службе у кагана состояли специальные чиновники для сбора налогов и учета населения.
+                    </p>
+                    <div class="text-[11px] font-bold text-blue-500 uppercase tracking-widest">11 Шад-тутуков</div>
+                </div>
+
+                <!-- Economy & Metallurgy -->
+                <div class="info-card">
+                    <div class="mb-4"><span class="term-badge" id="tag-3">Ресурсы</span></div>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Железо и Пушнина</h3>
+                    <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Кимаки были мастерами добычи металлов. Они славились изготовлением оружия и орудий из железа. Важным экспортным товаром была пушнина, которую кимаки обменивали на шелк и украшения у купцов из Средней Азии. Значительная часть населения занималась рыболовством и охотой в северных лесах.
+                    </p>
+                    <div class="text-[11px] font-bold text-blue-500 uppercase tracking-widest">Иртышский торговый путь</div>
+                </div>
+
+            </div>
+
+            <!-- Full Width Highlight: Imakiya -->
+            <div class="bg-blue-900/30 rounded-[4rem] p-10 md:p-16 border border-blue-500/20 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 id="feat-t" class="text-3xl font-black text-white mb-8 uppercase italic tracking-widest">Имакия: Город на Иртыше</h3>
+                        <p id="feat-d" class="text-slate-300 text-xl font-light leading-relaxed mb-8">
+                            Столица каганата — **Имакия** — располагалась на берегу Иртыша. Город был защищен мощными стенами и служил зимней ставкой кагана. Вторая столица, **Карантия**, находилась на побережье озера Алаколь. Кимакские города были важными центрами ремесла, где процветало ювелирное дело и керамика.
+                        </p>
+                        <div class="flex gap-4">
+                            <div class="px-6 py-2 bg-blue-500/10 rounded-2xl border border-blue-500/20 text-xs font-black text-blue-400 uppercase">Зимняя ставка</div>
+                            <div id="extra-info" class="px-6 py-2 bg-blue-500/10 rounded-2xl border border-blue-500/20 text-xs font-black text-blue-400 uppercase">Путь в Китай</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="w-72 h-72 border-2 border-dashed border-blue-500/30 rounded-full flex items-center justify-center animate-pulse">
+                            <div class="text-center">
+                                <div class="text-6xl mb-2">🏰</div>
+                                <div class="text-xs font-bold text-blue-400 uppercase tracking-widest">Imakiya</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">North</div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-black border-t border-blue-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-500">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-400">
+                «Кимакский каганат стал колыбелью кипчакской мощи, сохранив тюркские традиции в суровых лесостепях Севера.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-blue-900 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Кимакский каганат (IX – начало XI вв.)",
+                vizTitle: "Система 11 уделов",
+                vizDesc: "Кимаки разделили каганат на 11 административных областей. Нажмите на точки на карте бассейна Иртыша, чтобы узнать подробности.",
+                badge: "Анализ административного деления",
+                roleTitleDefault: "Исследуйте карту",
+                roleDescDefault: "Кликните на точки влияния вдоль реки Иртыш.",
+                planTitle: "Держава Семи Племен",
+                c1T: "Союз семи племен", c1D: "Гардизи называл племена: эймуры, имаки, татары, баядуры, кипчаки, ланиказы и аджлады. Кипчаки играли ключевую военную роль.",
+                c2T: "Титулатура", c2D: "Верховный правитель — Каган. Регионами управляли 11 шад-тутуков. Система сбора налогов была одной из самых развитых в степи.",
+                c3T: "Железо и Пушнина", c3D: "Добыча руды на Алтае обеспечивала кимаков оружием. Экспорт меха соболя и горностая шел в Византию и Халифат.",
+                featT: "Имакия: Город на Иртыше", featD: "Главный политический центр. Имакия славилась своими укреплениями и торговлей. Город Карантия был морским портом на Алаколе.",
+                footer: "«Кимакский каганат стал колыбелью кипчакской мощи, сохранив тюркские традиции на Севере.»",
+                tag1: "Этногенез", tag2: "Власть", tag3: "Ресурсы",
+                udyelInfo: {
+                    imakiya: { name: "Столица Имакия", text: "Располагалась в среднем течении Иртыша. Центр торговли, где жили богатые купцы и находилась казна кагана." },
+                    udyel1: { name: "Удел Кипчаков", text: "Северо-западная часть каганата. Кипчаки выставляли самую многочисленную конницу и имели высокую автономию." },
+                    karantia: { name: "Город Карантия", text: "Южный форпост на озере Алаколь. Важный пункт на торговом пути, связывавшем каганат с Восточным Туркестаном." }
+                }
+            },
+            kz: {
+                title: "Қимақ қағанаты (ІХ ғ. – ХІ ғ. басы)",
+                vizTitle: "11 ұлыс жүйесі",
+                vizDesc: "Қимақтар қағанатты 11 әкімшілік аймаққа бөлді. Ертіс алабының картасындағы нүктелерді басып, толығырақ біліңіз.",
+                badge: "Әкімшілік бөліністі талдау",
+                roleTitleDefault: "Картаны зерттеңіз",
+                roleDescDefault: "Ертіс бойындағы ықпал ету нүктелерін басыңыз.",
+                planTitle: "Жеті тайпа мемлекеті",
+                c1T: "Жеті тайпа одағы", c1D: "Гардизи мына тайпаларды атаған: эймур, қимақ, татар, баяндур, қыпшақ, ланиказ және аджлад. Қыпшақтар әскери рөл атқарды.",
+                c2T: "Лауазымдар", c2D: "Жоғарғы билеуші — Қаған. Аймақтарды 11 шад-тұтық басқарды. Салық жинау жүйесі даладағы ең дамыған жүйелердің бірі болды.",
+                c3T: "Темір мен Аң терісі", c3D: "Алтайдағы кен өндірісі қимақтарды қарумен қамтамасыз етті. Бұлғын мен тиін терілері Византия мен Халифатқа экспортталды.",
+                featT: "Имақия: Ертіс бойындағы қала", featD: "Басты саяси орталық. Имақия өзінің бекіністерімен және саудасымен танымал болды. Карантия қаласы Алакөл жағасында орналасты.",
+                footer: "«Қимақ қағанаты қыпшақ қуатының бесігіне айналып, Солтүстікте түркі дәстүрлерін сақтап қалды.»",
+                tag1: "Этногенез", tag2: "Билік", tag3: "Ресурстар",
+                udyelInfo: {
+                    imakiya: { name: "Имақия астанасы", text: "Ертістің орта ағысында орналасқан. Бай көпестер тұрған және қаған қазынасы сақталған сауда орталығы." },
+                    udyel1: { name: "Қыпшақ ұлысы", text: "Қағанаттың солтүстік-батыс бөлігі. Қыпшақтар ең көп атты әскер шығарды және жоғары автономияға ие болды." },
+                    karantia: { name: "Карантия қаласы", text: "Алакөлдегі оңтүстік бекініс. Қағанатты Шығыс Түркістанмен байланыстыратын сауда жолындағы маңызды нүкте." }
+                }
+            },
+            en: {
+                title: "Kimak Khaganate (9th – early 11th centuries)",
+                vizTitle: "The 11 Udyels System",
+                vizDesc: "The Kimaks divided their state into 11 administrative regions. Click on the markers along the Irtysh river map to learn more.",
+                badge: "Administrative Structure Analysis",
+                roleTitleDefault: "Explore the Map",
+                roleDescDefault: "Click on the influence points along the Irtysh river.",
+                planTitle: "Power of Seven Tribes",
+                c1T: "Union of Seven Tribes", c1D: "Gardizi recorded the tribes: Eymur, Imak, Tatar, Bayandur, Kipchak, Lanikaz, and Ajlad. Kipchaks played a major military role.",
+                c2T: "Titles & Hierarchy", c2D: "The supreme ruler was the Khagan. 11 shad-tuduns ruled the provinces. The tax collection system was highly advanced.",
+                c3T: "Iron & Furs", c3D: "Mining in the Altai provided iron for weapons. Sables and squirrels were exported to Byzantium and the Caliphate.",
+                featT: "Imakiya: City on the Irtysh", featD: "The primary political hub. Imakiya was famous for its fortifications. Karantia was a port city on lake Alakol.",
+                footer: "«The Kimak Khaganate became the cradle of Kipchak power, preserving Turkic traditions in the North.»",
+                tag1: "Ethnicity", tag2: "Power", tag3: "Resources",
+                udyelInfo: {
+                    imakiya: { name: "Capital Imakiya", text: "Located on the Irtysh. A trade center housing wealthy merchants and the Khagan's treasury." },
+                    udyel1: { name: "Kipchak Prefecture", text: "North-western part of the state. Kipchaks provided the largest cavalry and held significant autonomy." },
+                    karantia: { name: "City of Karantia", text: "Southern outpost on lake Alakol. A vital node on the trade route to Eastern Turkestan." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('udyelCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw Irtysh River (Stylized curve)
+            ctx.beginPath();
+            ctx.moveTo(cx + 200 * scale, 50);
+            ctx.bezierCurveTo(cx, 150, cx - 100 * scale, 350, cx - 300 * scale, 450);
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 15 * scale;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // 2. Draw Capital (Imakiya)
+            drawPoint(cx - 50 * scale, 220 * scale, '#fff', "Imakiya", 15 * scale);
+            
+            // 3. Draw Other Udyels/Points
+            drawPoint(cx - 200 * scale, 400 * scale, '#60a5fa', "Udyel Kipchak", 10 * scale);
+            drawPoint(cx + 100 * scale, 450 * scale, '#60a5fa', "Karantia", 10 * scale);
+            drawPoint(cx + 150 * scale, 80 * scale, '#1e3a8a', "Altai Mining", 8 * scale);
+
+            // 4. Connectors
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(96, 165, 250, 0.3)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 50 * scale, 220 * scale); ctx.lineTo(cx - 200 * scale, 400 * scale);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawPoint(x, y, color, label, size) {
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(label.toUpperCase(), x, y + size + 15);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const scale = canvas.width / 800;
+            const cx = canvas.width / 2;
+
+            let target = null;
+            if (Math.sqrt((x-(cx-50*scale))**2 + (y-220*scale)**2) < 30) target = 'imakiya';
+            else if (Math.sqrt((x-(cx-200*scale))**2 + (y-400*scale)**2) < 30) target = 'udyel1';
+            else if (Math.sqrt((x-(cx+100*scale))**2 + (y-450*scale)**2) < 30) target = 'karantia';
+
+            if (target) {
+                const info = translations[currentLang].udyelInfo[target];
+                document.getElementById('role-title').innerText = info.name;
+                document.getElementById('role-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#60a5fa';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('role-title').innerText = t.roleTitleDefault;
+            document.getElementById('role-desc').innerText = t.roleDescDefault;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+
+            document.getElementById('feat-t').innerText = t.featT;
+            document.getElementById('feat-d').innerText = t.featD;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate-forming Factors Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0c0a09; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #f59e0b; color: #451a03; font-weight: 800; }
+        .factor-node { transition: all 0.4s; cursor: pointer; }
+        .factor-node:hover { transform: scale(1.05); border-color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+        .factor-node.active { border-left: 8px solid #f59e0b; background: rgba(245, 158, 11, 0.15); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-b border-yellow-500/20">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-4xl uppercase tracking-tighter text-yellow-500"></h1>
+            <p id="sub-title" class="mt-1 text-white/30 font-bold uppercase tracking-widest text-[10px]"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-4 flex flex-col gap-4" id="factor-list">
+            <!-- Buttons injected by JS -->
+        </div>
+
+        <div class="lg:col-span-8 glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-yellow-600 relative overflow-hidden">
+            <div id="content-view" class="relative z-10 transition-all duration-500">
+                <div id="display-icon" class="text-7xl mb-8">☀️</div>
+                <h3 id="display-title" class="heading-font text-4xl mb-6 text-white"></h3>
+                <div id="display-text" class="text-xl font-light leading-relaxed text-white/80 space-y-6"></div>
+            </div>
+            <!-- Decorative Light -->
+            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-yellow-500/10 blur-[120px] rounded-full"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-8"><h4 id="ft1-t" class="heading-font text-yellow-500 mb-2 uppercase"></h4><p id="ft1-d" class="text-xs text-white/50"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="ft2-t" class="heading-font text-yellow-500 mb-2 uppercase"></h4><p id="ft2-d" class="text-xs text-white/50"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="ft3-t" class="heading-font text-yellow-500 mb-2 uppercase"></h4><p id="ft3-d" class="text-xs text-white/50"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Климат: Причины", subtitle: "Факторы формирования климата Земли",
+                factors: {
+                    lat: { icon: "☀️", title: "Географическая широта", text: "Главный фактор. От широты зависит угол падения солнечных лучей и, как следствие, количество тепла. На экваторе лучи падают отвесно ($90^\circ$), у полюсов — под малым углом." },
+                    circ: { icon: "🌬️", title: "Циркуляция атмосферы", text: "Постоянное движение воздушных масс переносит тепло и влагу. Пассаты, муссоны и западные ветры — главные 'двигатели' климата." },
+                    surface: { icon: "🏔️", title: "Подстилающая поверхность", text: "Рельеф (горы преграждают путь ветрам), высота местности и характер поверхности (лес, снег, песок) влияют на поглощение солнечного тепла." },
+                    ocean: { icon: "🌊", title: "Океанические течения", text: "Теплые течения (Гольфстрим) согревают побережья и приносят дожди. Холодные течения (Перуанское) делают берега засушливыми и холодными." }
+                },
+                facts: [
+                    { t: "Радиация", d: "Прямая и рассеянная энергия солнца." },
+                    { t: "Альбедо", d: "Отражательная способность поверхности." },
+                    { t: "Амплитуда", d: "Разница между экстремумами температур." }
+                ]
+            },
+            kz: {
+                title: "Климат: Себептері", subtitle: "Жер климатының қалыптасу факторлары",
+                factors: {
+                    lat: { icon: "☀️", title: "Географиялық ендік", text: "Басты фактор. Ендікке күн сәулесінің түсу бұрышы мен жылу мөлшері байланысты." },
+                    circ: { icon: "🌬️", title: "Атмосфера циркуляциясы", text: "Ауа массаларының тұрақты қозғалысы жылу мен ылғалды тасымалдайды." },
+                    surface: { icon: "🏔️", title: "Жер бетінің сипаты", text: "Рельеф, биіктік және беткі қабаттың түрі (орман, қар, құм) жылудың сіңірілуіне әсер етеді." },
+                    ocean: { icon: "🌊", title: "Мұхит ағыстары", text: "Жылы ағыстар жағалауды жылытып, жаңбыр әкеледі. Суық ағыстар құрғақшылық тудырады." }
+                },
+                facts: [
+                    { t: "Радиация", d: "Күннің тікелей және шашыранды энергиясы." },
+                    { t: "Альбедо", d: "Беткі қабаттың шағылыстыру қабілеті." },
+                    { t: "Амплитуда", d: "Температура ауытқуының айырмашылығы." }
+                ]
+            },
+            en: {
+                title: "Climate: Causes", subtitle: "Factors Determining Earth's Climate",
+                factors: {
+                    lat: { icon: "☀️", title: "Latitude", text: "Primary factor. Latitude determines the sun rays' angle of incidence and solar heat amount. Vertical at the equator ($90^\circ$), oblique near the poles." },
+                    circ: { icon: "🌬️", title: "Air Circulation", text: "Continuous movement of air masses transfers heat and moisture. Trade winds and monsoons are the main climate drivers." },
+                    surface: { icon: "🏔️", title: "Underlying Surface", text: "Relief (mountains block winds), altitude, and surface type (forest, snow, sand) affect solar heat absorption." },
+                    ocean: { icon: "🌊", title: "Ocean Currents", text: "Warm currents (Gulf Stream) heat the coasts and bring rain. Cold currents (Peruvian) create arid and cold coastal regions." }
+                },
+                facts: [
+                    { t: "Radiation", d: "Direct and scattered solar energy." },
+                    { t: "Albedo", d: "Surface reflectivity coefficient." },
+                    { t: "Amplitude", d: "Difference between temperature extremes." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', activeF = 'lat';
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.selectF = function(f) { activeF = f; updateUI(); }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            
+            const list = document.getElementById('factor-list');
+            list.innerHTML = '';
+            Object.keys(t.factors).forEach(key => {
+                const f = t.factors[key];
+                const div = document.createElement('div');
+                div.className = `factor-node glass p-6 rounded-3xl flex items-center gap-4 ${activeF === key ? 'active' : ''}`;
+                div.onclick = () => selectF(key);
+                div.innerHTML = `<span class="text-3xl">${f.icon}</span><span class="font-bold uppercase text-[10px] tracking-widest">${f.title}</span>`;
+                list.appendChild(div);
+            });
+
+            const active = t.factors[activeF];
+            document.getElementById('display-icon').textContent = active.icon;
+            document.getElementById('display-title').textContent = active.title;
+            document.getElementById('display-text').textContent = active.text;
+
+            document.getElementById('ft1-t').textContent = t.facts[0].t; document.getElementById('ft1-d').textContent = t.facts[0].d;
+            document.getElementById('ft2-t').textContent = t.facts[1].t; document.getElementById('ft2-d').textContent = t.facts[1].d;
+            document.getElementById('ft3-t').textContent = t.facts[2].t; document.getElementById('ft3-d').textContent = t.facts[2].d;
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

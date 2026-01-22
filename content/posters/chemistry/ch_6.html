@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Смесьтерді ажырату</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #047857; border-bottom: 3px solid #dcfce7; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #059669; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #059669; background: white; color: #059669; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #059669; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; font-size: 12px; }
+        th { background-color: #059669; color: white; }
+        .method-box { background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%); padding: 20px; border-radius: 0.75rem; border-left: 5px solid #059669; margin: 15px 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-green-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Смесьтерді Ажырату - 7 ӘДІСІ!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Separation of Mixtures - 7 METHODS!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Разделение смесей - 7 методов!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-green-100">Физикалық әдістер арқылы компоненттерді ажырату. Фильтрлеу, дистилляция, кристаллизация, хроматография - өндіс және лабораториялық қолданулы!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-green-100">Physical methods to separate components. Filtration, distillation, crystallization, chromatography - industrial & lab applications!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-green-100">Физические методы разделения. Фильтрация, дистилляция, кристаллизация, хроматография - промышленное применение!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. СМЕСЬТЕРДІ АЖЫРАТУ 7 ӘДІСІНІҢ ТОЛЫҚ САЛЫСТЫРУЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. 7 METHODS OF SEPARATION - COMPLETE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. 7 методов разделения смесей - полное сравнение</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">№</th>
+                            <th lang="kk" class="lang-content">ӘДІСІ</th>
+                            <th lang="kk" class="lang-content">ПРИНЦИПІ</th>
+                            <th lang="kk" class="lang-content">ПАЙДАЛАНЫЛАТЫН СМЕСЬТЕР</th>
+                            <th lang="kk" class="lang-content">АППАРАТТАРЫ</th>
+                            <th lang="kk" class="lang-content">МЫСАЛЫ</th>
+
+                            <th lang="en" class="lang-content">№</th>
+                            <th lang="en" class="lang-content">METHOD</th>
+                            <th lang="en" class="lang-content">PRINCIPLE</th>
+                            <th lang="en" class="lang-content">USED FOR</th>
+                            <th lang="en" class="lang-content">APPARATUS</th>
+                            <th lang="en" class="lang-content">EXAMPLE</th>
+
+                            <th lang="ru" class="lang-content">№</th>
+                            <th lang="ru" class="lang-content">МЕТОД</th>
+                            <th lang="ru" class="lang-content">ПРИНЦИП</th>
+                            <th lang="ru" class="lang-content">ПРИМЕНЯЕТСЯ ДЛЯ</th>
+                            <th lang="ru" class="lang-content">АППАРАТ</th>
+                            <th lang="ru" class="lang-content">ПРИМЕР</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">1️⃣</td>
+                            <td lang="kk" class="lang-content"><strong>ФИЛЬТРЛЕУ</strong></td>
+                            <td lang="kk" class="lang-content">Бөлшек өлшемі айырмасы</td>
+                            <td lang="kk" class="lang-content">Қатты + сұйық</td>
+                            <td lang="kk" class="lang-content">Фильтр қағазы, сүзгі</td>
+                            <td lang="kk" class="lang-content">Ас тұзы + су</td>
+
+                            <td lang="en" class="lang-content">1️⃣</td>
+                            <td lang="en" class="lang-content"><strong>FILTRATION</strong></td>
+                            <td lang="en" class="lang-content">Particle size difference</td>
+                            <td lang="en" class="lang-content">Solid + liquid</td>
+                            <td lang="en" class="lang-content">Filter paper, sieve</td>
+                            <td lang="en" class="lang-content">Salt + water</td>
+
+                            <td lang="ru" class="lang-content">1️⃣</td>
+                            <td lang="ru" class="lang-content"><strong>ФИЛЬТРАЦИЯ</strong></td>
+                            <td lang="ru" class="lang-content">Разница размеров частиц</td>
+                            <td lang="ru" class="lang-content">Твёрдое + жидкое</td>
+                            <td lang="ru" class="lang-content">Фильтр-бумага, сито</td>
+                            <td lang="ru" class="lang-content">Соль + вода</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">2️⃣</td>
+                            <td lang="kk" class="lang-content"><strong>ДИСТИЛЛЯЦИЯ</strong></td>
+                            <td lang="kk" class="lang-content">Қайнау температурасы</td>
+                            <td lang="kk" class="lang-content">Сұйық + сұйық</td>
+                            <td lang="kk" class="lang-content">Дистилляциялау аппарат</td>
+                            <td lang="kk" class="lang-content">Спирт + су</td>
+
+                            <td lang="en" class="lang-content">2️⃣</td>
+                            <td lang="en" class="lang-content"><strong>DISTILLATION</strong></td>
+                            <td lang="en" class="lang-content">Boiling point difference</td>
+                            <td lang="en" class="lang-content">Liquid + liquid</td>
+                            <td lang="en" class="lang-content">Distillation apparatus</td>
+                            <td lang="en" class="lang-content">Alcohol + water</td>
+
+                            <td lang="ru" class="lang-content">2️⃣</td>
+                            <td lang="ru" class="lang-content"><strong>ДИСТИЛЛЯЦИЯ</strong></td>
+                            <td lang="ru" class="lang-content">Разница температур кипения</td>
+                            <td lang="ru" class="lang-content">Жидкое + жидкое</td>
+                            <td lang="ru" class="lang-content">Дистилляционный аппарат</td>
+                            <td lang="ru" class="lang-content">Спирт + вода</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">3️⃣</td>
+                            <td lang="kk" class="lang-content"><strong>КРИСТАЛЛИЗАЦИЯ</strong></td>
+                            <td lang="kk" class="lang-content">Ерігіш-те айырмасы</td>
+                            <td lang="kk" class="lang-content">Қатты + қатты</td>
+                            <td lang="kk" class="lang-content">Суық құрылғы</td>
+                            <td lang="kk" class="lang-content">Қант + ас тұзы</td>
+
+                            <td lang="en" class="lang-content">3️⃣</td>
+                            <td lang="en" class="lang-content"><strong>CRYSTALLIZATION</strong></td>
+                            <td lang="en" class="lang-content">Solubility difference</td>
+                            <td lang="en" class="lang-content">Solid + solid</td>
+                            <td lang="en" class="lang-content">Cooling device</td>
+                            <td lang="en" class="lang-content">Sugar + salt</td>
+
+                            <td lang="ru" class="lang-content">3️⃣</td>
+                            <td lang="ru" class="lang-content"><strong>КРИСТАЛЛИЗАЦИЯ</strong></td>
+                            <td lang="ru" class="lang-content">Разница растворимости</td>
+                            <td lang="ru" class="lang-content">Твёрдое + твёрдое</td>
+                            <td lang="ru" class="lang-content">Охлаждающее устройство</td>
+                            <td lang="ru" class="lang-content">Сахар + соль</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">4️⃣</td>
+                            <td lang="kk" class="lang-content"><strong>МАГНИТТАНУ</strong></td>
+                            <td lang="kk" class="lang-content">Магнит сезімталық</td>
+                            <td lang="kk" class="lang-content">Темір + басқа қатты</td>
+                            <td lang="kk" class="lang-content">Магнит</td>
+                            <td lang="kk" class="lang-content">Темір + құм</td>
+
+                            <td lang="en" class="lang-content">4️⃣</td>
+                            <td lang="en" class="lang-content"><strong>MAGNETIZATION</strong></td>
+                            <td lang="en" class="lang-content">Magnetic property</td>
+                            <td lang="en" class="lang-content">Iron + other solid</td>
+                            <td lang="en" class="lang-content">Magnet</td>
+                            <td lang="en" class="lang-content">Iron + sand</td>
+
+                            <td lang="ru" class="lang-content">4️⃣</td>
+                            <td lang="ru" class="lang-content"><strong>МАГНИТНОЕ РАЗДЕЛЕНИЕ</strong></td>
+                            <td lang="ru" class="lang-content">Магнитные свойства</td>
+                            <td lang="ru" class="lang-content">Железо + твёрдое</td>
+                            <td lang="ru" class="lang-content">Магнит</td>
+                            <td lang="ru" class="lang-content">Железо + песок</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">5️⃣</td>
+                            <td lang="kk" class="lang-content"><strong>ӨНДІКТЕНУ</strong></td>
+                            <td lang="kk" class="lang-content">Тығыздық айырмасы</td>
+                            <td lang="kk" class="lang-content">Сұйық + сұйық</td>
+                            <td lang="kk" class="lang-content">Әдінді ажырату асасы</td>
+                            <td lang="kk" class="lang-content">Мұнай + су</td>
+
+                            <td lang="en" class="lang-content">5️⃣</td>
+                            <td lang="en" class="lang-content"><strong>DECANTATION</strong></td>
+                            <td lang="en" class="lang-content">Density difference</td>
+                            <td lang="en" class="lang-content">Liquid + liquid</td>
+                            <td lang="en" class="lang-content">Separatory funnel</td>
+                            <td lang="en" class="lang-content">Oil + water</td>
+
+                            <td lang="ru" class="lang-content">5️⃣</td>
+                            <td lang="ru" class="lang-content"><strong>РАССЛАИВАНИЕ</strong></td>
+                            <td lang="ru" class="lang-content">Разница плотности</td>
+                            <td lang="ru" class="lang-content">Жидкое + жидкое</td>
+                            <td lang="ru" class="lang-content">Делительная воронка</td>
+                            <td lang="ru" class="lang-content">Масло + вода</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ӨНДІС ҚОЛДАНУЛАРЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Industrial Applications</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Промышленные применения</h2>
+
+            <div class="rule-card">
+                <div class="space-y-4">
+                    <div class="method-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>⚙️ МҰНАЙ РАФИНИРЛЕУ:</strong> Дистилляция арқылы мұнайды бензин, дизель, мазутқа бөледі. $2+ трлн өндіс!<br/>🔬 Температура: 350-400°C, өндіктігі: 90-95%</p>
+                        <p lang="en" class="lang-content text-sm"><strong>⚙️ OIL REFINING:</strong> Distillation separates crude oil into gasoline, diesel, fuel oil. $2T+ industry!<br/>🔬 Temperature: 350-400°C, efficiency: 90-95%</p>
+                        <p lang="ru" class="lang-content text-sm"><strong>⚙️ НЕФТЕПЕРЕРАБОТКА:</strong> Дистилляция разделяет нефть на бензин, дизель, мазут. Индустрия $2+ трлн!<br/>🔬 Температура: 350-400°C, эффективность: 90-95%</p>
+                    </div>
+
+                    <div class="method-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>⚙️ ҰНДЫҚ ӨНДІС:</strong> Фильтрлеу өндіс таңбасында қоршекшіліктің жойылуында қолданылады. Су тазалау $100+ млрд өндіс!<br/>🔬 Өндіктігі: 99%+ түздік</p>
+                        <p lang="en" class="lang-content text-sm"><strong>⚙️ WATER PURIFICATION:</strong> Filtration removes impurities in water treatment. $100B+ industry!<br/>🔬 Purity: 99.9%+</p>
+                        <p lang="ru" class="lang-content text-sm"><strong>⚙️ ОЧИСТКА ВОДЫ:</strong> Фильтрация удаляет примеси. Индустрия $100+ млрд!<br/>🔬 Чистота: 99.9%+</p>
+                    </div>
+
+                    <div class="method-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>⚙️ ФАРМАЦЕВТИКА:</strong> Хроматография және кристаллизация дәрілік заттарды ажыратуда. Индустрия $500+ млрд!<br/>🔬 Өндіктігі: 99.99% таза</p>
+                        <p lang="en" class="lang-content text-sm"><strong>⚙️ PHARMACEUTICALS:</strong> Chromatography & crystallization separate active ingredients. $500B+ industry!<br/>🔬 Purity: 99.99%</p>
+                        <p lang="ru" class="lang-content text-sm"><strong>⚙️ ФАРМАЦЕВТИКА:</strong> Хроматография и кристаллизация. Индустрия $500+ млрд!<br/>🔬 Чистота: 99.99%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #dcfce7; border-radius: 1rem; border-top: 4px solid #059669;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Смесьтерді ажырату - 7 физикалық әдісі: фильтрлеу (қатты+сұйық), дистилляция (сұйық+сұйық, температура), кристаллизация (қатты+қатты, ерігіш), магниттану (темір), өндіктену (тығыздық), хроматография (ерігіш-те), беу (мөлшемі). Өндіс пайдалану: мұнай рафинирлеу ($2+ трлн), су тазалау ($100+ млрд), фармацевтика ($500+ млрд). ХИМИЯ = ӨНДІС!</p>
+            <p lang="en" class="lang-content text-sm">Separation of mixtures - 7 physical methods: filtration (solid+liquid), distillation (liquid+liquid, temperature), crystallization (solid+solid, solubility), magnetization (iron), decantation (density), chromatography (solvent), sieving (size). Industrial: oil refining ($2T+), water purification ($100B+), pharmaceuticals ($500B+). CHEMISTRY = INDUSTRY!</p>
+            <p lang="ru" class="lang-content text-sm">Разделение смесей - 7 физических методов: фильтрация (твёрдое+жидкое), дистилляция (жидкое+жидкое, температура), кристаллизация (твёрдое+твёрдое, растворимость), магнитное (железо), расслаивание (плотность), хроматография (растворитель), просеивание (размер). Промышленное: нефтепереработка ($2+ трлн), очистка воды ($100+ млрд), фармацевтика ($500+ млрд). ХИМИЯ = ПРОМЫШЛЕННОСТЬ!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

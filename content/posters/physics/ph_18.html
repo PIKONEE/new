@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Сила трения</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            overflow-x: hidden;
+            color: #0f172a; /* slate-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Slate Theme */
+        .header-card {
+            background-color: #334155; /* slate-700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(51, 65, 85, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #1e293b; /* slate-800 */
+            border-bottom: 3px solid #94a3b8; /* slate-400 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #e2e8f0; /* slate-200 */
+            border-radius: 1rem;
+            border-top: 4px solid #475569; /* slate-600 */
+        }
+         .term {
+            font-weight: bold;
+            color: #334155; /* slate-700 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #334155;
+            background-color: #ffffff;
+            color: #334155;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #f1f5f9;
+        }
+        .lang-btn.active {
+            background-color: #334155;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 200px;
+            margin: 15px 0;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #334155;
+            text-anchor: middle;
+        }
+        .svg-force-arrow-red {
+            stroke: #dc2626; /* Красный для трения */
+            stroke-width: 4;
+            marker-end: url(#arrowhead-red);
+        }
+        .svg-motion-arrow-green {
+            stroke: #16a34a; /* Зеленый для движения */
+            stroke-width: 4;
+            marker-end: url(#arrowhead-green);
+        }
+        .svg-magnify {
+            fill: #f1f5f9;
+            stroke: #64748b;
+            stroke-width: 2;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(71, 85, 105, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(71, 85, 105, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(71, 85, 105, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ҮЙКЕЛІС КҮШІ</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">FRICTION FORCE</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">СИЛА ТРЕНИЯ</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-slate-100">Қозғалысқа кедергі жасайтын күш.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-slate-100">The force that opposes motion.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-slate-100">Сила, препятствующая движению.</p>
+        </header>
+
+        <!-- 1. ҮЙКЕЛІС ДЕГЕНІМІЗ НЕ? -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Үйкеліс дегеніміз не?</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Friction?</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое трение?</h2>
+
+            <div class="rule-card border-t-slate-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Үйкеліс күші</span> – денелер жанасқанда пайда болатын және олардың салыстырмалы қозғалысына <strong>қарсы</strong> бағытталған күш.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="en">Friction</span> is a force that arises when bodies touch and acts <strong>against</strong> their relative motion.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Сила трения</span> – это сила, возникающая при соприкосновении тел и направленная <strong>против</strong> их относительного движения.
+                </p>
+
+                <!-- Illustration 1: Microscopic View -->
+                <svg class="illustration-svg" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" />
+                        </marker>
+                        <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a" />
+                        </marker>
+                    </defs>
+
+                    <!-- Block -->
+                    <rect x="50" y="50" width="100" height="60" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+                    <text x="100" y="85" class="svg-label" font-weight="bold">BLOCK</text>
+
+                    <!-- Surface -->
+                    <line x1="10" y1="110" x2="390" y2="110" stroke="#94a3b8" stroke-width="2"/>
+
+                    <!-- Motion Arrow -->
+                    <line x1="150" y1="80" x2="200" y2="80" class="svg-motion-arrow-green"/>
+                    <text x="175" y="70" font-size="12" fill="#16a34a" font-weight="bold">v (Motion)</text>
+
+                    <!-- Friction Arrow -->
+                    <line x1="50" y1="110" x2="10" y2="110" class="svg-force-arrow-red"/>
+                    <text x="30" y="130" font-size="12" fill="#dc2626" font-weight="bold">F_friction</text>
+
+                    <!-- Magnifying Glass Effect -->
+                    <g transform="translate(250, 40)">
+                        <circle cx="60" cy="60" r="50" class="svg-magnify" fill="#fff"/>
+                        <!-- Top Rough Surface (Block) -->
+                        <path d="M 20 60 L 30 70 L 40 55 L 50 65 L 60 50 L 70 65 L 80 55 L 90 70 L 100 60 L 100 20 L 20 20 Z" fill="#e2e8f0" stroke="#64748b"/>
+                        <!-- Bottom Rough Surface (Ground) -->
+                        <path d="M 20 62 L 30 72 L 40 57 L 50 67 L 60 52 L 70 67 L 80 57 L 90 72 L 100 62 L 100 100 L 20 100 Z" fill="#f1f5f9" stroke="#94a3b8"/>
+                        <!-- Handle -->
+                        <path d="M 100 95 L 130 125" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+
+                        <text x="60" y="130" class="svg-label" font-size="12">Zoom</text>
+                    </g>
+                </svg>
+
+                <p lang="kk" class="lang-content mt-2 text-sm text-gray-600">Себебі: Беттердің кедір-бұдырлығы және молекулалардың өзара тартылуы.</p>
+                <p lang="en" class="lang-content mt-2 text-sm text-gray-600">Cause: Surface roughness and molecular attraction.</p>
+                <p lang="ru" class="lang-content mt-2 text-sm text-gray-600">Причина: Шероховатость поверхностей и взаимное притяжение молекул.</p>
+            </div>
+        </section>
+
+        <!-- 2. ҮЙКЕЛІС ТҮРЛЕРІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Үйкеліс түрлері</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Types of Friction</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Виды трения</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 1. Static -->
+                <div class="rule-card border-t-red-500">
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="kk">1. Тыныштық үйкелісі</h3>
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="en">1. Static Friction</h3>
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="ru">1. Трение покоя</h3>
+
+                    <svg class="w-full h-24 mb-2" viewBox="0 0 100 80">
+                        <rect x="20" y="40" width="40" height="30" fill="#fca5a5" stroke="#dc2626"/>
+                        <line x1="0" y1="70" x2="100" y2="70" stroke="#000"/>
+                        <!-- Person trying to push -->
+                        <circle cx="10" cy="40" r="5" fill="#475569"/>
+                        <line x1="10" y1="45" x2="20" y2="55" stroke="#475569" stroke-width="2"/>
+                        <text x="50" y="30" font-size="10" fill="#dc2626" text-anchor="middle">Ең үлкен / Max</text>
+                    </svg>
+                    <p lang="kk" class="lang-content text-sm text-center">Денені орнынан қозғау ең қиын.</p>
+                    <p lang="en" class="lang-content text-sm text-center">Hardest to start moving.</p>
+                    <p lang="ru" class="lang-content text-sm text-center">Сдвинуть с места труднее всего.</p>
+                </div>
+
+                <!-- 2. Sliding -->
+                <div class="rule-card border-t-orange-500">
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="kk">2. Сырғанау үйкелісі</h3>
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="en">2. Sliding Friction</h3>
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="ru">2. Трение скольжения</h3>
+
+                    <svg class="w-full h-24 mb-2" viewBox="0 0 100 80">
+                        <rect x="30" y="40" width="40" height="30" fill="#fdba74" stroke="#d97706"/>
+                        <line x1="0" y1="70" x2="100" y2="70" stroke="#000"/>
+                         <!-- Motion lines -->
+                        <line x1="75" y1="55" x2="90" y2="55" stroke="#16a34a" marker-end="url(#arrowhead-green)"/>
+                    </svg>
+                    <p lang="kk" class="lang-content text-sm text-center">Тыныштық үйкелісінен азырақ.</p>
+                    <p lang="en" class="lang-content text-sm text-center">Less than static friction.</p>
+                    <p lang="ru" class="lang-content text-sm text-center">Меньше, чем трение покоя.</p>
+                </div>
+
+                <!-- 3. Rolling -->
+                <div class="rule-card border-t-green-500">
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="kk">3. Домалау үйкелісі</h3>
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="en">3. Rolling Friction</h3>
+                    <h3 class="font-bold text-lg text-center mb-2 lang-content" lang="ru">3. Трение качения</h3>
+
+                    <svg class="w-full h-24 mb-2" viewBox="0 0 100 80">
+                        <circle cx="50" cy="55" r="15" fill="#86efac" stroke="#16a34a"/>
+                        <line x1="0" y1="70" x2="100" y2="70" stroke="#000"/>
+                        <!-- Motion lines -->
+                        <line x1="70" y1="55" x2="90" y2="55" stroke="#16a34a" marker-end="url(#arrowhead-green)"/>
+                    </svg>
+                    <p lang="kk" class="lang-content text-sm text-center">Ең аз үйкеліс (дөңгелек).</p>
+                    <p lang="en" class="lang-content text-sm text-center">The least friction (wheels).</p>
+                    <p lang="ru" class="lang-content text-sm text-center">Самое маленькое (колеса).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ПАЙДАСЫ МЕН ЗИЯНЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Пайдасы мен Зияны</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Pros and Cons</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Польза и Вред</h2>
+
+            <div class="rule-card border-t-gray-500">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- Useful -->
+                    <div class="flex-1 bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 class="font-bold text-green-800 text-lg mb-2 text-center" lang="kk">Пайдалы (Арттыру керек)</h4>
+                        <h4 class="font-bold text-green-800 text-lg mb-2 text-center" lang="en">Useful (Increase it)</h4>
+                        <h4 class="font-bold text-green-800 text-lg mb-2 text-center" lang="ru">Полезное (Увеличить)</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700">
+                            <li lang="kk">Жүру, зат ұстау</li>
+                            <li lang="en">Walking, holding things</li>
+                            <li lang="ru">Ходьба, удержание предметов</li>
+                            <li lang="kk">Көлік тежегіші (Тормоз)</li>
+                            <li lang="en">Brakes</li>
+                            <li lang="ru">Тормоза автомобиля</li>
+                        </ul>
+                         <!-- Illustration: Shoe -->
+                        <svg class="w-full h-20 mt-2" viewBox="0 0 100 50">
+                             <path d="M 10 40 L 30 20 L 70 20 L 90 40 Z" fill="#bbf7d0"/>
+                             <line x1="10" y1="45" x2="90" y2="45" stroke="#16a34a" stroke-width="2" stroke-dasharray="2"/>
+                             <text x="50" y="15" font-size="10" text-anchor="middle" fill="#166534">Grip (Ұстасу)</text>
+                        </svg>
+                    </div>
+
+                    <!-- Harmful -->
+                    <div class="flex-1 bg-red-50 p-4 rounded-lg border border-red-200">
+                        <h4 class="font-bold text-red-800 text-lg mb-2 text-center" lang="kk">Зиянды (Азайту керек)</h4>
+                        <h4 class="font-bold text-red-800 text-lg mb-2 text-center" lang="en">Harmful (Decrease it)</h4>
+                        <h4 class="font-bold text-red-800 text-lg mb-2 text-center" lang="ru">Вредное (Уменьшить)</h4>
+                         <ul class="list-disc pl-5 text-sm text-gray-700">
+                            <li lang="kk">Деттің қызуы, тозуы</li>
+                            <li lang="en">Heating, wear and tear</li>
+                            <li lang="ru">Нагрев, износ деталей</li>
+                            <li lang="kk">Энергия шығыны</li>
+                            <li lang="en">Energy loss</li>
+                            <li lang="ru">Потеря энергии</li>
+                        </ul>
+                         <!-- Illustration: Oil -->
+                         <svg class="w-full h-20 mt-2" viewBox="0 0 100 50">
+                             <rect x="20" y="30" width="60" height="10" fill="#94a3b8"/> <!-- Surface 1 -->
+                             <rect x="20" y="10" width="60" height="10" fill="#94a3b8"/> <!-- Surface 2 -->
+                             <!-- Oil droplets -->
+                             <circle cx="30" cy="25" r="3" fill="#fbbf24"/>
+                             <circle cx="50" cy="25" r="3" fill="#fbbf24"/>
+                             <circle cx="70" cy="25" r="3" fill="#fbbf24"/>
+                             <text x="50" y="8" font-size="8" text-anchor="middle" fill="#92400e">Oil (Майлау)</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-slate-800">БАСТЫ ОЙ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-slate-800">SUMMARY</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-slate-800">ГЛАВНАЯ МЫСЛЬ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-slate-700">
+                Үйкеліссіз біз жүре алмас едік, бірақ ол тетіктерді тоздырады. Домалау үйкелісі сырғанау үйкелісінен әлдеқайда аз (сондықтан дөңгелек ойлап табылған!).
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-slate-700">
+                Without friction, we couldn't walk, but it wears out machinery. Rolling friction is much less than sliding friction (that's why the wheel was invented!).
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-slate-700">
+                Без трения мы не могли бы ходить, но оно изнашивает механизмы. Трение качения намного меньше трения скольжения (поэтому придумали колесо!).
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

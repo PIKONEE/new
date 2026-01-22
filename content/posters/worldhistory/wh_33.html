@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Великая греческая колонизация</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #075985, #0c4a6e, #020617);
+            color: #f0f9ff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #0ea5e9;
+            color: white;
+            box-shadow: 0 0 30px rgba(14, 165, 233, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #0ea5e9;
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-blue-300 uppercase">
+                Греческие колонии
+            </h1>
+            <p id="sub-title" class="text-sky-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Расселение эллинов по Средиземноморью</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-sky-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-sky-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-sky-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-sky-600 inline-block"></span>
+                Карта экспансии
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-sky-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="colonyCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-sky-500/50 italic text-center uppercase tracking-widest">Нажмите на регионы для изучения колониальных путей</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-sky-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Поиск новой доли</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Греки называли Средиземное море «нашим прудом», вокруг которого они расселись, «как лягушки». Недостаток земли и борьба демоса со знатью заставляли тысячи людей искать счастья за морем.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⛵</span>
+                            <span id="hint-1" class="text-sky-200/60 font-bold uppercase text-xs tracking-widest">Основание города</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏺</span>
+                            <span id="hint-2" class="text-sky-200/60 font-bold uppercase text-xs tracking-widest">Торговые связи</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-sky-950/40 text-sky-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-sky-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-sky-950/20 rounded-[2.5rem] border border-sky-900/30 shadow-xl">
+                        <strong class="text-sky-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-consequence">Значение региона:</strong>
+                        <p id="info-fact" class="text-sky-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-sky-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏜️</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-sky-400 uppercase">Причины ухода</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Главной причиной была <strong>стенохория</strong> (земельный голод). Из-за роста населения земель в Греции не хватало. Также в колонии уезжали проигравшие в политической борьбе или те, кто хотел разбогатеть на торговле.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-amber-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🕯️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-amber-500 uppercase">Связь с Метрополией</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Колония считалась независимым городом, но сохраняла духовную связь с родным городом — <strong>метрополией</strong>. Переселенцы брали с собой огонь из священного очага родины и поклонялись тем же богам.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🤝</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-sky-400 uppercase">Влияние на варваров</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Греки принесли местным народам свою культуру, алфавит, виноградарство и искусство. Взамен они получали рабов, скот, хлеб и металлы, что делало греческие полисы сказочно богатыми.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-sky-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-sky-100/70 leading-tight max-w-5xl mx-auto">
+            «Греки расселились по берегам морей, как лягушки вокруг пруда, неся свет своей культуры в самые дальние земли».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Греческие колонии",
+                subtitle: "Расселение эллинов по Средиземноморью",
+                visualTitle: "Карта экспансии",
+                hint: "Нажмите на регионы для изучения колониальных путей",
+                placeholderTitle: "Поиск новой доли",
+                placeholderText: "Великая колонизация (VIII–VI вв. до н.э.) превратила Грецию в мировую торговую державу. Выберите регион на карте.",
+                labelConsequence: "Значение региона:",
+                hint1: "Основание города", hint2: "Торговые связи",
+                card1Title: "Причины ухода",
+                card1Text: "Стенохория (нехватка земли), торговые интересы и политические смуты гнали эллинов за горизонт.",
+                card2Title: "Связь с Метрополией",
+                card2Text: "Родной город (мать-город) давал колонистам законы и священный огонь, оставаясь главным торговым партнером.",
+                card3Title: "Влияние на мир",
+                card3Text: "Взаимодействие с местными народами привело к рождению новых культур и обогащению греческих полисов ресурсами.",
+                footerQuote: "«Греки расселились по берегам морей, как лягушки вокруг пруда, неся свет своей культуры в самые дальние земли».",
+                nodes: [
+                    { id: 1, tag: "Западное направление", title: "Великая Греция", desc: "Южная Италия и Сицилия. Здесь возникли крупнейшие города: Сиракузы, Тарент, Неаполь. Земли здесь были настолько плодородны, что эти колонии вскоре превзошли свои метрополии по богатству.", fact: "Сицилия стала главной житницей греческого мира, снабжая Балканы пшеницей." },
+                    { id: 2, tag: "Северное направление", title: "Понт Эвксинский", desc: "Черное море. Греки основали здесь Ольвию, Пантикапей, Херсонес. Они торговали со скифами, обменивая вино и масло на зерно, мед и рабов.", fact: "Греки называли Черное море 'Гостеприимным', хотя сначала оно пугало их штормами и холодом." },
+                    { id: 3, tag: "Галлия и Испания", title: "Западные рубежи", desc: "На юге нынешней Франции возникла Массалия (Марсель). Отсюда греки продвигались вглубь Европы, знакомя галлов с культурой вина и оливок.", fact: "Массалия была основана фокейцами и стала крупнейшим портом западного Средиземноморья." },
+                    { id: 4, tag: "Северная Африка", title: "Кирена и Египет", desc: "На ливийском берегу была основана Кирена, славившаяся лекарственным растением сильфием. В Египте возник порт Навкратис — единственный центр торговли греков с фараонами.", fact: "Навкратис имел особый статус, в нем жили представители многих греческих городов." },
+                    { id: 5, tag: "Процесс", title: "Ойкист", desc: "Предводитель группы переселенцев. Перед отплытием он спрашивал совета у Дельфийского оракула. Ойкист планировал новый город, распределял участки земли и строил храмы.", fact: "После смерти ойкиста часто почитали как героя-покровителя города." }
+                ]
+            },
+            kz: {
+                title: "Грек колониялары",
+                subtitle: "Эллиндердің Жерорта теңізіне қоныстануы",
+                visualTitle: "Экспансия картасы",
+                hint: "Колониялық жолдарды зерттеу үшін аймақтарды басыңыз",
+                placeholderTitle: "Жаңа қоныс іздеу",
+                placeholderText: "Ұлы колонияландыру (б.з.б. VIII–VI ғғ.) Грекияны әлемдік сауда державасына айналдырды. Картадан аймақты таңдаңыз.",
+                labelConsequence: "Аймақтың маңызы:",
+                hint1: "Қаланың негізін қалау", hint2: "Сауда байланыстары",
+                card1Title: "Кету себептері",
+                card1Text: "Стенохория (жердің жетіспеушілігі), сауда мүдделері және саяси алауыздықтар эллиндерді шет елге қуды.",
+                card2Title: "Метрополиямен байланыс",
+                card2Text: "Туған қала (ана-қала) колонистерге заңдар мен қасиетті от беріп, басты сауда серіктесі болып қалды.",
+                card3Title: "Әлемге әсері",
+                card3Text: "Жергілікті халықтармен қарым-қатынас жаңа мәдениеттердің тууына және грек полистерінің байуына әкелді.",
+                footerQuote: "«Гректер теңіз жағалауларына тоған айналасындағы бақалар сияқты қоныстанып, өз мәдениетін алыс жерлерге таратты».",
+                nodes: [
+                    { id: 1, tag: "Батыс бағыт", title: "Ұлы Грекия", desc: "Оңтүстік Италия мен Сицилия. Мұнда Сиракузы, Тарент, Неаполь сияқты ірі қалалар пайда болды.", fact: "Сицилия грек әлемінің басты астық қоймасына айналды." },
+                    { id: 2, tag: "Солтүстік бағыт", title: "Понт Эвксин", desc: "Қара теңіз. Гректер мұнда Ольвия, Пантикапей, Херсонестің негізін қалады. Олар скифтермен сауда жасады.", fact: "Гректер Қара теңізді 'Қонақжай теңіз' деп атаған." },
+                    { id: 3, tag: "Галлия мен Испания", title: "Батыс шептер", desc: "Францияның оңтүстігінде Массалия (Марсель) пайда болды. Осы жерден гректер Еуропаның ішкі бөлігіне өтті.", fact: "Массалия батыс Жерорта теңізінің ең ірі портына айналды." },
+                    { id: 4, tag: "Солтүстік Африка", title: "Кирена мен Мысыр", desc: "Ливия жағалауында Киренаның негізі қаланды. Мысырда Навкратис порты пайда болды.", fact: "Навкратис гректердің перғауындармен сауда жасайтын жалғыз орталығы болды." },
+                    { id: 5, tag: "Процесс", title: "Ойкист", desc: "Қоныстанушылар тобының жетекшісі. Ол жаңа қаланы жоспарлап, жер телімдерін бөлді және храмдар салды.", fact: "Ойкист қайтыс болғаннан кейін оны қаланың жебеуші батыры ретінде құрметтеген." }
+                ]
+            },
+            en: {
+                title: "Greek Colonies",
+                subtitle: "The Spread of Hellenes Across the Seas",
+                visualTitle: "Expansion Map",
+                hint: "Click on regions to study colonial routes",
+                placeholderTitle: "Searching for New Life",
+                placeholderText: "The Great Colonization (8th–6th centuries BC) turned Greece into a global trade power. Select a region on the map.",
+                labelConsequence: "Regional Importance:",
+                hint1: "Founding a City", hint2: "Trade Connections",
+                card1Title: "Causes of Migration",
+                card1Text: "Stenochoria (land hunger), trade interests, and political strife drove the Hellenes beyond the horizon.",
+                card2Title: "Link to Metropolis",
+                card2Text: "The mother-city provided laws and sacred fire, remaining the primary trading partner for the colony.",
+                card3Title: "Global Impact",
+                card3Text: "Interaction with local peoples led to the birth of new cultures and enriched Greek poleis with resources.",
+                footerQuote: "«The Greeks settled around the seas like frogs around a pond, bringing the light of their culture to the furthest lands.»",
+                nodes: [
+                    { id: 1, tag: "Western Front", title: "Magna Graecia", desc: "Southern Italy and Sicily. Major cities like Syracuse, Tarentum, and Naples emerged here. The soil was incredibly fertile.", fact: "Sicily became the breadbasket of the Greek world, supplying the Balkans with wheat." },
+                    { id: 2, tag: "Northern Front", title: "Pontus Euxinus", desc: "The Black Sea. Greeks founded Olbia, Panticapaeum, and Chersonesus here. They traded with the Scythians.", fact: "Greeks called the Black Sea 'Hospitable' (Pontos Euxeinos), though they initially feared its storms." },
+                    { id: 3, tag: "Gaul and Spain", title: "Western Borders", desc: "Massalia (modern Marseille) was founded in southern France. From here, Greeks introduced Gauls to wine and olives.", fact: "Massalia was founded by Phocaeans and became the largest port in the Western Mediterranean." },
+                    { id: 4, tag: "North Africa", title: "Cyrene and Egypt", desc: "Cyrene was founded on the Libyan coast. In Egypt, the port of Naucratis became the sole center for trade with Pharaohs.", fact: "Naucratis had a special status, housing representatives from many different Greek cities." },
+                    { id: 5, tag: "The Process", title: "The Oikist", desc: "The leader of the settlers. He planned the new city, distributed plots of land, and built the first temples.", fact: "After death, an oikist was often venerated as the heroic protector of the city." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('colonyCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-consequence').innerText = t.labelConsequence;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Mediterranean & Black Sea
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.1)';
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=50) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+
+            const nodesData = [
+                { id: 1, x: cx - 100, y: cy + 40, icon: "🇮🇹" }, // Magna Graecia
+                { id: 2, x: cx + 120, y: cy - 100, icon: "🌊" }, // Black Sea
+                { id: 3, x: cx - 180, y: cy - 40, icon: "🇫🇷" }, // Gaul
+                { id: 4, x: cx + 20, y: cy + 120, icon: "🇪🇬" }, // Egypt/Libya
+                { id: 5, x: cx, y: cy, icon: "🇬🇷" }            // Mainland Greece (Process center)
+            ];
+
+            // Draw expansion arrows from Greece
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#0ea5e9';
+            ctx.lineWidth = 2;
+            nodesData.forEach((node, i) => {
+                if(i < 4) {
+                    ctx.beginPath();
+                    ctx.moveTo(nodesData[4].x, nodesData[4].y);
+                    ctx.lineTo(node.x, node.y);
+                    ctx.stroke();
+                }
+            });
+            ctx.setLineDash([]);
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(14, 165, 233, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = (i === 4) ? '#f59e0b' : '#0ea5e9';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#bae6fd';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

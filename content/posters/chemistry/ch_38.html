@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ертіндіде заттың массалық үлесін есептеу</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fce7f3; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #db2777; border-bottom: 3px solid #fbcfe8; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #ec4899; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #ec4899; background: white; color: #ec4899; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #ec4899; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .calc-box { background: linear-gradient(135deg, #fbcfe8 0%, #fce7f3 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #ec4899; margin: 10px 0; font-family: 'Courier New', monospace; font-size: 13px; }
+        .illustration { background: linear-gradient(135deg, #fbcfe8 0%, #fce7f3 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; text-align: center; }
+        svg { max-width: 100%; height: auto; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-pink-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Массалық Үлес Есептеу!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Mass Fraction Calculations!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Расчёт массовой доли!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-pink-100">w% = (m заттың / m ертінді) × 100%. NaCl 10 г + су 90 г = 10% ертінді. Есептемелер жеңіл!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-pink-100">w% = (m substance / m solution) × 100%. NaCl 10g + water 90g = 10% solution. Easy calculations!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-pink-100">w% = (m вещества / m раствора) × 100%. NaCl 10г + вода 90г = 10% раствор. Простые расчёты!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. МАССАЛЫҚ ҮЛЕС ФОРМУЛАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. MASS FRACTION FORMULA</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Формула массовой доли</h2>
+
+            <div class="illustration">
+                <svg viewBox="0 0 500 150" width="100%" height="150">
+                    <!-- Formula box -->
+                    <rect x="50" y="20" width="400" height="80" fill="#fbcfe8" stroke="#ec4899" stroke-width="2" rx="10"/>
+                    <text x="250" y="50" text-anchor="middle" font-size="18" font-weight="bold">w = m(заттың) ÷ m(ертінді) × 100%</text>
+                    <text x="250" y="85" text-anchor="middle" font-size="14">немесе</text>
+                    <text x="250" y="110" text-anchor="middle" font-size="18" font-weight="bold">w(%) = (m(s) / m(solution)) × 100</text>
+                </svg>
+            </div>
+
+            <div class="rule-card">
+                <div class="space-y-3">
+                    <div class="calc-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ 1: 20 г NaCl + 80 г су = ?</strong></p>
+                        <p lang="kk" class="lang-content">m(заттың) = 20 г</p>
+                        <p lang="kk" class="lang-content">m(су) = 80 г</p>
+                        <p lang="kk" class="lang-content">m(ертінді) = 20 + 80 = 100 г</p>
+                        <p lang="kk" class="lang-content">w = 20 / 100 × 100% = 20% ✓</p>
+
+                        <p lang="en" class="lang-content"><strong>📝 EXAMPLE 1: 20g NaCl + 80g water = ?</strong></p>
+                        <p lang="en" class="lang-content">m(substance) = 20 g</p>
+                        <p lang="en" class="lang-content">m(water) = 80 g</p>
+                        <p lang="en" class="lang-content">m(solution) = 20 + 80 = 100 g</p>
+                        <p lang="en" class="lang-content">w = 20 / 100 × 100% = 20% ✓</p>
+
+                        <p lang="ru" class="lang-content"><strong>📝 ПРИМЕР 1: 20г NaCl + 80г воды = ?</strong></p>
+                        <p lang="ru" class="lang-content">m(вещества) = 20 г</p>
+                        <p lang="ru" class="lang-content">m(воды) = 80 г</p>
+                        <p lang="ru" class="lang-content">m(раствора) = 20 + 80 = 100 г</p>
+                        <p lang="ru" class="lang-content">w = 20 / 100 × 100% = 20% ✓</p>
+                    </div>
+
+                    <div class="calc-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ 2: 50 г H₂SO₄ + 450 г су = ?</strong></p>
+                        <p lang="kk" class="lang-content">m(ертінді) = 50 + 450 = 500 г</p>
+                        <p lang="kk" class="lang-content">w = 50 / 500 × 100% = 10% ✓</p>
+
+                        <p lang="en" class="lang-content"><strong>📝 EXAMPLE 2: 50g H₂SO₄ + 450g water = ?</strong></p>
+                        <p lang="en" class="lang-content">m(solution) = 50 + 450 = 500 g</p>
+                        <p lang="en" class="lang-content">w = 50 / 500 × 100% = 10% ✓</p>
+
+                        <p lang="ru" class="lang-content"><strong>📝 ПРИМЕР 2: 50г H₂SO₄ + 450г воды = ?</strong></p>
+                        <p lang="ru" class="lang-content">m(раствора) = 50 + 450 = 500 г</p>
+                        <p lang="ru" class="lang-content">w = 50 / 500 × 100% = 10% ✓</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ТАБЛИЦАЛЫҚ МЫСАЛДАР</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. TABLE EXAMPLES</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Табличные примеры</h2>
+
+            <div class="illustration">
+                <svg viewBox="0 0 500 200" width="100%" height="200">
+                    <!-- Bar chart of mass fractions -->
+                    <rect x="50" y="40" width="35" height="100" fill="#ff6b6b" stroke="#000" stroke-width="1"/>
+                    <text x="67.5" y="155" text-anchor="middle" font-size="11">20%</text>
+                    <text x="67.5" y="175" text-anchor="middle" font-size="10">20г/80г су</text>
+
+                    <rect x="110" y="60" width="35" height="80" fill="#4ecdc4" stroke="#000" stroke-width="1"/>
+                    <text x="127.5" y="155" text-anchor="middle" font-size="11">16%</text>
+                    <text x="127.5" y="175" text-anchor="middle" font-size="10">16г/84г су</text>
+
+                    <rect x="170" y="80" width="35" height="60" fill="#ffd93d" stroke="#000" stroke-width="1"/>
+                    <text x="187.5" y="155" text-anchor="middle" font-size="11">12%</text>
+                    <text x="187.5" y="175" text-anchor="middle" font-size="10">12г/88г су</text>
+
+                    <rect x="230" y="100" width="35" height="40" fill="#95e1d3" stroke="#000" stroke-width="1"/>
+                    <text x="247.5" y="155" text-anchor="middle" font-size="11">8%</text>
+                    <text x="247.5" y="175" text-anchor="middle" font-size="10">8г/92г су</text>
+
+                    <rect x="290" y="120" width="35" height="20" fill="#a8e6cf" stroke="#000" stroke-width="1"/>
+                    <text x="307.5" y="155" text-anchor="middle" font-size="11">4%</text>
+                    <text x="307.5" y="175" text-anchor="middle" font-size="10">4г/96г су</text>
+
+                    <!-- Y-axis line -->
+                    <line x1="40" y1="140" x2="360" y2="140" stroke="#000" stroke-width="2"/>
+                    <line x1="40" y1="140" x2="40" y2="20" stroke="#000" stroke-width="2"/>
+                </svg>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fbcfe8; border-radius: 1rem; border-top: 4px solid #ec4899;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-pink-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Массалық үлес w(%) = (m заттың / m ертінді) × 100%. Есептемелер жеңіл: 20 г NaCl + 80 г су = 20% ертінді. 50 г H₂SO₄ + 450 г су = 10% ертінді. Қосындысы әрқашан 100%!</p>
+            <p lang="en" class="lang-content text-sm">Mass fraction w(%) = (m substance / m solution) × 100%. Easy calculations: 20g NaCl + 80g water = 20% solution. 50g H₂SO₄ + 450g water = 10% solution. Always adds to 100%!</p>
+            <p lang="ru" class="lang-content text-sm">Массовая доля w(%) = (m вещества / m раствора) × 100%. Простые расчёты: 20г NaCl + 80г воды = 20% раствор. 50г H₂SO₄ + 450г воды = 10% раствор. Всегда сумма 100%!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

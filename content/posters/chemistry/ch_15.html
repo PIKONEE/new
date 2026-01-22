@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Массовая доля элемента</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fde2e4; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #be185d 0%, #9d174d 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #9d174d; border-bottom: 3px solid #fbcfe8; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #be185d; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #be185d; background: white; color: #be185d; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #be185d; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: center; font-size: 11px; }
+        th { background-color: #be185d; color: white; }
+        .formula-box { background: linear-gradient(135deg, #fbcfe8 0%, #fde2e4 100%); padding: 20px; border-radius: 0.75rem; border-left: 5px solid #be185d; margin: 15px 0; }
+        .calculation-example { background: #fef5f7; padding: 15px; border-radius: 0.75rem; border-left: 4px solid #be185d; margin: 10px 0; font-family: 'Courier New', monospace; font-size: 13px; }
+        .step-box { background: #fcf0f5; padding: 10px; border-radius: 0.5rem; margin: 8px 0; border-left: 3px solid #be185d; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-pink-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Элементтің Массалық Үлесін Есептеу!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Calculate Mass Fraction of Element!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Вычисление массовой доли элемента!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-pink-100">Массовая доля = элемент молекулалық масса / соединения молекулалық масса × 100%. H₂O-та H = 11.1%, O = 88.9%. ГӨМІ ЕСЕПТЕУ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-pink-100">Mass fraction = element mass / compound mass × 100%. In H₂O: H = 11.1%, O = 88.9%. IMPORTANT CALCULATION!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-pink-100">Массовая доля = масса элемента / масса соединения × 100%. В H₂O: H = 11,1%, O = 88,9%. ВАЖНЫЙ РАСЧЁТ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ФОРМУЛА И ЕРЕЖЕЛЕРІ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. FORMULA & RULES</h2>
+            <h2 lang="ru" class="lang-content text-3ll section-heading">1. Формула и правила</h2>
+
+            <div class="rule-card">
+                <div class="formula-box">
+                    <p lang="kk" class="lang-content text-sm font-bold mb-3">📐 МАССОВАЯ ДОЛЯ ФОРМУЛЫ:</p>
+                    <p lang="kk" class="lang-content text-sm">ω(X) = [n × Ar(X)] / Mr(соединение) × 100%</p>
+                    <p lang="kk" class="lang-content text-sm mt-2" style="color: #666;">мәнімен:</p>
+                    <p lang="kk" class="lang-content text-sm">• n = элемент индексі</p>
+                    <p lang="kk" class="lang-content text-sm">• Ar(X) = элементтің атомдық массасы</p>
+                    <p lang="kk" class="lang-content text-sm">• Mr = соединения молекулалық массасы</p>
+
+                    <p lang="en" class="lang-content text-sm font-bold mb-3" style="margin-top: 15px;">📐 MASS FRACTION FORMULA:</p>
+                    <p lang="en" class="lang-content text-sm">ω(X) = [n × Ar(X)] / Mr(compound) × 100%</p>
+                    <p lang="en" class="lang-content text-sm mt-2" style="color: #666;">Where:</p>
+                    <p lang="en" class="lang-content text-sm">• n = element subscript</p>
+                    <p lang="en" class="lang-content text-sm">• Ar(X) = atomic mass of element</p>
+                    <p lang="en" class="lang-content text-sm">• Mr = molecular mass of compound</p>
+
+                    <p lang="ru" class="lang-content text-sm font-bold mb-3" style="margin-top: 15px;">📐 ФОРМУЛА МАССОВОЙ ДОЛИ:</p>
+                    <p lang="ru" class="lang-content text-sm">ω(X) = [n × Ar(X)] / Mr(соединение) × 100%</p>
+                    <p lang="ru" class="lang-content text-sm mt-2" style="color: #666;">Где:</p>
+                    <p lang="ru" class="lang-content text-sm">• n = индекс элемента</p>
+                    <p lang="ru" class="lang-content text-sm">• Ar(X) = атомная масса элемента</p>
+                    <p lang="ru" class="lang-content text-sm">• Mr = молярная масса соединения</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. МЫСАЛДАР - ТОЛЫҚ ШЕШІМДЕР!</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. EXAMPLES - COMPLETE SOLUTIONS!</h2>
+            <h2 lang="ru" class="lang-content text-3ll section-heading">2. Примеры - полные решения!</h2>
+
+            <div class="rule-card">
+                <div class="space-y-4">
+                    <div class="calculation-example">
+                        <p lang="kk" class="lang-content"><strong>📊 МЫСАЛ 1: H₂O - су</strong></p>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 1: Mr(H₂O) есептеу</p>
+                            <p lang="kk" class="lang-content">Mr = 2×1 + 1×16 = 2 + 16 = <strong>18</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 2: H массовая доля</p>
+                            <p lang="kk" class="lang-content">ω(H) = [2×1]/18 × 100% = 2/18 × 100% = <strong>11.1%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 3: O массовая доля</p>
+                            <p lang="kk" class="lang-content">ω(O) = [1×16]/18 × 100% = 16/18 × 100% = <strong>88.9%</strong> ✓</p>
+                        </div>
+                        <p lang="kk" class="lang-content" style="margin-top: 10px; color: #666;">Тексеру: 11.1% + 88.9% = <strong>100%</strong> ✓</p>
+
+                        <p lang="en" class="lang-content" style="margin-top: 15px;"><strong>📊 EXAMPLE 1: H₂O - water</strong></p>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 1: Calculate Mr(H₂O)</p>
+                            <p lang="en" class="lang-content">Mr = 2×1 + 1×16 = 2 + 16 = <strong>18</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 2: Mass fraction of H</p>
+                            <p lang="en" class="lang-content">ω(H) = [2×1]/18 × 100% = 2/18 × 100% = <strong>11.1%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 3: Mass fraction of O</p>
+                            <p lang="en" class="lang-content">ω(O) = [1×16]/18 × 100% = 16/18 × 100% = <strong>88.9%</strong> ✓</p>
+                        </div>
+                        <p lang="en" class="lang-content" style="margin-top: 10px; color: #666;">Check: 11.1% + 88.9% = <strong>100%</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content" style="margin-top: 15px;"><strong>📊 ПРИМЕР 1: H₂O - вода</strong></p>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 1: рассчитать Mr(H₂O)</p>
+                            <p lang="ru" class="lang-content">Mr = 2×1 + 1×16 = 2 + 16 = <strong>18</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 2: массовая доля H</p>
+                            <p lang="ru" class="lang-content">ω(H) = [2×1]/18 × 100% = 2/18 × 100% = <strong>11,1%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 3: массовая доля O</p>
+                            <p lang="ru" class="lang-content">ω(O) = [1×16]/18 × 100% = 16/18 × 100% = <strong>88,9%</strong> ✓</p>
+                        </div>
+                        <p lang="ru" class="lang-content" style="margin-top: 10px; color: #666;">Проверка: 11,1% + 88,9% = <strong>100%</strong> ✓</p>
+                    </div>
+
+                    <div class="calculation-example">
+                        <p lang="kk" class="lang-content"><strong>📊 МЫСАЛ 2: NaCl - тұз</strong></p>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 1: Mr(NaCl) есептеу</p>
+                            <p lang="kk" class="lang-content">Mr = 1×23 + 1×35.5 = 23 + 35.5 = <strong>58.5</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 2: Na массовая доля</p>
+                            <p lang="kk" class="lang-content">ω(Na) = [1×23]/58.5 × 100% = 23/58.5 × 100% = <strong>39.3%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 3: Cl массовая доля</p>
+                            <p lang="kk" class="lang-content">ω(Cl) = [1×35.5]/58.5 × 100% = 35.5/58.5 × 100% = <strong>60.7%</strong> ✓</p>
+                        </div>
+                        <p lang="kk" class="lang-content" style="margin-top: 10px; color: #666;">Тексеру: 39.3% + 60.7% = <strong>100%</strong> ✓</p>
+
+                        <p lang="en" class="lang-content" style="margin-top: 15px;"><strong>📊 EXAMPLE 2: NaCl - salt</strong></p>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 1: Calculate Mr(NaCl)</p>
+                            <p lang="en" class="lang-content">Mr = 1×23 + 1×35.5 = 23 + 35.5 = <strong>58.5</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 2: Mass fraction of Na</p>
+                            <p lang="en" class="lang-content">ω(Na) = [1×23]/58.5 × 100% = 23/58.5 × 100% = <strong>39.3%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 3: Mass fraction of Cl</p>
+                            <p lang="en" class="lang-content">ω(Cl) = [1×35.5]/58.5 × 100% = 35.5/58.5 × 100% = <strong>60.7%</strong> ✓</p>
+                        </div>
+                        <p lang="en" class="lang-content" style="margin-top: 10px; color: #666;">Check: 39.3% + 60.7% = <strong>100%</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content" style="margin-top: 15px;"><strong>📊 ПРИМЕР 2: NaCl - соль</strong></p>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 1: рассчитать Mr(NaCl)</p>
+                            <p lang="ru" class="lang-content">Mr = 1×23 + 1×35,5 = 23 + 35,5 = <strong>58,5</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 2: массовая доля Na</p>
+                            <p lang="ru" class="lang-content">ω(Na) = [1×23]/58,5 × 100% = 23/58,5 × 100% = <strong>39,3%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 3: массовая доля Cl</p>
+                            <p lang="ru" class="lang-content">ω(Cl) = [1×35,5]/58,5 × 100% = 35,5/58,5 × 100% = <strong>60,7%</strong> ✓</p>
+                        </div>
+                        <p lang="ru" class="lang-content" style="margin-top: 10px; color: #666;">Проверка: 39,3% + 60,7% = <strong>100%</strong> ✓</p>
+                    </div>
+
+                    <div class="calculation-example">
+                        <p lang="kk" class="lang-content"><strong>📊 МЫСАЛ 3: CaCO₃ - известняк</strong></p>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 1: Mr(CaCO₃) есептеу</p>
+                            <p lang="kk" class="lang-content">Mr = 1×40 + 1×12 + 3×16 = 40 + 12 + 48 = <strong>100</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 2: Ca массовая доля</p>
+                            <p lang="kk" class="lang-content">ω(Ca) = [1×40]/100 × 100% = <strong>40%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 3: C массовая доля</p>
+                            <p lang="kk" class="lang-content">ω(C) = [1×12]/100 × 100% = <strong>12%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="kk" class="lang-content">Қадам 4: O массовая доля</p>
+                            <p lang="kk" class="lang-content">ω(O) = [3×16]/100 × 100% = <strong>48%</strong> ✓</p>
+                        </div>
+                        <p lang="kk" class="lang-content" style="margin-top: 10px; color: #666;">Тексеру: 40% + 12% + 48% = <strong>100%</strong> ✓</p>
+
+                        <p lang="en" class="lang-content" style="margin-top: 15px;"><strong>📊 EXAMPLE 3: CaCO₃ - limestone</strong></p>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 1: Calculate Mr(CaCO₃)</p>
+                            <p lang="en" class="lang-content">Mr = 1×40 + 1×12 + 3×16 = 40 + 12 + 48 = <strong>100</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 2: Mass fraction of Ca</p>
+                            <p lang="en" class="lang-content">ω(Ca) = [1×40]/100 × 100% = <strong>40%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 3: Mass fraction of C</p>
+                            <p lang="en" class="lang-content">ω(C) = [1×12]/100 × 100% = <strong>12%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="en" class="lang-content">Step 4: Mass fraction of O</p>
+                            <p lang="en" class="lang-content">ω(O) = [3×16]/100 × 100% = <strong>48%</strong> ✓</p>
+                        </div>
+                        <p lang="en" class="lang-content" style="margin-top: 10px; color: #666;">Check: 40% + 12% + 48% = <strong>100%</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content" style="margin-top: 15px;"><strong>📊 ПРИМЕР 3: CaCO₃ - известняк</strong></p>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 1: рассчитать Mr(CaCO₃)</p>
+                            <p lang="ru" class="lang-content">Mr = 1×40 + 1×12 + 3×16 = 40 + 12 + 48 = <strong>100</strong></p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 2: массовая доля Ca</p>
+                            <p lang="ru" class="lang-content">ω(Ca) = [1×40]/100 × 100% = <strong>40%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 3: массовая доля C</p>
+                            <p lang="ru" class="lang-content">ω(C) = [1×12]/100 × 100% = <strong>12%</strong> ✓</p>
+                        </div>
+                        <div class="step-box">
+                            <p lang="ru" class="lang-content">Шаг 4: массовая доля O</p>
+                            <p lang="ru" class="lang-content">ω(O) = [3×16]/100 × 100% = <strong>48%</strong> ✓</p>
+                        </div>
+                        <p lang="ru" class="lang-content" style="margin-top: 10px; color: #666;">Проверка: 40% + 12% + 48% = <strong>100%</strong> ✓</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fbcfe8; border-radius: 1rem; border-top: 4px solid #be185d;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-pink-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Массовая доля элемента = [n × Ar(X)] / Mr(соединение) × 100%. H₂O: H=11.1%, O=88.9%. NaCl: Na=39.3%, Cl=60.7%. CaCO₃: Ca=40%, C=12%, O=48%. Әрқашан тексеру: барлық проценттер = 100%! МАССА ФРАКЦИЯСЫ - ХИМИЯНЫҢ ӨНДІКТІГІНІҢ ҚҰРАМЫ!</p>
+            <p lang="en" class="lang-content text-sm">Mass fraction = [n × Ar(X)] / Mr(compound) × 100%. H₂O: H=11.1%, O=88.9%. NaCl: Na=39.3%, Cl=60.7%. CaCO₃: Ca=40%, C=12%, O=48%. Always check: all percents = 100%! MASS FRACTION DETERMINES COMPOSITION!</p>
+            <p lang="ru" class="lang-content text-sm">Массовая доля = [n × Ar(X)] / Mr(соединение) × 100%. H₂O: H=11,1%, O=88,9%. NaCl: Na=39,3%, Cl=60,7%. CaCO₃: Ca=40%, C=12%, O=48%. Всегда проверяйте: все проценты = 100%! МАССОВАЯ ДОЛЯ ОПРЕДЕЛЯЕТ СОСТАВ!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

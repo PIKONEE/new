@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат 33: Орфоэпический словарь</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Очень светло-серый фон */
+            overflow-x: hidden;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Карточка-заголовок */
+        .header-card {
+            background-color: #0369a1; /* Голубой-700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(3, 105, 161, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Заголовок секции */
+        .section-heading {
+            color: #075985; /* Голубой-800 */
+            border-bottom: 3px solid #7dd3fc; /* Голубой-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Карточка с правилом */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Блок с примером внутри карточки */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f0f9ff; /* Очень светлый голубой */
+            border-left: 4px solid #38bdf8; /* Голубой-400 */
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Футер */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f1f5f9; /* Светло-серый */
+            border-radius: 1rem;
+            border-top: 4px solid #64748b; /* Серый */
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            list-style: none;
+            padding-left: 20px;
+            position: relative;
+        }
+        .feature-list li::before {
+            content: '🗣️'; /* Эмодзи для пунктов */
+            position: absolute;
+            left: 0;
+            color: #0369a1; /* Голубой */
+        }
+        .dict-entry {
+           font-weight: 600;
+           font-size: 1.1em;
+        }
+        .phonetic {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #1e3a8a; /* Indigo-800 */
+        }
+        .stress-mark { /* Стиль для знака ударения */
+            color: #ef4444; /* red-500 */
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    " onmouseover="this.style.transform='translateX(-3px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="container">
+
+        <!-- ГЛАВНЫЙ ЗАГОЛОВОК -->
+        <header class="header-card text-center mb-10">
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                ПЛАКАТ 33: ОРФОЭПИЧЕСКИЙ СЛОВАРЬ
+            </h1>
+            <p class="mt-2 text-xl font-medium text-gray-100">
+                Помощник для правильного произношения слов.
+            </p>
+        </header>
+
+        <!-- 1. ЧТО ТАКОЕ ОРФОЭПИЧЕСКИЙ СЛОВАРЬ? -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                1. Что такое Орфоэпический словарь?
+            </h2>
+
+            <div class="rule-card border-t-sky-500">
+                <h3 class="text-xl font-bold text-sky-700 mb-3">📖 Определение</h3>
+                <p class="text-base md:text-lg mb-3 text-gray-700">
+                    <strong>Орфоэпический словарь</strong> - это словарь, который указывает <strong>правильное литературное произношение</strong> слов и их форм.
+                </p>
+                <ul class="feature-list text-base text-gray-700">
+                    <li>🗣️ Он отвечает на вопрос: "Как <strong>сказать</strong> правильно?".</li>
+                    <li>🗣️ В отличие от орфографического (как писать) и толкового (что значит), орфоэпический фокусируется на <strong>звучании</strong> речи.</li>
+                    <li>🗣️ Орфоэпия - это наука о правильном произношении.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. ЧТО МОЖНО УЗНАТЬ ИЗ СЛОВАРЯ? -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                2. Какую информацию он содержит?
+            </h2>
+
+            <div class="rule-card border-t-cyan-500">
+                <p class="text-base md:text-lg mb-3 text-gray-700">
+                    Орфоэпический словарь обычно содержит:
+                </p>
+                <ul class="feature-list text-base text-gray-700">
+                    <li>🗣️ <strong>Слово</strong> с указанием <strong>места ударения</strong> (главное!).</li>
+                    <li>🗣️ Указания на <strong>особенности произношения</strong> отдельных звуков (например, [шн] вместо "чн", твёрдый или мягкий согласный перед "е").</li>
+                    <li>🗣️ (Иногда) Указания на <strong>варианты</strong> произношения (допустимые или устаревшие).</li>
+                    <li>🗣️ Произношение <strong>трудных форм</strong> слова.</li>
+                </ul>
+                <div class="example-block border-l-cyan-400 mt-4">
+                    <p class="font-semibold text-gray-800">Примеры записей в словаре:</p>
+                    <p class="text-gray-700 dict-entry"><i>алфав<span class="stress-mark">и́</span>т</i> (ударение на И)</p>
+                    <p class="text-gray-700 dict-entry"><i>ску<span class="phonetic">[шн]</span>о</i> (произносится ШН)</p>
+                    <p class="text-gray-700 dict-entry"><i>т<span class="phonetic">[э]</span>мп</i> (произносится твёрдый Т)</p>
+                    <p class="text-gray-700 dict-entry"><i>облегч<span class="stress-mark">и́</span>ть</i> (ударение на И)</p>
+                    <p class="text-gray-700 dict-entry"><i>тв<span class="stress-mark">о́</span>рог</i> и <span class="text-gray-500"><i>доп.</i></span><i> твор<span class="stress-mark">о́</span>г</i> (два варианта)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. КОГДА ОН НУЖЕН? -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                3. Когда нужно обращаться к словарю?
+            </h2>
+
+            <div class="rule-card border-t-blue-500">
+                <h3 class="text-xl font-bold text-blue-700 mb-3">❓ При сомнениях в произношении</h3>
+                <ul class="feature-list text-base text-gray-700">
+                    <li>🗣️ Если вы <strong>не уверены, куда падает ударение</strong> в слове: <i>катал<span class="stress-mark">о́</span>г</i> или <i>кат<span class="stress-mark">а́</span>лог</i>? (Правильно: <i>катал<span class="stress-mark">о́</span>г</i>).</li>
+                    <li>🗣️ Если вы сомневаетесь, как произносить <strong>отдельные звуки</strong> или сочетания: <i>коне<span class="phonetic">[шн]</span>о</i> или <i>коне<span class="phonetic">[ч'н]</span>о</i>? (Правильно: <i>коне<span class="phonetic">[шн]</span>о</i>).</li>
+                    <li>🗣️ Чтобы узнать произношение <strong>иностранных слов</strong> или <strong>специальных терминов</strong>: <i>марк<span class="stress-mark">е́</span>тинг</i>.</li>
+                    <li>🗣️ Для подготовки к <strong>публичным выступлениям</strong>, чтобы речь была грамотной и красивой.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ЗАКЛЮЧЕНИЕ -->
+        <footer class="footer-card">
+            <h3 class="text-xl font-extrabold mb-2 text-gray-800">
+                ГЛАВНАЯ МЫСЛЬ
+            </h3>
+            <p class="text-md font-semibold leading-relaxed text-gray-700">
+                <strong>Орфоэпический словарь</strong> - твой гид по <strong>правильному произношению</strong>. Он подскажет, где поставить <strong>ударение</strong> и как произнести "трудные" звуки, чтобы твоя речь была образцовой.
+            </p>
+        </footer>
+
+    </div>
+
+
+
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

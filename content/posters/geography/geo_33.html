@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human-Made Water Bodies & Engineering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b, #0f172a, #020617);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #6366f1; color: white; font-weight: 800; }
+        .mode-btn { transition: all 0.3s; }
+        .mode-btn.active { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; color: #818cf8; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-indigo-400/20">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-3xl animate-float">🏗️</div>
+            <div>
+                <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-indigo-400"></h1>
+                <p id="sub-title" class="mt-1 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <!-- Sidebar Navigation -->
+        <div class="lg:col-span-3 glass rounded-custom p-8 flex flex-col gap-4">
+            <h3 id="nav-title" class="heading-font text-lg text-indigo-300 uppercase mb-4 tracking-widest"></h3>
+            <button onclick="setMode('reservoir')" id="btn-reservoir" class="mode-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+            <button onclick="setMode('canal')" id="btn-canal" class="mode-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+            
+            <div class="mt-auto pt-6 border-t border-white/10">
+                <div class="p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
+                    <p id="hint-text" class="text-[10px] text-indigo-300 uppercase leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation View -->
+        <div class="lg:col-span-6 glass rounded-custom p-8 flex flex-col relative min-h-[500px]">
+            <div class="absolute top-8 left-8 z-10 flex flex-col">
+                <span id="canvas-label" class="text-[10px] font-bold text-white/30 uppercase tracking-[0.4em]">Simulation</span>
+                <span id="status-label" class="text-xs text-indigo-400 font-mono mt-1">Status: Operational</span>
+            </div>
+            <canvas id="damCanvas" class="w-full h-full bg-black/40"></canvas>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="lg:col-span-3 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-indigo-500">
+            <div id="info-content">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-indigo-300"></h3>
+                <div id="info-text" class="text-sm font-light leading-relaxed text-white/80 space-y-6"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-8 border-b-4 border-blue-600">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-blue-400 uppercase"></h4>
+            <div id="card1-desc" class="text-white/60 text-xs leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-8 border-b-4 border-indigo-600">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-indigo-400 uppercase"></h4>
+            <div id="card2-desc" class="text-white/60 text-xs leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-8 border-b-4 border-purple-600">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-purple-400 uppercase"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Творцы Воды",
+                subtitle: "Искусственные водоемы и гидротехника",
+                navTitle: "Инженерия",
+                hint: "Нажимайте на холст, чтобы открывать затворы и управлять потоком",
+                btnReservoir: "Водохранилище",
+                btnCanal: "Канал и Шлюз",
+                modes: {
+                    reservoir: { title: "Водохранилище", text: "Огромный искусственный водоем, созданный плотиной. Служит для регулирования стока рек, работы ГЭС и орошения полей. Позволяет запасать воду на случай засухи." },
+                    canal: { title: "Канал и Шлюз", text: "Каналы соединяют реки, озера и моря. Шлюзы — это инженерные «лифты», которые позволяют кораблям преодолевать разницу в уровнях воды." }
+                },
+                cards: [
+                    { title: "ГЭС", desc: "Гидроэлектростанции преобразуют энергию падающей воды в электричество. Это экологически чистый источник энергии." },
+                    { title: "Ирригация", desc: "Система каналов подает воду в засушливые районы, превращая пустыни в плодородные земли." },
+                    { title: "Экология", desc: "Строительство плотин меняет экосистему реки, поэтому современные ГЭС строят с учетом миграции рыб." }
+                ]
+            },
+            kz: {
+                title: "Су Жобалаушылары",
+                subtitle: "Жасанды су қоймалары және гидротехника",
+                navTitle: "Инженерия",
+                hint: "Су ағынын басқару үшін экранды басыңыз",
+                btnReservoir: "Су қоймасы",
+                btnCanal: "Канал және Шлюз",
+                modes: {
+                    reservoir: { title: "Су қоймасы", text: "Бөгет арқылы жасалған үлкен жасанды су қоймасы. Өзен ағысын реттеуге, СЭС жұмысына және суаруға қызмет етеді." },
+                    canal: { title: "Канал және Шлюз", text: "Каналдар өзендерді, көлдерді және теңіздерді байланыстырады. Шлюздер — кемелерге су деңгейінің айырмашылығын жеңуге көмектесетін 'лифттер'." }
+                },
+                cards: [
+                    { title: "СЭС", desc: "Гидроэлектр станциялары құлаған судың энергиясын электр энергиясына айналдырады." },
+                    { title: "Ирригация", desc: "Каналдар жүйесі құрғақ аймақтарға су жеткізіп, шөлді құнарлы жерге айналдырады." },
+                    { title: "Экология", desc: "Бөгеттерді салу өзен экосистемасын өзгертеді, сондықтан заманауи СЭС балықтардың миграциясын ескереді." }
+                ]
+            },
+            en: {
+                title: "Water Creators",
+                subtitle: "Artificial Reservoirs and Hydro-engineering",
+                navTitle: "Engineering",
+                hint: "Click the canvas to operate gates and control flow",
+                btnReservoir: "Reservoir & Dam",
+                btnCanal: "Canals & Locks",
+                modes: {
+                    reservoir: { title: "Reservoir", text: "A vast man-made body of water created by a dam. It regulates river flow, powers hydroelectric plants (HEPs), and provides irrigation." },
+                    canal: { title: "Canals & Locks", text: "Canals link rivers, lakes, and seas. Locks act as engineering 'elevators' that allow ships to transit between different water levels." }
+                },
+                cards: [
+                    { title: "Hydro-power", desc: "Dams harness the energy of falling water to generate clean, renewable electricity." },
+                    { title: "Irrigation", desc: "Canal systems bring life-giving water to arid regions, turning deserts into farmland." },
+                    { title: "Environment", desc: "Dams significantly impact river ecosystems; modern designs include fish ladders for migration." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', currentMode = 'reservoir', canvas, ctx;
+        let flowParticles = [];
+        let gateOpen = false;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        window.setMode = function(m) {
+            currentMode = m;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${m}`).classList.add('active');
+            gateOpen = false;
+            flowParticles = [];
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('nav-title').textContent = t.navTitle;
+            document.getElementById('hint-text').textContent = t.hint;
+            document.getElementById('btn-reservoir').textContent = t.btnReservoir;
+            document.getElementById('btn-canal').textContent = t.btnCanal;
+
+            const m = t.modes[currentMode];
+            document.getElementById('info-title').textContent = m.title;
+            document.getElementById('info-text').textContent = m.text;
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').textContent = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').textContent = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const time = Date.now() * 0.001;
+
+            if (currentMode === 'reservoir') {
+                // Ground
+                ctx.fillStyle = '#1c1917';
+                ctx.fillRect(0, h * 0.8, w, h * 0.2);
+                
+                // Dam Structure
+                ctx.fillStyle = '#475569';
+                ctx.beginPath();
+                ctx.moveTo(w * 0.4, h * 0.8);
+                ctx.lineTo(w * 0.45, h * 0.2);
+                ctx.lineTo(w * 0.55, h * 0.2);
+                ctx.lineTo(w * 0.6, h * 0.8);
+                ctx.fill();
+
+                // High Water (Left)
+                ctx.fillStyle = 'rgba(59, 130, 246, 0.6)';
+                ctx.fillRect(0, h * 0.3, w * 0.42, h * 0.5);
+                // Surface Waves
+                ctx.beginPath();
+                for(let i=0; i<w*0.42; i+=10) ctx.lineTo(i, h*0.3 + Math.sin(i*0.05 + time*2)*4);
+                ctx.lineTo(w*0.42, h*0.4); ctx.lineTo(0, h*0.4); ctx.fill();
+
+                // Low Water (Right)
+                ctx.fillStyle = 'rgba(59, 130, 246, 0.4)';
+                ctx.fillRect(w * 0.58, h * 0.7, w * 0.42, h * 0.1);
+
+                // Turbine icon (rotating)
+                if (gateOpen) {
+                    ctx.save();
+                    ctx.translate(w * 0.5, h * 0.7);
+                    ctx.rotate(time * 5);
+                    ctx.strokeStyle = '#facc15'; ctx.lineWidth = 4;
+                    for(let i=0; i<3; i++) {
+                        ctx.rotate(Math.PI * 2 / 3);
+                        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(15,0); ctx.stroke();
+                    }
+                    ctx.restore();
+                }
+
+                // Flow Particles
+                if (gateOpen) {
+                    if (Math.random() > 0.5) flowParticles.push({x: w * 0.45, y: h * 0.7, vx: 5, vy: (Math.random()-0.5)*2});
+                }
+            } else {
+                // CANAL / LOCKS Mode
+                ctx.fillStyle = '#27272a';
+                ctx.fillRect(0, h*0.8, w, h*0.2); // Bed
+                
+                // Lock Gates
+                ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 10;
+                ctx.beginPath(); ctx.moveTo(w*0.3, h*0.2); ctx.lineTo(w*0.3, h*0.8); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(w*0.7, h*0.2); ctx.lineTo(w*0.7, h*0.8); ctx.stroke();
+
+                // Water Levels
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.5)';
+                ctx.fillRect(0, h*0.4, w*0.3, h*0.4); // High
+                ctx.fillRect(w*0.3, gateOpen ? h*0.4 : h*0.7, w*0.4, gateOpen ? h*0.4 : h*0.1); // Inside lock
+                ctx.fillRect(w*0.7, h*0.7, w*0.3, h*0.1); // Low
+
+                // Boat icon
+                ctx.fillStyle = 'white';
+                const boatX = w*0.1 + (time*30 % (w*0.8));
+                ctx.fillRect(boatX, h*0.35, 30, 10);
+            }
+
+            // Draw and Update Particles
+            ctx.fillStyle = '#bae6fd';
+            flowParticles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
+                if (p.x > w) flowParticles.splice(i, 1);
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('damCanvas');
+            if (canvas) {
+                ctx = canvas.getContext('2d');
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 450;
+                
+                canvas.addEventListener('click', () => {
+                    gateOpen = !gateOpen;
+                    document.getElementById('status-label').textContent = gateOpen ? "Status: Active Flow" : "Status: Static / Closed";
+                });
+
+                setLang('ru');
+                setMode('reservoir');
+                draw();
+            }
+        };
+
+        window.onresize = function() {
+            if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 450;
+            }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

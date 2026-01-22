@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Государство Кангюй</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfcfb; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .oasis-gradient {
+            background: linear-gradient(135deg, #e0f2fe 0%, #fff7ed 100%);
+        }
+
+        .citadel-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            border: 1px solid #0ea5e9;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .citadel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.2);
+            border-color: #f59e0b;
+        }
+
+        .lang-active {
+            background-color: #0369a1;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(3, 105, 161, 0.3);
+        }
+
+        .accent-terracotta {
+            background-color: #9a3412;
+            color: white;
+        }
+
+        canvas {
+            filter: drop-shadow(0 10px 20px rgba(3, 105, 161, 0.1));
+        }
+    </style>
+    <script src="../../libs/chart.umd.min.js"></script>
+</head>
+<body class="oasis-gradient text-slate-900 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-sky-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl"></span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tight text-sky-900">Кангюи: Власть на Сырдарье</h1>
+            </div>
+            <div class="flex bg-sky-50 p-1 rounded-2xl border border-sky-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Map (Strategic Visualization) -->
+        <div class="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl border border-sky-50 relative overflow-hidden">
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-100/50 rounded-full blur-3xl"></div>
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-sky-600 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">Silk Road Hub</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-sky-950 leading-tight italic">Геополитика Кангюев</h2>
+                    <p id="viz-desc" class="text-lg text-slate-600 font-light leading-relaxed">
+                        Кангюи занимали территорию Южного Казахстана. Их могущество основывалось на контроле над городами и 5 зависимыми владениями.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sky-600 text-2xl">🏙️</span>
+                            <span id="loc1" class="font-bold">Битянь — столица государства</span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-amber-600 text-2xl">🛣️</span>
+                            <span id="loc2" class="font-bold">Контроль северной ветви Шелкового пути</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 h-80 md:h-[450px]">
+                    <canvas id="influenceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Plan (Structure Cards) -->
+        <div class="space-y-10">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-sky-900 uppercase tracking-[0.2em]">Устройство Державы</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-11 gap-8">
+                
+                <!-- Card: 5 Principalities -->
+                <div class="lg:col-span-6 accent-terracotta p-10 rounded-[3rem] shadow-xl flex flex-col justify-between relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-6">🏯</div>
+                        <h3 id="c1-t" class="text-3xl font-black mb-6 uppercase italic">5 владений</h3>
+                        <p id="c1-d" class="text-orange-50/80 text-lg font-light leading-relaxed">
+                            Государство делилось на 5 уделов, управляемых малыми ханами. Это позволяло гибко контролировать как кочевые племена, так и богатые оазисы.
+                        </p>
+                    </div>
+                    <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5 pointer-events-none rotate-12">🖐️</div>
+                </div>
+
+                <!-- Card: Population -->
+                <div class="lg:col-span-5 citadel-card p-10 flex flex-col justify-center">
+                    <div class="text-5xl mb-6">👥</div>
+                    <h3 id="c2-t" class="text-2xl font-bold mb-4 uppercase text-sky-900">Численность</h3>
+                    <p id="c2-d" class="text-slate-600 text-sm leading-relaxed">
+                        Китайские источники оценивают население кангюев в 600 тысяч человек. У них была сильная армия из 120 тысяч конных воинов.
+                    </p>
+                </div>
+
+                <!-- Card: Diplomacy -->
+                <div class="lg:col-span-5 citadel-card p-10 flex flex-col justify-center border-l-8 border-sky-700">
+                    <div class="text-5xl mb-6">🤝</div>
+                    <h3 id="c3-t" class="text-2xl font-bold mb-4 uppercase text-sky-900">Внешняя политика</h3>
+                    <p id="c3-d" class="text-slate-600 text-sm leading-relaxed">
+                        Кангюи были союзниками гуннов и часто выступали против экспансии Китая, защищая свою независимость и торговые интересы.
+                    </p>
+                </div>
+
+                <!-- Card: Capital -->
+                <div class="lg:col-span-6 bg-sky-900 p-10 rounded-[3rem] text-white flex items-center space-x-8">
+                    <div class="text-7xl shrink-0">🏛️</div>
+                    <div>
+                        <h3 id="c4-t" class="text-2xl font-bold mb-4 uppercase italic">Столица Битянь</h3>
+                        <p id="c4-d" class="text-sky-100/70 text-sm leading-relaxed">
+                            Главный город кангюев находился в долине реки Талас. Он был не только политическим, но и культурным центром всей Сырдарьинской долины.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-sky-950 text-sky-400/50">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-white/90">
+                «Кангюи были архитекторами торговой стабильности, превратившими долину Сырдарьи в несокрушимый щит Великого Шелкового пути.»
+            </p>
+            <div class="mt-12 flex justify-center space-x-2">
+                <div class="w-2 h-2 rounded-full bg-sky-500"></div>
+                <div class="w-16 h-2 rounded-full bg-sky-700"></div>
+                <div class="w-2 h-2 rounded-full bg-sky-500"></div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Кангюи: Власть на Сырдарье",
+                vizTitle: "Геополитика Кангюев",
+                vizDesc: "Государство кангюев основывалось на контроле над оазисами Южного Казахстана и управлении пятью полузависимыми владениями.",
+                badge: "Узел Шелкового пути",
+                loc1: "Битянь — столица государства", loc2: "Контроль северной ветви пути",
+                planTitle: "Устройство Державы",
+                c1T: "5 владений", c1D: "Государство делилось на 5 уделов, управляемых малыми ханами. Это позволяло контролировать как города, так и степи.",
+                c2T: "Численность", c2D: "Население достигало 600 тысяч человек. Мощная армия из 120 тысяч воинов была грозной силой в регионе.",
+                c3T: "Внешняя политика", c3D: "Союз с гуннами и успешное противостояние Китаю позволили кангюям сохранить суверенитет на века.",
+                c4T: "Столица Битянь", c4D: "Центральный город в долине Таласа. Был культурным мостом между восточными и западными цивилизациями.",
+                footer: "«Кангюи были архитекторами торговой стабильности, превратившими долину Сырдарьи в щит Великого Шелкового пути.»",
+                chartLabels: ["Торговля", "Армия", "Дипломатия", "Ирригация", "Градостроение"],
+                chartTitle: "Интеграция ресурсов Кангюев"
+            },
+            kz: {
+                title: "Қаңлылар: Сырдария билігі",
+                vizTitle: "Қаңлылар геосаясаты",
+                vizDesc: "Қаңлы мемлекеті Оңтүстік Қазақстанның шұраттарын бақылауға және бес тәуелді иелікті басқаруға негізделді.",
+                badge: "Жібек жолының торабы",
+                loc1: "Битянь — мемлекет астанасы", loc2: "Жолдың солтүстік тармағын бақылау",
+                planTitle: "Мемлекет құрылымы",
+                c1T: "5 иелік", c1D: "Мемлекет бес иелікке бөлініп, оларды кіші хандар басқарды. Бұл қалалар мен даланы тиімді бақылауға мүмкіндік берді.",
+                c2T: "Халық саны", c2D: "Халық саны 600 мың адамға жеткен. 120 мың жауынгерден тұратын қуатты әскер аймақтағы ірі күш болды.",
+                c3T: "Сыртқы саясат", c3D: "Ғұндармен одақ құру және Қытайға сәтті қарсы тұру қаңлылардың егемендігін ғасырлар бойы сақтады.",
+                c4T: "Битянь астанасы", c4D: "Талас алқабындағы орталық қала. Шығыс пен Батыс өркениеттері арасындағы мәдени көпір болды.",
+                footer: "«Қаңлылар Сырдария алқабын Жібек жолының мызғымас қалқанына айналдырған сауда тұрақтылығының сәулетшілері болды.»",
+                chartLabels: ["Сауда", "Әскер", "Дипломатия", "Суару", "Қала салу"],
+                chartTitle: "Қаңлы ресурстарының интеграциясы"
+            },
+            en: {
+                title: "Kangju: Power on Syr Darya",
+                vizTitle: "Kangju Geopolitics",
+                vizDesc: "The Kangju state was based on control over the oases of South Kazakhstan and managing five semi-dependent principalities.",
+                badge: "Silk Road Hub",
+                loc1: "Bityan — the state capital", loc2: "Control of the northern route",
+                planTitle: "State Structure",
+                c1T: "5 Principalities", c1D: "The state was divided into 5 regions ruled by lesser khans, allowing control over both cities and the steppes.",
+                c2T: "Population", c2D: "The population reached 600,000. A powerful army of 120,000 warriors was a formidable force in the region.",
+                c3T: "Foreign Policy", c3D: "Alliance with the Huns and successful resistance to China allowed Kangju to maintain sovereignty for centuries.",
+                c4T: "Bityan Capital", c4D: "The central city in the Talas valley. It was a cultural bridge between Eastern and Western civilizations.",
+                footer: "«The Kangju were architects of trade stability, turning the Syr Darya valley into a shield of the Silk Road.»",
+                chartLabels: ["Trade", "Army", "Diplomacy", "Irrigation", "Urbanization"],
+                chartTitle: "Kangju Resource Integration"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('influenceChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        label: 'Capacity',
+                        data: [100, 90, 85, 80, 75],
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                        borderColor: '#0284c7',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#0ea5e9',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(14, 165, 233, 0.1)' },
+                            grid: { color: 'rgba(14, 165, 233, 0.1)' },
+                            pointLabels: {
+                                color: '#0369a1',
+                                font: { family: 'Inter', size: 12, weight: 'bold' }
+                            },
+                            ticks: { display: false },
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: translations[lang].chartTitle, color: '#0369a1', font: { family: 'Montserrat', size: 16 } }
+                    }
+                }
+            });
+        }
+
+        function setLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('loc1').innerText = t.loc1;
+            document.getElementById('loc2').innerText = t.loc2;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-xl text-sm font-bold text-sky-600 hover:bg-sky-100 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

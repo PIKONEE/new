@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seed Plant Reproduction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #3f2c22; color: #fed7aa; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        canvas { border-radius: 1.5rem; cursor: pointer; }
+        .lang-btn.active { background: #f97316; color: #451a03; font-weight: bold; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-8 flex flex-col items-center">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="w-full max-w-6xl flex justify-between items-center mb-8">
+        <h1 class="text-4xl font-Montserrat text-orange-300" id="main-title"></h1>
+        <div class="flex gap-2">
+            <button onclick="window.setL('ru')" id="btn-ru" class="lang-btn px-3 py-1 rounded text-xs border border-white/20">RU</button>
+            <button onclick="window.setL('kz')" id="btn-kz" class="lang-btn px-3 py-1 rounded text-xs border border-white/20">KZ</button>
+            <button onclick="window.setL('en')" id="btn-en" class="lang-btn px-3 py-1 rounded text-xs border border-white/20">EN</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
+        <div class="relative h-[400px] glass p-0 flex items-center justify-center bg-black/20 rounded-3xl overflow-hidden">
+            <canvas id="gymnoCanvas" class="w-full h-full"></canvas>
+            <div class="absolute bottom-4 left-4 text-xs font-mono text-orange-400" id="cycle-label"></div>
+        </div>
+
+        <div class="glass p-8 rounded-3xl border-r-4 border-orange-600 flex flex-col justify-center">
+            <h2 class="text-2xl font-bold mb-4 text-white" id="info-h"></h2>
+            <p class="text-lg leading-relaxed opacity-80 mb-6" id="info-text"></p>
+            <div class="grid grid-cols-2 gap-4 text-xs uppercase tracking-widest text-orange-500 font-bold">
+                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                    <span id="lbl-cone-t"></span><br>
+                    <span class="text-white normal-case" id="lbl-cone-d"></span>
+                </div>
+                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                    <span id="lbl-seed-t"></span><br>
+                    <span class="text-white normal-case" id="lbl-seed-d"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bio21Data = {
+            ru: {
+                title: "ГОЛОСЕМЕННЫЕ",
+                h: "Эволюционный скачок",
+                text: "Семенные растения (Голосеменные и Покрытосеменные) размножаются семенами. Главное отличие от споровых — <strong>независимость оплодотворения от воды</strong>. Пыльца переносится ветром или насекомыми.",
+                cycle: "ЦИКЛ: ОПЫЛЕНИЕ -> СЕМЯ",
+                cone: {t: "Шишка", d: "Орган размножения"},
+                seed: {t: "Семя", d: "Зародыш + Запас пищи"}
+            },
+            kz: {
+                title: "АШЫҚТҰҚЫМДЫЛАР",
+                h: "Эволюциялық секіріс",
+                text: "Тұқымды өсімдіктер тұқым арқылы көбейеді. Споралылардан басты айырмашылығы — <strong>ұрықтанудың суға тәуелсіздігі</strong>. Тозаң жел немесе жәндіктер арқылы тасымалданады.",
+                cycle: "ЦИКЛ: ТОЗАҢДАНУ -> ТҰҚЫМ",
+                cone: {t: "Бүр", d: "Көбею мүшесі"},
+                seed: {t: "Тұқым", d: "Ұрық + Қорек қоры"}
+            },
+            en: {
+                title: "GYMNOSPERMS",
+                h: "Evolutionary Leap",
+                text: "Seed plants reproduce via seeds. The main difference from spore plants is <strong>fertilization independence from water</strong>. Pollen is carried by wind or insects.",
+                cycle: "CYCLE: POLLINATION -> SEED",
+                cone: {t: "Cone", d: "Reproductive organ"},
+                seed: {t: "Seed", d: "Embryo + Food store"}
+            }
+        };
+
+        let lang = 'ru', cx, cvs;
+        let pollen = [];
+
+        window.setL = (l) => {
+            lang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+            
+            const d = bio21Data[l];
+            document.getElementById('main-title').textContent = d.title;
+            document.getElementById('info-h').textContent = d.h;
+            document.getElementById('info-text').innerHTML = d.text;
+            document.getElementById('cycle-label').textContent = d.cycle;
+            document.getElementById('lbl-cone-t').textContent = d.cone.t;
+            document.getElementById('lbl-cone-d').textContent = d.cone.d;
+            document.getElementById('lbl-seed-t').textContent = d.seed.t;
+            document.getElementById('lbl-seed-d').textContent = d.seed.d;
+        }
+
+        function draw() {
+            if(!cx) return;
+            const w = cvs.width, h = cvs.height;
+            cx.clearRect(0,0,w,h);
+
+            // Tree Branch
+            cx.strokeStyle = '#57534e'; cx.lineWidth = 4;
+            cx.beginPath(); cx.moveTo(0, h*0.8); cx.lineTo(w*0.4, h*0.5); cx.stroke();
+
+            // Female Cone (Reddish)
+            cx.fillStyle = '#9f1239';
+            cx.beginPath(); cx.ellipse(w*0.4, h*0.5, 20, 30, -0.5, 0, Math.PI*2); cx.fill();
+
+            // Male Cone (Yellowish)
+            cx.fillStyle = '#fde047';
+            cx.beginPath(); cx.ellipse(w*0.2, h*0.7, 10, 15, 0, 0, Math.PI*2); cx.fill();
+
+            // Pollen
+            if(Math.random() > 0.8) pollen.push({x: w*0.2, y: h*0.7, vx: 2, vy: -1});
+            
+            cx.fillStyle = '#fef08a';
+            pollen.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy;
+                cx.beginPath(); cx.arc(p.x, p.y, 2, 0, Math.PI*2); cx.fill();
+                if(p.x > w || p.y < 0) pollen.splice(i, 1);
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('gymnoCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; draw(); };
+            window.addEventListener('resize', rs); rs();
+            window.setL('ru');
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

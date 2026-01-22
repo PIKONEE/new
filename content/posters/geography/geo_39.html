@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather vs Climate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #020617; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        .lang-btn.active { background: #10b981; color: white; font-weight: 800; }
+        .toggle-btn { transition: all 0.3s; }
+        .toggle-btn.active { background: #10b981; color: black; border-color: transparent; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-emerald-400/20">
+        <div><h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-emerald-400"></h1></div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Weather Card -->
+        <div class="glass rounded-custom p-10 border-l-8 border-yellow-500 flex flex-col justify-center">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-4xl">🌤️</span>
+                <h2 id="weather-title" class="heading-font text-3xl text-yellow-400 uppercase"></h2>
+            </div>
+            <div id="weather-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+            <div class="mt-6 p-4 bg-white/5 rounded-2xl text-[10px] uppercase tracking-widest text-white/30" id="weather-feature">Constant Change / Постоянная изменчивость</div>
+        </div>
+
+        <!-- Climate Card -->
+        <div class="glass rounded-custom p-10 border-l-8 border-emerald-500 flex flex-col justify-center">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-4xl">🌏</span>
+                <h2 id="climate-title" class="heading-font text-3xl text-emerald-400 uppercase"></h2>
+            </div>
+            <div id="climate-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+            <div class="mt-6 p-4 bg-white/5 rounded-2xl text-[10px] uppercase tracking-widest text-white/30" id="climate-feature">Long-term Average / Многолетний режим</div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-10"><h4 id="c1-t" class="heading-font text-xl mb-4 text-emerald-400"></h4><p id="c1-d" class="text-white/60 text-sm"></p></div>
+        <div class="glass rounded-custom p-10"><h4 id="c2-t" class="heading-font text-xl mb-4 text-emerald-400"></h4><p id="c2-d" class="text-white/60 text-sm"></p></div>
+        <div class="glass rounded-custom p-10"><h4 id="c3-t" class="heading-font text-xl mb-4 text-emerald-400"></h4><p id="c3-d" class="text-white/60 text-sm"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Погода и Климат",
+                wTitle: "Погода",
+                wText: "Состояние тропосферы в данном месте в данный момент времени. Основные элементы: температура, давление, ветер, влажность, осадки.",
+                cTitle: "Климат",
+                cText: "Многолетний режим погоды, характерный для данной местности. Климат более стабилен, чем погода, и зависит от широты и рельефа.",
+                cards: [
+                    { t: "Метеорология", d: "Наука о земной атмосфере и процессах, происходящих в ней. Метеостанции собирают данные круглосуточно." },
+                    { t: "Циклон", d: "Атмосферный вихрь с низким давлением в центре. Обычно приносит пасмурную и ветреную погоду." },
+                    { t: "Антициклон", d: "Вихрь с высоким давлением в центре. Приносит ясную, безветренную погоду, жару летом и мороз зимой." }
+                ]
+            },
+            kz: {
+                title: "Ауа райы және Климат",
+                wTitle: "Ауа райы",
+                wText: "Тропосфераның белгілі бір жердегі, белгілі бір уақыттағы жай-күйі. Негізгі элементтері: температура, қысым, жел, ылғалдылық.",
+                cTitle: "Климат",
+                cText: "Белгілі бір жерге тән ауа райының көпжылдық режимі. Климат ауа райына қарағанда тұрақты және ендікке байланысты.",
+                cards: [
+                    { t: "Метеорология", d: "Жер атмосферасы мен ондағы процестер туралы ғылым. Метеостанциялар деректерді тәулік бойы жинайды." },
+                    { t: "Циклон", d: "Орталығында төмен қысым болатын атмосфералық құйын. Әдетте бұлтты ауа райын әкеледі." },
+                    { t: "Антициклон", d: "Орталығында жоғары қысым болатын құйын. Ашық, желсіз ауа райын әкеледі." }
+                ]
+            },
+            en: {
+                title: "Weather & Climate",
+                wTitle: "Weather",
+                wText: "The state of the troposphere at a given place and time. Key elements include temperature, pressure, wind, humidity, and precipitation.",
+                cTitle: "Climate",
+                cText: "The long-term pattern of weather conditions in a specific area. Climate is more stable than weather and depends on latitude and relief.",
+                cards: [
+                    { t: "Meteorology", d: "The science of the Earth's atmosphere and the processes occurring within it. Weather stations collect data 24/7." },
+                    { t: "Cyclone", d: "An atmospheric vortex with low pressure at the center. It usually brings cloudy and windy weather." },
+                    { t: "Anticyclone", d: "A vortex with high pressure at the center. Brings clear, windless weather — heat in summer, frost in winter." }
+                ]
+            }
+        };
+
+        window.setLang = function(l) {
+            const t = translations[l];
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('weather-title').textContent = t.wTitle;
+            document.getElementById('weather-text').textContent = t.wText;
+            document.getElementById('climate-title').textContent = t.cTitle;
+            document.getElementById('climate-text').textContent = t.cText;
+
+            document.getElementById('c1-t').textContent = t.cards[0].t; document.getElementById('c1-d').textContent = t.cards[0].d;
+            document.getElementById('c2-t').textContent = t.cards[1].t; document.getElementById('c2-d').textContent = t.cards[1].d;
+            document.getElementById('c3-t').textContent = t.cards[2].t; document.getElementById('c3-d').textContent = t.cards[2].d;
+        }
+
+        window.onload = () => window.setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Афины: Сердце Эллады</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #f8fafc, #cbd5e1, #94a3b8);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 3rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #2563eb;
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-blue-900 uppercase">
+                В городе Афины
+            </h1>
+            <p id="sub-title" class="text-blue-700/60 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Прогулка по центру античного мира</p>
+        </div>
+        <div class="flex gap-3 glass p-2">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col">
+            <h2 id="visual-title" class="text-2xl mb-6 text-blue-800 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-blue-600 inline-block"></span>
+                Карта города
+            </h2>
+            <div class="relative flex-grow bg-white/50 rounded-[2.5rem] border border-blue-200 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="athensCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-blue-600/70 italic text-center uppercase tracking-widest">Нажмите на районы для начала экскурсии</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-blue-800 mb-8 font-black uppercase leading-tight" id="placeholder-title">Величие классики</h3>
+                    <p class="text-slate-600 leading-relaxed text-lg" id="placeholder-text">
+                        Афины — самый красивый город Греции V века до н.э. Его архитектура и общественная жизнь стали эталоном для всей европейской цивилизации. Нажмите на точки на карте слева.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/50 rounded-3xl border border-white">
+                            <span class="text-3xl">🏺</span>
+                            <span id="hint-1" class="text-blue-900/60 font-bold uppercase text-xs tracking-widest">Район гончаров</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-2" class="text-blue-900/60 font-bold uppercase text-xs tracking-widest">Священная скала</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-200"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-blue-900 font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-700 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-blue-50 rounded-[2.5rem] border border-blue-200 shadow-xl">
+                        <strong class="text-blue-600 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-note">Архитектурный факт:</strong>
+                        <p id="info-fact" class="text-blue-900 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-orange-200 hover:bg-white transition-all">
+            <div class="text-4xl mb-6">🏺</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-blue-800 uppercase">Керамик</h3>
+            <p id="card1-text" class="text-slate-600 text-sm leading-relaxed">Район мастеров-гончаров. Здесь рождались знаменитые вазы с чернофигурной и краснофигурной росписью, которые греки ценили как великие произведения искусства.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-yellow-200 hover:bg-white transition-all">
+            <div class="text-4xl mb-6">🛒</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-blue-800 uppercase">Агора</h3>
+            <p id="card2-text" class="text-slate-600 text-sm leading-relaxed">Главная площадь и рынок. Место встреч, споров и покупок. Здесь же находились административные здания, где решались дела полиса в перерывах между торговлей.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-blue-200 hover:bg-white transition-all">
+            <div class="text-4xl mb-6">🏛️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-blue-800 uppercase">Акрополь</h3>
+            <p id="card3-text" class="text-slate-600 text-sm leading-relaxed">«Верхний город» — священное место на высоком холме. Храм <strong>Парфенон</strong>, построенный из белого мрамора, считался земной обителью Афины и вершиной красоты.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-white mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-blue-900/70 leading-tight max-w-5xl mx-auto">
+            «Если ты не видел Афин — ты пень; если видел и не восторгался — ты осел; а если по своей воле покинул их — ты верблюд».
+        </p>
+        <span class="block mt-4 text-blue-600 uppercase tracking-widest text-sm">— Античная поговорка</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "В городе Афины",
+                subtitle: "Прогулка по центру античного мира",
+                visualTitle: "Карта города",
+                hint: "Нажмите на районы для начала экскурсии",
+                placeholderTitle: "Величие классики",
+                placeholderText: "Афины V века до н.э. — это вершина гармонии. Узнайте, как жили гончары, где спорили философы и как сиял мрамор Акрополя.",
+                labelNote: "Архитектурный факт:",
+                hint1: "Район гончаров", hint2: "Священная скала",
+                card1Title: "Керамик",
+                card1Text: "Афинские вазы были лучшим товаром во всем Средиземноморье. Мастера Керамика создавали шедевры, подписанные именами художников.",
+                card2Title: "Агора",
+                card2Text: "Шумный центр города. Здесь узнавали новости, покупали рабов и продукты, а также слушали выступления политиков.",
+                card3Title: "Акрополь",
+                card3Text: "Архитектурный ансамбль, созданный под руководством Фидия. Его пропорции кажутся идеальными даже спустя 2500 лет.",
+                footerQuote: "«Если ты не видел Афин — ты пень; если видел и не восторгался — ты осел; а если по своей воле покинул их — ты верблюд».",
+                nodes: [
+                    { id: 1, tag: "Запад", title: "Район Керамик", desc: "Узкие улицы с мастерскими гончаров. Из-за опасности пожаров и едкого дыма район вынесли на окраину. Здесь же находилось главное кладбище с великолепными надгробиями.", fact: "От названия этого района произошло наше современное слово 'керамика'." },
+                    { id: 2, tag: "Центр", title: "Площадь Агора", desc: "Главная рыночная площадь. До полудня здесь шла бурная торговля, а после — Агора превращалась в место политических и философских дискуссий.", fact: "На Агоре находился специальный круглый храм — Толос, где постоянно дежурили дежурные члены Совета пятисот." },
+                    { id: 3, tag: "Холм", title: "Священный Акрополь", desc: "Высокий скалистый холм с крутыми склонами. Главный вход — Пропилеи. В центре стоял Парфенон и колоссальная бронзовая статуя Афины Воительницы.", fact: "Шлем и копье статуи Афины сверкали на солнце и служили ориентиром для моряков, подплывающих к берегу." },
+                    { id: 4, tag: "Культ", title: "Храм Эрехтейон", desc: "Самый необычный храм Акрополя с портиком кариатид — колонн в виде женских фигур. Он построен на месте спора Афины и Посейдона за власть над городом.", fact: "Рядом с храмом росла священная олива, по легенде подаренная городу самой Афиной." },
+                    { id: 5, tag: "Жизнь", title: "Жилые кварталы", desc: "В отличие от роскошных храмов, дома простых афинян были скромными: стены из сырцового кирпича, плоские крыши и маленькие окошки во внутренний дворик.", fact: "Афиняне считали, что роскошными должны быть только общественные и священные здания." }
+                ]
+            },
+            kz: {
+                title: "Афины қаласында",
+                subtitle: "Антикалық әлем орталығына саяхат",
+                visualTitle: "Қала картасы",
+                hint: "Экскурсияны бастау үшін аудандарды басыңыз",
+                placeholderTitle: "Классиканың асқақтығы",
+                placeholderText: "б.з.б. V ғасырдағы Афины — үйлесімділіктің шыңы. Қолөнершілер өмірі мен Акрополь мәрмәрі туралы біліңіз.",
+                labelNote: "Сәулеттік факт:",
+                hint1: "Құмырашылар ауданы", hint2: "Қасиетті жартас",
+                card1Title: "Керамик",
+                card1Text: "Афины құмыралары бүкіл Жерорта теңізіндегі үздік тауар болды. Керамик шеберлері суретшілердің есімі жазылған туындылар жасады.",
+                card2Title: "Агора",
+                card2Text: "Қаланың шулы орталығы. Мұнда жаңалықтар біліп, саясаткерлердің сөзін тыңдайтын.",
+                card3Title: "Акрополь",
+                card3Text: "Фидийдің басшылығымен жасалған сәулет ансамблі. Оның пропорциялары 2500 жыл өтсе де мінсіз көрінеді.",
+                footerQuote: "«Егер сен Афиныны көрмесең — соқасың; көрсең де тамсанбасаң — есексің; ал өз еркіңмен кетіп қалсаң — түйесің».",
+                nodes: [
+                    { id: 1, tag: "Батыс", title: "Керамик ауданы", desc: "Құмырашылардың шеберханалары орналасқан тар көшелер. Өрт қаупіне байланысты аудан қала шетіне орналастырылған.", fact: "Қазіргі 'керамика' сөзі осы ауданның атауынан шыққан." },
+                    { id: 2, tag: "Орталық", title: "Агора алаңы", desc: "Басты базар алаңы. Түске дейін сауда жүрсе, түстен кейін саяси және философиялық пікірталастар орнына айналатын.", fact: "Агорада Бесжүздік кеңесінің мүшелері кезекшілік ететін Толос храмы болды." },
+                    { id: 3, tag: "Төбе", title: "Қасиетті Акрополь", desc: "Биік жартасты төбе. Ортасында Парфенон мен Афинаның алып қола мүсіні тұрған.", fact: "Афина мүсінінің дулығасы мен найзасы күнге шағылысып, теңізшілерге бағдар болған." },
+                    { id: 4, tag: "Ғибадат", title: "Эрехтейон храмы", desc: "Акропольдегі ең ерекше храм, бағаналары әйел тұлғасында (кариатидалар) жасалған.", fact: "Храм жанында Афинаның өзі сыйға тартқан қасиетті зәйтүн ағашы өскен." },
+                    { id: 5, tag: "Өмір", title: "Тұрғын кварталдар", desc: "Храмдардан ерекшелігі, афинылықтардың үйлері қарапайым болды: шикі кірпіштен қаланған қабырғалар және ішкі аула.", fact: "Афинылықтар тек қоғамдық ғимараттар ғана сәнді болуы тиіс деп санады." }
+                ]
+            },
+            en: {
+                title: "In the City of Athens",
+                subtitle: "A Walk Through the Center of Antiquity",
+                visualTitle: "City Map",
+                hint: "Click on districts to start the tour",
+                placeholderTitle: "Classical Grandeur",
+                placeholderText: "5th-century BC Athens is the pinnacle of harmony. Learn about the lives of potters, the debates of philosophers, and the Acropolis marble.",
+                labelNote: "Architectural Fact:",
+                hint1: "Potters' District", hint2: "The Sacred Rock",
+                card1Title: "Kerameikos",
+                card1Text: "Athenian vases were the best commodity in the Mediterranean. Kerameikos masters created signed masterpieces.",
+                card2Title: "Agora",
+                card2Text: "The bustling city center. Here people learned news, bought food, and listened to political speeches.",
+                card3Title: "Acropolis",
+                card3Text: "The architectural ensemble designed under Phidias. Its proportions seem perfect even 2,500 years later.",
+                footerQuote: "«If you haven't seen Athens, you're a stump; if you saw it and didn't admire it, you're an ass; and if you left it by choice, you're a camel.»",
+                nodes: [
+                    { id: 1, tag: "West", title: "Kerameikos District", desc: "Narrow streets with potters' workshops. Moved to the outskirts due to fire risk. It was also the site of a major cemetery.", fact: "The modern word 'ceramics' originates from the name of this district." },
+                    { id: 2, tag: "Center", title: "The Agora", desc: "The main marketplace. Trade boomed until noon, after which it became a place for political and philosophical discussions.", fact: "The Agora housed the Tholos, where members of the Council of 500 were on constant duty." },
+                    { id: 3, tag: "Hill", title: "The Sacred Acropolis", desc: "A high rocky hill with steep slopes. Home to the Parthenon and a colossal bronze statue of Athena Promachos.", fact: "The golden tip of Athena's spear served as a beacon for sailors approaching the coast." },
+                    { id: 4, tag: "Cult", title: "Erechtheion Temple", desc: "A unique temple featuring the Porch of the Caryatids — columns shaped like female figures. Built on a legendary site.", fact: "The sacred olive tree, gifted by Athena herself, grew next to this temple." },
+                    { id: 5, tag: "Life", title: "Residential Quarters", desc: "Unlike the magnificent temples, houses were humble: mud-brick walls, flat roofs, and small windows facing inner courtyards.", fact: "Athenians believed only public and sacred buildings deserved architectural splendor." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('athensCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-note').innerText = t.labelNote;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Acropolis Hill
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.ellipse(cx + 80, cy, 100, 60, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx - 120, y: cy + 40, icon: "🏺" }, // Kerameikos
+                { id: 2, x: cx - 20, y: cy, icon: "🛒" },      // Agora
+                { id: 3, x: cx + 80, y: cy - 20, icon: "🏛️" },  // Parthenon
+                { id: 4, x: cx + 130, y: cy + 10, icon: "👸" }, // Erechtheion
+                { id: 5, x: cx - 50, y: cy - 100, icon: "🏠" }  // Houses
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = (i === 2) ? '#2563eb' : '#60a5fa';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#1e3a8a';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

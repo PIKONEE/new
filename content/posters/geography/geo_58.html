@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature of Planet Earth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #020617; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #10b981; color: #020617; font-weight: 800; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-6 flex flex-col md:flex-row justify-between items-center border-t border-emerald-500/20">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-2xl animate-pulse">🌍</div>
+            <div>
+                <h1 id="main-title" class="heading-font text-2xl md:text-3xl uppercase tracking-tighter text-emerald-400"></h1>
+                <p id="sub-title" class="mt-1 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        <!-- Visual Model -->
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col relative min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-emerald-200 uppercase mb-4 self-start tracking-widest opacity-70"></h2>
+            <canvas id="natureCanvas" class="w-full h-full bg-black/40"></canvas>
+            <div class="absolute bottom-10 left-10 flex gap-4 text-[10px] uppercase tracking-widest text-white/30">
+                <span id="hint-click">Click the layers</span>
+            </div>
+        </div>
+
+        <!-- Theory Panel -->
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-emerald-500">
+            <div id="info-content" class="transition-all duration-500">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-emerald-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass rounded-custom p-8 border-t border-white/10">
+            <h4 id="ft1-t" class="heading-font text-emerald-400 mb-2 uppercase text-sm"></h4>
+            <p id="ft1-d" class="text-xs text-white/50 leading-relaxed"></p>
+        </div>
+        <div class="glass rounded-custom p-8 border-t border-white/10">
+            <h4 id="ft2-t" class="heading-font text-emerald-400 mb-2 uppercase text-sm"></h4>
+            <p id="ft2-d" class="text-xs text-white/50 leading-relaxed"></p>
+        </div>
+        <div class="glass rounded-custom p-8 border-t border-white/10">
+            <h4 id="ft3-t" class="heading-font text-emerald-400 mb-2 uppercase text-sm"></h4>
+            <p id="ft3-d" class="text-xs text-white/50 leading-relaxed"></p>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Природа Земли", subtitle: "Система географических оболочек",
+                canvasHeading: "Геосферы и их связь", hintClick: "Нажимайте на оболочки",
+                defaultTitle: "Единство планеты",
+                defaultText: "Природа Земли — это сложная система, состоящая из взаимосвязанных оболочек. Любое изменение в одной из них неизбежно влечет за собой перемены в других.",
+                layers: {
+                    atmo: { t: "Атмосфера", d: "Воздушная оболочка. Снабжает жизнь кислородом, защищает от радиации и регулирует температуру." },
+                    hydro: { t: "Гидросфера", d: "Водная оболочка (96% — океан). Участвует в круговороте веществ и формировании климата." },
+                    litho: { t: "Литосфера", d: "Твердая оболочка. Основа рельефа, источник минеральных ресурсов для человека." },
+                    bio: { t: "Биосфера", d: "Сфера жизни. Проникает во все остальные оболочки, радикально меняя их состав (почва, кислород)." }
+                },
+                facts: [
+                    { t: "Географическая оболочка", d: "Особая сфера, где все оболочки Земли соприкасаются и обмениваются энергией." },
+                    { t: "Энергия Солнца", d: "Главный двигатель всех природных процессов — от течений в океане до роста растений." },
+                    { t: "Целостность", d: "Главная закономерность: мир един. Нарушение баланса в одном месте аукнется везде." }
+                ]
+            },
+            kz: {
+                title: "Жер Табиғаты", subtitle: "Географиялық қабықтар жүйесі",
+                canvasHeading: "Геосфералар және олардың байланысы", hintClick: "Қабықтарды басыңыз",
+                defaultTitle: "Планета бірлігі",
+                defaultText: "Жер табиғаты — өзара байланысты қабықтардан тұратын күрделі жүйе. Бір қабықтағы өзгеріс басқаларына міндетті түрде әсер етеді.",
+                layers: {
+                    atmo: { t: "Атмосфера", d: "Ауа қабығы. Тіршілікті оттегімен қамтамасыз етеді, радиациядан қорғайды." },
+                    hydro: { t: "Гидросфера", d: "Су қабығы. Зат айналымына және климаттың қалыптасуына қатысады." },
+                    litho: { t: "Литосфера", d: "Қатты қабық. Рельефтің негізі, минералды ресурстар көзі." },
+                    bio: { t: "Биосфера", d: "Тіршілік қабаты. Барлық басқа қабықтарға еніп, олардың құрамын өзгертеді." }
+                },
+                facts: [
+                    { t: "Географиялық қабық", d: "Жердің барлық қабықтары жанасатын және энергия алмасатын ерекше аймақ." },
+                    { t: "Күн энергиясы", d: "Барлық табиғи процестердің басты қозғаушы күші." },
+                    { t: "Тұтастық", d: "Басты заңдылық: әлем біртұтас. Бір жердегі тепе-теңдіктің бұзылуы бәріне әсер етеді." }
+                ]
+            },
+            en: {
+                title: "Nature of Earth", subtitle: "The System of Earth Shells",
+                canvasHeading: "Geospheres & Interactions", hintClick: "Click the layers to explore",
+                defaultTitle: "Planetary Unity",
+                defaultText: "Earth's nature is a complex system of interconnected shells. Any change in one geosphere inevitably impacts the others.",
+                layers: {
+                    atmo: { t: "Atmosphere", d: "The air shell. Provides oxygen, protects from space radiation, and regulates temperature." },
+                    hydro: { t: "Hydrosphere", d: "The water shell (96% is the ocean). Essential for the water cycle and climate." },
+                    litho: { t: "Lithosphere", d: "The solid shell. The base of global relief and a source of mineral resources." },
+                    bio: { t: "Biosphere", d: "The living sphere. Permeates all other shells, transforming their composition (soil, air)." }
+                },
+                facts: [
+                    { t: "Geographic Shell", d: "The unique realm where all Earth shells overlap and exchange energy and matter." },
+                    { t: "Solar Energy", d: "The primary engine of all natural processes, from ocean currents to plant growth." },
+                    { t: "Integrity", d: "The main law: the world is one. Disruption in one area echoes through the entire system." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx;
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('hint-click').textContent = t.hintClick;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('ft1-t').textContent = t.facts[0].t; document.getElementById('ft1-d').textContent = t.facts[0].d;
+            document.getElementById('ft2-t').textContent = t.facts[1].t; document.getElementById('ft2-d').textContent = t.facts[1].d;
+            document.getElementById('ft3-t').textContent = t.facts[2].t; document.getElementById('ft3-d').textContent = t.facts[2].d;
+            draw();
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const cx = w/2, cy = h/2;
+
+            // Simple concentric geospheres
+            const r = [200, 160, 120, 80];
+            const colors = ['rgba(56, 189, 248, 0.2)', 'rgba(30, 64, 175, 0.3)', 'rgba(120, 53, 15, 0.4)', 'rgba(16, 185, 129, 0.5)'];
+            const labels = ['ATMO', 'HYDRO', 'LITHO', 'BIO'];
+
+            r.forEach((radius, i) => {
+                ctx.fillStyle = colors[i];
+                ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.stroke();
+                ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = 'bold 10px Inter';
+                ctx.fillText(labels[i], cx - 15, cy - radius + 15);
+            });
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('natureCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight || 500;
+            
+            canvas.addEventListener('click', e => {
+                const rect = canvas.getBoundingClientRect();
+                const dist = Math.sqrt((e.clientX-rect.left-canvas.width/2)**2 + (e.clientY-rect.top-canvas.height/2)**2);
+                const t = translations[currentLang].layers;
+                let key = null;
+                if(dist < 80) key = 'bio';
+                else if(dist < 120) key = 'litho';
+                else if(dist < 160) key = 'hydro';
+                else if(dist < 200) key = 'atmo';
+
+                if(key) {
+                    document.getElementById('info-title').textContent = t[key].t;
+                    document.getElementById('info-text').textContent = t[key].d;
+                }
+            });
+
+            setLang('ru');
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

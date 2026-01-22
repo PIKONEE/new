@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эпоха Мезолита</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <!-- Добавляем Montserrat и Inter с расширенной кириллицей для корректного отображения казахских букв -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(20, 184, 166, 0.2);
+        }
+
+        .gradient-bg {
+            background: radial-gradient(circle at top right, #f0fdfa, #f1f5f9);
+        }
+
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .feature-card:hover {
+            transform: scale(1.02) translateY(-5px);
+        }
+
+        /* Плавное появление контента */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade { animation: fadeIn 0.6s ease-out forwards; }
+    </style>
+</head>
+<body class="gradient-bg text-slate-800 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 glass border-b border-teal-100 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🏹</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-extrabold text-teal-800 tracking-tight uppercase">Эпоха Мезолита</h1>
+            </div>
+            <div class="flex bg-teal-50 p-1 rounded-2xl border border-teal-100">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-5 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-5 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-5 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 py-10 animate-fade">
+        
+        <!-- Section 1: The Radar Map & Hero -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            <div class="lg:col-span-7 glass p-8 rounded-[2.5rem] shadow-xl shadow-teal-900/5">
+                <h2 id="radar-title" class="text-xl font-bold mb-2 text-teal-700">Прогресс навыков</h2>
+                <p id="radar-desc" class="text-sm text-slate-500 mb-6 font-medium">Сравнение технологий палеолита и мезолита</p>
+                <div class="h-[380px] w-full">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Accent Highlight Block -->
+            <div class="lg:col-span-5 bg-teal-600 rounded-[2.5rem] p-10 text-white flex flex-col justify-center relative overflow-hidden shadow-2xl">
+                <div class="relative z-10">
+                    <div class="inline-block bg-teal-500/50 backdrop-blur-sm px-4 py-1 rounded-full text-xs font-bold mb-6 uppercase tracking-widest">Top Breakthrough</div>
+                    <h2 id="highlight-title" class="text-3xl font-extrabold mb-6 leading-tight">Великое изобретение</h2>
+                    <p id="highlight-text" class="text-teal-50 leading-relaxed text-lg font-light">
+                        Лук и стрелы изменили всё. Охота стала дистанционной, а добыча — более мелкой и быстрой.
+                    </p>
+                    <div class="mt-8 flex items-center space-x-4">
+                        <div class="h-1 w-12 bg-white rounded-full"></div>
+                        <span class="text-4xl">🏹</span>
+                    </div>
+                </div>
+                <!-- Abstract visual element (Emoji pattern) -->
+                <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-10 pointer-events-none rotate-12">🏹</div>
+            </div>
+        </div>
+
+        <!-- Section 2: Anatomy of Era (Dynamic Layout) -->
+        <div class="space-y-10">
+            <h2 id="plan-title" class="text-3xl font-extrabold text-slate-800 tracking-tight">Анатомия эпохи</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-11 gap-8">
+                <!-- Large Feature -->
+                <div class="md:col-span-6 glass p-10 rounded-[2.5rem] feature-card border-t-4 border-teal-500">
+                    <div class="flex flex-col space-y-6">
+                        <div class="bg-teal-50 w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🌍</div>
+                        <div>
+                            <h3 id="card1-t" class="text-2xl font-bold mb-4 text-slate-800">Глобальное потепление</h3>
+                            <p id="card1-d" class="text-slate-600 leading-relaxed text-lg">Ледник отступил, сформировались современные реки и озера. Животный мир изменился: на смену мамонтам пришли косули, кабаны и зайцы.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medium Feature -->
+                <div class="md:col-span-5 glass p-10 rounded-[2.5rem] feature-card border-t-4 border-orange-400">
+                    <div class="flex flex-col space-y-6">
+                        <div class="bg-orange-50 w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🐕</div>
+                        <div>
+                            <h3 id="card2-t" class="text-2xl font-bold mb-4 text-slate-800">Верный друг</h3>
+                            <p id="card2-d" class="text-slate-600 leading-relaxed text-lg">В мезолите произошло важнейшее событие — приручение собаки. Она стала помощником на охоте и первым охранником стоянки.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Width Innovation Card -->
+            <div class="bg-slate-900 rounded-[3rem] p-1 md:p-12 overflow-hidden relative shadow-2xl">
+                <div class="bg-slate-800/50 p-8 md:p-12 rounded-[2.5rem] border border-slate-700/50 flex flex-col md:flex-row items-center gap-12 z-10 relative">
+                    <div class="shrink-0 flex flex-col items-center">
+                        <div class="w-32 h-32 bg-teal-500/20 rounded-full flex items-center justify-center text-7xl shadow-2xl shadow-teal-500/20 animate-pulse">🛶</div>
+                        <div id="badge-tech" class="mt-4 bg-teal-500 text-white px-6 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">Инновация</div>
+                    </div>
+                    <div class="flex-1 text-center md:text-left text-white">
+                        <h3 id="card3-t" class="text-3xl font-extrabold mb-6">Водный транспорт и рыболовство</h3>
+                        <p id="card3-d" class="text-slate-300 text-xl font-light leading-relaxed">Люди изобрели лодку-долбленку, весла и рыболовные сети. Рыба стала постоянным источником пищи, что позволило дольше оставаться на одном месте.</p>
+                    </div>
+                </div>
+                <!-- Abstract decorations -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
+            </div>
+
+            <!-- Fact Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-[2rem] text-center border border-slate-100 shadow-sm feature-card">
+                    <div class="text-4xl mb-4">💎</div>
+                    <h4 id="small1-t" class="font-bold text-slate-800 text-lg uppercase tracking-wide">Микролиты</h4>
+                    <p id="small1-d" class="text-sm text-slate-500 mt-3 font-medium">Миниатюрные каменные пластины для наконечников.</p>
+                </div>
+                <div class="bg-white p-8 rounded-[2rem] text-center border border-slate-100 shadow-sm feature-card">
+                    <div class="text-4xl mb-4">🐚</div>
+                    <h4 id="small2-t" class="font-bold text-slate-800 text-lg uppercase tracking-wide">Искусство</h4>
+                    <p id="small2-d" class="text-sm text-slate-500 mt-3 font-medium">Украшения из ракушек и мелкая пластика.</p>
+                </div>
+                <div class="bg-white p-8 rounded-[2rem] text-center border border-slate-100 shadow-sm feature-card">
+                    <div class="text-4xl mb-4">🛖</div>
+                    <h4 id="small3-t" class="font-bold text-slate-800 text-lg uppercase tracking-wide">Миграции</h4>
+                    <p id="small3-d" class="text-sm text-slate-500 mt-3 font-medium">Сезонные перемещения небольших групп людей.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-20 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+            <div class="text-teal-600 text-4xl mb-8">“</div>
+            <p id="footer-conclusion" class="text-2xl font-semibold text-slate-800 leading-tight italic">
+                Мезолит — это эпоха гибкости. Человек перестал просто следовать за природой и начал подстраивать технологии под её изменения.
+            </p>
+            <div class="mt-8 text-slate-400 font-bold uppercase tracking-[0.3em] text-xs">— Mesolithic Age —</div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Эпоха Мезолита",
+                radarTitle: "Карта способностей",
+                radarDesc: "Сравнение технологий палеолита и мезолита (уровень развития)",
+                highlightTitle: "Великое изобретение",
+                highlightText: "Лук и стрелы изменили всё. Охота стала дистанционной, а добыча — более мелкой и быстрой.",
+                planTitle: "Анатомия эпохи",
+                card1T: "Глобальное потепление",
+                card1D: "Ледник отступил, сформировались современные реки и озера. Животный мир изменился: на смену мамонтам пришли косули, кабаны и зайцы.",
+                card2T: "Верный друг",
+                card2D: "В мезолите произошло важнейшее событие — приручение собаки. Она стала помощником на охоте и первым охранником стоянки.",
+                card3T: "Водный транспорт и рыболовство",
+                card3D: "Люди изобрели лодку-долбленку, весла и рыболовные сети. Рыба стала постоянным источником пищи, что позволило дольше оставаться на одном месте.",
+                badgeTech: "Инновация",
+                small1T: "Микролиты", small1D: "Миниатюрные каменные пластины для наконечников.",
+                small2T: "Искусство", small2D: "Украшения из ракушек и мелкая пластика.",
+                small3T: "Миграции", small3D: "Сезонные перемещения небольших групп людей.",
+                footer: "«Мезолит — это эпоха гибкости. Человек перестал просто следовать за природой и начал подстраивать технологии под её изменения.»",
+                radarLabels: ["Охота", "Рыболовство", "Собирательство", "Инструменты", "Мобильность", "Социальность"],
+                set1: "Палеолит", set2: "Мезолит"
+            },
+            kz: {
+                title: "Мезолит дәуірі",
+                radarTitle: "Қабілеттер картасы",
+                radarDesc: "Палеолит пен мезолит технологияларын салыстыру (даму деңгейі)",
+                highlightTitle: "Ұлы жаңалық",
+                highlightText: "Садақ пен жебе бәрін өзгертті. Аң аулау қашықтықтан жүргізіліп, олжалар кішірек әрі жылдамырақ болды.",
+                planTitle: "Дәуір анатомиясы",
+                card1T: "Жаһандық жылыну",
+                card1D: "Мұздық шегініп, қазіргі өзендер мен көлдер қалыптасты. Жануарлар әлемі өзгерді: мамонттардың орнына еліктер, қабандар мен қояндар келді.",
+                card2T: "Сенімді дос",
+                card2D: "Мезолитте ең маңызды оқиға орын алды — итті қолға үйрету. Ол аң аулауда көмекші және тұрақтардың алғашқы күзетшісі болды.",
+                card3T: "Су көлігі және балық аулау",
+                card3D: "Адамдар қайықтарды, ескектерді және балық аулау торларын ойлап тапты. Балық тұрақты азық көзіне айналды.",
+                badgeTech: "Инновация",
+                small1T: "Микролиттер", small1D: "Ұсақ тас пластиналардан жасалған құралдар.",
+                small2T: "Өнер", small2D: "Қабыршақтардан жасалған әшекейлер мен суреттер.",
+                small3T: "Миграция", small3D: "Шағын топтардың маусымдық қоныс аударуы.",
+                footer: "«Мезолит — икемділік дәуірі. Адам табиғаттың соңынан еруді қойып, технологияларды өзгерістерге бейімдей бастады.»",
+                radarLabels: ["Аңшылық", "Балық аулау", "Терімшілік", "Құралдар", "Қозғалыс", "Әлеуметтік"],
+                set1: "Палеолит", set2: "Мезолит"
+            },
+            en: {
+                title: "The Mesolithic Era",
+                radarTitle: "Skill Map",
+                radarDesc: "Comparison between Paleolithic and Mesolithic technologies",
+                highlightTitle: "Great Invention",
+                highlightText: "Bows and arrows changed everything. Hunting became long-distance, and prey became smaller and faster.",
+                planTitle: "Era Anatomy",
+                card1T: "Global Warming",
+                card1D: "The glaciers retreated, forming modern rivers and lakes. The fauna changed: mammoths were replaced by deer, boars, and hares.",
+                card2T: "Faithful Friend",
+                card2D: "A major event occurred in the Mesolithic — the domestication of the dog. It became a hunting assistant and the first guard.",
+                card3T: "Water Transport & Fishing",
+                card3D: "People invented dugout boats, oars, and fishing nets. Fish became a constant food source, allowing for longer settlements.",
+                badgeTech: "Innovation",
+                small1T: "Microliths", small1D: "Miniature stone plates for tool heads.",
+                small2T: "Art", small2D: "Shell jewelry and more detailed rock art.",
+                small3T: "Migrations", small3D: "Seasonal movements of small groups following herds.",
+                footer: "«The Mesolithic is an era of flexibility. Humans stopped just following nature and started adapting technologies to its changes.»",
+                radarLabels: ["Hunting", "Fishing", "Gathering", "Tools", "Mobility", "Social life"],
+                set1: "Paleolithic", set2: "Mesolithic"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: translations[lang].radarLabels,
+                    datasets: [
+                        {
+                            label: translations[lang].set1,
+                            data: [90, 10, 80, 40, 30, 40],
+                            backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                            borderColor: '#94a3b8',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: translations[lang].set2,
+                            data: [85, 95, 75, 90, 80, 70],
+                            backgroundColor: 'rgba(20, 184, 166, 0.4)',
+                            borderColor: '#14b8a6',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#14b8a6',
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0,0,0,0.05)' },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            pointLabels: {
+                                font: {
+                                    size: 13,
+                                    family: 'Inter',
+                                    weight: 'bold'
+                                }
+                            },
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('radar-title').innerText = t.radarTitle;
+            document.getElementById('radar-desc').innerText = t.radarDesc;
+            document.getElementById('highlight-title').innerText = t.highlightTitle;
+            document.getElementById('highlight-text').innerText = t.highlightText;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('footer-conclusion').innerText = t.footer;
+
+            document.getElementById('card1-t').innerText = t.card1T;
+            document.getElementById('card1-d').innerText = t.card1D;
+            document.getElementById('card2-t').innerText = t.card2T;
+            document.getElementById('card2-d').innerText = t.card2D;
+            document.getElementById('card3-t').innerText = t.card3T;
+            document.getElementById('card3-d').innerText = t.card3D;
+            document.getElementById('badge-tech').innerText = t.badgeTech;
+
+            document.getElementById('small1-t').innerText = t.small1T;
+            document.getElementById('small1-d').innerText = t.small1D;
+            document.getElementById('small2-t').innerText = t.small2T;
+            document.getElementById('small2-d').innerText = t.small2D;
+            document.getElementById('small3-t').innerText = t.small3T;
+            document.getElementById('small3-d').innerText = t.small3D;
+
+            // Update button styles
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if (l === lang) {
+                    btn.className = "px-5 py-2 rounded-xl text-sm font-black bg-teal-600 text-white shadow-xl shadow-teal-200 ring-2 ring-teal-600 ring-offset-2";
+                } else {
+                    btn.className = "px-5 py-2 rounded-xl text-sm font-bold text-teal-600 hover:bg-teal-100 transition-all";
+                }
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => changeLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

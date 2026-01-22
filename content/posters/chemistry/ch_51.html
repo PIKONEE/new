@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Interactive Periodic Table</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --accent-cyan: #22d3ee;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom right, #0f172a, #1e1b4b, #020617);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+        }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { cursor: pointer; }
+        .lang-btn.active { background: var(--accent-cyan); color: #083344; font-weight: 800; }
+        .info-animate { animation: fadeInRight 0.5s ease-out; }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="glass rounded-custom p-6 md:p-8 mb-8 flex flex-col lg:flex-row justify-between items-center border-t border-white/10">
+        <div class="text-center lg:text-left">
+            <h1 id="main-title" class="heading-font text-2xl md:text-5xl uppercase tracking-tighter text-cyan-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-3 mt-6 lg:mt-0">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-5 py-2 rounded-full border border-white/20 uppercase text-[10px] font-bold tracking-widest transition-all">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-5 py-2 rounded-full border border-white/20 uppercase text-[10px] font-bold tracking-widest transition-all">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-5 py-2 rounded-full border border-white/20 uppercase text-[10px] font-bold tracking-widest transition-all">EN</button>
+        </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        <!-- Periodic Table Canvas -->
+        <div class="lg:col-span-9 glass rounded-custom p-4 relative overflow-hidden flex flex-col min-h-[500px] lg:min-h-[700px]">
+            <h2 id="canvas-heading" class="heading-font text-lg text-cyan-300 uppercase mb-2 opacity-70 ml-4"></h2>
+            <div class="flex-grow flex items-center justify-center">
+                <canvas id="tableCanvas"></canvas>
+            </div>
+            <p id="canvas-hint" class="mt-2 text-center text-[9px] tracking-[0.3em] text-white/20 uppercase"></p>
+        </div>
+
+        <!-- Element Info Panel -->
+        <div class="lg:col-span-3 glass rounded-custom p-8 flex flex-col justify-center border-l-4 border-cyan-500 relative overflow-hidden">
+            <div id="info-content" class="info-animate">
+                <div id="element-display" class="mb-6 p-4 bg-cyan-500/10 rounded-3xl border border-cyan-500/30 flex flex-col items-center text-center">
+                    <div id="el-symbol" class="heading-font text-5xl font-black text-cyan-400">H</div>
+                    <div class="mt-2">
+                        <div id="el-number" class="text-xs text-white/40 font-mono">№ 1</div>
+                        <div id="el-name" class="heading-font text-xl uppercase tracking-wider">Водород</div>
+                        <div id="el-mass" class="text-xs font-light text-cyan-200">1.008 u</div>
+                    </div>
+                </div>
+                <h3 id="info-title" class="heading-font text-xl mb-4 text-white"></h3>
+                <div id="info-text" class="text-sm font-light leading-relaxed text-white/70 space-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cards Section -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="glass rounded-custom p-8 border-b-4 border-blue-500">
+            <h4 id="card1-title" class="heading-font text-lg mb-3 text-cyan-400 uppercase"></h4>
+            <p id="card1-desc" class="text-white/60 text-xs leading-relaxed"></p>
+        </div>
+        <div class="glass rounded-custom p-8 border-b-4 border-emerald-500">
+            <h4 id="card2-title" class="heading-font text-lg mb-3 text-emerald-400 uppercase"></h4>
+            <p id="card2-desc" class="text-white/60 text-xs leading-relaxed"></p>
+        </div>
+        <div class="glass rounded-custom p-8 border-b-4 border-purple-500">
+            <h4 id="card3-title" class="heading-font text-lg mb-3 text-purple-400 uppercase"></h4>
+            <p id="card3-desc" class="text-white/60 text-xs leading-relaxed"></p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="glass rounded-custom p-10 text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+        <p id="quote-text" class="text-xl md:text-2xl font-light italic text-white/90 mb-4"></p>
+        <div id="quote-author" class="text-cyan-400 font-bold uppercase tracking-[0.4em] text-[10px]"></div>
+    </footer>
+
+    <script>
+        const symbols = [
+            "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar",
+            "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr",
+            "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe",
+            "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn",
+            "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og"
+        ];
+
+        const translations = {
+            ru: {
+                title: "Таблица Элементов",
+                subtitle: "Полная классификация химических элементов",
+                canvasHeading: "Периодическая система (118 элементов)",
+                canvasHint: "Нажмите на любой элемент для просмотра данных",
+                infoTitle: "Академическая справка",
+                defaultDesc: "Химический элемент, входящий в Периодическую систему. Свойства определяются структурой электронной оболочки.",
+                cards: [
+                    { title: "Группы", desc: "Вертикальные столбцы. Элементы одной группы имеют сходное строение внешнего уровня и схожие свойства." },
+                    { title: "Периоды", desc: "Горизонтальные ряды. Номер периода соответствует числу энергетических уровней в атоме элемента." },
+                    { title: "Лантаноиды", desc: "Семейство из 14 элементов (58-71), вынесенное вниз таблицы для компактности. Свойства близки к лантану." }
+                ],
+                quote: "«Границы наук подобны границам государств: они не разделяют, а связывают»",
+                author: "Дмитрий Менделеев"
+            },
+            kz: {
+                title: "Элементтер Кестесі",
+                subtitle: "Химиялық элементтердің толық классификациясы",
+                canvasHeading: "Периодтық жүйе (118 элемент)",
+                canvasHint: "Мәліметтерді көру үшін кез келген элементті басыңыз",
+                infoTitle: "Академиялық анықтама",
+                defaultDesc: "Периодтық жүйеге кіретін химиялық элемент. Қасиеттері электрондық қабықшаның құрылымымен анықталады.",
+                cards: [
+                    { title: "Топтар", desc: "Тік бағаналар. Бір топтың элементтері сыртқы деңгейінің құрылысы мен қасиеттері бойынша ұқсас болып келеді." },
+                    { title: "Периодтар", desc: "Көлденең қатарлар. Период нөмірі элемент атомындағы энергетикалық деңгейлер санына сәйкес келеді." },
+                    { title: "Лантаноидтар", desc: "Кестенің жинақылығы үшін төменге шығарылған 14 элементтен (58-71) тұратын отбасы." }
+                ],
+                quote: "«Ғылымның шекаралары мемлекеттердің шекаралары сияқты: олар бөлмейді, біріктіреді»",
+                author: "Дмитрий Менделеев"
+            },
+            en: {
+                title: "Table of Elements",
+                subtitle: "Full classification of chemical elements",
+                canvasHeading: "Periodic System (118 Elements)",
+                canvasHint: "Click any element to view detailed data",
+                infoTitle: "Academic Reference",
+                defaultDesc: "A chemical element belonging to the Periodic System. Properties are defined by its electron shell structure.",
+                cards: [
+                    { title: "Groups", desc: "Vertical columns. Elements in the same group have similar outer shell configurations and properties." },
+                    { title: "Periods", desc: "Horizontal rows. The period number corresponds to the number of energy levels in the atom." },
+                    { title: "Lanthanides", desc: "A family of 14 elements (58-71) placed at the bottom for table compactness." }
+                ],
+                quote: "«The boundaries of sciences are like the borders of states: they do not separate, but connect»",
+                author: "Dmitri Mendeleev"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('tableCanvas');
+        const ctx = canvas.getContext('2d');
+        let selectedN = 1;
+
+        function getPosition(n) {
+            // Standard Grid positions for 1-118
+            if (n === 1) return {x: 0, y: 0};
+            if (n === 2) return {x: 17, y: 0};
+            if (n >= 3 && n <= 4) return {x: n-3, y: 1};
+            if (n >= 5 && n <= 10) return {x: n+7, y: 1};
+            if (n >= 11 && n <= 12) return {x: n-11, y: 2};
+            if (n >= 13 && n <= 18) return {x: n-1, y: 2};
+            if (n >= 19 && n <= 36) return {x: n-19, y: 3};
+            if (n >= 37 && n <= 54) return {x: n-37, y: 4};
+            // Lanthanides (57-71)
+            if (n === 57) return {x: 2, y: 5};
+            if (n >= 72 && n <= 86) return {x: n-69, y: 5};
+            if (n === 89) return {x: 2, y: 6};
+            if (n >= 104 && n <= 118) return {x: n-101, y: 6};
+            
+            // f-block below
+            if (n >= 58 && n <= 71) return {x: n-55.5 + 1, y: 8};
+            if (n >= 90 && n <= 103) return {x: n-87.5 + 1, y: 9};
+            return {x: 0, y: 0};
+        }
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.infoTitle;
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').textContent = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').textContent = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+
+            document.getElementById('quote-text').textContent = t.quote;
+            document.getElementById('quote-author').textContent = t.author;
+
+            // Element details
+            document.getElementById('el-symbol').textContent = symbols[selectedN-1];
+            document.getElementById('el-number').textContent = `№ ${selectedN}`;
+            document.getElementById('el-name').textContent = selectedN === 1 ? (currentLang === 'ru' ? 'Водород' : currentLang === 'kz' ? 'Сутегі' : 'Hydrogen') : (currentLang === 'ru' ? 'Элемент' : 'Элемент');
+            document.getElementById('el-mass').textContent = "-";
+            document.getElementById('info-text').textContent = t.defaultDesc;
+
+            drawTable();
+        }
+
+        function drawTable() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cols = 18, rows = 10;
+            const padding = 10;
+            const size = Math.min((canvas.width - padding*2) / cols, (canvas.height - padding*2) / rows);
+            
+            for(let n=1; n<=118; n++) {
+                const pos = getPosition(n);
+                const x = padding + pos.x * size;
+                const y = padding + pos.y * size;
+
+                const isSelected = selectedN === n;
+                
+                // Cell
+                ctx.fillStyle = isSelected ? '#22d3ee' : 'rgba(255,255,255,0.05)';
+                ctx.strokeStyle = isSelected ? '#fff' : 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = isSelected ? 2 : 1;
+                ctx.fillRect(x + 1, y + 1, size - 2, size - 2);
+                ctx.strokeRect(x + 1, y + 1, size - 2, size - 2);
+
+                // Symbol
+                ctx.fillStyle = isSelected ? '#083344' : '#22d3ee';
+                ctx.font = `bold ${size/2.5}px Montserrat`;
+                ctx.textAlign = 'center';
+                ctx.fillText(symbols[n-1], x + size/2, y + size/1.6);
+
+                // Number
+                ctx.font = `${size/6}px Inter`;
+                ctx.textAlign = 'left';
+                ctx.fillText(n, x + 4, y + size/4);
+            }
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const cols = 18, rows = 10;
+            const padding = 10;
+            const size = Math.min((canvas.width - padding*2) / cols, (canvas.height - padding*2) / rows);
+
+            for(let n=1; n<=118; n++) {
+                const pos = getPosition(n);
+                const x = padding + pos.x * size;
+                const y = padding + pos.y * size;
+
+                if (mouseX > x && mouseX < x + size && mouseY > y && mouseY < y + size) {
+                    selectedN = n;
+                    const panel = document.getElementById('info-content');
+                    panel.classList.remove('info-animate');
+                    void panel.offsetWidth;
+                    panel.classList.add('info-animate');
+                    updateUI();
+                    break;
+                }
+            }
+        });
+
+        window.onload = () => {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            setLang('ru');
+        };
+
+        window.onresize = () => {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            drawTable();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

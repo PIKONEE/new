@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Образование Казахского ханства (1465 г.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .kazakh-gradient {
+            background: radial-gradient(circle at top right, #0ea5e9, #f8fafc 85%);
+        }
+
+        .premium-card {
+            background: white;
+            border-radius: 3rem;
+            border: 1px solid #bae6fd;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -15px rgba(14, 165, 233, 0.15);
+            border-color: #38bdf8;
+        }
+
+        .lang-active {
+            background-color: #0369a1;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(3, 105, 161, 0.3);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: #fff;
+            border: 1px solid #e0f2fe;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 8px solid #0284c7;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.5s ease;
+        }
+
+        .term-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="kazakh-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header (Strict text, no emoji) -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-sky-100 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-sky-950 text-center">Образование Казахского ханства</h1>
+            <div class="flex bg-sky-50 p-1 rounded-2xl border border-sky-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Migration Route (The Map) -->
+        <div class="premium-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-sky-600 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">National Origin Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-sky-950 leading-tight uppercase italic">Великая откочевка</h2>
+                    <p id="viz-desc" class="text-lg text-sky-900/60 font-light leading-relaxed">
+                        Султаны Керей и Жанибек увели племена из-под власти Абулхаира. Нажмите на точки маршрута, чтобы изучить этапы создания первого национального государства казахов.
+                    </p>
+                    
+                    <div id="info-display" class="info-panel shadow-xl">
+                        <h3 id="element-title" class="text-xl font-bold text-sky-900 mb-3 uppercase">Начните анализ</h3>
+                        <p id="element-desc" class="text-sky-800/70 text-sm leading-relaxed italic">Кликните на Сыгнак, долину рек Чу и Талас или на ставку в Козы-Баши.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="mapCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-sky-300 font-mono uppercase tracking-[0.4em]">Strategic Migration Schematic 1459-1465</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Core Historical Blocks (The Plan) -->
+        <div id="plan-section" class="space-y-12">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-sky-900 uppercase tracking-[0.5em]">Фундамент Нации</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                
+                <!-- Causes -->
+                <div class="premium-card p-10 flex flex-col border-t-8 border-sky-600">
+                    <div class="mb-6"><span class="term-badge" id="t-cause">Причины</span></div>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Политический кризис</h3>
+                    <p id="c1-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
+                        Жесткая централизация Абулхаир-хана, поражение от ойратов в 1457 году и высокие налоги вызвали массовое недовольство. Племена нуждались в защите своих прав и пастбищ, что привело к объединению вокруг султанов-чингизидов Керея и Жанибека.
+                    </p>
+                    <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c1-f">
+                        Кризис в «Узбекском улусе».
+                    </div>
+                </div>
+
+                <!-- Establishment -->
+                <div class="premium-card p-10 flex flex-col border-t-8 border-sky-400">
+                    <div class="mb-6"><span class="term-badge" id="t-date">Событие</span></div>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-sky-900">1465 год: Провозглашение</h3>
+                    <p id="c2-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
+                        В долинах рек Чу и Талас, на территории Западного Могулистана, было провозглашено Казахское ханство. Первым ханом был избран **Керей** (старший по возрасту), а его соправителем и идеологом стал **Жанибек**. Это событие зафиксировано в труде «Тарих-и Рашиди».
+                    </p>
+                    <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c2-f">
+                        Автор: Мухаммад Хайдар Дулати.
+                    </div>
+                </div>
+
+                <!-- Significance -->
+                <div class="premium-card p-10 flex flex-col border-t-8 border-sky-600">
+                    <div class="mb-6"><span class="term-badge" id="t-impact">Значение</span></div>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Этническое единство</h3>
+                    <p id="c3-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
+                        Создание ханства завершило многовековой процесс формирования казахской народности. Слово «казах» приобрело политический смысл, означая свободных людей, отстоявших свое право на независимое государство и общую культуру.
+                    </p>
+                    <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c3-f">
+                        Термин: «Казах» — свободный человек.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Section 3: The Founders Highlight (Full Width) -->
+        <div class="bg-sky-900 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h3 id="founders-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Керей и Жанибек: Отцы Нации</h3>
+                    <p id="founders-d" class="text-sky-100/70 text-xl font-light leading-relaxed">
+                        Потомки Урус-хана, они сумели за несколько лет превратить группу переселенцев в мощную силу. Благодаря их авторитету, население нового государства быстро выросло до 200 тысяч человек. Они выбрали Жетысу как «тихую гавань» для накопления сил перед возвращением к берегам Сырдарьи.
+                    </p>
+                    <div class="inline-flex items-center gap-4 bg-white/10 px-6 py-2 rounded-full border border-white/20">
+                        <span id="founders-tag" class="text-sm font-bold uppercase tracking-widest">Династия чингизидов (Торе)</span>
+                    </div>
+                </div>
+                <div class="flex justify-center relative">
+                    <div class="w-80 h-80 border-4 border-dashed border-sky-700/50 rounded-full flex items-center justify-center animate-spin-slow">
+                        <div class="text-center">
+                            <div class="text-7xl mb-4 grayscale opacity-20">⚔️</div>
+                            <div id="found-label" class="text-[10px] font-black uppercase text-sky-300 tracking-[0.5em]">The Great Sovereignty</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">KAZAKH</div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-white border-t border-sky-100 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl font-light italic leading-tight text-sky-900/60">
+                «Образование Казахского ханства стало венцом борьбы тюркских племен за самоопределение, создав нерушимый оплот культуры в сердце Азии.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-sky-400 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Образование Казахского ханства",
+                vizTitle: "Великая откочевка",
+                vizDesc: "Султаны Керей и Жанибек увели племена из-под власти Абулхаира. Нажмите на точки маршрута на схеме для анализа событий.",
+                badge: "Анализ истоков нации",
+                elementTitleDefault: "Начните анализ",
+                elementDescDefault: "Кликните на Сыгнак, долины рек или ставку на чертеже.",
+                planTitle: "Фундамент Нации",
+                tCause: "Причины", tDate: "Событие", tImpact: "Значение",
+                c1T: "Политический кризис", c1D: "Жесткая политика Абулхаира и военные неудачи подтолкнули племена к поиску новых лидеров. Керей и Жанибек стали знаменем свободы для Дешт-и-Кыпчака.",
+                c1F: "Кризис в «Узбекском улусе».",
+                c2T: "1465 год: Провозглашение", c2D: "В междуречье Чу и Таласа родилось новое государство. Этот момент стал точкой невозврата в процессе политической консолидации казахов.",
+                c2F: "Источник: «Тарих-и Рашиди».",
+                c3T: "Этническое единство", c3D: "Ханство стало домом для всех казахских родов. Оно обеспечило сохранность языка, традиций и территории на века вперед.",
+                c3F: "Термин: «Казах» — свободный.",
+                foundersT: "Керей и Жанибек: Отцы Нации", foundersD: "Они выбрали Жетысу как базу для нового государства. Под их мудрым руководством ханство стало центром притяжения для сотен тысяч людей из всей Степи.",
+                foundersTag: "Династия Торе (Чингизиды)",
+                footer: "«Образование Казахского ханства стало венцом борьбы племен за самоопределение в сердце Азии.»",
+                nodes: {
+                    sygnak: { name: "Сыгнак (Отправная точка)", text: "Здесь зрело недовольство властью Абулхаира. Отсюда началось движение первых 200 тысяч человек на восток." },
+                    valley: { name: "Долина Чу и Таласа", text: "Земли, выделенные правителем Могулистана Есен-Бугой. Удобные пастбища стали первой территорией ханства." },
+                    kozy: { name: "Ставка Козы-Баши", text: "Сакральное место, где по преданию были подняты на белой кошме первые казахские ханы. Символ рождения государственности." }
+                }
+            },
+            kz: {
+                title: "Қазақ хандығының құрылуы",
+                vizTitle: "Ұлы көш",
+                vizDesc: "Керей мен Жәнібек сұлтандар Әбілқайыр билігінен бөлініп, тайпаларды бастап кетті. Оқиғаларды талдау үшін картаны басыңыз.",
+                badge: "Ұлт бастауын талдау",
+                elementTitleDefault: "Талдауды бастаңыз",
+                elementDescDefault: "Сығанақты, өзен алқаптарын немесе орданы басыңыз.",
+                planTitle: "Ұлт іргетасы",
+                tCause: "Себептер", tDate: "Оқиға", tImpact: "Маңызы",
+                c1T: "Саяси дағдарыс", c1D: "Әбілқайырдың қатал саясаты мен әскери жеңілістері тайпаларды жаңа көсемдер іздеуге итермеледі. Керей мен Жәнібек бостандық нышаны болды.",
+                c1F: "«Өзбек ұлысындағы» дағдарыс.",
+                c2T: "1465 жыл: Жариялану", c2D: "Шу мен Талас арасында жаңа мемлекет дүниеге келді. Бұл сәт қазақтардың саяси бірігу процесіндегі бетбұрыс болды.",
+                c2F: "Дереккөз: «Тарих-и Рашиди».",
+                c3T: "Этникалық тұтастық", c3D: "Хандық барлық қазақ руларының ортақ үйіне айналды. Ол тілдің, дәстүр мен аумақтың ғасырлар бойы сақталуын қамтамасыз етті.",
+                c3F: "Термин: «Қазақ» — еркін адам.",
+                foundersT: "Керей мен Жәнібек: Ұлт әкелері", foundersD: "Олар Жетісуды жаңа мемлекеттің базасы ретінде таңдады. Олардың даналығымен хандық бүкіл Дала халқы үшін тартылыс орталығына айналды.",
+                foundersTag: "Төре әулеті (Шыңғыс ұрпақтары)",
+                footer: "«Қазақ хандығының құрылуы — Азия төріндегі тайпалардың өз тағдырын өзі шешу жолындағы күресінің жеңісі.»",
+                nodes: {
+                    sygnak: { name: "Сығанақ (Бастау нүктесі)", text: "Әбілқайыр билігіне қарсылық осында пісіп-жетілді. Осы жерден 200 мың адамның шығысқа қарай көші басталды." },
+                    valley: { name: "Шу мен Талас алқабы", text: "Моғолстан билеушісі Есен-Бұға бөлген жерлер. Ыңғайлы жайылымдар хандықтың алғашқы аумағы болды." },
+                    kozy: { name: "Қозыбасы ордасы", text: "Алғашқы қазақ хандары ақ киізге көтерілген қасиетті жер. Мемлекеттіліктің туған жерінің символы." }
+                }
+            },
+            en: {
+                title: "Formation of the Kazakh Khanate",
+                vizTitle: "The Great Migration",
+                vizDesc: "Sultans Kerey and Janybek led tribes away from Abulkhair's rule. Click on the migration points to study the formation stages.",
+                badge: "National Roots Analysis",
+                elementTitleDefault: "Start analysis",
+                elementDescDefault: "Click on Sygnak, the river valleys, or the headquarters.",
+                planTitle: "Foundation of the Nation",
+                tCause: "Causes", tDate: "Event", tImpact: "Significance",
+                c1T: "Political Crisis", c1D: "Abulkhair's strict rule and military failures pushed clans to seek new leadership. Kerey and Janybek became symbols of freedom.",
+                c1F: "Crisis in the 'Uzbek Ulus'.",
+                c2T: "1465 AD: Proclamation", c2D: "A new state was born between the Chu and Talas rivers. This marked a point of no return for Kazakh political consolidation.",
+                c2F: "Source: 'Tarikh-i Rashidi'.",
+                c3T: "Ethnic Unity", c3D: "The Khanate became home to all Kazakh clans, ensuring the preservation of language, culture, and territory for centuries.",
+                c3F: "Term: 'Kazakh' — a free man.",
+                foundersT: "Kerey and Janybek: Founding Fathers", foundersD: "They chose Zhetysu as the base for the new state. Under their wise leadership, the Khanate became a magnet for hundreds of thousands across the Steppe.",
+                foundersTag: "Tore Dynasty (Chinghizids)",
+                footer: "«The formation of the Kazakh Khanate was the culmination of tribes' struggle for self-determination in the heart of Asia.»",
+                nodes: {
+                    sygnak: { name: "Sygnak (Starting Point)", text: "Where dissatisfaction with Abulkhair grew. This point marked the start of 200,000 people moving East." },
+                    valley: { name: "Chu and Talas Valleys", text: "Lands allocated by Moghulistan's ruler Esen-Buqa. Prime pastures became the first territory of the Khanate." },
+                    kozy: { name: "Kozy-Bashi HQ", text: "The sacred site where the first Kazakh khans were reportedly raised on white felt. The symbol of state birth." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw Rivers (Syrdarya & Chu)
+            ctx.beginPath();
+            ctx.moveTo(50 * scale, 450 * scale);
+            ctx.quadraticCurveTo(250 * scale, 400 * scale, 400 * scale, 420 * scale); // Syrdarya
+            ctx.strokeStyle = '#bae6fd';
+            ctx.lineWidth = 8 * scale;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(450 * scale, 480 * scale);
+            ctx.bezierCurveTo(600 * scale, 450 * scale, 700 * scale, 480 * scale, 750 * scale, 440 * scale); // Chu
+            ctx.stroke();
+
+            // 2. Migration Path (The Great Arrow)
+            drawArrow(200 * scale, 350 * scale, 600 * scale, 400 * scale, '#0ea5e9');
+
+            // 3. Key Nodes
+            drawNode(180 * scale, 410 * scale, '#dc2626', "SYGNAK", 15 * scale);
+            drawNode(550 * scale, 450 * scale, '#0284c7', "CHU-TALAS", 12 * scale);
+            drawNode(650 * scale, 420 * scale, '#0369a1', "KOZY-BASHI", 18 * scale);
+
+            // Labels
+            ctx.fillStyle = 'rgba(2, 132, 199, 0.2)';
+            ctx.font = 'bold 10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText("TAP MARKERS TO ANALYZE STEPS", cx, 40 * scale);
+        }
+
+        function drawNode(x, y, color, label, size) {
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + size + 15);
+        }
+
+        function drawArrow(fromx, fromy, tox, toy, color) {
+            const headlen = 15;
+            const angle = Math.atan2(toy - fromy, tox - fromx);
+            ctx.beginPath();
+            ctx.moveTo(fromx, fromy);
+            ctx.lineTo(tox, toy);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 5;
+            ctx.setLineDash([10, 10]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.beginPath();
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.sqrt((x - 180*scale)**2 + (y - 410*scale)**2) < 30) target = 'sygnak';
+            else if (Math.sqrt((x - 550*scale)**2 + (y - 450*scale)**2) < 30) target = 'valley';
+            else if (Math.sqrt((x - 650*scale)**2 + (y - 420*scale)**2) < 30) target = 'kozy';
+
+            if (target) {
+                const info = translations[currentLang].nodes[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-display').style.borderColor = (target === 'kozy' ? '#0369a1' : (target === 'sygnak' ? '#dc2626' : '#0284c7'));
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            
+            document.getElementById('t-cause').innerText = t.tCause;
+            document.getElementById('t-date').innerText = t.tDate;
+            document.getElementById('t-impact').innerText = t.tImpact;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c1-f').innerText = t.c1F;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c2-f').innerText = t.c2F;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('c3-f').innerText = t.c3F;
+
+            document.getElementById('founders-t').innerText = t.foundersT;
+            document.getElementById('founders-d').innerText = t.foundersD;
+            document.getElementById('founders-tag').innerText = t.foundersTag;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-sky-600 hover:bg-white transition-all";
+            });
+
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

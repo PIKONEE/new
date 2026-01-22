@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Век Перикла: Торжество Демократии</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e3a8a, #0f172a, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #ffffff;
+            color: #1e3a8a;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #60a5fa;
+            background: linear-gradient(90deg, rgba(96, 165, 250, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #60a5fa; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-200 uppercase">
+                Век Перикла
+            </h1>
+            <p id="sub-title" class="text-blue-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Золотой век афинской демократии</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-blue-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-blue-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-blue-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-blue-600 inline-block"></span>
+                Структура управления
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-blue-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="govCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-blue-500/50 italic text-center uppercase tracking-widest">Нажмите на органы власти для изучения их функций</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-blue-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Власть народа</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        При Перикле (середина V в. до н.э.) афинская демократия достигла своего расцвета. Полис стал местом, где любой гражданин мог реально влиять на жизнь государства. Нажмите на схему слева.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🗳️</span>
+                            <span id="hint-1" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Выборность всех должностей</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">💰</span>
+                            <span id="hint-2" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Оплата службы</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-blue-950/40 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-blue-950/20 rounded-[2.5rem] border border-blue-900/30 shadow-xl">
+                        <strong class="text-blue-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-essence">Политическая норма:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-blue-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏛️</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Народное собрание</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Высший орган власти. Собиралось 3-4 раза в месяц на холме Пникс. Здесь принимали законы, объявляли войну и выбирали стратегов тайным голосованием.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-slate-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🗣️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-white uppercase">Искусство слова</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">В Афинах ценилось умение убеждать. Каждый гражданин мог выступить в собрании. Ораторы (демагоги — 'вожди народа') вели за собой толпу силой логики и красноречия.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-blue-400 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">💎</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-blue-300 uppercase">Оплата должностей</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Перикл ввел ежедневную плату из казны за исполнение гражданских обязанностей. Это позволило даже беднейшим афинянам оставлять работу и участвовать в управлении полисом.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-blue-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-blue-100/70 leading-tight max-w-5xl mx-auto">
+            «Мы называем человека, не участвующего в общественных делах, не спокойным, а бесполезным».
+        </p>
+        <span class="block mt-4 text-blue-500 uppercase tracking-widest text-sm">— Перикл</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Век Перикла",
+                subtitle: "Золотой век афинской демократии",
+                visualTitle: "Структура управления",
+                hint: "Нажмите на органы власти для изучения их функций",
+                placeholderTitle: "Власть народа",
+                placeholderText: "При Перикле (середина V в. до н.э.) афинская демократия достигла своего расцвета. Изучите институты власти на схеме.",
+                labelEssence: "Политическая норма:",
+                hint1: "Выборность должностей", hint2: "Оплата службы",
+                card1Title: "Народное собрание",
+                card1Text: "Экклесия — сердце демократии. Здесь каждый свободный гражданин имел право голоса и законодательной инициативы.",
+                card2Title: "Искусство слова",
+                card2Text: "Ораторское мастерство стало главным инструментом политика. Перикл славился тем, что 'метал молнии' своими речами.",
+                card3Title: "Оплата должностей",
+                card3Text: "Введение жалованья судьям и чиновникам сделало политику доступной для всего демоса, а не только для богатых.",
+                footerQuote: "«Мы называем человека, не участвующего в общественных делах, не спокойным, а бесполезным».",
+                nodes: [
+                    { id: 1, tag: "Верховная власть", title: "Народное Собрание", desc: "Собрание всех граждан-мужчин. Решало вопросы войны, мира, налогов и законов. Голосовали поднятием рук, а по самым важным вопросам — черными и белыми камешками.", fact: "Для принятия решения требовалось присутствие не менее 6000 человек." },
+                    { id: 2, tag: "Исполнение", title: "Совет Пятисот", desc: "Рабочий орган, который готовил повестку для Народного собрания и следил за исполнением решений. Члены совета выбирались по жребию на один год.", fact: "Жребий гарантировал, что любой гражданин может попасть во власть вне зависимости от богатства." },
+                    { id: 3, tag: "Командование", title: "Коллегия Стратегов", desc: "10 военачальников, выбиравшихся не жребием, а открытым голосованием. Перикл занимал пост Первого стратега 15 лет подряд благодаря своему авторитету.", fact: "Стратеги несли личную ответственность перед народом за военные неудачи." },
+                    { id: 4, tag: "Суд", title: "Гелиэя", desc: "Суд присяжных из 6000 человек. Судьи выбирались по жребию. Перикл ввел плату за день работы в суде — 2 обола (дневной заработок бедняка).", fact: "В афинском суде не было прокуроров: обвинять и защищаться граждане должны были сами." },
+                    { id: 5, tag: "Личность", title: "Перикл", desc: "Выдающийся стратег и оратор. Его уважали за честность: за годы власти он не прибавил ни драхмы к своему имуществу. При нем Афины стали центром культуры.", fact: "Его называли 'Олимпийцем' за величественный вид и мощь его убедительных речей." }
+                ]
+            },
+            kz: {
+                title: "Перикл дәуірі",
+                subtitle: "Афины демократиясының алтын ғасыры",
+                visualTitle: "Басқару құрылымы",
+                hint: "Билік органдарын зерттеу үшін оларды басыңыз",
+                placeholderTitle: "Халық билігі",
+                placeholderText: "Перикл тұсында (б.з.б. V ғ. ортасы) Афины демократиясы шарықтау шегіне жетті. Билік институттарын схемадан зерттеңіз.",
+                labelEssence: "Саяси норма:",
+                hint1: "Лауазымдардың сайлануы", hint2: "Қызметке ақы төлеу",
+                card1Title: "Халық жиналысы",
+                card1Text: "Экклесия — демократияның жүрегі. Мұнда әрбір азат азаматтың дауыс беру құқығы болды.",
+                card2Title: "Сөз өнері",
+                card2Text: "Шешендік өнер саясаткердің басты құралына айналды. Перикл өз сөздерімен халықты баурап алатын.",
+                card3Title: "Лауазымдарға ақы төлеу",
+                card3Text: "Судьялар мен шенеуніктерге жалақы төлеу саясатты барлық халық үшін қолжетімді етті.",
+                footerQuote: "«Біз қоғамдық істерге қатыспайтын адамды сабырлы емес, пайдасыз деп атаймыз».",
+                nodes: [
+                    { id: 1, tag: "Жоғарғы билік", title: "Халық жиналысы", desc: "Барлық ер азаматтардың жиналысы. Соғыс, бейбітшілік, салық және заң мәселелерін шешті.", fact: "Шешім қабылдау үшін кемінде 6000 адамның қатысуы талап етілді." },
+                    { id: 2, tag: "Атқару", title: "Бесжүздік кеңесі", desc: "Халық жиналысына мәселелер дайындайтын және шешімдердің орындалуын қадағалайтын орган. Мүшелері жеребе арқылы таңдалды.", fact: "Жеребе кез келген азаматтың билікке келуіне мүмкіндік берді." },
+                    { id: 3, tag: "Қолбасшылық", title: "Стратегтер алқасы", desc: "Ашық дауыс беру арқылы сайланатын 10 қолбасшы. Перикл 15 жыл бойы Бірінші стратег болды.", fact: "Стратегтер әскери сәтсіздіктер үшін халық алдында жеке жауап берді." },
+                    { id: 4, tag: "Сот", title: "Гелиэя", desc: "6000 адамнан тұратын алқабилер соты. Перикл соттағы жұмыс күні үшін ақы төлеуді (2 обол) енгізді.", fact: "Афины сотында прокурорлар болған жоқ: азаматтар өздерін өздері қорғады." },
+                    { id: 5, tag: "Тұлға", title: "Перикл", desc: "Көрнекті стратег және шешен. Ол адалдығымен құрметке ие болды. Оның тұсында Афины мәдениет орталығына айналды.", fact: "Оны асқақ бейнесі мен сөзінің қуаты үшін 'Олимпші' деп атаған." }
+                ]
+            },
+            en: {
+                title: "The Age of Pericles",
+                subtitle: "Golden Age of Athenian Democracy",
+                visualTitle: "Government Structure",
+                hint: "Click on governing bodies to study their functions",
+                placeholderTitle: "Rule of the People",
+                placeholderText: "Under Pericles (mid-5th century BC), Athenian democracy reached its zenith. Study the institutions on the diagram.",
+                labelEssence: "Political Norm:",
+                hint1: "Elective Offices", hint2: "Public Pay",
+                card1Title: "The Assembly",
+                card1Text: "The Ecclesia was the heart of democracy. Every free citizen had the right to vote and propose laws.",
+                card2Title: "The Art of Oratory",
+                card2Text: "Public speaking became the essential tool of power. Pericles was famous for 'thundering' with his speeches.",
+                card3Title: "Paid Offices",
+                card3Text: "Introducing salaries for jurors and officials made politics accessible to the common people, not just the rich.",
+                footerQuote: "«We do not say that a man who takes no interest in politics is a man who minds his own business; we say that he has no business here at all.»",
+                nodes: [
+                    { id: 1, tag: "Supreme Power", title: "The Assembly", desc: "A meeting of all male citizens to decide on war, peace, taxes, and laws. Voting was done by show of hands or colored stones.", fact: "A quorum of at least 6,000 citizens was required for major decisions." },
+                    { id: 2, tag: "Executive", title: "Council of 500", desc: "Prepared the agenda for the Assembly and oversaw daily administration. Members were chosen by lot for one-year terms.", fact: "Selection by lot ensured that every citizen had a chance to serve regardless of wealth." },
+                    { id: 3, tag: "Command", title: "Board of Generals", desc: "10 military leaders (Strategoi) elected by open vote. Pericles served as First General for 15 consecutive years.", fact: "Generals were personally accountable to the people for the outcome of military campaigns." },
+                    { id: 4, tag: "Judiciary", title: "The Heliaea", desc: "A jury court of 6,000 people. Pericles introduced a daily stipend (2 obols) to allow poor citizens to serve.", fact: "There were no professional prosecutors; citizens had to deliver their own accusations and defenses." },
+                    { id: 5, tag: "Leader", title: "Pericles", desc: "A brilliant statesman and orator. He was respected for his integrity; he never added a drachma to his personal fortune.", fact: "He was nicknamed 'The Olympian' because of his majestic bearing and powerful eloquence." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('govCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-essence').innerText = t.labelEssence;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Connection Lines
+            ctx.strokeStyle = 'rgba(96, 165, 250, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 100);
+            ctx.lineTo(cx - 120, cy + 40);
+            ctx.lineTo(cx + 120, cy + 40);
+            ctx.closePath();
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx, y: cy - 100, icon: "🗣️" },    // Assembly
+                { id: 2, x: cx - 120, y: cy + 40, icon: "📋" }, // Council
+                { id: 3, x: cx + 120, y: cy + 40, icon: "⚔️" }, // Generals
+                { id: 4, x: cx, y: cy + 120, icon: "⚖️" },    // Jury
+                { id: 5, x: cx, y: cy, icon: "🤴" }           // Pericles
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(96, 165, 250, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core Point
+                ctx.fillStyle = (i === 4) ? '#1e3a8a' : '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.title.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

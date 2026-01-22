@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Количество теплоты</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fef2f2; /* red-50 */
+            overflow-x: hidden;
+            color: #7f1d1d; /* red-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Red Theme */
+        .header-card {
+            background-color: #ef4444; /* red-500 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #991b1b; /* red-800 */
+            border-bottom: 3px solid #fca5a5; /* red-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #fee2e2; /* red-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #b91c1c; /* red-700 */
+        }
+         .term {
+            font-weight: bold;
+            color: #ef4444; /* red-500 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #ef4444;
+            background-color: #ffffff;
+            color: #ef4444;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #fef2f2;
+        }
+        .lang-btn.active {
+            background-color: #ef4444;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 220px;
+            margin: 15px 0;
+            border: 1px solid #fecaca;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #991b1b;
+            text-anchor: middle;
+        }
+        .svg-fire {
+            fill: #ef4444;
+            stroke: #b91c1c;
+        }
+        .svg-water {
+            fill: #bae6fd;
+            opacity: 0.6;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-red-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(248, 113, 113, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(248, 113, 113, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(248, 113, 113, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ЖЫЛУ МӨЛШЕРІ (Q)</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">QUANTITY OF HEAT (Q)</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">КОЛИЧЕСТВО ТЕПЛОТЫ (Q)</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-red-100">Жылу алмасу кезіндегі энергия.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-red-100">Energy transferred during heat exchange.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-red-100">Энергия, передаваемая при теплообмене.</p>
+        </header>
+
+        <!-- 1. АНЫҚТАМАСЫ ЖӘНЕ БІРЛІКТЕРІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Жылу мөлшері және Бірліктері</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Definition and Units</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Определение и Единицы</h2>
+
+            <div class="rule-card border-t-red-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Жылу мөлшері (Q)</span> – жылу алмасу кезінде дененің алатын немесе жоғалтатын энергиясы.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="en">Quantity of Heat (Q)</span> is the energy received or lost by a body during heat transfer.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Количество теплоты (Q)</span> – это энергия, которую тело получает или теряет при теплопередаче.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <!-- Unit: Joule -->
+                    <div class="bg-red-50 p-4 rounded-lg text-center border border-red-200">
+                        <h3 class="font-bold text-red-900 mb-2">SI (ХБЖ)</h3>
+                        <p class="text-3xl font-extrabold text-red-600">Joule (Дж)</p>
+                        <p class="text-xs text-gray-600 mt-2">1 kJ = 1000 J</p>
+                    </div>
+                    <!-- Unit: Calorie -->
+                    <div class="bg-orange-50 p-4 rounded-lg text-center border border-orange-200">
+                        <h3 class="font-bold text-orange-900 mb-2">Басқа / Other</h3>
+                        <p class="text-3xl font-extrabold text-orange-600">Calorie (кал)</p>
+                        <p class="text-xs text-gray-600 mt-2">1 cal ≈ 4.2 J</p>
+                    </div>
+                </div>
+
+                <!-- Illustration 1: Heating Water -->
+                <svg class="illustration-svg" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg" style="margin-top: 20px;">
+                    <!-- Burner -->
+                    <g transform="translate(180, 120)">
+                        <path d="M 0 0 Q 20 -30, 40 0" fill="#ef4444"/>
+                        <path d="M 10 0 Q 20 -20, 30 0" fill="#facc15"/>
+                        <text x="20" y="20" font-size="10" text-anchor="middle">Heat Source</text>
+                    </g>
+
+                    <!-- Beaker -->
+                    <path d="M 160 50 L 160 110 Q 200 120, 240 110 L 240 50" fill="none" stroke="#4b5563" stroke-width="2"/>
+                    <path d="M 160 60 L 160 110 Q 200 120, 240 110 L 240 60" fill="#bae6fd" opacity="0.6"/>
+
+                    <!-- Energy Arrows -->
+                    <line x1="180" y1="120" x2="180" y2="100" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)"/>
+                    <line x1="200" y1="120" x2="200" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)"/>
+                    <line x1="220" y1="120" x2="220" y2="100" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)"/>
+
+                    <text x="280" y="80" class="svg-label" font-weight="bold">+ Q (Energy)</text>
+                    <text x="280" y="100" class="svg-label" font-size="12">T° ↑ (Temperature rises)</text>
+
+                    <defs>
+                        <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#dc2626" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 2. НЕГЕ ТӘУЕЛДІ? -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Q неге тәуелді?</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. What does Q depend on?</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. От чего зависит Q?</h2>
+
+            <div class="rule-card border-t-orange-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Денені қыздыруға қажетті жылу мөлшері үш нәрсеге байланысты:
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    The amount of heat needed to warm a body depends on three things:
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Количество теплоты, необходимое для нагревания тела, зависит от трех вещей:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <!-- Mass -->
+                    <div class="bg-white p-3 rounded shadow-sm border border-gray-200">
+                        <h4 class="font-bold text-red-800 text-center">1. Масса (m)</h4>
+                        <svg viewBox="0 0 100 60" class="w-full h-16 my-2">
+                            <rect x="10" y="30" width="20" height="20" fill="#bae6fd" stroke="#3b82f6"/>
+                            <text x="20" y="25" font-size="8" text-anchor="middle">m</text>
+                            <rect x="60" y="10" width="30" height="40" fill="#bae6fd" stroke="#3b82f6"/>
+                            <text x="75" y="5" font-size="8" text-anchor="middle">3m</text>
+                            <text x="50" y="55" font-size="10" text-anchor="middle" fill="#dc2626">Q₂ > Q₁</text>
+                        </svg>
+                        <p class="text-xs text-center text-gray-600">Көп суды қайнату қиынырақ.</p>
+                    </div>
+
+                    <!-- Delta T -->
+                    <div class="bg-white p-3 rounded shadow-sm border border-gray-200">
+                        <h4 class="font-bold text-red-800 text-center">2. Температура (Δt)</h4>
+                        <svg viewBox="0 0 100 60" class="w-full h-16 my-2">
+                            <line x1="20" y1="50" x2="20" y2="30" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)"/>
+                            <text x="20" y="25" font-size="8" text-anchor="middle">10°C</text>
+                            <line x1="70" y1="50" x2="70" y2="10" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)"/>
+                            <text x="70" y="5" font-size="8" text-anchor="middle">50°C</text>
+                            <text x="50" y="55" font-size="10" text-anchor="middle" fill="#dc2626">Q₂ > Q₁</text>
+                        </svg>
+                        <p class="text-xs text-center text-gray-600">Қатты қыздыру үшін көп жылу керек.</p>
+                    </div>
+
+                    <!-- Substance -->
+                    <div class="bg-white p-3 rounded shadow-sm border border-gray-200">
+                        <h4 class="font-bold text-red-800 text-center">3. Зат тегі (c)</h4>
+                        <svg viewBox="0 0 100 60" class="w-full h-16 my-2">
+                            <circle cx="30" cy="30" r="10" fill="#9ca3af"/> <!-- Metal -->
+                            <text x="30" y="15" font-size="8" text-anchor="middle">Fe</text>
+                            <circle cx="70" cy="30" r="10" fill="#bae6fd"/> <!-- Water -->
+                            <text x="70" y="15" font-size="8" text-anchor="middle">H₂O</text>
+                            <text x="50" y="55" font-size="10" text-anchor="middle" fill="#dc2626">Q_water > Q_iron</text>
+                        </svg>
+                        <p class="text-xs text-center text-gray-600">Су темірге қарағанда баяу қызады.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ФОРМУЛА -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Есептеу формуласы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Calculation Formula</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Формула расчета</h2>
+
+            <div class="rule-card border-t-red-500">
+                <div class="example-block border-l-red-400 bg-red-50 p-6 text-center">
+                    <p class="text-4xl font-bold text-red-900 mb-4">Q = c · m · (t₂ - t₁)</p>
+
+                    <div class="text-left inline-block">
+                        <p class="text-lg text-red-800"><strong>c</strong> — меншікті жылу сыйымдылығы (Specific heat capacity)</p>
+                        <p class="text-lg text-red-800"><strong>m</strong> — масса (Mass)</p>
+                        <p class="text-lg text-red-800"><strong>t₂ - t₁</strong> — температура өзгерісі (Change in Temp)</p>
+                    </div>
+                </div>
+
+                <!-- Illustration 3: Specific Heat Concept -->
+                <svg class="illustration-svg" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg" style="margin-top: 20px;">
+                    <!-- Sand vs Water (Daytime) -->
+                    <!-- Sun -->
+                    <circle cx="200" cy="20" r="15" fill="#facc15"/>
+                    <line x1="200" y1="35" x2="200" y2="60" stroke="#facc15" stroke-width="2" stroke-dasharray="4"/>
+
+                    <!-- Sand -->
+                    <rect x="50" y="80" width="100" height="40" fill="#fcd34d"/>
+                    <text x="100" y="105" font-size="12" fill="#78350f" text-anchor="middle" font-weight="bold">SAND</text>
+                    <text x="100" y="70" font-size="14" fill="#dc2626" text-anchor="middle" font-weight="bold">HOT (60°C)</text>
+                    <text x="100" y="140" font-size="10" fill="#78350f" text-anchor="middle">Low c (880)</text>
+
+                    <!-- Water -->
+                    <rect x="250" y="80" width="100" height="40" fill="#60a5fa"/>
+                    <text x="300" y="105" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">WATER</text>
+                    <text x="300" y="70" font-size="14" fill="#1e3a8a" text-anchor="middle" font-weight="bold">WARM (25°C)</text>
+                    <text x="300" y="140" font-size="10" fill="#1e3a8a" text-anchor="middle">High c (4200)</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-red-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-red-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-red-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-red-800">
+                1 калория = 4.2 Джоуль. Меншікті жылу сыйымдылығы (c) заттың қаншалықты тез қызатынын көрсетеді. Су баяу қызады және баяу суиды.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-red-800">
+                1 calorie = 4.2 Joules. Specific heat capacity (c) shows how fast a substance heats up. Water heats up slowly and cools down slowly.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-red-800">
+                1 калория = 4.2 Джоуля. Удельная теплоемкость (c) показывает, как быстро нагревается вещество. Вода нагревается медленно и остывает медленно.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

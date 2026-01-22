@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Развитие просвещения в Казахстане (II пол. XIX в.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .edu-gradient {
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+        }
+
+        .premium-card {
+            background: white;
+            border-radius: 3rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 40px 100px -20px rgba(15, 23, 42, 0.1);
+        }
+
+        .lang-active {
+            background-color: #1e293b;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2rem;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 2.5rem;
+            border-left: 10px solid #1e293b;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.5s ease;
+        }
+
+        .tag-school {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="edu-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-slate-900 text-center">Просвещение в Казахстане (II пол. XIX в.)</h1>
+            <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Educational Nexus (Canvas) -->
+        <div class="premium-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block bg-slate-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Educational Systems Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-slate-900 leading-tight uppercase italic tracking-tighter">Сеть знаний</h2>
+                    <p id="viz-desc" class="text-lg text-slate-500 font-light leading-relaxed">
+                        Во второй половине XIX века образование в Степи стало многослойным. Нажмите на узлы системы, чтобы изучить различия между традиционным и светским подходом.
+                    </p>
+                    
+                    <div id="info-panel" class="info-panel shadow-lg transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-slate-900 mb-3 uppercase">Выберите систему</h3>
+                        <p id="element-desc" class="text-slate-600 text-sm leading-relaxed italic">Кликните на «Традиционную», «Светскую» или «Профессиональную» школу на холсте.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="eduCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-slate-400 font-mono uppercase tracking-[0.4em]">Educational Paradigm Reconstruction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Analytical Content -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- State System -->
+            <div class="premium-card p-10 space-y-6">
+                <span class="tag-school" id="tag-1">Гос. система</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Русско-казахские школы</h3>
+                <p id="c1-d" class="text-slate-600 text-sm leading-relaxed">
+                    После реформы 1867–1868 гг. началось активное открытие начальных училищ. Их целью было распространение русского языка и подготовка кадров для низового управления. Обучение велось по светским программам, включавшим арифметику, географию и историю. Значительную роль в их развитии сыграла деятельность **Ибрая Алтынсарина**.
+                </p>
+            </div>
+
+            <!-- Professional Training -->
+            <div class="premium-card p-10 space-y-6">
+                <span class="tag-school" id="tag-2">Проф. образование</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Гимназии и Училища</h3>
+                <p id="c2-d" class="text-slate-600 text-sm leading-relaxed">
+                    В крупных городах (Верный, Семипалатинск, Уральск) открывались мужские и женские гимназии. Также зародилось профессиональное образование: учительские семинарии, сельскохозяйственные и ремесленные школы. Это позволило детям из казахской знати и интеллигенции получать высшее образование в Петербурге и Москве.
+                </p>
+            </div>
+
+            <!-- Management -->
+            <div class="premium-card p-10 space-y-6">
+                <span class="tag-school" id="tag-3">Управление</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Школьная инспекция</h3>
+                <p id="c3-d" class="text-slate-600 text-sm leading-relaxed">
+                    Управление народным образованием в Степи находилось под жестким контролем. Были учреждены должности инспекторов народных училищ. Образование использовалось империей как инструмент культурной интеграции (русификации), но объективно способствовало росту грамотности и приобщению к мировой науке.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-white border-t border-slate-200 text-center text-slate-400">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
+                «Во второй половине XIX века Степь превратилась в пространство интеллектуального поиска, где на смену устной традиции пришла системная школа.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-slate-900 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Просвещение в Казахстане (II пол. XIX в.)",
+                vizTitle: "Сеть знаний",
+                vizDesc: "Образование в Степи стало многослойным. Нажмите на узлы на холсте, чтобы изучить особенности обучения в этот период.",
+                badge: "Анализ образовательных систем",
+                elementTitleDefault: "Выберите систему",
+                elementDescDefault: "Кликните на «Традиционную», «Светскую» или «Профессиональную» школу на чертеже.",
+                tag1: "Гос. система", tag2: "Проф. образование", tag3: "Управление",
+                c1T: "Русско-казахские школы", c1D: "Начальные школы, созданные государством для интеграции казахов в имперскую среду. Обучение велось на двух языках, давая основы светских наук и делопроизводства.",
+                c2T: "Гимназии и Училища", c2D: "Центры среднего образования в городах. Здесь готовили будущую элиту. Учительские семинарии стали кузницей кадров для первых национальных просветителей.",
+                c3T: "Школьная инспекция", c3D: "Институт контроля над качеством и идеологией обучения. Инспекторы следили за программами, стараясь сбалансировать имперские интересы и потребности Степи.",
+                footer: "«В этот период Степь перешла от устной традиции к системной школьной грамотности.»",
+                nodes: {
+                    tradition: { name: "Традиционные мектебы", text: "Продолжали давать базовую грамоту на арабской графике. Находились под влиянием духовенства, сохраняя консервативный уклад воспитания." },
+                    secular: { name: "Светские училища", text: "Школы нового типа с русским языком обучения. В программе: арифметика, география, естествознание. База для реформ Алтынсарина." },
+                    professional: { name: "Проф. школы", text: "Ремесленные и сельскохозяйственные классы. Учили практическим навыкам — от садоводства до слесарного дела для работы на рудниках." }
+                }
+            },
+            kz: {
+                title: "ХІХ ғ. ІІ жартысындағы Қазақстан ағарту ісі",
+                vizTitle: "Білім желісі",
+                vizDesc: "Дала білімі көпқабатты жүйеге айналды. Оқыту ерекшеліктерін зерттеу үшін кенептегі нүктелерді басыңыз.",
+                badge: "Білім беру жүйелерін талдау",
+                elementTitleDefault: "Жүйені таңдаңыз",
+                elementDescDefault: "Сызбадағы «Дәстүрлі», «Зайырлы» немесе «Кәсіби» мектепті басыңыз.",
+                tag1: "Мемл. жүйе", tag2: "Кәсіби білім", tag3: "Басқару",
+                c1T: "Орыс-қазақ мектептері", c1D: "Қазақтарды империялық ортаға интеграциялау үшін құрылған бастауыш мектептер. Екі тілде оқытылып, зайырлы ғылым негіздерін берді.",
+                c2T: "Гимназиялар мен Училищелер", c2D: "Қалалардағы орта білім беру орталықтары. Мұнда болашақ элита даярланды. Мұғалімдер семинариялары ағартушы кадрлардың ұстаханасына айналды.",
+                c3T: "Мектеп инспекциясы", c3D: "Оқыту сапасы мен идеологиясын бақылау институты. Инспекторлар империялық мүдде мен Дала қажеттілігін теңгеруге тырысты.",
+                footer: "«Бұл кезеңде Дала ауызша дәстүрден жүйелі мектеп сауаттылығына көшті.»",
+                nodes: {
+                    tradition: { name: "Дәстүрлі мектептер", text: "Араб графикасында базалық сауат ашуды жалғастырды. Діни қызметкерлердің ықпалында болып, тәрбиенің консервативті жолын сақтады." },
+                    secular: { name: "Зайырлы училищелер", text: "Орыс тілінде оқытатын жаңа типтегі мектептер. Бағдарламада: арифметика, география, жаратылыстану. Ыбырай реформаларының негізі." },
+                    professional: { name: "Кәсіби мектептер", text: "Қолөнер және ауыл шаруашылығы сыныптары. Бағбандықтан бастап кен орындарында жұмыс істеуге қажетті мамандықтарға баулыды." }
+                }
+            },
+            en: {
+                title: "Enlightenment in Kazakhstan (2nd Half of 19th c.)",
+                vizTitle: "Knowledge Nexus",
+                vizDesc: "Education in the Steppe became multi-layered. Click on the nodes on the canvas to study the educational specifics of the period.",
+                badge: "Educational Systems Analysis",
+                elementTitleDefault: "Select a System",
+                elementDescDefault: "Click on the 'Traditional', 'Secular', or 'Professional' school on the schematic.",
+                tag1: "State System", tag2: "Prof. Education", tag3: "Governance",
+                c1T: "Russian-Kazakh Schools", c1D: "Primary schools designed for integration. They taught in two languages, providing the basics of secular sciences and administration skills.",
+                c2T: "Gymnasiums & Colleges", c2D: "Urban secondary education hubs for the future elite. Teacher seminaries became the engine for national enlightenment.",
+                c3T: "School Inspection", c3D: "A control institute over education quality and ideology. Inspectors balanced imperial interests with the needs of the nomadic society.",
+                footer: "«In this period, the Steppe moved from oral traditions to systematic school literacy.»",
+                nodes: {
+                    tradition: { name: "Traditional Mektebs", text: "Continued to provide basic literacy using Arabic script. Influenced by clergy, they maintained conservative moral education." },
+                    secular: { name: "Secular Schools", text: "New-style schools focusing on Russian language, math, and geography. The foundation for Altynsarin's reforms." },
+                    professional: { name: "Professional Vocational", text: "Craft and agricultural classes. Taught practical skills from horticulture to mining trades for the growing industry." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('eduCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawEduMap();
+        }
+
+        function drawEduMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Connecting Lines (Tree-like structure)
+            ctx.beginPath();
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.moveTo(cx, cy - 150 * scale); ctx.lineTo(cx, cy + 150 * scale);
+            ctx.moveTo(cx - 200 * scale, cy); ctx.lineTo(cx + 200 * scale, cy);
+            ctx.stroke();
+
+            // Nodes
+            drawPoint(cx, cy - 150 * scale, '#1e293b', "INSPECTION", 'management');
+            drawPoint(cx - 200 * scale, cy, '#3b82f6', "SECULAR", 'secular');
+            drawPoint(cx + 200 * scale, cy, '#475569', "TRADITION", 'tradition');
+            drawPoint(cx, cy + 150 * scale, '#94a3b8', "PROFESSIONAL", 'professional');
+
+            // Central Core
+            ctx.beginPath();
+            ctx.arc(cx, cy, 40 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 12px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText("EDU", cx, cy + 5);
+        }
+
+        function drawPoint(x, y, color, label, id) {
+            ctx.beginPath();
+            ctx.arc(x, y, 35 * (canvas.width/800), 0, Math.PI * 2);
+            ctx.fillStyle = color + '22';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (y < cy - 100 * scale) target = 'secular'; // In reality linked to top-right
+            else if (x < cx - 100 * scale) target = 'secular';
+            else if (x > cx + 100 * scale) target = 'tradition';
+            else if (y > cy + 100 * scale) target = 'professional';
+
+            if (target && translations[currentLang].nodes[target]) {
+                const info = translations[currentLang].nodes[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#1e293b';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            if (!t) return;
+
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-800 transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

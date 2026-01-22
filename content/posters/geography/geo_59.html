@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natural Zones of the Earth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0c0a09; color: white; min-height: 100vh; overflow-x: hidden; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #eab308; color: #422006; font-weight: 800; }
+        .zone-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; border-left: 4px solid transparent; }
+        .zone-card:hover { transform: translateX(10px); background: rgba(234, 179, 8, 0.1); border-color: #eab308; }
+        .zone-card.active { background: rgba(234, 179, 8, 0.15); border-color: #eab308; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-6 flex flex-col md:flex-row justify-between items-center border-b border-yellow-500/20">
+        <div>
+            <h1 id="main-title" class="heading-font text-2xl md:text-3xl uppercase tracking-tighter text-yellow-400"></h1>
+            <p id="sub-title" class="mt-1 text-white/30 font-bold uppercase tracking-widest text-[10px]"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-[10px] font-bold">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-[10px] font-bold">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-[10px] font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        <!-- Sidebar Navigation -->
+        <div class="lg:col-span-4 flex flex-col gap-3" id="zone-list">
+            <!-- Items via JS -->
+        </div>
+
+        <!-- Landscape View -->
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col justify-center border-r-4 border-yellow-600 relative overflow-hidden min-h-[500px]">
+            <div id="content-display" class="transition-all duration-500 transform">
+                <div id="zone-emoji" class="text-8xl mb-8">🌲</div>
+                <h3 id="info-title" class="heading-font text-4xl mb-4 text-white"></h3>
+                <div id="info-text" class="text-xl font-light leading-relaxed text-white/80 space-y-6"></div>
+                <div id="zone-stats" class="mt-8 grid grid-cols-2 gap-4">
+                    <!-- Stats via JS -->
+                </div>
+            </div>
+            <!-- Animated background elements based on zone could go here -->
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Природные Зоны", subtitle: "Широтная зональность и биоразнообразие",
+                labels: { temp: "Температура", prec: "Осадки" },
+                zones: {
+                    equator: { icon: "🌴", name: "Экваториальные леса", text: "Многоярусные леса, где всегда влажно и жарко. Здесь обитает более половины всех видов животных Земли.", temp: "+24...+28°C", prec: "2000-3000 мм" },
+                    savanna: { icon: "🦓", name: "Саванны", text: "Открытые пространства с редкими деревьями. Четкая смена сухого и влажного сезонов.", temp: "+20...+30°C", prec: "500-1500 мм" },
+                    desert: { icon: "🏜️", name: "Пустыни", text: "Экстремальная жара и минимум влаги. Растения имеют длинные корни и мелкие листья.", temp: "+30...+50°C", prec: "<100 мм" },
+                    steppe: { icon: "🌾", name: "Степи", text: "Безлесные равнины, покрытые травами. Обладают самыми плодородными почвами — черноземами.", temp: "-10...+25°C", prec: "300-500 мм" },
+                    taiga: { icon: "🌲", name: "Тайга", text: "Хвойные леса умеренного пояса. Длинная холодная зима и прохладное лето.", temp: "-30...+15°C", prec: "400-600 мм" },
+                    tundra: { icon: "🦌", name: "Тундра", text: "Безлесные пространства субарктического пояса. Многолетняя мерзлота, мхи и лишайники.", temp: "-40...+10°C", prec: "200-300 мм" }
+                }
+            },
+            kz: {
+                title: "Табиғат Зоналары", subtitle: "Ендік зоналылық және биоалуантүрлілік",
+                labels: { temp: "Температура", prec: "Жауын-шашын" },
+                zones: {
+                    equator: { icon: "🌴", name: "Экваторлық ормандар", text: "Ылғалды әрі ыстық көпқабатты ормандар. Жердегі жануарлар түрлерінің жартысынан астамы осында." },
+                    savanna: { icon: "🦓", name: "Саванналар", text: "Сирек ағашты ашық кеңістіктер. Құрғақ және ылғалды мезгілдер анық байқалады." },
+                    desert: { icon: "🏜️", name: "Шөлдер", text: "Экстремалды ыстық пен ылғалдың аздығы. Өсімдіктердің тамыры ұзын, жапырақтары ұсақ." },
+                    steppe: { icon: "🌾", name: "Далалар", text: "Шөптесін жазықтар. Ең құнарлы топырақ — қара топырақ осында." },
+                    taiga: { icon: "🌲", name: "Тайга", text: "Қылқан жапырақты ормандар. Ұзақ суық қыс және қоңырсалқын жаз." },
+                    tundra: { icon: "🦌", name: "Тундра", text: "Ормансыз субарктикалық кеңістіктер. Мүктер мен қыналар басым." }
+                }
+            },
+            en: {
+                title: "Natural Zones", subtitle: "Global Zonation & Biodiversity",
+                labels: { temp: "Temperature", prec: "Rainfall" },
+                zones: {
+                    equator: { icon: "🌴", name: "Equatorial Forests", text: "Multi-layered forests with constant heat and high humidity. Home to half of the world's species.", temp: "24-28°C", prec: "2000-3000 mm" },
+                    savanna: { icon: "🦓", name: "Savannas", text: "Open grasslands with scattered trees. Characterized by distinct wet and dry seasons.", temp: "20-30°C", prec: "500-1500 mm" },
+                    desert: { icon: "🏜️", name: "Deserts", text: "Extreme heat and minimal moisture. Plants have long roots and needle-like leaves to survive.", temp: "30-50°C", prec: "<100 mm" },
+                    steppe: { icon: "🌾", name: "Steppes", text: "Treeless plains covered in grasses. Featuring the most fertile black soils (chernozem).", temp: "-10 to 25°C", prec: "300-500 mm" },
+                    taiga: { icon: "🌲", name: "Taiga", text: "Northern coniferous forests. Long, harsh winters and short, cool summers.", temp: "-30 to 15°C", prec: "400-600 mm" },
+                    tundra: { icon: "🦌", name: "Tundra", text: "Treeless subarctic region with permafrost. Dominated by mosses and lichens.", temp: "-40 to 10°C", prec: "200-300 mm" }
+                }
+            }
+        };
+
+        let currentLang = 'ru', activeZone = 'equator';
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.selectZone = function(z) { activeZone = z; updateUI(); }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+
+            const list = document.getElementById('zone-list');
+            list.innerHTML = '';
+            Object.keys(t.zones).forEach(key => {
+                const z = t.zones[key];
+                const div = document.createElement('div');
+                div.className = `zone-card glass p-4 rounded-3xl flex items-center gap-4 ${activeZone === key ? 'active' : ''}`;
+                div.onclick = () => selectZone(key);
+                div.innerHTML = `<span class="text-2xl">${z.icon}</span><span class="font-bold text-xs uppercase tracking-widest">${z.name}</span>`;
+                list.appendChild(div);
+            });
+
+            const data = t.zones[activeZone];
+            const content = document.getElementById('content-display');
+            content.style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('zone-emoji').textContent = data.icon;
+                document.getElementById('info-title').textContent = data.name;
+                document.getElementById('info-text').textContent = data.text;
+                
+                const stats = document.getElementById('zone-stats');
+                stats.innerHTML = `
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <div class="text-[9px] uppercase opacity-40">${t.labels.temp}</div>
+                        <div class="font-bold text-yellow-400">${data.temp || 'N/A'}</div>
+                    </div>
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <div class="text-[9px] uppercase opacity-40">${t.labels.prec}</div>
+                        <div class="font-bold text-sky-400">${data.prec || 'N/A'}</div>
+                    </div>
+                `;
+                content.style.opacity = '1';
+            }, 300);
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

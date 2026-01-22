@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Труд и быт: Земледельцы и ремесленники Египта</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #2d241e, #0c0a09);
+            color: #fafaf9;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(217, 119, 6, 0.1);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #b45309;
+            color: white;
+            box-shadow: 0 0 30px rgba(180, 83, 9, 0.3);
+        }
+        .accent-terracotta { color: #d97706; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #b45309; border-radius: 10px; }
+        .info-panel-accent {
+            border-left: 6px solid #b45309;
+            background: linear-gradient(90deg, rgba(180, 83, 9, 0.05), transparent);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-400 uppercase">
+                Труд долины Нила
+            </h1>
+            <p id="sub-title" class="text-orange-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Быт тех, кто строил пирамиды</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-orange-500/10">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-orange-900/20 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-orange-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-orange-800 inline-block"></span>
+                Сцена повседневности
+            </h2>
+            <div class="relative flex-grow bg-stone-900/40 rounded-[2.5rem] border border-orange-900/30 overflow-hidden shadow-inner">
+                <canvas id="lifeCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-orange-500/50 italic text-center uppercase tracking-widest">Нажмите на элементы жизни египтян для изучения</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-orange-600 mb-8 font-black uppercase leading-tight" id="placeholder-title">Основа экономики</h3>
+                    <p class="text-stone-300 leading-relaxed text-lg" id="placeholder-text">
+                        Земледельцы и ремесленники составляли большинство населения Египта. На их плечах лежала обязанность кормить страну, платить налоги и возводить великие постройки по приказу фараона.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🧺</span>
+                            <span id="hint-1" class="text-orange-200/60 font-bold uppercase text-xs tracking-widest">Налоги и Писцы</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏺</span>
+                            <span id="hint-2" class="text-orange-200/60 font-bold uppercase text-xs tracking-widest">Мастерство ремесла</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-orange-950/40 text-orange-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-stone-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-stone-950/40 rounded-[2.5rem] border border-orange-900/30 shadow-xl">
+                        <strong class="text-orange-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-detail">Особенности быта:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛠️</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-orange-400 uppercase">Шадуф и Ирригация</h3>
+            <p id="card1-text" class="text-stone-400 text-sm leading-relaxed">Чтобы поливать поля, до которых не доходила вода Нила, египтяне использовали <strong>шадуф</strong> — устройство, похожее на колодезный журавль. Это позволяло собирать несколько урожаев в год.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-yellow-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📝</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-orange-400 uppercase">Налоги и Учет</h3>
+            <p id="card2-text" class="text-stone-400 text-sm leading-relaxed"><strong>Писцы</strong> строго записывали количество собранного зерна. Большая часть урожая уходила в казну фараона в виде налогов. За неуплату земледельца могли жестоко наказать.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-amber-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🍞</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-orange-400 uppercase">Простая пища</h3>
+            <p id="card3-text" class="text-stone-400 text-sm leading-relaxed">Основным рационом были лепешки из <strong>ячменя</strong>, сушеная рыба, лук и чеснок. Излюбленным напитком было пиво. Мясо появлялось на столах бедняков крайне редко, по праздникам.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-orange-900/10 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-orange-100/70 leading-tight max-w-5xl mx-auto">
+            «Пока фараон восседает на троне, тысячи рук в долине Нила неустанно трудятся, превращая ил в хлеб, а глину — в вечность».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Труд долины Нила",
+                subtitle: "Быт тех, кто строил пирамиды",
+                visualTitle: "Сцена повседневности",
+                hint: "Нажмите на элементы жизни египтян для изучения",
+                placeholderTitle: "Основа экономики",
+                placeholderText: "Земледельцы и ремесленники — сердце Египта. Труд на полях и в мастерских обеспечивал процветание великой цивилизации.",
+                labelDetail: "Особенности быта:",
+                hint1: "Налоги и Писцы", hint2: "Мастерство ремесла",
+                card1Title: "Шадуф и Ирригация",
+                card1Text: "Шадуф позволял поднимать воду на высокие участки земли. Ирригационная система — главный технологический секрет Египта.",
+                card2Title: "Налоги и Учет",
+                card2Text: "Писцы контролировали каждый мешок зерна. Налоги были тяжелым бременем для простых крестьян.",
+                card3Title: "Простая пища",
+                card3Text: "Ячменный хлеб, пиво и овощи — основа рациона. Простота жизни контрастировала с роскошью дворцов.",
+                footerQuote: "«Пока фараон восседает на троне, тысячи рук в долине Нила неустанно трудятся, превращая ил в хлеб, а глину — в вечность».",
+                nodes: [
+                    { id: 1, tag: "На поле", title: "Труд земледельца", desc: "Жизнь зависела от Нила. После разлива (сезон Ахет) землю пахали плугом, запряженным быками. Затем зерно втаптывали в ил домашними животными. Во время жатвы работали серпами с каменными зубьями.", fact: "Весь Египет был поделен на прямоугольные бассейны дамбами для удержания воды." },
+                    { id: 2, tag: "Технология", title: "Шадуф", desc: "Изобретение для подъема воды. Состоит из длинного шеста с кожаным ведром на одном конце и противовесом из камня на другом. Позволял орошать сады и огороды круглый год.", fact: "Благодаря шадуфу египтяне могли выращивать овощи даже в самый засушливый сезон." },
+                    { id: 3, tag: "Мастерская", title: "Ремесленники", desc: "Египет славился ювелирами, ткачами, кожевниками и гончарами. Ремесленники работали в государственных мастерских или на вельмож, получая паек продуктами.", fact: "Ткачи изготавливали тончайший лен, который называли 'тканым воздухом' за его легкость." },
+                    { id: 4, tag: "Подсчет", title: "Писец", desc: "Сотрудник администрации. Писцы записывали размеры полей, количество скота и урожая. Они были грамотными людьми и пользовались большим уважением.", fact: "Писец — это символ власти и порядка в Египте, связующее звено между фараоном и народом." },
+                    { id: 5, tag: "Хижина", title: "Дом бедняка", desc: "Дома строили из необожженного кирпича (сырца). Вместо окон были узкие щели. Внутри — циновки из тростника, глиняная посуда и сундуки для одежды.", fact: "Крыши делали плоскими: на них спали в жаркие ночи и сушили продукты." }
+                ]
+            },
+            kz: {
+                title: "Ніл аңғарының еңбегі",
+                subtitle: "Пирамида салғандардың тұрмысы",
+                visualTitle: "Күнделікті өмір көрінісі",
+                hint: "Зерттеу үшін Мысыр өмірінің элементтерін басыңыз",
+                placeholderTitle: "Экономика негізі",
+                placeholderText: "Егіншілер мен қолөнершілер — Мысырдың жүрегі. Егістіктер мен шеберханалардағы еңбек ұлы өркениеттің гүлденуін қамтамасыз етті.",
+                labelDetail: "Тұрмыс ерекшеліктері:",
+                hint1: "Салық пен Хатшылар", hint2: "Қолөнер шеберлігі",
+                card1Title: "Шадуф пен Ирригация",
+                card1Text: "Шадуф суды жоғары жерлерге көтеруге мүмкіндік берді. Суару жүйесі — Мысырдың басты технологиялық құпиясы.",
+                card2Title: "Салық және Есеп",
+                card2Text: "Хатшылар әр қап астықты бақылап отырды. Салық қарапайым шаруалар үшін ауыр жүк болды.",
+                card3Title: "Қарапайым тағам",
+                card3Text: "Арпа наны, сыра және көкөністер — рационның негізі. Өмірдің қарапайымдылығы сарайлардың сән-салтанатымен ерекшеленді.",
+                footerQuote: "«Перғауын тақта отырғанда, Ніл аңғарындағы мыңдаған қолдар лайды нанға, ал балшықты — мәңгілікке айналдыру үшін үздіксіз еңбек етеді».",
+                nodes: [
+                    { id: 1, tag: "Егістікте", title: "Егінші еңбегі", desc: "Өмір Нілге байланысты болды. Ніл тасығаннан кейін жерді өгіз жегілген соқамен жыртты. Содан кейін дәнді малмен бастырды.", fact: "Бүкіл Мысыр суды ұстап тұру үшін дамбалармен тікбұрышты бассейндерге бөлінді." },
+                    { id: 2, tag: "Технология", title: "Шадуф", desc: "Су көтеруге арналған құрылғы. Бір жағында тері шелек, екінші жағында тас салмағы бар ұзын сырықтан тұрады.", fact: "Шадуфтың арқасында мысырлықтар ең құрғақ маусымда да көкөніс өсіре алды." },
+                    { id: 3, tag: "Шеберхана", title: "Қолөнершілер", desc: "Мысыр зергерлерімен, тоқымашыларымен, тері өңдеушілерімен танымал болды. Олар азық-түлік пайегін алып жұмыс істеді.", fact: "Тоқымашылар өте жұқа зығыр мата жасады, оны жеңілдігі үшін 'тоқылған ауа' деп атаған." },
+                    { id: 4, tag: "Есеп", title: "Хатшы", desc: "Әкімшілік қызметкері. Хатшылар егістік көлемін, мал мен егін санын жазып отырды. Олар үлкен құрметке ие болды.", fact: "Хатшы — Мысырдағы билік пен тәртіптің символы." },
+                    { id: 5, tag: "Күрке", title: "Кедейдің үйі", desc: "Үйлерді күйдірілмеген кірпіштен салды. Ішінде қамыстан жасалған төсеніштер мен қыш ыдыстар болды.", fact: "Төбелерді тегіс етіп жасады: ыстық түндері сонда ұйықтап, өнімдерді кептірді." }
+                ]
+            },
+            en: {
+                title: "Labor of the Nile Valley",
+                subtitle: "Daily life of the Pyramid Builders",
+                visualTitle: "Daily Life Scene",
+                hint: "Click on elements of Egyptian life to explore",
+                placeholderTitle: "Base of Economy",
+                placeholderText: "Farmers and craftsmen were the heart of Egypt. Labor in fields and workshops ensured the prosperity of the great civilization.",
+                labelDetail: "Lifestyle Features:",
+                hint1: "Taxes and Scribes", hint2: "Craft Mastery",
+                card1Title: "Shaduf and Irrigation",
+                card1Text: "The Shaduf allowed lifting water to high grounds. The irrigation system was Egypt's main technological secret.",
+                card2Title: "Taxes and Accounting",
+                card2Text: "Scribes monitored every sack of grain. Taxes were a heavy burden for the simple peasants.",
+                card3Title: "Simple Diet",
+                card3Text: "Barley bread, beer, and vegetables were the staples. Simple life contrasted with the luxury of palaces.",
+                footerQuote: "«While the Pharaoh sits on the throne, thousands of hands in the Nile Valley work tirelessly, turning silt into bread, and clay into eternity.»",
+                nodes: [
+                    { id: 1, tag: "In the Field", title: "Farmer's Labor", desc: "Life depended on the Nile. After the flood, the land was plowed with oxen. Grain was trodden into the silt by livestock.", fact: "All Egypt was divided into rectangular basins by dikes to hold the water." },
+                    { id: 2, tag: "Technology", title: "Shaduf", desc: "A device for lifting water. Consists of a long pole with a bucket and a counterweight. Allowed watering gardens year-round.", fact: "Thanks to the shaduf, Egyptians could grow vegetables even in the driest season." },
+                    { id: 3, tag: "Workshop", title: "Artisans", desc: "Egypt was famous for jewelers, weavers, tanners, and potters. They worked in state workshops for food rations.", fact: "Weavers produced linen so fine it was called 'woven air' for its lightness." },
+                    { id: 4, tag: "Counting", title: "Scribe", desc: "Administration staff. Scribes recorded field sizes, livestock, and crops. They were literate and highly respected.", fact: "The scribe is a symbol of power and order in Egypt, a link between Pharaoh and people." },
+                    { id: 5, tag: "Hut", title: "Poor Man's House", desc: "Houses were built of sun-dried mud bricks. Inside: reed mats, pottery, and chests for clothes.", fact: "Roofs were flat: they slept there on hot nights and dried food items." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('lifeCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-detail').innerText = t.labelDetail;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Stylized Background: Sky and Land
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrad.addColorStop(0, '#1c1917');
+            skyGrad.addColorStop(0.6, '#44403c');
+            skyGrad.addColorStop(1, '#78716c');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Water (Nile)
+            ctx.fillStyle = '#0c4a6e';
+            ctx.fillRect(0, canvas.height * 0.7, canvas.width, canvas.height * 0.3);
+
+            const nodesData = [
+                { id: 1, x: canvas.width * 0.2, y: canvas.height * 0.5, icon: "🌾" }, // Field
+                { id: 2, x: canvas.width * 0.45, y: canvas.height * 0.65, icon: "🏗️" }, // Shaduf
+                { id: 3, x: canvas.width * 0.75, y: canvas.height * 0.45, icon: "🏺" }, // Workshop
+                { id: 4, x: canvas.width * 0.85, y: canvas.height * 0.2, icon: "📝" }, // Scribe
+                { id: 5, x: canvas.width * 0.15, y: canvas.height * 0.25, icon: "🛖" } // Hut
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(180, 83, 9, 0.4)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fafaf9';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Symbol
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Tag
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                ctx.font = 'bold 10px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

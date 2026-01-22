@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ionic Bond: The Static Power</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom left, #78350f, #92400e, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2.5rem; cursor: pointer; }
+        .lang-btn.active { background: #facc15; color: #78350f; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-yellow-500/40">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-yellow-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-yellow-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="ionicCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-yellow-500">
+            <div id="info-content">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-yellow-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4 font-inter"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-yellow-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-yellow-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-yellow-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-yellow-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-yellow-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-yellow-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-yellow-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-yellow-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Ионная связь",
+                subtitle: "Электростатическое притяжение зарядов",
+                canvasHeading: "Модель переноса электрона",
+                canvasHint: "Нажмите, чтобы увидеть процесс образования ионов",
+                defaultTitle: "Захват и отдача",
+                defaultText: "Ионная связь образуется между типичными металлами и типичными неметаллами. Металл отдает электроны, превращаясь в катион (+), а неметалл принимает их, становясь анионом (-).",
+                cards: [
+                    { title: "Природа связи", desc: "Это крайний случай полярной ковалентной связи, когда электронная пара практически полностью переходит к более электроотрицательному атому." },
+                    { title: "Кристаллы", desc: "Вещества с ионной связью образуют ионные кристаллические решетки, отличающиеся высокой твердостью и температурой плавления." },
+                    { title: "Примеры", desc: "Типичные представители: поваренная соль (NaCl), фторид кальция (CaF<sub>2</sub>), оксид натрия (Na<sub>2</sub>O)." }
+                ],
+                quote: "«Ионная связь — это торжество закона Кулона в микромире атомов»",
+                author: "Макс Борн"
+            },
+            kz: {
+                title: "Иондық байланыс",
+                subtitle: "Зарядтардың электростатикалық тартылуы",
+                canvasHeading: "Электрон ауысу моделі",
+                canvasHint: "Иондардың түзілу процесін көру үшін басыңыз",
+                defaultTitle: "Беру және қосып алу",
+                defaultText: "Иондық байланыс типтік металдар мен типтік бейметалдар арасында түзіледі. Металл электрондарын беріп, катионға (+) айналады.",
+                cards: [
+                    { title: "Байланыс табиғаты", desc: "Бұл ковалентті полюсті байланыстың шекті жағдайы, мұнда электрон жұбы толығымен дерлік электртеріс атомға ауысады." },
+                    { title: "Кристалдар", desc: "Иондық байланысы бар заттар жоғары қаттылығымен және балку температурасымен ерекшеленетін иондық кристалдық торлар түзеді." },
+                    { title: "Мысалдар", desc: "Типтік өкілдері: ас тұзы (NaCl), кальций фториді (CaF<sub>2</sub>), натрий оксиді (Na<sub>2</sub>O)." }
+                ],
+                quote: "«Иондық байланыс — бұл атомдар микроәлеміндегі Кулон заңының салтанаты»",
+                author: "Макс Борн"
+            },
+            en: {
+                title: "Ionic Bond",
+                subtitle: "Electrostatic attraction of charges",
+                canvasHeading: "Electron Transfer Model",
+                canvasHint: "Click to see the process of ion formation",
+                defaultTitle: "Give and Take",
+                defaultText: "Ionic bonds form between typical metals and non-metals. The metal donates electrons to become a cation (+), while the non-metal accepts them to become an anion (-).",
+                cards: [
+                    { title: "Bond Nature", desc: "This is an extreme case of polar covalent bonding where the electron pair fully transfers to the more electronegative atom." },
+                    { title: "Crystals", desc: "Ionic substances form crystal lattices characterized by high hardness and melting points." },
+                    { title: "Examples", desc: "Typical representatives: Table salt (NaCl), Calcium fluoride (CaF<sub>2</sub>), Sodium oxide (Na<sub>2</sub>O)." }
+                ],
+                quote: "«The ionic bond is the triumph of Coulomb's law within the microworld of atoms»",
+                author: "Max Born"
+            }
+        };
+
+        let currentLang = 'ru';
+        let step = 0;
+        const canvas = document.getElementById('ionicCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.002;
+
+            if (step === 0) {
+                // Neutral atoms
+                drawBall(cx - 120, cy, 50, '#94a3b8', 'Na');
+                drawBall(cx + 120, cy, 70, '#10b981', 'Cl');
+                // Valence electron
+                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx - 70, cy, 5, 0, Math.PI*2); ctx.fill();
+            } else {
+                // Ions
+                drawBall(cx - 80, cy, 40, '#fbbf24', 'Na+');
+                drawBall(cx + 80, cy, 75, '#10b981', 'Cl-');
+                ctx.strokeStyle = 'white'; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.arc(cx, cy, 180, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+            }
+            requestAnimationFrame(draw);
+        }
+
+        function drawBall(x, y, r, color, label) {
+            ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'white'; ctx.font = 'bold 16px Inter'; ctx.textAlign = 'center'; ctx.fillText(label, x, y + 6);
+        }
+
+        canvas.addEventListener('click', () => { step = 1 - step; });
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

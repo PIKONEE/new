@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature of Antarctica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #1e3a8a; color: white; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #bae6fd; color: #1e3a8a; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="mb-8 flex justify-between items-center border-b border-blue-400/30 pb-4">
+        <h1 id="title" class="text-3xl font-montserrat text-sky-200"></h1>
+        <div class="flex gap-2"><button onclick="setL('ru')" id="btn-ru" class="lang-btn px-4 py-1 rounded text-xs">RU</button><button onclick="setL('en')" id="btn-en" class="lang-btn px-4 py-1 rounded text-xs">EN</button></div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 relative h-[500px] bg-sky-900 rounded-custom overflow-hidden">
+            <canvas id="natureCanvas" class="w-full h-full"></canvas>
+            <div class="absolute top-4 left-4 glass px-4 py-2 rounded-lg text-xs font-bold text-sky-100">
+                ICEBERG PROFILE: 10% Above, 90% Below
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+            <div class="glass p-8 rounded-custom border-l-4 border-sky-400">
+                <h2 id="h-info" class="text-2xl font-bold mb-4 text-sky-100"></h2>
+                <p id="t-info" class="text-sm leading-relaxed text-sky-50/80"></p>
+            </div>
+            
+            <div class="glass p-6 rounded-2xl flex items-center gap-4">
+                <span class="text-4xl">🐧</span>
+                <div>
+                    <h4 class="font-bold text-sky-200">Emperor Penguin</h4>
+                    <p class="text-xs opacity-60">Endemic Symbol</p>
+                </div>
+            </div>
+             <div class="glass p-6 rounded-2xl flex items-center gap-4">
+                <span class="text-4xl">🦐</span>
+                <div>
+                    <h4 class="font-bold text-pink-200">Krill</h4>
+                    <p class="text-xs opacity-60">Base of Food Chain</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: { t: "ПРИРОДА АНТАРКТИДЫ", h: "Ледяная пустыня", d: "Органический мир беден и связан с океаном. Растения: мхи, лишайники. Животные: пингвины, тюлени, киты. Центральные районы почти безжизненны (антарктический оазис)." },
+            en: { t: "ANTARCTIC NATURE", h: "Ice Desert", d: "Organic life is scarce and tied to the ocean. Plants: mosses, lichens. Animals: penguins, seals, whales. Central regions are nearly lifeless." }
+        };
+
+        let cx, cvs;
+        let krill = [];
+
+        window.setL = (l) => {
+            const d = content[l] || content['en'];
+            document.getElementById('title').textContent = d.t;
+            document.getElementById('h-info').textContent = d.h;
+            document.getElementById('t-info').textContent = d.d;
+            document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.001;
+            cx.clearRect(0,0,w,h);
+
+            // Sky
+            cx.fillStyle = '#bae6fd'; cx.fillRect(0,0,w,h*0.3);
+            // Ocean
+            const oceanG = cx.createLinearGradient(0,h*0.3, 0, h);
+            oceanG.addColorStop(0, '#0284c7'); oceanG.addColorStop(1, '#0c4a6e');
+            cx.fillStyle = oceanG; cx.fillRect(0,h*0.3,w,h*0.7);
+
+            // Iceberg
+            cx.fillStyle = 'white';
+            cx.beginPath();
+            // Top part
+            cx.moveTo(w*0.4, h*0.3); cx.lineTo(w*0.5, h*0.2); cx.lineTo(w*0.6, h*0.3);
+            // Underwater part (Huge)
+            cx.lineTo(w*0.7, h*0.8); cx.lineTo(w*0.55, h*0.9); cx.lineTo(w*0.3, h*0.7);
+            cx.closePath();
+            cx.fill();
+
+            // Krill swarm (particles)
+            cx.fillStyle = '#f9a8d4';
+            krill.forEach(k => {
+                k.x += Math.sin(t + k.y)*0.5;
+                if(k.x > w) k.x = 0;
+                cx.beginPath(); cx.arc(k.x, k.y, 2, 0, Math.PI*2); cx.fill();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('natureCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            
+            for(let i=0; i<50; i++) krill.push({x: Math.random()*1000, y: 200 + Math.random()*200});
+
+            setL('ru'); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Индустрия и Экологическая цена</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #020617; color: #cbd5e1; }
+        .industrial-card { background: #0f172a; border: 1px solid #334155; padding: 40px; border-radius: 40px; position: relative; overflow: hidden; }
+        .lang-active { background: #10b981 !important; color: white !important; font-weight: 900; }
+        .hazard-glow { box-shadow: 0 0 30px rgba(16, 185, 129, 0.2); }
+        .eco-warning { color: #f87171; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; }
+    </style>
+</head>
+<body class="p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="fixed bottom-10 left-10 z-50 flex gap-2 bg-slate-900/90 border border-white/10 p-2 rounded-full shadow-2xl">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-6 py-2 rounded-full text-xs">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-xs text-slate-400">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-xs text-slate-400">EN</button>
+    </div>
+
+    <main class="max-w-5xl mx-auto space-y-12">
+        <header>
+            <h1 id="title" class="text-6xl font-black uppercase text-white leading-none mb-4 italic tracking-tighter">Промышленность и Кризис</h1>
+            <p id="desc" class="text-emerald-500 font-bold uppercase tracking-widest text-sm">Сырьевой гигант на грани эко-катастрофы</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Промышленность -->
+            <div class="lg:col-span-2 industrial-card hazard-glow">
+                <h2 id="indT" class="text-3xl font-black text-white mb-6 uppercase">Сырьевой Придаток</h2>
+                <p id="indD" class="text-lg text-slate-400 mb-8 leading-relaxed">Казахстан стал главной «бензоколонкой» и «кузницей» СССР. Добыча нефти, газа, меди и угля росла рекордными темпами, но 90% продукции уходило в центр. Регион получал лишь экологические последствия.</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-800/50 p-6 rounded-2xl border border-white/5">
+                        <p class="text-3xl font-black text-white">93%</p>
+                        <p id="stat1" class="text-[10px] uppercase text-emerald-400 font-bold">Вывоз сырья</p>
+                    </div>
+                    <div class="bg-slate-800/50 p-6 rounded-2xl border border-white/5">
+                        <p class="text-3xl font-black text-white">#1</p>
+                        <p id="stat2" class="text-[10px] uppercase text-emerald-400 font-bold">В мире по хрому</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Эко-катастрофа диаграмма -->
+            <div class="industrial-card flex flex-col justify-center">
+                <h3 id="chartTitle" class="text-xs font-black uppercase mb-6 text-slate-500 text-center tracking-widest">Уровень угроз (%)</h3>
+                <div class="h-64">
+                    <canvas id="ecoChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Арал и Семей -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="p-10 bg-red-950/20 border border-red-900/50 rounded-[3rem] space-y-4">
+                <span class="eco-warning">Danger Zone A</span>
+                <h3 id="aralT" class="text-2xl font-black text-white uppercase">Аральская Трагедия</h3>
+                <p id="aralD" class="text-sm text-slate-400 italic">Бесконтрольное орошение полей привело к высыханию моря на 14 метров. Соляные бури накрыли тысячи километров вокруг.</p>
+            </div>
+            <div class="p-10 bg-emerald-950/20 border border-emerald-900/50 rounded-[3rem] space-y-4">
+                <span class="eco-warning" style="color: #34d399;">Hazard Zone B</span>
+                <h3 id="polyT" class="text-2xl font-black text-white uppercase">Семипалатинск</h3>
+                <p id="polyD" class="text-sm text-slate-400 italic">456 ядерных взрывов. Казахстан стал заложником гонки вооружений. Миллионы людей подверглись радиации без их ведома.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const content = {
+            ru: {
+                title: "Промышленность и Кризис", indT: "Сырьевой Придаток", indD: "Казахстан стал главной «кузницей» СССР. Добыча нефти, меди и угля росла, но 90% продукции уходило в центр. Регион получал лишь экологические последствия.",
+                stat1: "Вывоз сырья", stat2: "В мире по хрому", chartTitle: "Уровень эко-угроз",
+                aralT: "Аральская Трагедия", aralD: "Бесконтрольное орошение привело к высыханию моря. Соляные бури накрыли тысячи километров.",
+                polyT: "Семипалатинск", polyD: "456 ядерных взрывов. Казахстан — заложник гонки вооружений и радиации.",
+                labels: ['Арал', 'Радиация', 'Воздух', 'Почва']
+            },
+            kz: {
+                title: "Өнеркәсіп және Дағдарыс", indT: "Шикізат Орталығы", indD: "Қазақстан КСРО-ның басты «ұстаханасына» айналды. Мұнай, мыс және көмір өндіру қарқынды өсті, бірақ өнімнің 90%-ы орталыққа кетті.",
+                stat1: "Шикізат тасу", stat2: "Хром бойынша #1", chartTitle: "Эко-қауіп деңгейі",
+                aralT: "Арал қасіреті", aralD: "Бақылаусыз суару теңіздің құрғауына әкелді. Тұзды дауылдар мыңдаған шақырымды жауып тастады.",
+                polyT: "Семей полигоны", polyD: "456 ядролық жарылыс. Қазақстан қарулану жарысы мен радиацияның тұтқынына айналды.",
+                labels: ['Арал', 'Радиация', 'Ауа', 'Топырақ']
+            },
+            en: {
+                title: "Industry & Crisis", indT: "Resource Backbone", indD: "Kazakhstan became the USSR's main 'forge'. Oil, copper, and coal extraction grew, but 90% of output went to the center.",
+                stat1: "Export of raw materials", stat2: "#1 in Chrome", chartTitle: "Eco-Hazard Levels",
+                aralT: "Aral Sea Tragedy", aralD: "Uncontrolled irrigation led to the sea drying up. Salt storms covered thousands of kilometers.",
+                polyT: "Semipalatinsk", polyD: "456 nuclear tests. Kazakhstan became a hostage to the arms race and radiation.",
+                labels: ['Aral', 'Radiation', 'Air', 'Soil']
+            }
+        };
+
+        let chart = null;
+
+        function setLang(lang) {
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('indT').innerText = t.indT;
+            document.getElementById('indD').innerText = t.indD;
+            document.getElementById('stat1').innerText = t.stat1;
+            document.getElementById('stat2').innerText = t.stat2;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('aralT').innerText = t.aralT;
+            document.getElementById('aralD').innerText = t.aralD;
+            document.getElementById('polyT').innerText = t.polyT;
+            document.getElementById('polyD').innerText = t.polyD;
+            renderChart(t.labels);
+        }
+
+        function renderChart(labels) {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('ecoChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'polarArea',
+                data: { labels: labels, datasets: [{ data: [95, 90, 75, 80], backgroundColor: ['#10b981CC', '#f43f5eCC', '#3b82f6CC', '#f59e0bCC'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { grid: { color: '#334155' }, ticks: { display: false } } } }
+            });
+        }
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

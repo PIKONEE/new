@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countries of the World: Diversity and Types</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #020617; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #6366f1; color: white; font-weight: 800; }
+        .type-card { transition: all 0.3s; cursor: pointer; }
+        .type-card:hover { background: rgba(99, 102, 241, 0.15); border-color: #6366f1; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-b border-indigo-500/20">
+        <div class="flex items-center gap-4">
+            <div class="text-3xl">🏛️</div>
+            <div>
+                <h1 id="main-title" class="heading-font text-2xl md:text-3xl uppercase tracking-tighter text-indigo-400"></h1>
+                <p id="sub-title" class="text-white/40 text-[10px] uppercase tracking-widest"></p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-[10px] font-bold">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-[10px] font-bold">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-[10px] font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        <div class="lg:col-span-4 flex flex-col justify-center p-8 glass rounded-custom border-l-8 border-indigo-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-white"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/70 space-y-6"></div>
+        </div>
+
+        <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div onclick="showDetail('monarchy')" class="type-card glass p-8 rounded-3xl border border-white/5 flex flex-col justify-center">
+                <span class="text-4xl mb-4">👑</span>
+                <h4 id="t1-n" class="font-bold text-indigo-400 uppercase text-xs tracking-widest mb-2"></h4>
+                <p id="t1-d" class="text-xs text-white/50"></p>
+            </div>
+            <div onclick="showDetail('republic')" class="type-card glass p-8 rounded-3xl border border-white/5 flex flex-col justify-center">
+                <span class="text-4xl mb-4">🗳️</span>
+                <h4 id="t2-n" class="font-bold text-indigo-400 uppercase text-xs tracking-widest mb-2"></h4>
+                <p id="t2-d" class="text-xs text-white/50"></p>
+            </div>
+            <div onclick="showDetail('giant')" class="type-card glass p-8 rounded-3xl border border-white/5 flex flex-col justify-center">
+                <span class="text-4xl mb-4">📐</span>
+                <h4 id="t3-n" class="font-bold text-indigo-400 uppercase text-xs tracking-widest mb-2"></h4>
+                <p id="t3-d" class="text-xs text-white/50"></p>
+            </div>
+            <div onclick="showDetail('island')" class="type-card glass p-8 rounded-3xl border border-white/5 flex flex-col justify-center">
+                <span class="text-4xl mb-4">🏝️</span>
+                <h4 id="t4-n" class="font-bold text-indigo-400 uppercase text-xs tracking-widest mb-2"></h4>
+                <p id="t4-d" class="text-xs text-white/50"></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Страны Мира", subtitle: "Политическое и территориальное многообразие",
+                defaultTitle: "Мир государств",
+                defaultText: "На современной карте мира насчитывается около 230 стран (из них более 190 — суверенные государства). Страны различаются по площади, численности населения, форме правления и уровню развития.",
+                types: {
+                    monarchy: { n: "Монархия", d: "Власть принадлежит одному человеку и передается по наследству. Бывают абсолютными и конституционными (Великобритания)." },
+                    republic: { n: "Республика", d: "Органы власти выбираются на определенный срок. Самая распространенная форма правления в современном мире." },
+                    giant: { n: "Страны-гиганты", d: "Страны с огромной территорией (Россия, Канада, Китай, США, Бразилия, Австралия, Индия, Казахстан)." },
+                    island: { n: "Островные", d: "Государства, расположенные полностью на островах (Япония, Индонезия, Мадагаскар)." }
+                }
+            },
+            kz: {
+                title: "Әлем Елдері", subtitle: "Саяси және аумақтық әртүрлілік",
+                defaultTitle: "Мемлекеттер әлемі",
+                defaultText: "Қазіргі дүниежүзілік картада 230-ға жуық ел бар (оның 190-нан астамы егеменді мемлекеттер). Елдер аумағы, халқы және басқару формасы бойынша ерекшеленеді.",
+                types: {
+                    monarchy: { n: "Монархия", d: "Билік бір адамның қолында болады және мұрагерлікпен беріледі (Ұлыбритания, Сауд Арабиясы)." },
+                    republic: { n: "Республика", d: "Билік органдары белгілі бір мерзімге сайланады. Қазіргі әлемдегі ең көп таралған басқару түрі." },
+                    giant: { n: "Алып елдер", d: "Аумағы өте үлкен елдер (Ресей, Канада, Қытай, АҚШ, Бразилия, Австралия, Үндістан, Қазақстан)." },
+                    island: { n: "Аралдық", d: "Толығымен аралдарда орналасқан мемлекеттер (Жапония, Индонезия, Мадагаскар)." }
+                }
+            },
+            en: {
+                title: "World Countries", subtitle: "Political and Territorial Diversity",
+                defaultTitle: "World of States",
+                defaultText: "There are about 230 countries on the modern world map (over 190 are sovereign states). They differ in land area, population size, government form, and development level.",
+                types: {
+                    monarchy: { n: "Monarchy", d: "Power is held by a single individual and inherited. Can be absolute or constitutional (e.g., UK)." },
+                    republic: { n: "Republic", d: "Authorities are elected for a specific term. The most common form of government today." },
+                    giant: { n: "Giant Countries", d: "Countries with vast territories (Russia, Canada, China, USA, Brazil, Australia, India, Kazakhstan)." },
+                    island: { n: "Island Nations", d: "States located entirely on islands (e.g., Japan, Indonesia, Madagascar)." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.showDetail = function(key) {
+            const t = translations[currentLang].types[key];
+            document.getElementById('info-title').textContent = t.n;
+            document.getElementById('info-text').textContent = t.d;
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            
+            document.getElementById('t1-n').textContent = t.types.monarchy.n; document.getElementById('t1-d').textContent = t.types.monarchy.d;
+            document.getElementById('t2-n').textContent = t.types.republic.n; document.getElementById('t2-d').textContent = t.types.republic.d;
+            document.getElementById('t3-n').textContent = t.types.giant.n; document.getElementById('t3-d').textContent = t.types.giant.d;
+            document.getElementById('t4-n').textContent = t.types.island.n; document.getElementById('t4-d').textContent = t.types.island.d;
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

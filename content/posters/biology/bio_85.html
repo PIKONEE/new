@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Растительные сообщества</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #d1fae5; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #059669; border-bottom: 3px solid #a7f3d0; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #10b981; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #10b981; background: white; color: #10b981; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #10b981; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-emerald-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Өндіс Қауымдастығы</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Plant Communities (Phytocenosis)</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Растительные сообщества (Фитоценоз)</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-emerald-100">Өндіс адамдар бір орында топтасады - 5 сатылары, біріктіктігі, сукцессия</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-emerald-100">Plants gather together - 5 layers, diversity, succession patterns</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-emerald-100">Растения собираются вместе - 5 слоёв, разнообразие, сукцессия</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Өндіс Қауымдастық құрылымы (5 сатылары)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Plant Community Structure (5 Layers)</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Структура растительного сообщества (5 слоёв)</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-green-50 p-4 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-3">🌳 Ағас сатысы (Tree Layer)</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-3">🌳 Tree Layer (Canopy)</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-3">🌳 Древесный слой (Полог)</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Биіктігі:</strong> 20-60м (дөңгелек сосна - 30м, дуб - 25м, эвкалипт - 80м)</li>
+                            <li lang="en" class="lang-content"><strong>Height:</strong> 20-60m (pine 30m, oak 25m, eucalyptus 80m)</li>
+                            <li lang="ru" class="lang-content"><strong>Высота:</strong> 20-60м (сосна 30м, дуб 25м, эвкалипт 80м)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Маңызы:</strong> 60-70% жарықты құрып алады (теңсіздік төменгі сатылар)</li>
+                            <li lang="en" class="lang-content"><strong>Function:</strong> Intercepts 60-70% light (shadows lower layers)</li>
+                            <li lang="ru" class="lang-content"><strong>Функция:</strong> перехватывает 60-70% света</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Дуб, сосна, берёза, ель, тополь, лиственница</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Oak, pine, birch, spruce, poplar, larch</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> дуб, сосна, берёза, ель, тополь</li>
+
+                            <li lang="kk" class="lang-content"><strong>Биоразнобідігі:</strong> 1 дөңгелек орманда 5-10 ағас түрлері</li>
+                            <li lang="en" class="lang-content"><strong>Diversity:</strong> 5-10 tree species per hectare</li>
+                            <li lang="ru" class="lang-content"><strong>Разнообразие:</strong> 5-10 видов деревьев на гектар</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-lime-50 p-4 rounded border border-lime-300">
+                        <h4 lang="kk" class="lang-content font-bold text-lime-900 mb-3">🌿 Кустарник сатысы (Shrub Layer)</h4>
+                        <h4 lang="en" class="lang-content font-bold text-lime-900 mb-3">🌿 Shrub Layer</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-lime-900 mb-3">🌿 Кустарниковый слой</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Биіктігі:</strong> 3-20м (дөңгелек қала 8м, лесной орех - 6м)</li>
+                            <li lang="en" class="lang-content"><strong>Height:</strong> 3-20m (young trees 8m, hazel 6m)</li>
+                            <li lang="ru" class="lang-content"><strong>Высота:</strong> 3-20м (молодые деревья 8м, лещина 6м)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Маңызы:</strong> 20-30% жарықты құрып алады (өндіс өндіс)</li>
+                            <li lang="en" class="lang-content"><strong>Function:</strong> Intercepts 20-30% light (partially shaded)</li>
+                            <li lang="ru" class="lang-content"><strong>Функция:</strong> перехватывает 20-30% света</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Лесной орех, шиповник, бузина, красная смородина, молодые деревья</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Hazel, dog-rose, elder, currant, young trees</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> лещина, шиповник, бузина, смородина</li>
+
+                            <li lang="kk" class="lang-content"><strong>Ягоды:</strong> Малина, ежевика, черника, брусника (пищевая ресурс)</li>
+                            <li lang="en" class="lang-content"><strong>Berries:</strong> Raspberry, blackberry, blueberry, lingonberry</li>
+                            <li lang="ru" class="lang-content"><strong>Ягоды:</strong> малина, ежевика, черника, брусника</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-3">🌱 Өндіс сатысы (Herb Layer)</h4>
+                        <h4 lang="en" class="lang-content font-bold text-yellow-900 mb-3">🌱 Herb Layer</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-yellow-900 mb-3">🌱 Травяной слой</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Биіктігі:</strong> 0.5-2м (шөптеу, цветы, папоротники)</li>
+                            <li lang="en" class="lang-content"><strong>Height:</strong> 0.5-2m (grasses, flowers, ferns)</li>
+                            <li lang="ru" class="lang-content"><strong>Высота:</strong> 0.5-2м (травы, цветы, папоротники)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Маңызы:</strong> 5-10% жарықты құрып алады (төменгі сатылар 90% қараңғы)</li>
+                            <li lang="en" class="lang-content"><strong>Function:</strong> Intercepts 5-10% light (lower layers 90% dark)</li>
+                            <li lang="ru" class="lang-content"><strong>Функция:</strong> перехватывает 5-10% света</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Щавель, крапива, одуванчик, земляника, папоротник</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Sorrel, nettle, dandelion, strawberry, fern</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> щавель, крапива, одуванчик, земляника</li>
+
+                            <li lang="kk" class="lang-content"><strong>Өндіс ресурстар:</strong> съедобные растения (дикие травы, грибы)</li>
+                            <li lang="en" class="lang-content"><strong>Resources:</strong> Edible plants (wild herbs, mushrooms)</li>
+                            <li lang="ru" class="lang-content"><strong>Ресурсы:</strong> съедобные растения (дикие травы)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-cyan-50 p-4 rounded border border-cyan-300">
+                        <h4 lang="kk" class="lang-content font-bold text-cyan-900 mb-3">🍄 Мхи және лишайники (Moss & Lichen)</h4>
+                        <h4 lang="en" class="lang-content font-bold text-cyan-900 mb-3">🍄 Moss & Lichen Layer</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-cyan-900 mb-3">🍄 Слой мхов и лишайников</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Бііктігі:</strong> 0-0.5м (төмің мхидің слой орманын)</li>
+                            <li lang="en" class="lang-content"><strong>Height:</strong> 0-0.5m (low moss layer on forest)</li>
+                            <li lang="ru" class="lang-content"><strong>Высота:</strong> 0-0.5м (низкий слой мхов)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Маңызы:</strong> Су сохранение, почва закрепление, азот фиксация</li>
+                            <li lang="en" class="lang-content"><strong>Function:</strong> Water retention, soil fixation, N-fixation</li>
+                            <li lang="ru" class="lang-content"><strong>Функция:</strong> сохранение воды, укрепление почвы, азот</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Сфагнум (сфагний болота), кукушкин лён, различные лишайники</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Sphagnum (peat bogs), feathermoss, lichens</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> сфагнум (торфяные болота), кукушкин лён</li>
+
+                            <li lang="kk" class="lang-content"><strong>Өндіс:</strong> Мхидің 1 м² покрывает 100+ литров воды</li>
+                            <li lang="en" class="lang-content"><strong>Fact:</strong> 1 m² moss holds 100+ liters water</li>
+                            <li lang="ru" class="lang-content"><strong>Факт:</strong> 1 м² мха держит 100+ литров воды</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-green-100 p-4 rounded border border-green-400 mt-6">
+                    <h4 lang="kk" class="lang-content font-bold text-green-900 mb-3">🪵 Ұйын (Litter/Humus Layer)</h4>
+                    <h4 lang="en" class="lang-content font-bold text-green-900 mb-3">🪵 Litter & Humus Layer</h4>
+                    <h4 lang="ru" class="lang-content font-bold text-green-900 mb-3">🪵 Подстилка (слой гумуса)</h4>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        <li lang="kk" class="lang-content"><strong>Құрамы:</strong> Өндіс ломка (листья, веточки, цветы), готовый гумус</li>
+                        <li lang="en" class="lang-content"><strong>Composition:</strong> Plant debris (leaves, twigs), humus</li>
+                        <li lang="ru" class="lang-content"><strong>Состав:</strong> растительный материал (листья, ветки), готовый гумус</li>
+
+                        <li lang="kk" class="lang-content"><strong>Маңызы:</strong> Питательные вещества (N, P, K), вода сохранение, почва улучшение</li>
+                        <li lang="en" class="lang-content"><strong>Function:</strong> Nutrients (N, P, K), water retention, soil improvement</li>
+                        <li lang="ru" class="lang-content"><strong>Функция:</strong> питательные вещества, сохранение воды, улучшение почвы</li>
+
+                        <li lang="kk" class="lang-content"><strong>Микрооргу:</strong> Бактерии, грибы (разложение), дождевые черви (аерация)</li>
+                        <li lang="en" class="lang-content"><strong>Microorganisms:</strong> Bacteria, fungi (decomposition), earthworms (aeration)</li>
+                        <li lang="ru" class="lang-content"><strong>Микроорганизмы:</strong> бактерии, грибы (разложение), черви</li>
+
+                        <li lang="kk" class="lang-content"><strong>Сәндіктігі:</strong> 5-20см орманында (өндіс типты 10-50 жыл құрамы)</li>
+                        <li lang="en" class="lang-content"><strong>Thickness:</strong> 5-20cm in forest (takes 10-50 years to form)</li>
+                        <li lang="ru" class="lang-content"><strong>Толщина:</strong> 5-20см в лесу (формируется 10-50 лет)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Қауымдастық Типтері (Биомдар)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Community Types (Biomes)</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Типы сообществ (Биомы)</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-100 p-4 rounded border-l-4 border-green-700">
+                        <h4 lang="kk" class="lang-content font-bold mb-2">🌳 Орман (Forest)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-2">🌳 Forest Biome</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-2">🌳 Лес (Лесной биом)</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">• Покрытие: 30% земли (4 млрд га)</li>
+                            <li lang="en" class="lang-content">• Coverage: 30% earth (4B hectares)</li>
+                            <li lang="ru" class="lang-content">• Покрытие: 30% земли (4 млрд га)</li>
+
+                            <li lang="kk" class="lang-content">• Типи: Тропик (влажный), умеренный, бореальный</li>
+                            <li lang="en" class="lang-content">• Types: Tropical, temperate, boreal</li>
+                            <li lang="ru" class="lang-content">• Типы: тропический, умеренный, бореальный</li>
+
+                            <li lang="kk" class="lang-content">• Жарық: 1-5% орманы подлеска</li>
+                            <li lang="en" class="lang-content">• Light: 1-5% forest understory</li>
+                            <li lang="ru" class="lang-content">• Свет: 1-5% подлеска</li>
+
+                            <li lang="kk" class="lang-content">• Су: 400-2000мм год</li>
+                            <li lang="en" class="lang-content">• Water: 400-2000mm/year</li>
+                            <li lang="ru" class="lang-content">• Вода: 400-2000мм/год</li>
+
+                            <li lang="kk" class="lang-content">• Биоразнобідігі: 50,000+ түрлі өндіс</li>
+                            <li lang="en" class="lang-content">• Biodiversity: 50,000+ plant species</li>
+                            <li lang="ru" class="lang-content">• Биоразнообразие: 50000+ видов растений</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-yellow-100 p-4 rounded border-l-4 border-yellow-700">
+                        <h4 lang="kk" class="lang-content font-bold mb-2">🌾 Өндіс ұйын (Grassland)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-2">🌾 Grassland Biome</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-2">🌾 Травянистое сообщество</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">• Покрытие: 20% земли (2.5 млрд га)</li>
+                            <li lang="en" class="lang-content">• Coverage: 20% earth (2.5B hectares)</li>
+                            <li lang="ru" class="lang-content">• Покрытие: 20% земли (2.5 млрд га)</li>
+
+                            <li lang="kk" class="lang-content">• Типи: Саванна (африкалық), прерия, степь</li>
+                            <li lang="en" class="lang-content">• Types: Savanna, prairie, steppe</li>
+                            <li lang="ru" class="lang-content">• Типы: саванна, прерия, степь</li>
+
+                            <li lang="kk" class="lang-content">• Жарық: 80% земли (шөптеуу өндіс)</li>
+                            <li lang="en" class="lang-content">• Light: 80% ground (grass plants)</li>
+                            <li lang="ru" class="lang-content">• Свет: 80% земли (травянистые)</li>
+
+                            <li lang="kk" class="lang-content">• Су: 250-800мм год (неустойчивый)</li>
+                            <li lang="en" class="lang-content">• Water: 250-800mm/year (variable)</li>
+                            <li lang="ru" class="lang-content">• Вода: 250-800мм/год (неустойчивая)</li>
+
+                            <li lang="kk" class="lang-content">• Жануарлар: Зебра, гну, антилопа (мясо ресурс)</li>
+                            <li lang="en" class="lang-content">• Animals: Zebra, wildebeest, antelope</li>
+                            <li lang="ru" class="lang-content">• Животные: зебра, антилопа</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-orange-100 p-4 rounded border-l-4 border-orange-700">
+                        <h4 lang="kk" class="lang-content font-bold mb-2">🌵 Пустыня (Desert)</h4>
+                        <h4 lang="en" class="lang-content font-bold mb-2">🌵 Desert Biome</h4>
+                        <h4 lang="ru" class="lang-content font-bold mb-2">🌵 Пустыня (Пустынный биом)</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">• Покрытие: 15% земли (2 млрд га)</li>
+                            <li lang="en" class="lang-content">• Coverage: 15% earth (2B hectares)</li>
+                            <li lang="ru" class="lang-content">• Покрытие: 15% земли (2 млрд га)</li>
+
+                            <li lang="kk" class="lang-content">• Типи: Жарақ пустыня (Сахара), холодная пустыня</li>
+                            <li lang="en" class="lang-content">• Types: Hot desert (Sahara), cold desert</li>
+                            <li lang="ru" class="lang-content">• Типы: жаркая пустыня, холодная пустыня</li>
+
+                            <li lang="kk" class="lang-content">• Жарық: 100% земли (өндіс төме)</li>
+                            <li lang="en" class="lang-content">• Light: 100% ground (plants sparse)</li>
+                            <li lang="ru" class="lang-content">• Свет: 100% земли (растения редко)</li>
+
+                            <li lang="kk" class="lang-content">• Су: <250мм год (өте құлын)</li>
+                            <li lang="en" class="lang-content">• Water: <250mm/year (very dry)</li>
+                            <li lang="ru" class="lang-content">• Вода: <250мм/год (очень сухо)</li>
+
+                            <li lang="kk" class="lang-content">• Өндіс: 5% өндіс өлгі (ксерофиты)</li>
+                            <li lang="en" class="lang-content">• Plants: 5% vegetation cover (xerophytes)</li>
+                            <li lang="ru" class="lang-content">• Растения: 5% (ксерофиты)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #a7f3d0; border-radius: 1rem; border-top: 4px solid #10b981;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-emerald-800">Өндіс қауымдастық - өндіс адамдар бір орында топтасады. 5 сатылары: ағас (20-60м), кустарник (3-20м), өндіс (0.5-2м), мхи (0-0.5м), ұйын. 3 биомда: орман (30% земли), өндіс (20%), пустыня (15%). Биоразнобідігі, түрлі ресурстар!</p>
+            <p lang="en" class="lang-content text-md font-semibold text-emerald-800">Plant community - plants gather together. 5 layers: tree (20-60m), shrub (3-20m), herb (0.5-2m), moss (0-0.5m), litter. 3 biomes: forest (30% earth), grassland (20%), desert (15%). Biodiversity, diverse resources!</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-emerald-800">Растительное сообщество - растения собираются вместе. 5 слоёв: древесный (20-60м), кустарниковый, травяной, мхи, подстилка. 3 биома: лес (30% земли), луг (20%), пустыня (15%). Биоразнообразие!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

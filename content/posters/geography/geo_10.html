@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Космическая Гонка: План и Карта</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c1a2e; /* Глубокий космос */
+            color: #e0f7fa; /* Светлый текст */
+        }
+        .gradient-title {
+            background: linear-gradient(to right, #a0d2eb, #4971d2); /* Небесный градиент */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .fact-card {
+            background-color: #172a48; /* Чуть светлее фон карточки */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-height: 250px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .fact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(73, 113, 210, 0.4);
+        }
+        .fact-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+        .fact-metric {
+            color: #ff9f1c; /* Золотистый акцент */
+            font-weight: 900;
+            font-size: 1.8rem;
+            line-height: 1.2;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .fact-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+        }
+        .lang-button {
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 700;
+            background-color: #4971d2;
+            color: white;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .lang-button:hover {
+            background-color: #a0d2eb;
+            color: #0c1a2e;
+        }
+        .lang-button.active {
+            background-color: #ff9f1c;
+            color: #0c1a2e;
+            box-shadow: 0 0 10px rgba(255, 159, 28, 0.7);
+        }
+    </style>
+    <script>
+        let currentLang = 'ru';
+
+        // --- 10 КЛЮЧЕВЫХ ЭТАПОВ КОСМИЧЕСКОЙ ГОНКИ ---
+        const spaceMilestones = [
+            { icon: '🛰️', metric: '1957', ru: 'Спутник-1: Первый искусственный спутник Земли (СССР). Начало космической эры.', kz: 'Спутник-1: Жердің бірінші жасанды серігі (КСРО). Ғарыш дәуірінің басталуы.', en: 'Sputnik-1: First artificial Earth satellite (USSR). Start of the space age.' },
+            { icon: '🐶', metric: '1957', ru: 'Лайка: Первое животное, вышедшее на орбиту (СССР). Доказательство выживания в невесомости.', kz: 'Лайка: Орбитаға шыққан бірінші жануар (КСРО). Салмақсыздықта тіршілік ету дәлелі.', en: 'Laika: First animal to orbit (USSR). Proof of survival in zero gravity.' },
+            { icon: '🚀', metric: '1958', ru: 'NASA: Создание Национального управления по аэронавтике и исследованию космического пространства (США).', kz: 'NASA: Аэронавтика және ғарышты зерттеу ұлттық басқармасының құрылуы (АҚШ).', en: 'NASA: Establishment of the National Aeronautics and Space Administration (USA).' },
+            { icon: '👨‍🚀', metric: '1961', ru: 'Гагарин: Первый человек в космосе (СССР). Облет Земли за 108 минут.', kz: 'Гагарин: Ғарыштағы бірінші адам (КСРО). Жерді 108 минутта айналып өту.', en: 'Gagarin: First human in space (USSR). Orbiting Earth in 108 minutes.' },
+            { icon: '🇺🇸', metric: '1961', ru: 'Алан Шепард: Первый американец в космосе. Суборбитальный полет.', kz: 'Алан Шепард: Ғарыштағы бірінші американдық. Суборбиталық ұшу.', en: 'Alan Shepard: First American in space. Suborbital flight.' },
+            { icon: '🚶‍♀️', metric: '1963', ru: 'Терешкова: Первая женщина в космосе (СССР). Одиночный полет.', kz: 'Терешкова: Ғарыштағы бірінші әйел (КСРО). Жалғыз ұшу.', en: 'Tereshkova: First woman in space (USSR). Solo flight mission.' },
+            { icon: '🚶‍♂️', metric: '1965', ru: 'Леонов: Первый выход человека в открытый космос (СССР). Продлился 12 минут.', kz: 'Леонов: Адамның ашық ғарышқа бірінші шығуы (КСРО). 12 минутқа созылды.', en: 'Leonov: First human spacewalk (USSR). Lasted 12 minutes.' },
+            { icon: '🌕', metric: '1969', ru: 'Аполлон-11: Первая высадка человека на Луну (США). "Один маленький шаг" Н. Армстронга.', kz: 'Аполлон-11: Адамның Айға бірінші қонуы (АҚШ). Н. Армстронгтың "Бір кішкентай қадамы".', en: 'Apollo 11: First human Moon landing (USA). N. Armstrong\'s "One small step".' },
+            { icon: '🤝', metric: '1975', ru: 'Союз-Аполлон: Первая совместная миссия СССР и США. Символ разрядки.', kz: 'Союз-Аполлон: КСРО мен АҚШ-тың бірінші бірлескен миссиясы. Жібіту символы.', en: 'Soyuz-Apollo: First joint USSR-USA mission. Symbol of détente.' },
+            { icon: '🛰️', metric: '1981', ru: 'Шаттл: Первый полет многоразового космического челнока (Колумбия, США).', kz: 'Шаттл: Бірінші қайта пайдалануға болатын ғарыш кемесінің ұшуы (Колумбия, АҚШ).', en: 'Shuttle: First flight of the reusable space shuttle (Columbia, USA).' }
+        ];
+        // --- КОНЕЦ 10 КЛЮЧЕВЫХ ЭТАПОВ ---
+
+
+        // Функция рендеринга фактов (ПЛАН)
+        function renderFacts(lang) {
+            const factsGrid = document.getElementById('facts-grid');
+            let factsHTML = '';
+
+            spaceMilestones.forEach(fact => {
+                const factText = fact[lang] || fact.ru;
+
+                factsHTML += `
+                    <div class="fact-card rounded-xl shadow-lg p-4 flex flex-col items-center justify-start border-b-4 border-[#ff9f1c]">
+                        <div class="fact-icon">${fact.icon}</div>
+                        <div class="fact-metric font-mono">${fact.metric}</div>
+
+                        <p class="fact-text font-bold text-center border-t border-gray-600 pt-2 mt-2">${factText}</p>
+                    </div>
+                `;
+            });
+
+            factsGrid.innerHTML = factsHTML;
+            updateActiveButton(lang);
+        }
+
+        // Функция: Управление видимостью языковых блоков
+        function updateContentVisibility(lang) {
+            const languages = ['ru', 'kz', 'en'];
+
+            languages.forEach(l => {
+                const elements = document.querySelectorAll(`.${l}-text`);
+                elements.forEach(el => {
+                    if (l === lang) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // Функция переключения языка
+        function switchLang(lang) {
+            currentLang = lang;
+            renderFacts(lang);
+            updateContentVisibility(lang);
+        }
+
+        // Функция обновления активной кнопки
+        function updateActiveButton(activeLang) {
+            document.querySelectorAll('.lang-button').forEach(button => {
+                if (button.dataset.lang === activeLang) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация Chart.js (КАРТА: Таймлайн Гонки)
+            const ctx = document.getElementById('spaceTimelineChart').getContext('2d');
+            const chartLabels = spaceMilestones.map(m => m.metric);
+            const chartData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Порядковый номер для визуализации
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [
+                        {
+                            label: 'Этапы Космической Гонки',
+                            data: chartData,
+                            backgroundColor: '#ff9f1c',
+                            borderColor: '#a0d2eb',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#4971d2',
+                            pointBorderColor: '#ff9f1c',
+                            pointRadius: 8,
+                            tension: 0.4, // Сглаживание линии
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'category',
+                            title: {
+                                display: true,
+                                text: 'Год',
+                                color: '#e0f7fa'
+                            },
+                            ticks: { color: '#a0d2eb' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            display: false, // Скрываем вертикальную ось, так как она только для визуализации шагов
+                            min: 0,
+                            max: 11,
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const fact = spaceMilestones[index];
+                                    return fact[currentLang].split(':')[0]; // Название события
+                                },
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    const fact = spaceMilestones[index];
+                                    // Краткое описание события
+                                    return fact[currentLang].split(': ')[1] || fact[currentLang];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Привязка событий к кнопкам
+            document.getElementById('lang-ru').addEventListener('click', () => switchLang('ru'));
+            document.getElementById('lang-kz').addEventListener('click', () => switchLang('kz'));
+            document.getElementById('lang-en').addEventListener('click', () => switchLang('en'));
+
+            // Первичный рендеринг
+            switchLang(currentLang);
+        });
+    </script>
+</head>
+<body class="text-gray-100">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="bg-[#172a48] text-center p-8 shadow-2xl border-b-8 border-[#a0d2eb]">
+
+        <!-- Language Switcher Buttons -->
+        <div class="flex justify-center space-x-4 mb-6">
+            <button id="lang-ru" data-lang="ru" class="lang-button">РУС</button>
+            <button id="lang-kz" data-lang="kz" class="lang-button">КАЗ</button>
+            <button id="lang-en" data-lang="en" class="lang-button">ENG</button>
+        </div>
+
+        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-wider gradient-title">КОСМИЧЕСКАЯ ГОНКА</h1>
+        <!-- Subtitles controlled by visibility toggling -->
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ff9f1c] ru-text">СССР против США: Главные Прорывы</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ff9f1c] kz-text hidden">КСРО мен АҚШ: Басты Жетістіктер</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ff9f1c] en-text hidden">USSR vs USA: Key Breakthroughs</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-10">
+
+        <!-- СЕКЦИЯ 1: КАРТА (Визуализация Таймлайна) -->
+        <section class="mb-12 bg-[#172a48] p-6 rounded-xl shadow-xl">
+
+            <!-- Map Titles (Fully localized) -->
+            <h2 class="text-3xl font-extrabold pb-2 text-[#a0d2eb] ru-text">🗺️ Карта: Исторический Таймлайн</h2>
+            <h2 class="text-3xl font-extrabold pb-2 text-[#a0d2eb] kz-text hidden">🗺️ Карта: Тарихи Уақыт Кестесі</h2>
+            <h2 class="text-3xl font-extrabold pb-2 text-[#a0d2eb] en-text hidden">🗺️ Map: The Historical Timeline</h2>
+
+            <!-- Description paragraphs (Fully localized) -->
+            <p class="text-lg text-gray-400 mb-4 ru-text">
+                **RU:** Карта показывает $10$ ключевых моментов противостояния двух сверхдержав, которые привели человечество в космос. Каждая точка — величайшее достижение.
+            </p>
+            <p class="text-lg text-gray-400 mb-4 kz-text hidden">
+                **KZ:** Карта адамзатты ғарышқа апарған екі аса ірі державаның қарсы тұруының $10$ негізгі сәтін көрсетеді. Әрбір нүкте — ұлы жетістік.
+            </p>
+            <p class="text-lg text-gray-400 mb-4 en-text hidden">
+                **EN:** The Map visualizes the $10$ key moments of confrontation between two superpowers that led humanity into space. Each point represents a monumental achievement.
+            </p>
+
+            <!-- Chart Container (Timeline) -->
+            <div class="chart-container mt-6">
+                <canvas id="spaceTimelineChart"></canvas>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ 2: ПЛАН (Сетка Фактов) -->
+
+        <!-- Title for the Fact Grid (Fully localized) -->
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ff9f1c] ru-text">📑 План: 10 Главных Прорывов</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ff9f1c] kz-text hidden">📑 Жоспар: 10 Басты Серпіліс</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ff9f1c] en-text hidden">📑 Plan: 10 Major Breakthroughs</h2>
+
+        <!-- FACT GRID (Presents all 10 facts) -->
+        <div id="facts-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- Facts will be inserted here by JavaScript -->
+        </div>
+
+    </main>
+
+    <footer class="text-center p-6 mt-12 bg-[#172a48] text-gray-400">
+        <p class="text-sm">Исследования космоса продолжаются! Сегодня — новая эра частной космонавтики.</p>
+    </footer>
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

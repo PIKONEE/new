@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribution of Organisms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #052e16; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #22c55e; color: #052e16; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b border-green-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-green-400"></h1>
+            <p id="sub-title" class="mt-1 text-white/30 font-bold uppercase tracking-widest text-[10px]"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 relative overflow-hidden min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-green-200 uppercase mb-8 self-start"></h2>
+            <canvas id="distCanvas" class="w-full h-full bg-black/40"></canvas>
+            <div class="absolute top-1/2 left-8 -translate-y-1/2 flex flex-col gap-4">
+                 <button onclick="setZone('equator')" class="px-4 py-1 glass rounded-full text-[10px] font-black hover:bg-green-500/20">EQUATOR</button>
+                 <button onclick="setZone('temperate')" class="px-4 py-1 glass rounded-full text-[10px] font-black hover:bg-green-500/20">TEMPERATE</button>
+                 <button onclick="setZone('polar')" class="px-4 py-1 glass rounded-full text-[10px] font-black hover:bg-green-500/20">POLAR</button>
+            </div>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-green-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-green-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-8"><h4 id="card1-t" class="heading-font text-green-400 mb-2"></h4><p id="card1-d" class="text-xs text-white/50"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="card2-t" class="heading-font text-green-400 mb-2"></h4><p id="card2-d" class="text-xs text-white/50"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="card3-t" class="heading-font text-green-400 mb-2"></h4><p id="card3-d" class="text-xs text-white/50"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Карта Жизни", subtitle: "Распространение организмов на Земле",
+                canvasHeading: "Биоразнообразие зон",
+                zones: {
+                    equator: { t: "Экваториальные леса", d: "Максимальное разнообразие. Постоянное тепло и влага создают идеальные условия. 50% всех видов Земли обитают здесь." },
+                    temperate: { t: "Умеренный пояс", d: "Сезонность. Леса и степи. Организмы адаптированы к смене времен года и перепадам температур." },
+                    polar: { t: "Полярные пустыни", d: "Экстремальный холод. Низкое биоразнообразие. Жизнь сосредоточена в основном в океане или прибрежных зонах." }
+                },
+                cards: [
+                    { t: "Широтная зональность", d: "Изменение состава видов от экватора к полюсам вслед за климатом." },
+                    { t: "Высотная поясность", d: "В горах жизнь меняется с высотой так же, как при движении на север." },
+                    { t: "Адаптация", d: "Способность организмов приспосабливаться к условиям среды (спячка, окраска, форма листа)." }
+                ]
+            },
+            kz: {
+                title: "Тіршілік Картасы", subtitle: "Организмдердің Жер бетінде таралуы",
+                canvasHeading: "Аймақтардың биоалуантүрлілігі",
+                zones: {
+                    equator: { t: "Экваторлық ормандар", d: "Максималды алуантүрлілік. Тұрақты жылу мен ылғал мінсіз жағдай жасайды. Жердегі барлық түрлердің 50%-ы осында." },
+                    temperate: { t: "Қоңыржай белдеу", d: "Маусымдылық. Ормандар мен далалар. Организмдер жыл мезгілдерінің ауысуына бейімделген." },
+                    polar: { t: "Полярлық шөлдер", d: "Экстремалды суық. Тіршілік негізінен мұхитта немесе жағалау аймақтарында шоғырланған." }
+                },
+                cards: [
+                    { t: "Ендік зоналық", d: "Климатқа байланысты экватордан полюстерге қарай түрлер құрамының өзгеруі." },
+                    { t: "Биіктік белдеулік", d: "Тауларда тіршілік биіктікке қарай, солтүстікке жылжығандағыдай өзгереді." },
+                    { t: "Бейімделу", d: "Организмдердің орта жағдайларына бейімделу қабілеті." }
+                ]
+            },
+            en: {
+                title: "Map of Life", subtitle: "Distribution of Organisms on Earth",
+                canvasHeading: "Zonal Biodiversity",
+                zones: {
+                    equator: { t: "Equatorial Forests", d: "Maximum diversity. Constant heat and moisture create ideal conditions. 50% of all Earth's species live here." },
+                    temperate: { t: "Temperate Belt", d: "Seasonality. Forests and steppes. Organisms are adapted to changing seasons and temperature swings." },
+                    polar: { t: "Polar Deserts", d: "Extreme cold. Low biodiversity. Life is concentrated mainly in the ocean or coastal zones." }
+                },
+                cards: [
+                    { t: "Latitudinal Zonation", d: "Changes in species composition from equator to poles following climate patterns." },
+                    { t: "Altitudinal Zonation", d: "In mountains, life changes with height similarly to moving north." },
+                    { t: "Adaptation", d: "The ability of organisms to adjust to environmental conditions (hibernation, color, leaf shape)." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', activeZone = 'equator', canvas, ctx;
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.setZone = function(z) { activeZone = z; updateUI(); }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            const z = t.zones[activeZone];
+            document.getElementById('info-title').textContent = z.t;
+            document.getElementById('info-text').textContent = z.d;
+            document.getElementById('card1-t').textContent = t.cards[0].t; document.getElementById('card1-d').textContent = t.cards[0].d;
+            document.getElementById('card2-t').textContent = t.cards[1].t; document.getElementById('card2-d').textContent = t.cards[1].d;
+            document.getElementById('card3-t').textContent = t.cards[2].t; document.getElementById('card3-d').textContent = t.cards[2].d;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const time = Date.now() * 0.001;
+
+            if (activeZone === 'equator') {
+                ctx.fillStyle = '#065f46'; ctx.fillRect(0,0,w,h);
+                // Abstract dense leaves
+                for(let i=0; i<30; i++) {
+                    ctx.fillStyle = `rgba(16, 185, 129, ${0.4 + Math.sin(time+i)*0.2})`;
+                    ctx.beginPath(); ctx.arc((i*50)%w, (i*30)%h, 40, 0, Math.PI*2); ctx.fill();
+                }
+            } else if (activeZone === 'temperate') {
+                ctx.fillStyle = '#166534'; ctx.fillRect(0,0,w,h);
+                // Sparse trees
+                for(let i=0; i<10; i++) {
+                    ctx.fillStyle = '#3f6212';
+                    ctx.fillRect(w*0.1 + i*100, h*0.5, 20, h*0.5);
+                }
+            } else {
+                ctx.fillStyle = '#e2e8f0'; ctx.fillRect(0,0,w,h);
+                // Snowflakes
+                ctx.fillStyle = 'white';
+                for(let i=0; i<50; i++) {
+                   ctx.beginPath(); ctx.arc((i*100)%w, (time*100 + i*50)%h, 2, 0, Math.PI*2); ctx.fill();
+                }
+            }
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('distCanvas'); ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;
+            setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

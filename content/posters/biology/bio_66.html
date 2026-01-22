@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прорастание семян</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fef3c7; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #d97706; border-bottom: 3px solid #fcd34d; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #f59e0b; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #f59e0b; background: white; color: #f59e0b; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #f59e0b; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; border: 2px dashed #f59e0b; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-amber-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Семяның Жарыға Келу</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Seed Germination</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Прорастание семян</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-amber-100">Семяның өндіс құрау - өндіс өндіс органдарының істемесі</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-amber-100">Seed activation and growth - stages of germination</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-amber-100">Активация и рост семени - стадии прорастания</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Семяның Жарыға Келу Процесс</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Germination Process</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Процесс прорастания</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 700 380" style="height: 340px; width: 100%;">
+                        <!-- Семя закрытое -->
+                        <g>
+                            <ellipse cx="80" cy="100" rx="35" ry="45" fill="#DAA520" stroke="#8B6914" stroke-width="2"/>
+                            <text x="80" y="105" font-size="12" text-anchor="middle" font-weight="bold" fill="#fff">Семя</text>
+                            <text x="80" y="160" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">1. Покой</text>
+                            <text x="80" y="175" font-size="9" text-anchor="middle" fill="#333">Низкий метаболизм</text>
+                        </g>
+
+                        <!-- Впитывание воды -->
+                        <g>
+                            <ellipse cx="180" cy="100" rx="35" ry="45" fill="#F0E68C" stroke="#8B6914" stroke-width="2"/>
+                            <circle cx="165" cy="95" r="4" fill="#4169E1"/>
+                            <circle cx="195" cy="105" r="4" fill="#4169E1"/>
+                            <text x="180" y="145" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">2. Набухание</text>
+                            <text x="180" y="160" font-size="9" text-anchor="middle" fill="#333">Впиталась вода</text>
+                            <text x="180" y="175" font-size="9" text-anchor="middle" fill="#333">Метаболизм ↑</text>
+                        </g>
+
+                        <!-- Прорастание корня -->
+                        <g>
+                            <ellipse cx="280" cy="85" rx="30" ry="35" fill="#90EE90" stroke="#228B22" stroke-width="2"/>
+                            <line x1="280" y1="120" x2="280" y2="160" stroke="#8B4513" stroke-width="3"/>
+                            <line x1="280" y1="140" x2="265" y2="155" stroke="#8B4513" stroke-width="1"/>
+                            <line x1="280" y1="140" x2="295" y2="155" stroke="#8B4513" stroke-width="1"/>
+                            <text x="280" y="145" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">3. Корень</text>
+                            <text x="280" y="160" font-size="9" text-anchor="middle" fill="#333">Первый орган</text>
+                            <text x="280" y="175" font-size="9" text-anchor="middle" fill="#333">из основного корня</text>
+                        </g>
+
+                        <!-- Прорастание побега -->
+                        <g>
+                            <ellipse cx="380" cy="85" rx="30" ry="35" fill="#90EE90" stroke="#228B22" stroke-width="2"/>
+                            <line x1="380" y1="50" x2="380" y2="30" stroke="#228B22" stroke-width="3"/>
+                            <ellipse cx="375" cy="25" rx="4" ry="6" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+                            <ellipse cx="385" cy="25" rx="4" ry="6" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+                            <text x="380" y="145" font-size="11" text-anchor="middle" font-weight="bold" fill="#333">4. Побег</text>
+                            <text x="380" y="160" font-size="9" text-anchor="middle" fill="#333">Стебель и листья</text>
+                            <text x="380" y="175" font-size="9" text-anchor="middle" fill="#333">Фотосинтез начинается</text>
+                        </g>
+
+                        <!-- Условия прорастания -->
+                        <g>
+                            <rect x="480" y="60" width="200" height="140" fill="#FFF8DC" stroke="#DAA520" stroke-width="2" rx="5"/>
+                            <text x="580" y="80" font-size="12" font-weight="bold" text-anchor="middle" fill="#333">Условия прорастания</text>
+
+                            <text x="490" y="105" font-size="10" fill="#333">✓ Вода (набухание)</text>
+                            <text x="490" y="123" font-size="10" fill="#333">✓ Кислород (дыхание)</text>
+                            <text x="490" y="141" font-size="10" fill="#333">✓ Температура</text>
+                            <text x="490" y="159" font-size="10" fill="#333">  (оптимум 20-30°C)</text>
+                            <text x="490" y="177" font-size="10" fill="#333">✓ Свет (для побега)</text>
+                            <text x="490" y="195" font-size="10" fill="#333">✓ pH почвы (нейтральный)</text>
+                        </g>
+
+                        <!-- Фазы прорастания -->
+                        <text x="10" y="230" font-size="12" font-weight="bold" fill="#d97706">Три фазы прорастания:</text>
+
+                        <!-- Фаза 1 -->
+                        <rect x="10" y="245" width="220" height="120" fill="#FFFACD" stroke="#FFD700" stroke-width="2" rx="5"/>
+                        <text x="120" y="265" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">1. ВОДОПОГЛОЩЕНИЕ</text>
+                        <text x="20" y="285" font-size="9" fill="#333">• Семя впитывает воду</text>
+                        <text x="20" y="300" font-size="9" fill="#333">• Набухает (30-50%)</text>
+                        <text x="20" y="315" font-size="9" fill="#333">• Метаболизм активируется</text>
+                        <text x="20" y="330" font-size="9" fill="#333">• Ферменты пробуждаются</text>
+                        <text x="20" y="345" font-size="9" fill="#333">• Дыхание усиливается</text>
+                        <text x="20" y="360" font-size="9" fill="#333">Длит: 6-48 часов</text>
+
+                        <!-- Фаза 2 -->
+                        <rect x="240" y="245" width="220" height="120" fill="#E0F2FE" stroke="#0284c7" stroke-width="2" rx="5"/>
+                        <text x="350" y="265" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">2. ПРОБУЖДЕНИЕ</text>
+                        <text x="250" y="285" font-size="9" fill="#333">• Клеточное деление</text>
+                        <text x="250" y="300" font-size="9" fill="#333">• Развитие зародыша</text>
+                        <text x="250" y="315" font-size="9" fill="#333">• Образование корневого волоска</text>
+                        <text x="250" y="330" font-size="9" fill="#333">• Корень пробивает оболочку</text>
+                        <text x="250" y="345" font-size="9" fill="#333">• Первое деление</text>
+                        <text x="250" y="360" font-size="9" fill="#333">Длит: 2-5 дней</text>
+
+                        <!-- Фаза 3 -->
+                        <rect x="470" y="245" width="220" height="120" fill="#E8F5E9" stroke="#388E3C" stroke-width="2" rx="5"/>
+                        <text x="580" y="265" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">3. РОСТ</text>
+                        <text x="480" y="285" font-size="9" fill="#333">• Корень растёт вниз</text>
+                        <text x="480" y="300" font-size="9" fill="#333">• Побег растёт вверх</text>
+                        <text x="480" y="315" font-size="9" fill="#333">• Листья развиваются</text>
+                        <text x="480" y="330" font-size="9" fill="#333">• Фотосинтез начинается</text>
+                        <text x="480" y="345" font-size="9" fill="#333">• Переход к автотрофии</text>
+                        <text x="480" y="360" font-size="9" fill="#333">Длит: 1-4 недели</text>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-amber-50 p-4 rounded border border-amber-300">
+                        <h4 lang="kk" class="lang-content font-bold text-amber-900 mb-3">🌱 Семяның Құрамдарының</h4>
+                        <h4 lang="en" class="lang-content font-bold text-amber-900 mb-3">🌱 Seed Components</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-amber-900 mb-3">🌱 Части семени</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Зародыш:</strong> Өндіс өндіс органдарының - корень, стебель, листья</li>
+                            <li lang="en" class="lang-content"><strong>Embryo:</strong> Future plant organs - root, stem, leaves</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Зародыш:</strong> Будущее растение - корень, стебель, листья</li>
+
+                            <li lang="kk" class="lang-content"><strong>Эндосперм:</strong> Өндіс сақтау - крахмал, белок, жир (питание)</li>
+                            <li lang="en" class="lang-content"><strong>Endosperm:</strong> Nutrient storage - starch, protein, fat</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Эндосперм:</strong> Запас питания - крахмал, белок, жир</li>
+
+                            <li lang="kk" class="lang-content"><strong>Семенная оболочка:</strong> Қорғау - микропиле (вода үтірі)</li>
+                            <li lang="en" class="lang-content"><strong>Seed coat:</strong> Protection - micropyle (water entry)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Семенная оболочка:</strong> Защита - микропиле (вход воды)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Семядоля:</strong> Листья зародыша - питание (один = однодол, два = двудол)</li>
+                            <li lang="en" class="lang-content"><strong>Cotyledons:</strong> Seed leaves - 1 (monocot) or 2 (dicot)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Семядоли:</strong> Листья зародыша - 1 или 2 штуки</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-3">⚡ Факторларның Маңызы</h4>
+                        <h4 lang="en" class="lang-content font-bold text-yellow-900 mb-3">⚡ Factor Importance</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-yellow-900 mb-3">⚡ Значение факторов</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Вода:</strong> Впиталась семя, метаболизм активируется, клеточное деление</li>
+                            <li lang="en" class="lang-content"><strong>Water:</strong> Activates metabolism, enables cell division</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Вода:</strong> Активирует метаболизм, клеточное деление</li>
+
+                            <li lang="kk" class="lang-content"><strong>О₂:</strong> Дыхание - энергия (АТФ) для роста</li>
+                            <li lang="en" class="lang-content"><strong>Oxygen:</strong> Respiration - energy (ATP) for growth</strong></li>
+                            <li lang="ru" class="lang-content"><strong>O₂:</strong> Дыхание - энергия для роста</li>
+
+                            <li lang="kk" class="lang-content"><strong>Температура:</strong> Ферментативтік қызмет - оптимум 20-30°C</li>
+                            <li lang="en" class="lang-content"><strong>Temperature:</strong> Enzyme activity - optimum 20-30°C</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Температура:</strong> Активность ферментов - оптимум 20-30°C</li>
+
+                            <li lang="kk" class="lang-content"><strong>Свет:</strong> Корень растёт без света (отрицательный фототропизм), побег к свету</li>
+                            <li lang="en" class="lang-content"><strong>Light:</strong> Root grows away (negative), shoot toward (positive)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Свет:</strong> Корень вниз (отрицательный), побег вверх (положительный)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Гравитация:</strong> Корень - вниз (геотропизм), побег - вверх (антигеотропизм)</li>
+                            <li lang="en" class="lang-content"><strong>Gravity:</strong> Root down, shoot up - geotropism</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Гравитация:</strong> Корень вниз, побег вверх - геотропизм</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fde68a; border-radius: 1rem; border-top: 4px solid #f59e0b;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-amber-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-amber-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-amber-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-amber-800">Семяның жарыға келу - өндіс өндіс органдарының маңызды процесс. Үш фаза - водопоглощение, пробуждение, рост - барлығы өндіс өндіс органдарының дамуының негізі</p>
+            <p lang="en" class="lang-content text-md font-semibold text-amber-800">Seed germination is essential. Three phases: water uptake, awakening, growth create new plant</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-amber-800">Прорастание семян - процесс возрождения. Три фазы создают новое растение</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

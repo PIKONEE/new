@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salt Hydrolysis: pH Balance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #0c4a6e, #0369a1, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-sky-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+        <div class="lg:col-span-1 glass rounded-custom p-8 flex flex-col gap-4">
+            <h3 id="sidebar-title" class="heading-font text-lg text-sky-300 uppercase mb-4">Salts</h3>
+            <button onclick="setSalt('acidic')" class="p-4 glass rounded-2xl text-left text-xs font-bold uppercase hover:bg-white/10">ZnCl₂ (Acidic)</button>
+            <button onclick="setSalt('basic')" class="p-4 glass rounded-2xl text-left text-xs font-bold uppercase hover:bg-white/10">Na₂CO₃ (Basic)</button>
+            <button onclick="setSalt('neutral')" class="p-4 glass rounded-2xl text-left text-xs font-bold uppercase hover:bg-white/10">NaCl (Neutral)</button>
+        </div>
+
+        <div class="lg:col-span-3 glass rounded-custom p-10 flex flex-col items-center">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-8 self-start"></h2>
+            <canvas id="hydroCanvas" class="w-full h-[400px]"></canvas>
+            <div id="info-overlay" class="mt-8 p-6 glass rounded-3xl border-l-4 border-sky-500 w-full">
+                <h4 id="info-title" class="heading-font text-2xl text-sky-300 mb-2"></h4>
+                <div id="info-text" class="text-white/70 font-light leading-relaxed space-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-sky-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-sky-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Гидролиз Солей",
+                subtitle: "Взаимодействие солей с водой и среда раствора",
+                canvasHeading: "Визуализация среды раствора",
+                defaultTitle: "Химия равновесия",
+                defaultText: "Гидролиз — это реакция обменного взаимодействия ионов соли с молекулами воды, приводящая к образованию слабого электролита и изменению pH среды.",
+                salts: {
+                    acidic: { title: "Среда кислая (pH < 7)", text: "Соль образована сильной кислотой и слабым основанием. Гидролиз по катиону. Пример: ZnCl₂ + H₂O ⇌ ZnOHCl + HCl." },
+                    basic: { title: "Среда щелочная (pH > 7)", text: "Соль образована слабой кислотой и сильным основанием. Гидролиз по аниону. Пример: Na₂CO₃ + H₂O ⇌ NaHCO₃ + NaOH." },
+                    neutral: { title: "Среда нейтральная (pH ≈ 7)", text: "Соль образована сильной кислотой и сильным основанием. Гидролиз не протекает. Пример: NaCl, KNO₃." }
+                },
+                cards: [
+                    { title: "Закон силы", desc: "Гидролиз идет по 'слабому' компоненту. Если слабое основание — гидролиз по катиону. Если слабая кислота — по аниону." },
+                    { title: "Обратимость", desc: "Гидролиз в большинстве случаев — процесс обратимый. Равновесие можно сместить нагреванием или разбавлением." },
+                    { title: "Полный гидролиз", desc: "Соли, образованные очень слабой кислотой и очень слабым основанием, гидролизуются полностью (Al₂S₃)." }
+                ],
+                quote: "«Вода — это не просто растворитель, это активный участник химической драмы»",
+                author: "Илья Каблуков"
+            },
+            kz: {
+                title: "Тұздар Гидролизі",
+                subtitle: "Тұздардың сумен әрекеттесуі және ерітінді ортасы",
+                canvasHeading: "Ерітінді ортасын визуалдау",
+                defaultTitle: "Тепе-теңдік химиясы",
+                defaultText: "Гидролиз — тұз иондарының су молекулаларымен алмасу әрекеттесуі, бұл әлсіз электролиттің түзілуіне және ортаның pH мәнінің өзгеруіне әкеледі.",
+                salts: {
+                    acidic: { title: "Орта қышқылдық (pH < 7)", text: "Тұз күшті қышқыл мен әлсіз негізден түзілген. Гидролиз катион бойынша жүреді. Мысалы: ZnCl₂." },
+                    basic: { title: "Орта сілтілік (pH > 7)", text: "Тұз әлсіз қышқыл мен күшті негізден түзілген. Гидролиз анион бойынша жүреді. Мысалы: Na₂CO₃." },
+                    neutral: { title: "Орта бейтарап (pH ≈ 7)", text: "Тұз күшті қышқыл мен күшті негізден түзілген. Гидролиз жүрмейді. Мысалы: NaCl." }
+                },
+                cards: [
+                    { title: "Күш заңы", desc: "Гидролиз 'әлсіз' компонент бойынша жүреді." },
+                    { title: "Қайтымдылық", desc: "Көп жағдайда гидролиз қайтымды процесс болып табылады." },
+                    { title: "Толық гидролиз", desc: "Өте әлсіз қышқыл мен өте әлсіз негізден түзілген тұздар толық гидролизденеді (Al₂S₃)." }
+                ],
+                quote: "«Су — жай ғана еріткіш емес, бұл химиялық драманың белсенді қатысушысы»",
+                author: "Илья Каблуков"
+            },
+            en: {
+                title: "Salt Hydrolysis",
+                subtitle: "Interaction of salts with water and solution pH",
+                canvasHeading: "Solution Environment Visual",
+                defaultTitle: "Equilibrium Chemistry",
+                defaultText: "Hydrolysis is the exchange interaction of salt ions with water molecules, resulting in the formation of a weak electrolyte and pH change.",
+                salts: {
+                    acidic: { title: "Acidic Medium (pH < 7)", text: "Salt formed by a strong acid and a weak base. Cationic hydrolysis. e.g., ZnCl₂." },
+                    basic: { title: "Basic Medium (pH > 7)", text: "Salt formed by a weak acid and a strong base. Anionic hydrolysis. e.g., Na₂CO₃." },
+                    neutral: { title: "Neutral Medium (pH ≈ 7)", text: "Salt formed by a strong acid and a strong base. No hydrolysis. e.g., NaCl." }
+                },
+                cards: [
+                    { title: "Law of Weakness", desc: "Hydrolysis occurs via the 'weak' component (either cation or anion)." },
+                    { title: "Reversibility", desc: "In most cases, hydrolysis is a reversible process. Equilibrium shifts with T or concentration." },
+                    { title: "Full Hydrolysis", desc: "Salts from very weak acid and very weak base undergo complete hydrolysis (Al₂S₃)." }
+                ],
+                quote: "«Water is not just a solvent; it is an active participant in the chemical drama»",
+                author: "Ivan Kablukov"
+            }
+        };
+
+        let currentLang = 'ru';
+        let currentSalt = null;
+        const canvas = document.getElementById('hydroCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            updateUI();
+        }
+
+        function setSalt(salt) {
+            currentSalt = salt;
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            
+            if (currentSalt) {
+                const data = t.salts[currentSalt];
+                document.getElementById('info-title').textContent = data.title;
+                document.getElementById('info-text').textContent = data.text;
+            } else {
+                document.getElementById('info-title').textContent = t.defaultTitle;
+                document.getElementById('info-text').textContent = t.defaultText;
+            }
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+
+            // Indicator Paper Color
+            let color = '#94a3b8'; // Neutral gray
+            if (currentSalt === 'acidic') color = '#f87171'; // Red
+            if (currentSalt === 'basic') color = '#60a5fa';  // Blue
+            if (currentSalt === 'neutral') color = '#4ade80'; // Green
+
+            ctx.shadowBlur = 30; ctx.shadowColor = color;
+            ctx.fillStyle = color; ctx.beginPath(); ctx.arc(cx, cy, 100, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

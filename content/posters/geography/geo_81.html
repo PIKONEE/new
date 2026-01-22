@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature of South America: The Green Giant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #064e3b, #020617);
+            color: white; min-height: 100vh;
+        }
+        .serif { font-family: 'Cinzel', serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #4ade80; color: #022c22; font-weight: 800; }
+        canvas { border-radius: 1.5rem; cursor: pointer; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="flex justify-between items-end mb-12 border-b border-green-800 pb-6">
+        <div>
+            <div class="text-green-400 font-bold tracking-[0.4em] text-xs mb-2 uppercase">Physical Geography</div>
+            <h1 id="title" class="serif text-4xl md:text-6xl text-white"></h1>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="window.updateL('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs transition-all hover:bg-green-900/50">RU</button>
+            <button onclick="window.updateL('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs transition-all hover:bg-green-900/50">KZ</button>
+            <button onclick="window.updateL('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs transition-all hover:bg-green-900/50">EN</button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 relative h-[500px] glass rounded-custom p-4 flex items-center justify-center bg-black/20">
+            <canvas id="natureCanvas" class="w-full h-full"></canvas>
+            
+            <div class="absolute bottom-8 left-8 flex gap-4">
+                <div class="glass px-6 py-3 rounded-xl border-l-4 border-green-500">
+                    <span class="text-[10px] uppercase text-gray-400">Rainiest Place</span>
+                    <div class="text-xl font-bold text-green-300">Lloró, Colombia</div>
+                </div>
+                <div class="glass px-6 py-3 rounded-xl border-l-4 border-yellow-500">
+                    <span class="text-[10px] uppercase text-gray-400">Driest Place</span>
+                    <div class="text-xl font-bold text-yellow-300">Atacama, Chile</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-4 flex flex-col justify-center gap-8">
+            <div class="glass rounded-custom p-8 border-r-4 border-green-600">
+                <h3 id="info-h" class="serif text-2xl mb-4 text-green-400"></h3>
+                <p id="info-d" class="text-sm leading-relaxed text-gray-300"></p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-4">
+                <button class="glass p-4 rounded-xl text-left hover:bg-white/5 transition flex items-center gap-4 group" onclick="setMode('andes')">
+                    <span class="text-2xl group-hover:scale-110 transition">🏔️</span>
+                    <div>
+                        <div class="text-xs uppercase text-gray-500" id="l-andes-t">Structure</div>
+                        <div class="font-bold" id="l-andes">The Andes</div>
+                    </div>
+                </button>
+                <button class="glass p-4 rounded-xl text-left hover:bg-white/5 transition flex items-center gap-4 group" onclick="setMode('amazon')">
+                    <span class="text-2xl group-hover:scale-110 transition">🌧️</span>
+                    <div>
+                        <div class="text-xs uppercase text-gray-500" id="l-amazon-t">Climate</div>
+                        <div class="font-bold" id="l-amazon">Amazon Basin</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: {
+                t: "Природа Южной Америки",
+                h: "Континент Рекордов",
+                d: "Южная Америка — самый влажный материк Земли. Здесь природа создала экстремальные контрасты: от непроходимых лесов Амазонии до безжизненной пустыни Атакама и ледников Анд.",
+                l_andes: "Анды (Кордильеры)", l_andes_t: "Рельеф",
+                l_amazon: "Амазония", l_amazon_t: "Климат"
+            },
+            kz: {
+                t: "Оңтүстік Америка Табиғаты",
+                h: "Рекордтар Континенті",
+                d: "Оңтүстік Америка — Жердегі ең ылғалды материк. Мұнда табиғат қарама-қайшылықтарға толы: Амазонияның ну ормандарынан Атакама шөлі мен Анд мұздықтарына дейін.",
+                l_andes: "Анд таулары", l_andes_t: "Рельеф",
+                l_amazon: "Амазония", l_amazon_t: "Климат"
+            },
+            en: {
+                t: "Nature of South America",
+                h: "Continent of Records",
+                d: "South America is the wettest continent on Earth. Nature here creates extreme contrasts: from the impenetrable Amazon rainforests to the lifeless Atacama Desert and Andean glaciers.",
+                l_andes: "The Andes", l_andes_t: "Structure",
+                l_amazon: "Amazonia", l_amazon_t: "Climate"
+            }
+        };
+
+        let lang = 'ru', mode = 'amazon';
+        let canvas, ctx, drops = [];
+
+        window.updateL = (l) => {
+            lang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            
+            const t = content[l];
+            document.getElementById('title').textContent = t.t;
+            document.getElementById('info-h').textContent = t.h;
+            document.getElementById('info-d').textContent = t.d;
+            document.getElementById('l-andes').textContent = t.l_andes;
+            document.getElementById('l-andes-t').textContent = t.l_andes_t;
+            document.getElementById('l-amazon').textContent = t.l_amazon;
+            document.getElementById('l-amazon-t').textContent = t.l_amazon_t;
+        };
+
+        window.setMode = (m) => { mode = m; drops = []; };
+
+        function drawMap() {
+            const w = canvas.width, h = canvas.height;
+            const cx = w/2, cy = h/2;
+            
+            // South America Path
+            ctx.beginPath();
+            ctx.moveTo(cx - 60, cy - 180); // Panama connection
+            ctx.bezierCurveTo(cx + 80, cy - 180, cx + 180, cy - 50, cx + 150, cy + 20); // Brazil bulge
+            ctx.bezierCurveTo(cx + 120, cy + 80, cx + 50, cy + 150, cx + 10, cy + 220); // East coast to South
+            ctx.lineTo(cx - 20, cy + 220); // Tierra del Fuego
+            ctx.bezierCurveTo(cx - 30, cy + 100, cx - 80, cy - 50, cx - 100, cy - 100); // West coast (Andes)
+            ctx.lineTo(cx - 60, cy - 180);
+            ctx.closePath();
+            
+            ctx.fillStyle = '#065f46'; // Deep jungle green base
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#34d399';
+            ctx.stroke();
+
+            // Clip to continent for inner details
+            ctx.save();
+            ctx.clip();
+
+            if (mode === 'amazon') {
+                // Amazon River System
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                // Main river
+                ctx.moveTo(cx + 120, cy - 60); // Mouth
+                ctx.bezierCurveTo(cx + 50, cy - 50, cx - 20, cy - 70, cx - 80, cy - 90); // Source in Andes
+                ctx.stroke();
+                
+                // Tributaries
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(cx, cy - 60); ctx.lineTo(cx - 40, cy - 20); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx + 50, cy - 55); ctx.lineTo(cx + 30, cy - 100); ctx.stroke();
+
+                // "Breathing" Greenery
+                const t = Date.now() * 0.002;
+                const gradient = ctx.createRadialGradient(cx, cy - 80, 10, cx, cy - 80, 120);
+                gradient.addColorStop(0, `rgba(74, 222, 128, ${0.4 + Math.sin(t)*0.1})`);
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, w, h);
+                
+                // Rain
+                ctx.fillStyle = '#a7f3d0';
+                for(let i=0; i<drops.length; i++) {
+                    const d = drops[i];
+                    ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
+                    d.y += d.v;
+                    if(d.y > h) d.y = 0;
+                }
+                if(drops.length < 50) drops.push({x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.5, v: 2+Math.random()*2});
+
+            } else {
+                // Andes Mountains
+                ctx.fillStyle = '#94a3b8'; // Grey rock
+                for(let i=0; i<15; i++) {
+                    // Draw triangles along the west coast path roughly
+                    const mx = cx - 90 + Math.sin(i*0.5)*20; 
+                    const my = cy - 120 + i*22;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(mx - 15, my + 10);
+                    ctx.lineTo(mx, my - 15); // Peak
+                    ctx.lineTo(mx + 15, my + 10);
+                    ctx.fill();
+                    
+                    // Snow cap
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.moveTo(mx - 5, my - 6);
+                    ctx.lineTo(mx, my - 15);
+                    ctx.lineTo(mx + 5, my - 6);
+                    ctx.fill();
+                    ctx.fillStyle = '#94a3b8'; // Reset
+                }
+                
+                // Atacama Desert spot
+                ctx.fillStyle = '#ca8a04';
+                ctx.beginPath(); ctx.ellipse(cx-60, cy+60, 10, 30, -0.2, 0, Math.PI*2); ctx.fill();
+            }
+            
+            ctx.restore();
+        }
+
+        function animate() {
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            drawMap();
+            requestAnimationFrame(animate);
+        }
+
+        window.onload = () => {
+            canvas = document.getElementById('natureCanvas');
+            ctx = canvas.getContext('2d');
+            const resize = () => {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+            };
+            window.addEventListener('resize', resize);
+            resize();
+            window.updateL('ru');
+            animate();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

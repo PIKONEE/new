@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humanity and the Biosphere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #020617; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        .lang-btn.active { background: #ef4444; color: white; font-weight: 800; }
+        .impact-btn { transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+        .impact-btn:hover { background: rgba(239, 68, 68, 0.1); transform: scale(1.05); }
+        .impact-btn.active { background: #ef4444; color: black; font-weight: bold; border-color: transparent; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-red-500">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-red-400"></h1>
+            <p id="sub-title" class="mt-1 text-white/30 font-bold uppercase tracking-widest text-[10px]"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+        <div class="lg:col-span-1 flex flex-col gap-4">
+             <h3 id="nav-title" class="heading-font text-lg text-red-400 uppercase mb-4 tracking-widest">Impacts</h3>
+             <button onclick="setEffect('pollution')" id="btn-pollution" class="impact-btn p-4 glass rounded-2xl text-left text-xs uppercase font-bold"></button>
+             <button onclick="setEffect('conservation')" id="btn-conservation" class="impact-btn p-4 glass rounded-2xl text-left text-xs uppercase font-bold"></button>
+             <button onclick="setEffect('noosphere')" id="btn-noosphere" class="impact-btn p-4 glass rounded-2xl text-left text-xs uppercase font-bold"></button>
+        </div>
+
+        <div class="lg:col-span-3 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-red-500 relative min-h-[500px]">
+            <div id="content-view" class="transition-all duration-500">
+                <div id="view-icon" class="text-8xl mb-8">🌍</div>
+                <h3 id="view-title" class="heading-font text-4xl mb-6 text-white"></h3>
+                <div id="view-text" class="text-xl font-light leading-relaxed text-white/80 space-y-6"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Человек и Биосфера", subtitle: "От воздействия к ответственности",
+                navTitle: "Взаимодействие",
+                btnPollution: "Загрязнение", btnConservation: "Охрана", btnNoosphere: "Ноосфера",
+                effects: {
+                    pollution: { icon: "🏭", title: "Антропогенная нагрузка", text: "Деятельность человека стала главным фактором изменения биосферы. Вырубка лесов, выбросы газов и загрязнение океана ведут к вымиранию видов и глобальному потеплению." },
+                    conservation: { icon: "🛡️", title: "Охрана природы", text: "Создание заповедников, Красных книг и переход на возобновляемую энергию — это попытки человечества сохранить баланс биосферы для будущих поколений." },
+                    noosphere: { icon: "🧠", title: "Ноосфера", text: "Сфера разума. Состояние биосферы, при котором разумная деятельность человека становится определяющим фактором её развития. Концепция В.И. Вернадского." }
+                }
+            },
+            kz: {
+                title: "Адам және Биосфера", subtitle: "Әсерден жауапкершілікке дейін",
+                navTitle: "Өзара әрекет",
+                btnPollution: "Ластану", btnConservation: "Қорғау", btnNoosphere: "Ноосфера",
+                effects: {
+                    pollution: { icon: "🏭", title: "Антропогендік жүктеме", text: "Адам әрекеті биосфераны өзгертудің басты факторына айналды. Ормандарды кесу, газдардың шығарылуы және мұхиттың ластануы түрлердің жойылуына әкеледі." },
+                    conservation: { icon: "🛡️", title: "Табиғатты қорғау", text: "Қорықтар құру, Қызыл кітаптар және жаңартылатын энергияға көшу — биосфера тепе-теңдігін сақтау талпыныстары." },
+                    noosphere: { icon: "🧠", title: "Ноосфера", text: "Сана қабаты. Адамның ақыл-ой қызметі биосфера дамуының шешуші факторына айналатын күйі. В.И. Вернадскийдің концепциясы." }
+                }
+            },
+            en: {
+                title: "Humanity & Biosphere", subtitle: "From Impact to Responsibility",
+                navTitle: "Interaction",
+                btnPollution: "Pollution", btnConservation: "Conservation", btnNoosphere: "Noosphere",
+                effects: {
+                    pollution: { icon: "🏭", title: "Anthropogenic Pressure", text: "Human activity has become the primary driver of biosphere change. Deforestation and pollution lead to species extinction and global warming." },
+                    conservation: { icon: "🛡️", title: "Nature Protection", text: "Creating national parks, Red Data Books, and shifting to green energy are efforts to preserve the biosphere's balance." },
+                    noosphere: { icon: "🧠", title: "The Noosphere", text: "The sphere of reason. A stage in biosphere evolution where human intelligence becomes the dominant force of development. Concept by V. Vernadsky." }
+                }
+            }
+        };
+
+        let currentLang = 'ru', activeEffect = 'pollution';
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.setEffect = function(e) { activeEffect = e; updateUI(); }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('nav-title').textContent = t.navTitle;
+            document.getElementById('btn-pollution').textContent = t.btnPollution;
+            document.getElementById('btn-conservation').textContent = t.btnConservation;
+            document.getElementById('btn-noosphere').textContent = t.btnNoosphere;
+
+            document.querySelectorAll('.impact-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${activeEffect}`).classList.add('active');
+
+            const eff = t.effects[activeEffect];
+            const view = document.getElementById('content-view');
+            view.style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('view-icon').textContent = eff.icon;
+                document.getElementById('view-title').textContent = eff.title;
+                document.getElementById('view-text').textContent = eff.text;
+                view.style.opacity = '1';
+            }, 300);
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

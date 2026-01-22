@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Советская власть и Гражданская война в Казахстане</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .war-theme {
+            background: linear-gradient(to bottom right, #fef2f2, #f1f5f9);
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #991b1b;
+            box-shadow: 0 10px 30px -5px rgba(153, 27, 27, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: #dc2626;
+        }
+
+        .soviet-glow {
+            box-shadow: 0 0 25px rgba(153, 27, 27, 0.2);
+        }
+
+        .btn-active {
+            background-color: #991b1b;
+            color: white;
+            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.3);
+        }
+
+        .radar-container {
+            height: 350px;
+        }
+    </style>
+</head>
+<body class="war-theme text-slate-900 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-red-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🚩</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-red-900 leading-tight">Советская власть и война</h1>
+            </div>
+            <div class="flex bg-red-100/50 p-1 rounded-full border border-red-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
+        
+        <!-- Section 1: Visualization (Analysis of Forces) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-red-800 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Conflict Analysis</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase text-red-900">Баланс сил 1918-1920</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    Гражданская война в Казахстане не была двусторонней. Это было сложное переплетение интересов большевиков, белогвардейцев и национального правительства «Алаш-Орда».
+                </p>
+                <div class="mt-8 grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-red-50 rounded-2xl border-l-4 border-red-600">
+                        <span id="stat-1-l" class="block text-xs font-bold uppercase text-red-800">Красный фронт</span>
+                        <span id="stat-1-v" class="text-2xl font-black text-red-900">450к+</span>
+                    </div>
+                    <div class="p-4 bg-blue-50 rounded-2xl border-l-4 border-blue-600">
+                        <span id="stat-2-l" class="block text-xs font-bold uppercase text-blue-800">Конница Алаш</span>
+                        <span id="stat-2-v" class="text-2xl font-black text-blue-900">~5к</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex flex-col items-center justify-center">
+                <h3 id="chart-header" class="text-sm font-black uppercase text-slate-400 mb-4">Сравнение потенциалов сторон</h3>
+                <div class="radar-container w-full">
+                    <canvas id="forcesRadarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Major Fronts -->
+        <div class="bg-red-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl soviet-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">⚔️</div>
+                    <div id="war-label" class="text-red-300 font-black text-sm uppercase tracking-[0.3em]">Civil War Fronts</div>
+                </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="war-title" class="text-3xl font-black tracking-tight uppercase text-red-200">Главные очаги войны</h3>
+                    <p id="war-desc" class="text-xl text-red-50 font-light leading-relaxed">
+                        Казахстан был разделен на фронты: Уральский, Актюбинский и Семиреченский. Здесь сражались легендарные личности: В. Чапаев, М. Фрунзе и лидеры Алаш, пытавшиеся лавировать между двумя огнями.
+                    </p>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none rotate-12">🎖️</div>
+        </div>
+
+        <!-- Section 3: Key Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="info-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-700">
+                <div class="text-5xl mb-4">🔴</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Красный террор</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">Политика 'военного коммунизма', продразверстка и насильственное установление власти Советов через подавление оппозиции.</p>
+            </div>
+            <div class="info-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-slate-400">
+                <div class="text-5xl mb-4">⚪</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Белый поход</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">Попытка Колчака и атамана Дутова восстановить имперские порядки, что оттолкнуло казахское население от поддержки 'белых'.</p>
+            </div>
+            <div class="info-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-800">
+                <div class="text-5xl mb-4">🦅</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Судьба Алаш</h4>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">Осознав крах белых, Алаш-Орда перешла на сторону Советов в 1919-20 гг., надеясь сохранить автономию мирным путем.</p>
+            </div>
+        </div>
+
+        <!-- Section 4: Consequences -->
+        <div class="bg-slate-100 p-10 rounded-[3rem] border border-slate-200">
+            <h3 id="impact-title" class="text-2xl font-black mb-8 uppercase text-slate-800">Последствия и итоги</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <p id="impact-desc" class="text-lg text-slate-600 font-light">
+                        Война принесла полное разрушение хозяйства. Скотопоголовье сократилось на 80%, что привело к страшному голоду 1921-1922 годов, унесшему жизни сотен тысяч казахов.
+                    </p>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h4 id="result-label" class="font-black text-red-700 uppercase text-xs mb-2">Главный политический итог</h4>
+                        <p id="result-text" class="text-sm font-semibold">26 августа 1920 года — Декрет об образовании Киргизской (Казахской) АССР со столицей в Оренбурге.</p>
+                    </div>
+                </div>
+                <div class="h-64">
+                    <canvas id="impactChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="py-20 bg-slate-900 text-slate-400">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Гражданская война в степи была не только борьбой классов, но и отчаянной битвой за выживание нации».
+            </p>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-slate-600">Kazakhstan: Soviet Power & Civil War Period</div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Советская власть и война",
+                vizTitle: "Баланс сил 1918-1920",
+                vizDesc: "Война в Казахстане — это столкновение интернационализма большевиков, имперских амбиций Белого движения и национальных чаяний Алаш.",
+                statusBadge: "Анализ конфликта",
+                warTitle: "Главные очаги войны",
+                warDesc: "Фронты на территории Казахстана имели ключевое значение для контроля над Туркестаном и связью с Сибирью. К 1920 году красные установили полный контроль.",
+                fact1T: "Красный террор", fact1D: "Подавление любых форм инакомыслия, реквизиция продовольствия у крестьян для снабжения фронта.",
+                fact2T: "Белое движение", fact2D: "Поражение Колчака в 1919 году стало поворотным моментом, после которого силы 'белых' начали отступать из степи.",
+                fact3T: "Судьба Алаш", fact3D: "Правительство Алаш-Орды было официально упразднено Советами в 1920 году, несмотря на амнистию её лидерам.",
+                impactTitle: "Последствия и итоги",
+                impactDesc: "Война обернулась гуманитарной катастрофой. В 1921 году в Казахстане голодало более 2 миллионов человек. Экономика была отброшена на десятилетия назад.",
+                resultLabel: "Главный политический итог",
+                resultText: "Образование КазАССР в 1920 году — первый шаг к современной казахстанской государственности в рамках СССР.",
+                footer: "«Гражданская война в степи была не только борьбой классов, но и отчаянной битвой за выживание нации».",
+                chartHeader: "Потенциал сторон",
+                radarLabels: ["Идеология", "Военная сила", "Ресурсы", "Поддержка народа", "Организация"],
+                impactLabels: ["До войны", "После войны"],
+                impactTitleChart: "Скотопоголовье (млн)",
+                stat1L: "Красный фронт", stat1V: "450к+",
+                stat2L: "Конница Алаш", stat2V: "~5к"
+            },
+            kz: {
+                title: "Кеңес өкіметі және соғыс",
+                vizTitle: "Күштер теңгерімі 1918-1920",
+                vizDesc: "Қазақстандағы соғыс — большевиктердің интернационализмі, Ақ қозғалыстың империялық амбициялары мен Алаштың ұлттық мүдделерінің қақтығысы.",
+                statusBadge: "Қақтығысты талдау",
+                warTitle: "Соғыстың негізгі ошақтары",
+                warDesc: "Қазақстан аумағындағы майдандар Түркістанды бақылау және Сібірмен байланыс үшін стратегиялық маңызға ие болды. 1920 жылға қарай қызылдар толық бақылау орнатты.",
+                fact1T: "Қызыл террор", fact1D: "Кез келген өзгеше ойлауды басып-жаншу, майданды қамтамасыз ету үшін шаруалардан азық-түлікті тартып алу.",
+                fact2T: "Ақ қозғалыс", fact2D: "1919 жылы Колчактың жеңілуі бетбұрыс сәт болды, содан кейін 'ақтар' даладан шегіне бастады.",
+                fact3T: "Алаш тағдыры", fact3D: "Алашорда үкіметі 1920 жылы Кеңестермен ресми түрде таратылды, тіпті оның жетекшілеріне амнистия жарияланса да.",
+                impactTitle: "Салдары мен қорытындылары",
+                impactDesc: "Соғыс гуманитарлық апатқа әкелді. 1921 жылы Қазақстанда 2 миллионнан астам адам ашықты. Экономика ондаған жылдарға кейін шегерілді.",
+                resultLabel: "Басты саяси қорытынды",
+                resultText: "1920 жылы ҚазАКСР-нің құрылуы — КСРО құрамындағы қазіргі қазақстандық мемлекеттіліктің алғашқы қадамы.",
+                footer: "«Даладағы азамат соғысы тек таптық күрес емес, сонымен бірге ұлттың аман қалуы үшін болған жанқиярлық шайқас еді».",
+                chartHeader: "Тараптардың әлеуеті",
+                radarLabels: ["Идеология", "Әскери күш", "Ресурстар", "Халық қолдауы", "Ұйымдастыру"],
+                impactLabels: ["Соғысқа дейін", "Соғыстан кейін"],
+                impactTitleChart: "Мал саны (млн)",
+                stat1L: "Қызыл майдан", stat1V: "450к+",
+                stat2L: "Алаш атты әскері", stat2V: "~5к"
+            },
+            en: {
+                title: "Soviet Power & War",
+                vizTitle: "Balance of Forces 1918-1920",
+                vizDesc: "The war in Kazakhstan was a collision of Bolshevik internationalism, White Guard imperial ambitions, and Alash national aspirations.",
+                statusBadge: "Conflict Analysis",
+                warTitle: "Major Fronts of War",
+                warDesc: "The fronts in Kazakhstan were vital for controlling Turkestan and linking with Siberia. By 1920, the Reds established total control.",
+                fact1T: "Red Terror", fact1D: "Suppression of dissent and 'War Communism' policies, requisitioning food from peasants to supply the frontlines.",
+                fact2T: "White Movement", fact2D: "Kolchak's defeat in 1919 was the turning point after which White forces began their retreat from the Steppe.",
+                fact3T: "Fate of Alash", fact3D: "The Alash Orda government was formally abolished by the Soviets in 1920, despite initial amnesties for its leaders.",
+                impactTitle: "Consequences & Outcomes",
+                impactDesc: "The war resulted in a humanitarian disaster. In 1921, over 2 million people faced famine in Kazakhstan. The economy was set back by decades.",
+                resultLabel: "Main Political Outcome",
+                resultText: "The formation of the Kazakh ASSR in 1920 was the first step toward modern Kazakh statehood within the USSR.",
+                footer: "«The civil war in the steppe was not only a class struggle but a desperate battle for the survival of the nation.»",
+                chartHeader: "Potential of Factions",
+                radarLabels: ["Ideology", "Military Might", "Resources", "People's Support", "Organization"],
+                impactLabels: ["Before War", "After War"],
+                impactTitleChart: "Livestock (mln)",
+                stat1L: "Red Front", stat1V: "450k+",
+                stat2L: "Alash Cavalry", stat2V: "~5k"
+            }
+        };
+
+        let radarChart = null;
+        let impactChart = null;
+
+        function initCharts(lang) {
+            const t = translations[lang];
+
+            // Radar Chart for Forces
+            const radarCtx = document.getElementById('forcesRadarChart').getContext('2d');
+            if (radarChart) radarChart.destroy();
+            radarChart = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: t.radarLabels,
+                    datasets: [
+                        {
+                            label: 'Красные (Reds)',
+                            data: [100, 90, 80, 50, 90],
+                            borderColor: '#991b1b',
+                            backgroundColor: 'rgba(153, 27, 27, 0.2)',
+                            pointBackgroundColor: '#991b1b'
+                        },
+                        {
+                            label: 'Белые (Whites)',
+                            data: [40, 70, 60, 20, 50],
+                            borderColor: '#64748b',
+                            backgroundColor: 'rgba(100, 116, 139, 0.2)',
+                            pointBackgroundColor: '#64748b'
+                        },
+                        {
+                            label: 'Алаш (Alash)',
+                            data: [80, 30, 20, 90, 70],
+                            borderColor: '#1e3a8a',
+                            backgroundColor: 'rgba(30, 58, 138, 0.2)',
+                            pointBackgroundColor: '#1e3a8a'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: { beginAtZero: true, max: 100, ticks: { display: false } }
+                    },
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+                }
+            });
+
+            // Bar Chart for Impact
+            const impactCtx = document.getElementById('impactChart').getContext('2d');
+            if (impactChart) impactChart.destroy();
+            impactChart = new Chart(impactCtx, {
+                type: 'bar',
+                data: {
+                    labels: t.impactLabels,
+                    datasets: [{
+                        label: t.impactTitleChart,
+                        data: [30, 6],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('war-title').innerText = t.warTitle;
+            document.getElementById('war-desc').innerText = t.warDesc;
+            document.getElementById('impact-title').innerText = t.impactTitle;
+            document.getElementById('impact-desc').innerText = t.impactDesc;
+            document.getElementById('result-label').innerText = t.resultLabel;
+            document.getElementById('result-text').innerText = t.resultText;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('stat-1-l').innerText = t.stat1L; document.getElementById('stat-1-v').innerText = t.stat1V;
+            document.getElementById('stat-2-l').innerText = t.stat2L; document.getElementById('stat-2-v').innerText = t.stat2V;
+            document.getElementById('footer-quote').innerText = t.footer;
+            document.getElementById('chart-header').innerText = t.chartHeader;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-red-800 hover:bg-red-50 transition-all";
+            });
+
+            initCharts(lang);
+        }
+
+        window.onload = () => changeLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

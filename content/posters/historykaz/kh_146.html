@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Архитектура Казахстана в XIV-XV веках</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .blueprint-gradient {
+            background-color: #f1f5f9;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .premium-panel {
+            background: white;
+            border-radius: 3.5rem;
+            border: 1px solid #cbd5e1;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-panel:hover {
+            border-color: #0369a1;
+            box-shadow: 0 40px 80px -20px rgba(3, 105, 161, 0.1);
+        }
+
+        .lang-active {
+            background-color: #0369a1;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(3, 105, 161, 0.3);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 2rem;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 2.5rem;
+            border-bottom: 6px solid #0369a1;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px);
+            border-color: #0284c7;
+        }
+
+        .term-badge {
+            background: #f0f9ff;
+            color: #0369a1;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body class="blueprint-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-sky-100 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-sky-900">Архитектура Казахстана в XIV-XV веках</h1>
+            <div class="flex bg-sky-50 p-1 rounded-2xl border border-sky-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Architectural Blueprint (Canvas) -->
+        <div class="premium-panel p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block bg-sky-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Engineering Reconstruction</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-sky-950 leading-tight uppercase italic">Чертеж Мавзолея</h2>
+                    <p id="viz-desc" class="text-lg text-slate-500 font-light leading-relaxed">
+                        Эпоха Амира Темура принесла в Казахстан монументальный стиль. Исследуйте архитектурный план Мавзолея Ходжи Ахмеда Ясави, нажимая на элементы схемы.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[3rem] bg-sky-50 border-l-8 border-sky-600 shadow-lg transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-sky-900 mb-3 uppercase">Выберите узел</h3>
+                        <p id="element-desc" class="text-slate-500 text-sm leading-relaxed italic">Нажмите на купол, портал или центральный зал (казандык).</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="archCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-sky-300 font-mono uppercase tracking-[0.4em]">Schematic Top-down view</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Technical and Historical Data -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            
+            <!-- Construction Tech -->
+            <div class="info-card">
+                <div class="mb-4"><span class="term-badge" id="t-tech">Технологии</span></div>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-sky-950">Инженерные инновации</h3>
+                <p id="c1-d" class="text-slate-600 text-sm leading-relaxed mb-6">
+                    В XIV-XV веках архитекторы начали использовать **двойные купола** (внешний — для эстетики, внутренний — для акустики). Основным материалом стал жженый кирпич на алебастровом растворе (**ганч**). Уникальные рецепты глазури позволяли плиткам сохранять цвет веками.
+                </p>
+                <div class="mt-auto pt-4 border-t border-sky-100 text-[10px] font-black text-sky-600 uppercase tracking-widest">Материал: Терракота и Майолика</div>
+            </div>
+
+            <!-- Major Monuments -->
+            <div class="info-card">
+                <div class="mb-4"><span class="term-badge" id="t-mon">Памятники</span></div>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-sky-950">Великие мавзолеи</h3>
+                <p id="c2-d" class="text-slate-600 text-sm leading-relaxed mb-6">
+                    Помимо шедевра в Туркестане, в этот период были возведены мавзолеи **Арыстан-Баба** (Отрарский оазис), **Алаша-хана** и **Джучи-хана** (Центральный Казахстан). Архитектура сочетала в себе имперский размах Темуридов и традиционные формы степного зодчества.
+                </p>
+                <div class="mt-auto pt-4 border-t border-sky-100 text-[10px] font-black text-sky-600 uppercase tracking-widest">Стиль: Портально-купольный</div>
+            </div>
+
+            <!-- Interior and Art -->
+            <div class="info-card">
+                <div class="mb-4"><span class="term-badge" id="t-art">Декор</span></div>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-sky-950">Символика декора</h3>
+                <p id="c3-d" class="text-slate-600 text-sm leading-relaxed mb-6">
+                    Интерьеры украшались сталактитовыми сводами (**мукарнас**), резьбой по дереву и камню. Огромные бронзовые светильники и знаменитый **Тайказан** в Туркестане — шедевры литейного искусства, подчеркивающие священный статус сооружений.
+                </p>
+                <div class="mt-auto pt-4 border-t border-sky-100 text-[10px] font-black text-sky-600 uppercase tracking-widest">Тайказан: 2 тонны бронзы</div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-white border-t border-sky-100 text-center text-slate-400">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
+                «Архитектура XIV-XV веков — это застывшая в камне молитва, где математическая точность куполов встречается с небесной лазурью глазури.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-sky-300 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Архитектура Казахстана в XIV-XV веках",
+                vizTitle: "Чертеж Мавзолея",
+                vizDesc: "Монументальный стиль эпохи Темуридов. Нажмите на элементы плана для изучения инженерных и художественных особенностей.",
+                badge: "Инженерная реконструкция",
+                elementTitleDefault: "Выберите узел",
+                elementDescDefault: "Нажмите на купол, портал или центральный зал на чертеже.",
+                tTech: "Технологии", tMon: "Памятники", tArt: "Декор",
+                c1T: "Инженерные инновации", c1D: "Использование двойных куполов и жженого кирпича на ганчевом растворе. Стены мавзолеев достигали толщины 2 метров для выдерживания колоссальных нагрузок.",
+                c2T: "Великие мавзолеи", c2D: "Туркестан, Отрар и Улытау стали центрами мемориального зодчества. Мавзолей Ясави — крупнейшее кирпичное сооружение Средневековья в регионе.",
+                c3T: "Символика декора", c3D: "Майолика и мозаика синих оттенков символизировали Небо. Использование эпиграфики (аятов из Корана) превращало стены в священную книгу.",
+                footer: "«Архитектура XIV-XV веков — это застывшая в камне молитва и математическая точность куполов.»",
+                parts: {
+                    dome: { name: "Купол (Кумбез)", text: "Внешний купол Мавзолея Ясави облицован голубой плиткой. Его высота — 44 метра. Это символ небесного владычества." },
+                    portal: { name: "Пештак (Портал)", text: "Парадный вход, украшенный нишами и каллиграфией. Мощные колонны-гульдаста по углам обеспечивают устойчивость фасада." },
+                    kazandyk: { name: "Казандык (Центральный зал)", text: "Главное помещение под самым большим куполом. Здесь установлен Тайказан — символ единства и гостеприимства тюрков." }
+                }
+            },
+            kz: {
+                title: "XIV-XV ғғ. Қазақстан сәулеті",
+                vizTitle: "Кесене сызбасы",
+                vizDesc: "Темір дәуірінің монументалды стилі. Сәулеттік және инженерлік ерекшеліктерді білу үшін жоспар элементтерін басыңыз.",
+                badge: "Инженерлік реконструкция",
+                elementTitleDefault: "Түйінді таңдаңыз",
+                elementDescDefault: "Сызбадағы күмбезді, порталды немесе орталық залды басыңыз.",
+                tTech: "Технологиялар", tMon: "Ескерткіштер", tArt: "Декор",
+                c1T: "Инженерлік жаңалықтар", c1D: "Қос қабатты күмбездер мен ганч ерітіндісіндегі күйдірілген кірпішті қолдану. Кесене қабырғаларының қалыңдығы 2 метрге дейін жетті.",
+                c2T: "Ұлы кесенелер", c2D: "Түркістан, Отырар және Ұлытау мемориалдық сәулет орталықтары болды. Ясауи кесенесі — аймақтағы ортағасырлық ең ірі кірпіш құрылыс.",
+                c3T: "Декор символикасы", c3D: "Көк түсті майолика мен мозаика Аспанды білдірді. Эпиграфиканы (Құран аяттарын) қолдану қабырғаларды қасиетті кітапқа айналдырды.",
+                footer: "«XIV-XV ғасырлар сәулеті — тасқа қашалған мінәжат пен күмбездердің математикалық дәлдігі.»",
+                parts: {
+                    dome: { name: "Күмбез", text: "Ясауи кесенесінің сыртқы күмбезі көк плиткамен қапталған. Биіктігі — 44 метр. Бұл аспан билігінің нышаны." },
+                    portal: { name: "Пештак (Портал)", text: "Таушалармен және каллиграфиямен безендірілген салтанатты кіреберіс. Бұрыштардағы гүлдаста-бағаналар қасбеттің беріктігін қамтамасыз етеді." },
+                    kazandyk: { name: "Қазандық (Орталық зал)", text: "Ең үлкен күмбез астындағы басты бөлме. Мұнда түркілердің бірлігі мен қонақжайлылығының нышаны — Тайқазан орнатылған." }
+                }
+            },
+            en: {
+                title: "Kazakhstan's Architecture in the 14-15th Centuries",
+                vizTitle: "Mausoleum Blueprint",
+                vizDesc: "The monumental style of the Timurid era. Click on the plan elements to explore engineering and artistic features.",
+                badge: "Engineering Reconstruction",
+                elementTitleDefault: "Select a Section",
+                elementDescDefault: "Click on the dome, portal, or the central hall on the diagram.",
+                tTech: "Technologies", tMon: "Monuments", tArt: "Decor",
+                c1T: "Engineering Innovations", c1D: "Use of double domes and baked bricks with 'ganch' mortar. Walls reached up to 2 meters in thickness to support immense loads.",
+                c2T: "Great Mausoleums", c2D: "Turkestan, Otrar, and Ulytau became hubs of memorial architecture. The Yasawi Mausoleum is the largest medieval brick structure in the region.",
+                c3T: "Decorative Symbolism", c3D: "Blue-tinted majolica and mosaics symbolized the Sky. Calligraphy (Quranic verses) transformed walls into sacred books.",
+                footer: "«The architecture of the 14-15th centuries is a prayer frozen in stone and the mathematical precision of domes.»",
+                parts: {
+                    dome: { name: "The Dome (Kumbez)", text: "The outer dome of the Yasawi Mausoleum is clad in turquoise tiles. Its height is 44 meters, symbolizing celestial rule." },
+                    portal: { name: "Pishtaq (Portal)", text: "The ceremonial entrance decorated with niches and calligraphy. Massive 'guldasta' columns ensure facade stability." },
+                    kazandyk: { name: "Kazandyk (Main Hall)", text: "The main chamber under the largest dome. It houses the Taikazan — the symbol of Turkic unity and hospitality." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('archCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawPlan();
+        }
+
+        function drawPlan() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Simple Precise Blueprint (Top-down)
+            
+            // 1. Outer Walls
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 10 * scale;
+            ctx.strokeRect(cx - 150 * scale, cy - 100 * scale, 300 * scale, 250 * scale);
+            
+            // 2. Central Hall (Kazandyk)
+            ctx.beginPath();
+            ctx.arc(cx, cy + 20 * scale, 80 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(2, 132, 199, 0.1)';
+            ctx.fill();
+            ctx.strokeStyle = '#0369a1';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // 3. Portal (Pishtaq Area)
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(cx - 80 * scale, cy - 110 * scale, 160 * scale, 20 * scale);
+            
+            // 4. Inner Chambers
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(cx - 130 * scale, cy - 80 * scale, 60 * scale, 60 * scale);
+            ctx.strokeRect(cx + 70 * scale, cy - 80 * scale, 60 * scale, 60 * scale);
+
+            // Labels
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText("PISHTAQ", cx, cy - 125 * scale);
+            ctx.fillText("KAZANDYK", cx, cy + 25 * scale);
+            ctx.fillText("DOME AREA", cx, cy - 20 * scale);
+
+            // Interaction Points
+            ctx.fillStyle = 'rgba(3, 105, 161, 0.2)';
+            ctx.font = 'bold 10px Inter';
+            ctx.fillText("TAP ON ELEMENTS TO ANALYZE", cx, 40 * scale);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            const distFromCenter = Math.sqrt((x - cx)**2 + (y - (cy + 20*scale))**2);
+            let target = null;
+
+            if (y < cy - 90 * scale && Math.abs(x - cx) < 90 * scale) target = 'portal';
+            else if (distFromCenter < 80 * scale) target = 'kazandyk';
+            else if (Math.abs(x - cx) < 160 * scale) target = 'dome';
+
+            if (target) {
+                const info = translations[currentLang].parts[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (target === 'kazandyk' ? '#0369a1' : (target === 'dome' ? '#0ea5e9' : '#0f172a'));
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            
+            document.getElementById('t-tech').innerText = t.tTech;
+            document.getElementById('t-mon').innerText = t.tMon;
+            document.getElementById('t-art').innerText = t.tArt;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-sky-600 hover:bg-white transition-all";
+            });
+
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

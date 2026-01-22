@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор предмета</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-button {
+            background: #2196F3;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: #1976D2;
+            transform: translateX(-3px);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .subject-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 180px;
+            animation: slideIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .subject-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .subject-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subject-card .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+    </style>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button" onclick="goBack()">← Артқа</button>
+
+        <header>
+            <h1>Интерактивные плакаты</h1>
+            <p>Выберите предмет для начала работы</p>
+        </header>
+
+        <div class="subjects-grid" id="subjects-grid">
+            <!-- Содержимое будет загружено из Python -->
+        </div>
+
+        <footer>
+            <p>© 2024 Интерактивные электронные плакаты</p>
+        </footer>
+    </div>
+
+    <script>
+        let bridge = null;
+
+        // Иконки для предметов
+        const subjectIcons = {
+            'kazakhlang': '🇰🇿',
+            'russianlang': '🇷🇺',
+            'englishlang': '🇬🇧',
+            'math': '🔢',
+            'mathematics': '🔢',
+            'physics': '⚛️',
+            'chemistry': '🧪',
+            'informatics': '💻',
+            'geography': '🗺️',
+            'biology': '🧬',
+            'historykaz': '📜',
+            'worldhistory': '🌍'
+        };
+
+        function goBack() {
+            if (bridge) {
+                bridge.onBackClicked();
+            }
+        }
+
+        function renderSubjects(subjects) {
+            console.log("📚 renderSubjects() вызвана с", subjects.length, "предметами");
+            const grid = document.getElementById('subjects-grid');
+            grid.innerHTML = '';
+
+            subjects.forEach(subject => {
+                const card = document.createElement('div');
+                card.className = 'subject-card';
+                card.onclick = () => {
+                    console.log("📖 Клик на предмет:", subject.id);
+                    if (bridge) {
+                        bridge.onSubjectSelected(subject.id);
+                    }
+                };
+
+                const icon = subjectIcons[subject.id] || '📚';
+                card.innerHTML = `
+                    <div class="icon">${icon}</div>
+                    <h2>${subject.name}</h2>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("📱 DOMContentLoaded - инициализирую");
+
+            if (typeof QWebChannel !== 'undefined') {
+                console.log("✅ QWebChannel найден");
+
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    bridge = channel.objects.bridge;
+                    console.log("✅ Bridge получен");
+                    console.log("   Вызываю onFrontEndReady()");
+                    bridge.onFrontEndReady();
+                });
+            } else {
+                console.error("❌ QWebChannel не найден!");
+            }
+        });
+    </script>
+</body>
+</html>

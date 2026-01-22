@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мир в движении: Великое переселение народов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #450a0a, #1a1a1a, #000000);
+            color: #fee2e2;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #991b1b;
+            color: white;
+            box-shadow: 0 0 30px rgba(153, 27, 27, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #991b1b;
+            background: linear-gradient(90deg, rgba(153, 27, 27, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-stone-400 to-red-400 uppercase">
+                Переселение Народов
+            </h1>
+            <p id="sub-title" class="text-red-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">IV – VII века н.э. / Гибель античного мира</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-red-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Map Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-red-950 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-red-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-red-700 inline-block"></span>
+                Карта Вторжений
+            </h2>
+            <div class="relative flex-grow bg-black/50 rounded-[2.5rem] border border-red-900/20 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="migrationCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-red-500/50 italic text-center uppercase tracking-widest">Нажмите на народы для изучения путей их миграции</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-red-700 mb-8 font-black uppercase leading-tight" id="placeholder-title">Волна варваров</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Движение кочевников-гуннов из глубин Азии вызвало эффект домино: германские племена устремились в пределы Римской империи. Это навсегда изменило этническую карту Европы. Нажмите на точки схемы.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏹</span>
+                            <span id="hint-1" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Удар гуннов</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-2" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Падение Рима</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-red-950/40 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-red-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-red-950/20 rounded-[2.5rem] border border-red-900/30 shadow-xl">
+                        <strong class="text-red-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-result">Последствие:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🐎</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-red-500 uppercase">Гунны</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Свирепые кочевники из Азии под предводительством Аттилы («Бича божьего»). Их появление в 375 г. н.э. стало спусковым крючком для массового бегства племен в сторону Рима.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Германцы</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Готы, вандалы, франки и англосаксы. Эти племена не просто грабили, но и селились на римских землях, создавая свои <strong>варварские королевства</strong>.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-red-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">💀</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-red-400 uppercase">Конец античности</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">В 476 году германский вождь Одоакр низложил последнего римского императора. Это событие знаменовало окончательный распад Западной Римской империи.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-red-950 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-red-100/70 leading-tight max-w-5xl mx-auto">
+            «Народы смешались в великом водовороте, и на руинах одного мира начал рождаться другой».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Переселение Народов",
+                subtitle: "IV – VII века н.э. / Гибель античного мира",
+                visualTitle: "Карта Вторжений",
+                hint: "Нажмите на народы для изучения путей их миграции",
+                placeholderTitle: "Волна варваров",
+                placeholderText: "Великое переселение народов началось с движения гуннов. Вся Европа пришла в движение, сокрушая границы империи. Выберите племя на карте.",
+                labelResult: "Последствие:",
+                hint1: "Удар гуннов", hint2: "Падение Рима",
+                card1Title: "Гунны",
+                card1Text: "Кочевая орда из глубин Азии, чье мастерство конного боя повергло в ужас как варваров, так и римлян.",
+                card2Title: "Германцы",
+                card2Text: "Народы, создавшие на руинах Рима свои государства: Франкское, Вестготское, Вандальское и другие.",
+                card3Title: "Конец античности",
+                card3Text: "Падение Запада привело к исчезновению античных городов, школ и упадку экономики в Европе на несколько веков.",
+                footerQuote: "«Народы смешались в великом водовороте, и на руинах одного мира начал рождаться другой».",
+                nodes: [
+                    { id: 1, tag: "Кочевники", title: "Орда Гуннов", desc: "Двинулись на запад из приуральских степей в 375 году. Подчинили себе германские племена остготов. При Аттиле гунны едва не захватили Галлию, но были остановлены в битве на Каталаунских полях (451 г.).", fact: "Гунны принесли в Европу новую тактику конной стрельбы из лука и седло со стременами." },
+                    { id: 2, tag: "Германцы", title: "Вестготы (Западные готы)", desc: "Бежали от гуннов за Дунай. После конфликта с Римом в 378 г. разгромили армию императора при Адрианополе. В 410 г. под руководством Алариха взяли и разграбили сам Рим.", fact: "Позже вестготы основали свое королевство на территории современной Испании и южной Франции." },
+                    { id: 3, tag: "Германцы", title: "Вандалы", desc: "Прошли через всю Европу в Испанию, а затем в Северную Африку. В 455 г. захватили Рим с моря, в течение двух недель беспощадно грабя город и уничтожая памятники культуры.", fact: "Имя этого народа стало синонимом бессмысленного разрушения — 'вандализм'." },
+                    { id: 4, tag: "Германцы", title: "Франки", desc: "Заселили северо-восточную часть Галлии. Под предводительством Хлодвига разгромили остатки римских войск и основали самое прочное варварское королевство.", fact: "Франки первыми из варваров приняли христианство напрямую от Рима, что дало им поддержку Церкви." },
+                    { id: 5, tag: "Германцы", title: "Англы и Саксы", desc: "Германские племена с берегов Северного моря, переправившиеся на британские острова. Они вытеснили кельтов (бриттов) и заложили основу будущей Англии.", fact: "Легенды о короле Артуре — это сказания бриттов о попытке сопротивления вторжению англосаксов." }
+                ]
+            },
+            kz: {
+                title: "Халықтардың ұлы қоныс аударуы",
+                subtitle: "б.з. IV – VII ғасырлар / Антикалық әлемнің күйреуі",
+                visualTitle: "Шапқыншылық картасы",
+                hint: "Көші-қон жолдарын зерттеу үшін халықтарды басыңыз",
+                placeholderTitle: "Варварлар толқыны",
+                placeholderText: "Халықтардың ұлы қоныс аударуы ғұндардың қозғалысынан басталды. Бүкіл Еуропа қозғалысқа келіп, империя шекараларын қиратты.",
+                labelResult: "Салдары:",
+                hint1: "Ғұндар соққысы", hint2: "Римнің құлауы",
+                card1Title: "Ғұндар",
+                card1Text: "Азияның түкпірінен келген көшпелі орда. Олардың атты әскері варварлар мен римдіктерді зәресін алды.",
+                card2Title: "Германдықтар",
+                card2Text: "Римнің үйіндісінде өз мемлекеттерін құрған халықтар: Франк, Вестгот, Вандал және т.б.",
+                card3Title: "Антиканың соңы",
+                card3Text: "Батыстың құлауы антикалық қалалардың, мектептердің жойылуына және Еуропа экономикасының құлдырауына әкелді.",
+                footerQuote: "«Халықтар ұлы иірімде араласып кетті, бір әлемнің қирандысында екінші әлем туа бастады».",
+                nodes: [
+                    { id: 1, tag: "Көшпенділер", title: "Ғұн ордасы", desc: "375 жылы батысқа қарай жылжыды. Аттиланың тұсында Еуропаны тітірентті. 451 жылы Каталаун шайқасында тоқтатылды.", fact: "Ғұндар Еуропаға ат үстінде садақ атудың жаңа тактикасын әкелді." },
+                    { id: 2, tag: "Германдықтар", title: "Вестготтар", desc: "Ғұндардан қашып, Дунайдан өтті. 410 жылы Аларихтың бастауымен Римді басып алып, тонады.", fact: "Кейін олар қазіргі Испания аумағында өз патшалығын құрды." },
+                    { id: 3, tag: "Германдықтар", title: "Вандалдар", desc: "Бүкіл Еуропа арқылы Солтүстік Африкаға өтті. 455 жылы Римді теңізден шабуылдап, қаланы аяусыз қиратты.", fact: "'Вандализм' сөзі осы халықтың атауынан шыққан." },
+                    { id: 4, tag: "Германдықтар", title: "Франктер", desc: "Галлияның солтүстік-шығысын қоныстанды. Хлодвигтің тұсында ең мықты варварлық патшалықтың негізін қалады.", fact: "Франктер варварлардың ішінде бірінші болып христиан дінін қабылдады." },
+                    { id: 5, tag: "Германдықтар", title: "Англдар мен Сакстар", desc: "Солтүстік теңіз жағалауынан Британия аралдарына өткен тайпалар. Олар Англияның негізін қалады.", fact: "Артур патша туралы аңыздар осы англосакстарға қарсылықтан туған." }
+                ]
+            },
+            en: {
+                title: "Great Migration of Peoples",
+                subtitle: "4th – 7th Centuries AD / The Death of Antiquity",
+                visualTitle: "Invasion Map",
+                hint: "Click on tribes to study their migration routes",
+                placeholderTitle: "The Barbarian Tide",
+                placeholderText: "The Migration began with the Huns' westward push. All Europe moved, crushing the imperial borders. Select a tribe on the map.",
+                labelResult: "Consequence:",
+                hint1: "Hunnic Impact", hint2: "Fall of Rome",
+                card1Title: "The Huns",
+                card1Text: "A nomadic horde from Asia under Attila (the 'Scourge of God') whose arrival triggered a domino effect across Europe.",
+                card2Title: "The Germans",
+                card2Text: "Goths, Vandals, and Franks who built the first medieval kingdoms on the ruins of Roman administration.",
+                card3Title: "End of Antiquity",
+                card3Text: "The fall of the West led to the decline of urban life, classical schools, and a shift towards a rural manor economy.",
+                footerQuote: "«Nations mingled in a great whirlpool, and upon the ruins of one world, another began to be born.»",
+                nodes: [
+                    { id: 1, tag: "Nomads", title: "The Hunnic Horde", desc: "Pushed west in 375 AD. They subdued Germanic tribes like the Ostrogoths. Under Attila, they threatened all Gaul but were checked at the Catalaunian Plains (451 AD).", fact: "The Huns introduced the powerful composite bow and advanced stirrups to European warfare." },
+                    { id: 2, tag: "Germans", title: "The Visigoths", desc: "Fled the Huns into Roman lands. In 410 AD, led by Alaric, they achieved the unthinkable by capturing and sacking the city of Rome.", fact: "They eventually settled in Hispania, creating a kingdom that lasted until the Islamic conquests." },
+                    { id: 3, tag: "Germans", title: "The Vandals", desc: "Migrated from Central Europe through Gaul and Spain to North Africa. In 455 AD, they launched a naval raid on Rome, looting it for 14 days.", fact: "Their name became a lasting synonym for the senseless destruction of art and property: 'vandalism'." },
+                    { id: 4, tag: "Germans", title: "The Franks", desc: "Settled in northern Gaul. Under King Clovis, they unified the region and founded the most stable and influential of the successor kingdoms.", fact: "The Franks converted directly to Catholic Christianity, securing a vital alliance with the Papacy." },
+                    { id: 5, tag: "Germans", title: "Angles & Saxons", desc: "North Sea tribes that crossed to Britain. They displaced the Romanized Celts and established the roots of English culture and language.", fact: "The legends of King Arthur represent the Romano-British resistance against these very invaders." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('migrationCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-result').innerText = t.labelResult;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Europe
+            ctx.fillStyle = 'rgba(153, 27, 27, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 200, 50); // Britain
+            ctx.lineTo(cx + 200, 50); // Steppe
+            ctx.lineTo(cx + 100, 400); // Africa
+            ctx.lineTo(cx - 150, 400); // Spain
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx + 150, y: cy - 80, icon: "🏹" }, // Huns (East)
+                { id: 2, x: cx - 40, y: cy + 50, icon: "🛡️" },  // Visigoths (Rome area)
+                { id: 3, x: cx - 80, y: cy + 150, icon: "⛵" }, // Vandals (Africa path)
+                { id: 4, x: cx - 120, y: cy - 40, icon: "🗡️" }, // Franks (Gaul)
+                { id: 5, x: cx - 180, y: cy - 120, icon: "🏰" } // Angles (Britain)
+            ];
+
+            // Arrows of Migration
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(153, 27, 27, 0.3)';
+            ctx.lineWidth = 2;
+            // From Huns to others
+            nodesData.forEach((node, i) => {
+                if(i > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(nodesData[0].x, nodesData[0].y);
+                    ctx.lineTo(node.x, node.y);
+                    ctx.stroke();
+                }
+            });
+            ctx.setLineDash([]);
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(153, 27, 27, 0.4)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = (i === 0) ? '#dc2626' : '#991b1b';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#fca5a5';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

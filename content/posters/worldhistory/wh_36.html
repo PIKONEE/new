@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нашествие Ксеркса: Война за Свободу</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #450a0a, #1a1a1a, #000000);
+            color: #fef3c7;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #991b1b;
+            color: white;
+            box-shadow: 0 0 30px rgba(153, 27, 27, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #991b1b;
+            background: linear-gradient(90deg, rgba(153, 27, 27, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-white to-red-400 uppercase text-center md:text-left">
+                Нашествие Персов
+            </h1>
+            <p id="sub-title" class="text-red-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">480 год до н.э. / Объединенная Эллада</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-red-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-red-950 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-red-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-red-700 inline-block"></span>
+                Карта Войны
+            </h2>
+            <div class="relative flex-grow bg-black/50 rounded-[2.5rem] border border-red-900/20 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="warCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-red-500/50 italic text-center uppercase tracking-widest">Нажмите на ключевые сражения для изучения подвигов</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-red-700 mb-8 font-black uppercase leading-tight" id="placeholder-title">Ярость Ксеркса</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Через 10 лет после Марафона сын Дария Ксеркс двинул на Грецию несметное войско. Чтобы выжить, греческие полисы забыли о вражде и объединились. Выберите битву на карте.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🦁</span>
+                            <span id="hint-1" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">300 спартанцев</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🚢</span>
+                            <span id="hint-2" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Саламинская победа</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-red-950/40 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-red-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-red-950/20 rounded-[2.5rem] border border-red-900/30 shadow-xl">
+                        <strong class="text-red-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-hero">Герой и подвиг:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🦁</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-red-500 uppercase">Фермопилы</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Царь Спарты <strong>Леонид</strong> с небольшим отрядом три дня удерживал узкое ущелье, сдерживая всю мощь персидской армии. Подвиг спартанцев дал грекам время для подготовки флота.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-blue-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛶</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Триремы</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Греческие боевые корабли с тремя рядами весел. Быстрые и маневренные, они были оснащены медным тараном, который пробивал борта тяжелых и неповоротливых персидских судов.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⚓</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Фемистокл</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Афинский вождь, убедивший греков построить мощный флот на доходы от серебряных рудников. Его хитрость заманила персов в ловушку в узком Саламинском проливе.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-red-950 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-red-100/70 leading-tight max-w-5xl mx-auto">
+            «Путник, пойди возвести нашим гражданам в Лакедемоне, что, их заветы блюдя, здесь мы костями легли».
+        </p>
+        <span class="block mt-4 text-red-600 uppercase tracking-widest text-sm">— Эпитафия у Фермопил</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Нашествие Персов",
+                subtitle: "480 год до н.э. / Объединенная Эллада",
+                visualTitle: "Карта Войны",
+                hint: "Нажмите на ключевые сражения для изучения подвигов",
+                placeholderTitle: "Ярость Ксеркса",
+                placeholderText: "Ксеркс вел миллионную армию, но столкнулся с железной волей греков. Изучите этапы великой освободительной войны.",
+                labelHero: "Герой и подвиг:",
+                hint1: "300 спартанцев", hint2: "Саламинская победа",
+                card1Title: "Фермопилы",
+                card1Text: "Узкое ущелье стало могилой для тысяч персов и бессмертной славой для Леонида и его 300 воинов.",
+                card2Title: "Триремы",
+                card2Text: "Главное оружие афинян. Легкие корабли в узких проливах превратились в смертоносные тараны.",
+                card3Title: "Фемистокл",
+                card3Text: "Гений стратегии, предвидевший, что судьба Греции решится на море, и создавший 'деревянные стены' флота.",
+                footerQuote: "«Путник, пойди возвести нашим гражданам в Лакедемоне, что, их заветы блюдя, здесь мы костями легли».",
+                nodes: [
+                    { id: 1, tag: "Сухопутный рубеж", title: "Фермопильское ущелье", desc: "Узкий проход между горами и заливом. Здесь царь Леонид и 300 спартанцев (вместе с союзниками) сдерживали полчища Ксеркса. Предательство Эфиальта позволило персам обойти греков с тыла.", fact: "На месте гибели героев стоит памятник со львом — символом царя Леонида." },
+                    { id: 2, tag: "Морской триумф", title: "Саламинское сражение", desc: "Решающая морская битва в узком проливе у острова Саламин. Огромный персидский флот не мог маневрировать и был по частям уничтожен греческими триремами.", fact: "Ксеркс наблюдал за разгромом своего флота с трона, установленного на берегу горы Эгалеос." },
+                    { id: 3, tag: "Захват", title: "Сожжение Афин", desc: "Персы ворвались в Аттику и захватили пустые Афины. Жители были эвакуированы на Саламин. Акрополь был сожжен, но греки не сдались, веря в победу на море.", fact: "Это событие стало личной трагедией для афинян, но сплотило их в борьбе до конца." },
+                    { id: 4, tag: "Финал", title: "Битва при Платеях", desc: "Окончательный разгром остатков сухопутной армии персов в 479 г. до н.э. Объединенное войско всех греческих полисов под командованием Павсания выдворило врага из Европы.", fact: "Победа при Платеях навсегда избавила Элладу от угрозы персидского рабства." },
+                    { id: 5, tag: "Технология", title: "Греческий огонь", desc: "Хотя это термин позднего времени, тактика поджога персидских судов и использование медных таранов были ключом к успеху. Греки лучше знали свои воды и течения.", fact: "Строительство флота было оплачено всеми гражданами Афин — демократия создала мощь." }
+                ]
+            },
+            kz: {
+                title: "Парсы шапқыншылығы",
+                subtitle: "б.з.б. 480 жыл / Біріккен Эллада",
+                visualTitle: "Соғыс картасы",
+                hint: "Ерліктерді зерттеу үшін негізгі шайқастарды басыңыз",
+                placeholderTitle: "Ксеркстің қаһары",
+                placeholderText: "Ксеркс миллиондаған әскер бастап келді, бірақ гректердің темірдей еркіне тап болды. Азаттық соғысының кезеңдерін зерттеңіз.",
+                labelHero: "Батыр мен ерлік:",
+                hint1: "300 спартандық", hint2: "Саламин жеңісі",
+                card1Title: "Фермопилы",
+                card1Text: "Тар өткел мыңдаған парсының қабіріне және Леонид пен оның 300 жауынгерінің мәңгілік даңқына айналды.",
+                card2Title: "Триремалар",
+                card2Text: "Афинылықтардың басты қаруы. Жеңіл кемелер тар бұғаздарда жойқын қаруға айналды.",
+                card3Title: "Фемистокл",
+                card3Text: "Грекия тағдыры теңізде шешілетінін болжаған және флот құрған стратегиялық данышпан.",
+                footerQuote: "«Ей, жолаушы, Лакедемонға бар да, олардың заңдарын сақтап, осында жан қиғанымызды айт».",
+                nodes: [
+                    { id: 1, tag: "Құрлықтық шеп", title: "Фермопилы өткелі", desc: "Леонид патша мен 300 спартандық Ксеркстің қалың қолдарына тосқауыл болды. Эфиальттың сатқындығы парсыларға гректерді сыртынан айналып өтуге мүмкіндік берді.", fact: "Батырлар қаза тапқан жерде арыстан мүсіні — Леонид патшаның нышаны орнатылған." },
+                    { id: 2, tag: "Теңіз триумфы", title: "Саламин шайқасы", desc: "Саламин аралы түбіндегі шешуші теңіз шайқасы. Парсы флоты тар бұғазда маневр жасай алмай, талқандалды.", fact: "Ксеркс өз флотының жеңілісін жағадағы тақтан бақылап отырды." },
+                    { id: 3, tag: "Басып алу", title: "Афинының өртенуі", desc: "Парсылар Аттикаға басып кіріп, бос қалған Афиныны өртеді. Тұрғындар Саламинге көшірілді.", fact: "Бұл оқиға афинылықтарды аяғына дейін күресуге жұмылдырды." },
+                    { id: 4, tag: "Финал", title: "Платеи шайқасы", desc: "б.з.б. 479 жылы парсылардың құрлықтағы әскерін түпкілікті талқандау. Біріккен грек әскері жауды Еуропадан қуып шықты.", fact: "Платеидегі жеңіс Элладаны парсы құлдығынан біржола құтқарды." },
+                    { id: 5, tag: "Технология", title: "Грек кемелері", desc: "Парсы кемелерін өртеу тактикасы мен мыс тарандарды қолдану табыстың кілті болды.", fact: "Флот құрылысына барлық Афины азаматтары үлес қосты." }
+                ]
+            },
+            en: {
+                title: "Persian Invasion",
+                subtitle: "480 BC / United Hellas",
+                visualTitle: "War Map",
+                hint: "Click on key battles to study heroic deeds",
+                placeholderTitle: "Wrath of Xerxes",
+                placeholderText: "Xerxes moved a vast army but faced the iron will of the Greeks. Explore the stages of the great war for liberation.",
+                labelHero: "Hero and Deed:",
+                hint1: "300 Spartans", hint2: "Victory at Salamis",
+                card1Title: "Thermopylae",
+                card1Text: "The narrow pass became a grave for thousands of Persians and eternal glory for Leonidas and his 300.",
+                card2Title: "Triremes",
+                card2Text: "The primary Athenian weapon. Light ships in narrow straits turned into lethal battering rams.",
+                card3Title: "Themistocles",
+                card3Text: "A strategic genius who foresaw that Greece's fate would be decided at sea and built the 'wooden walls' of the fleet.",
+                footerQuote: "«Go tell the Spartans, passerby, that here, obedient to their laws, we lie.»",
+                nodes: [
+                    { id: 1, tag: "Land Barrier", title: "Pass of Thermopylae", desc: "A narrow gap where King Leonidas and 300 Spartans held back Xerxes' hordes for three days until betrayed by Ephialtes.", fact: "A lion monument stands at the site of their sacrifice, symbolizing King Leonidas." },
+                    { id: 2, tag: "Naval Triumph", title: "Battle of Salamis", desc: "The decisive sea battle where the heavy Persian fleet was outmaneuvered and destroyed by Greek triremes in narrow waters.", fact: "Xerxes watched the destruction of his fleet from a golden throne on the slopes of Mount Egaleo." },
+                    { id: 3, tag: "Destruction", title: "Burning of Athens", desc: "Persians entered Attica and sacked the evacuated city of Athens, burning the Acropolis to the ground.", fact: "The loss of their city only strengthened the Athenian resolve to fight at sea." },
+                    { id: 4, tag: "The End", title: "Battle of Plataea", desc: "The final land battle in 479 BC where the combined Greek forces under Pausanias crushed the remaining Persian army.", fact: "The victory at Plataea permanently ended the Persian threat to mainland Greece." },
+                    { id: 5, tag: "Technology", title: "Naval Tactics", desc: "Using bronze rams to pierce hulls and understanding local currents were the technological keys to victory.", fact: "The creation of the navy was funded by common Athenian citizens through silver mine revenue." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('warCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-hero').innerText = t.labelHero;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Coast of Greece
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(0, 50);
+            ctx.lineTo(cx - 50, 100);
+            ctx.lineTo(cx + 100, 250);
+            ctx.lineTo(cx - 20, 400);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx - 100, y: cy - 120, icon: "🛡️" }, // Thermopylae
+                { id: 2, x: cx + 20, y: cy + 30, icon: "⚓" },  // Salamis
+                { id: 3, x: cx + 100, y: cy - 20, icon: "🔥" }, // Athens
+                { id: 4, x: cx - 50, y: cy + 120, icon: "⚔️" }, // Plataea
+                { id: 5, x: cx + 150, y: cy + 150, icon: "⛴️" }  // Ships
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(153, 27, 27, 0.4)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = '#991b1b';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fef3c7';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon text
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 45);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Арабский мир: Наследие Халифата</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #422006, #1a1a1a, #000000);
+            color: #fef3c7;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #d97706;
+            color: white;
+            box-shadow: 0 0 30px rgba(217, 119, 6, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #d97706;
+            background: linear-gradient(90deg, rgba(217, 119, 6, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d97706; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-300 to-yellow-500 uppercase">
+                Арабский Халифат
+            </h1>
+            <p id="sub-title" class="text-amber-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Мир Ислама и расцвет наук</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-amber-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-amber-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-amber-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-amber-600 inline-block"></span>
+                Карта Завоеваний
+            </h2>
+            <div class="relative flex-grow bg-black/40 rounded-[2.5rem] border border-amber-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="caliphateCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-amber-500/50 italic text-center uppercase tracking-widest">Нажмите на центры Халифата для изучения его истории</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-amber-600 mb-8 font-black uppercase leading-tight" id="placeholder-title">Свет с Востока</h3>
+                    <p class="text-stone-300 leading-relaxed text-lg" id="placeholder-text">
+                        За одно столетие арабы создали империю, превзошедшую Римскую. Халифат стал хранилищем знаний античности и колыбелью современной математики и медицины. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🌙</span>
+                            <span id="hint-1" class="text-amber-200/60 font-bold uppercase text-xs tracking-widest">Золотой век наук</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🐫</span>
+                            <span id="hint-2" class="text-amber-200/60 font-bold uppercase text-xs tracking-widest">Торговые пути</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-amber-950/40 text-amber-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-stone-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-amber-950/20 rounded-[2.5rem] border border-amber-900/30 shadow-xl">
+                        <strong class="text-amber-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-contribution">Вклад в культуру:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-amber-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📐</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-amber-500 uppercase">Наука и Математика</h3>
+            <p id="card1-text" class="text-stone-400 text-sm leading-relaxed">Арабы ввели систему «арабских» цифр (заимствованных из Индии) и создали алгебру. Имена ученых, таких как <strong>аль-Хорезми</strong>, навсегда вошли в историю науки.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🕌</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Архитектура</h3>
+            <p id="card2-text" class="text-stone-400 text-sm leading-relaxed">Мечети с тонкими минаретами, узорчатые арабески и величественные дворцы (Альгамбра) стали вершиной восточного зодчества, сочетая роскошь и математическую точность.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🩺</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-orange-500 uppercase">Медицина</h3>
+            <p id="card3-text" class="text-stone-400 text-sm leading-relaxed"><strong>Ибн Сина (Авиценна)</strong> написал «Канон врачебной науки», который был главным учебником для врачей Европы и Востока на протяжении шести столетий.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-amber-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-amber-100/70 leading-tight max-w-5xl mx-auto">
+            «Чернила ученого столь же священны, как кровь мученика».
+        </p>
+        <span class="block mt-4 text-amber-500 uppercase tracking-widest text-sm">— Восточная мудрость</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Арабский Халифат",
+                subtitle: "Мир Ислама и расцвет наук",
+                visualTitle: "Карта Завоеваний",
+                hint: "Нажмите на центры Халифата для изучения",
+                placeholderTitle: "Свет с Востока",
+                placeholderText: "Арабский мир объединил культуры Персии, Египта и Греции. Изучите этапы роста этой уникальной цивилизации.",
+                labelContribution: "Вклад в культуру:",
+                hint1: "Золотой век наук", hint2: "Торговые пути",
+                card1Title: "Наука и Математика",
+                card1Text: "Арабы сохранили греческие трактаты и развили астрономию, химию (алхимию) и математику, подарив миру цифры и алгоритмы.",
+                card2Title: "Архитектура",
+                card2Text: "Искусство без изображения живых существ породило сложнейшие геометрические орнаменты и уникальный стиль стрельчатых арок.",
+                card3Title: "Медицина",
+                card3Text: "В Халифате открывались первые общественные больницы и аптеки, а хирурги проводили сложнейшие операции уже в IX веке.",
+                footerQuote: "«Чернила ученого столь же священны, как кровь мученика».",
+                nodes: [
+                    { id: 1, tag: "Центр", title: "Мекка и Медина", desc: "Священные города, где в VII веке пророк Мухаммед начал проповедовать новую веру. Место рождения исламской государственности.", fact: "Паломничество (хадж) в Мекку стало объединяющим фактором для мусульман со всего мира." },
+                    { id: 2, tag: "Сирия", title: "Дамаск", desc: "Столица династии Омейядов. Здесь арабы освоили византийское искусство управления и создали великолепную мечеть Омейядов.", fact: "Дамасская сталь прославилась на весь мир своей невероятной прочностью и остротой." },
+                    { id: 3, tag: "Ирак", title: "Багдад", desc: "Столица Аббасидов, 'Город Мира'. Здесь был основан 'Дом мудрости' — первая в мире академия наук, где переводили Аристотеля и Платона.", fact: "Багдад IX века был крупнейшим городом мира с населением более миллиона человек." },
+                    { id: 4, tag: "Испания", title: "Кордова", desc: "Центр арабской Испании (Аль-Андалус). Город просвещения, где в мире сосуществовали мусульмане, христиане и иудеи.", fact: "Библиотека Кордовы насчитывала 400 тысяч свитков, когда в библиотеках Парижа было лишь несколько сотен." },
+                    { id: 5, tag: "Египет", title: "Каир", desc: "Важнейший торговый узел и центр исламского образования. Основанный династией Фатимидов, Каир стал жемчужиной Востока.", fact: "Университет Аль-Азхар в Каире является одним из старейших действующих вузов мира." }
+                ]
+            },
+            kz: {
+                title: "Араб Халифаты",
+                subtitle: "Ислам әлемі және ғылымның өрлеуі",
+                visualTitle: "Жаулап алу картасы",
+                hint: "Зерттеу үшін Халифат орталықтарын басыңыз",
+                placeholderTitle: "Шығыстан келген нұр",
+                placeholderText: "Араб әлемі Парсы, Мысыр және Грекия мәдениеттерін біріктірді. Осы бірегей өркениеттің даму кезеңдерін зерттеңіз.",
+                labelContribution: "Мәдениетке қосқан үлесі:",
+                hint1: "Ғылымның алтын ғасыры", hint2: "Сауда жолдары",
+                card1Title: "Ғылым мен Математика",
+                card1Text: "Арабтар грек еңбектерін сақтап, астрономияны, химияны және математиканы дамытып, әлемге цифрлар мен алгоритмдерді сыйлады.",
+                card2Title: "Сәулет өнері",
+                card2Text: "Тірі жанды бейнелеуге тыйым салу күрделі геометриялық ою-өрнектер мен бірегей аркалар стилін тудырды.",
+                card3Title: "Медицина",
+                card3Text: "Халифатта алғашқы қоғамдық ауруханалар мен дәріханалар ашылды, ал хирургтар IX ғасырда-ақ күрделі оталар жасаған.",
+                footerQuote: "«Ғалымның сиясы шейіттің қанымен бірдей қасиетті».",
+                nodes: [
+                    { id: 1, tag: "Орталық", title: "Мекке мен Медина", desc: "VII ғасырда Мұхаммед пайғамбар жаңа дінді уағыздай бастаған қасиетті қалалар. Ислам мемлекеттілігінің бесігі.", fact: "Меккеге қажылық жасау бүкіл әлем мұсылмандарын біріктіруші факторға айналды." },
+                    { id: 2, tag: "Сирия", title: "Дамаск", desc: "Омейядтар әулетінің астанасы. Мұнда арабтар византиялық басқару жүйесін меңгерді.", fact: "Дамаск болаттары өзінің ерекше беріктігімен әлемге танымал болды." },
+                    { id: 3, tag: "Ирак", title: "Бағдат", desc: "Аббасидтер астанасы. Мұнда әлемдегі алғашқы ғылым академиясы — 'Даналық үйі' негізі қаланды.", fact: "IX ғасырдағы Бағдат халқы миллионнан асатын әлемдегі ең ірі қала болды." },
+                    { id: 4, tag: "Испания", title: "Кордова", desc: "Арабтық Испанияның орталығы. Мұнда мұсылмандар, христиандар мен иудейлер тату өмір сүрді.", fact: "Кордова кітапханасында 400 мыңнан астам қолжазба сақталған." },
+                    { id: 5, tag: "Мысыр", title: "Каир", desc: "Маңызды сауда торабы және исламдық білім беру орталығы. Фатимидтер әулеті негізін қалаған.", fact: "Каирдегі Әл-Азхар университеті әлемдегі ең көне оқу орындарының бірі." }
+                ]
+            },
+            en: {
+                title: "The Arab Caliphate",
+                subtitle: "The Islamic World & Golden Age of Science",
+                visualTitle: "Map of Conquests",
+                hint: "Click on the centers of the Caliphate to explore",
+                placeholderTitle: "Light from the East",
+                placeholderText: "The Arab world unified the cultures of Persia, Egypt, and Greece. Explore the stages of this unique civilization's growth.",
+                labelContribution: "Cultural Legacy:",
+                hint1: "Golden Age of Science", hint2: "Trade Routes",
+                card1Title: "Science & Mathematics",
+                card1Text: "Arabs preserved Greek texts and advanced astronomy, chemistry (alchemy), and math, giving the world digits and algorithms.",
+                card2Title: "Architecture",
+                card2Text: "The prohibition of living images led to intricate geometric arabesques and the majestic style of horseshoe arches.",
+                card3Title: "Medicine",
+                card3Text: "The first public hospitals and pharmacies appeared in the Caliphate; surgeons performed complex tasks as early as the 9th century.",
+                footerQuote: "«The ink of the scholar is more holy than the blood of the martyr.»",
+                nodes: [
+                    { id: 1, tag: "Heartland", title: "Mecca & Medina", desc: "Sacred cities where Prophet Muhammad began his mission in the 7th century. The cradle of the Islamic state.", fact: "The Hajj (pilgrimage) became a powerful force for unity across the diverse regions of the Caliphate." },
+                    { id: 2, tag: "Syria", title: "Damascus", desc: "The Umayyad capital. Here, Arabs adapted Byzantine administrative structures and built the iconic Umayyad Mosque.", fact: "Damascene steel became legendary globally for its flexibility and incredible strength." },
+                    { id: 3, tag: "Iraq", title: "Baghdad", desc: "The Abbasid capital, known as the 'City of Peace'. Home to the House of Wisdom, where Aristotle and Plato were translated.", fact: "In the 9th century, Baghdad was the largest city on Earth, with a population exceeding one million." },
+                    { id: 4, tag: "Spain", title: "Cordoba", desc: "The capital of Al-Andalus. A beacon of light where Muslims, Christians, and Jews lived in cultural symbiosis.", fact: "The Library of Cordoba housed 400,000 volumes when major European libraries had only a few hundred." },
+                    { id: 5, tag: "Egypt", title: "Cairo", desc: "A vital trade hub and center of theological study. Founded by the Fatimids, it became a jewel of the Eastern Mediterranean.", fact: "Al-Azhar University in Cairo is one of the world's oldest degree-granting institutions." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('caliphateCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-contribution').innerText = t.labelContribution;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Islamic Crescent Background
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.1)';
+            ctx.lineWidth = 40;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 160, 0.8 * Math.PI, 0.2 * Math.PI, true);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx + 50, y: cy + 120, icon: "🕋" }, // Mecca
+                { id: 2, x: cx + 20, y: cy + 10, icon: "🕌" },  // Damascus
+                { id: 3, x: cx + 110, y: cy - 40, icon: "📜" }, // Baghdad
+                { id: 4, x: cx - 140, y: cy - 80, icon: "🎓" }, // Cordoba
+                { id: 5, x: cx - 40, y: cy + 80, icon: "🏙️" }  // Cairo
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(217, 119, 6, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#fde68a';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

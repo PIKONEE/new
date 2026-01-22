@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.P.Q.R. Устройство Республики</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #312e81, #1e1b4b, #0c0a09);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #f59e0b;
+            color: #1e1b4b;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #f59e0b;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f59e0b; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-white to-amber-200 uppercase">
+                Римская Республика
+            </h1>
+            <p id="sub-title" class="text-amber-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">S.P.Q.R. — Сенат и народ Рима</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-yellow-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-yellow-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-amber-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-amber-600 inline-block"></span>
+                Структура власти
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-amber-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="republicCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-amber-500/50 italic text-center uppercase tracking-widest">Нажмите на институты власти для изучения системы</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-amber-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Res Publica</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        После изгнания царей Рим стал республикой («общественным делом»). Власть была разделена так, чтобы никто не мог стать единоличным правителем. Нажмите на схему слева.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-1" class="text-amber-200/60 font-bold uppercase text-xs tracking-widest">Власть Сената</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🗳️</span>
+                            <span id="hint-2" class="text-amber-200/60 font-bold uppercase text-xs tracking-widest">Право вето</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-amber-950/40 text-amber-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-amber-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-indigo-950/40 rounded-[2.5rem] border border-amber-500/20 shadow-xl">
+                        <strong class="text-amber-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-law">Основа права:</strong>
+                        <p id="info-fact" class="text-amber-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👔</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-amber-400 uppercase">Консулы</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Два высших правителя, выбиравшихся на один год. Они обладали равной властью и командовали армией. Во время войны один консул мог наложить запрет на решение другого.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-amber-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📜</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-amber-500 uppercase">Сенат</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Собрание из 300 бывших чиновников. Сенат распоряжался казной, ведал внешней политикой и готовил законы. Его авторитет (auctoritas) был непререкаемым.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-slate-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🗣️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Народные трибуны</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Защитники плебеев. Личность трибуна была священной и неприкосновенной. Они могли отменить любое несправедливое решение магистратов одним словом: «Вето!» (запрещаю).</p>
+        </div>
+    </section>
+
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-yellow-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-amber-100/70 leading-tight max-w-5xl mx-auto">
+            «Senatus Populusque Romanus — Сенат и народ Рима».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Римская Республика",
+                subtitle: "S.P.Q.R. — Сенат и народ Рима",
+                visualTitle: "Структура власти",
+                hint: "Нажмите на институты власти для изучения системы",
+                placeholderTitle: "Res Publica",
+                placeholderText: "Римская республика строилась на системе сдержек и противовесов. Власть была распределена между Сенатом, магистратами и народом. Исследуйте схему.",
+                labelLaw: "Основа права:",
+                hint1: "Власть Сената", hint2: "Право вето",
+                card1Title: "Консулы",
+                card1Text: "Высшая исполнительная власть. Годовой срок полномочий исключал возможность захвата личной власти в мирное время.",
+                card2Title: "Сенат",
+                card2Text: "Мозговой центр Рима. Здесь заседали самые опытные политики, принимавшие стратегические решения государственного масштаба.",
+                card3Title: "Народные трибуны",
+                card3Text: "Щит народа против произвола знати. Их право вето было мощнейшим инструментом социальной справедливости.",
+                footerQuote: "«Senatus Populusque Romanus — Сенат и народ Рима».",
+                nodes: [
+                    { id: 1, tag: "Законосовещательный", title: "Сенат", desc: "Главный орган власти. Сенаторы назначались пожизненно. Они контролировали финансы, объявляли чрезвычайное положение и принимали иностранных послов.", fact: "Мнение Сената было законом для всех римских чиновников." },
+                    { id: 2, tag: "Исполнительная власть", title: "Магистраты (Консулы)", desc: "Высшие должностные лица. Консулы созывали Сенат и Народное собрание, командовали легионами. В их честь называли текущий год.", fact: "Во время походов консулы обладали абсолютной властью над воинами." },
+                    { id: 3, tag: "Народная власть", title: "Народные трибуны", desc: "Выбирались из плебеев. Двери их домов всегда были открыты для граждан, нуждающихся в защите. Обладали правом вето на любые указы.", fact: "Убить народного трибуна считалось тягчайшим преступлением против богов." },
+                    { id: 4, tag: "Высший орган", title: "Народное Собрание", desc: "Собрание всех граждан по сотням (центуриям). Здесь выбирали консулов, преторов и принимали или отвергали предложенные Сенатом законы.", fact: "Голосование было тайным с использованием восковых табличек." },
+                    { id: 5, tag: "Крайняя мера", title: "Диктатор", desc: "В случае смертельной опасности Сенат назначал одного человека на полгода. Его власть была неограниченной и не подлежала обжалованию.", fact: "Самый известный диктатор — Цинциннат, который после победы вернулся к своему плугу." }
+                ]
+            },
+            kz: {
+                title: "Рим Республикасы",
+                subtitle: "S.P.Q.R. — Рим Сенаты мен халқы",
+                visualTitle: "Билік құрылымы",
+                hint: "Жүйені зерттеу үшін билік институттарын басыңыз",
+                placeholderTitle: "Res Publica",
+                placeholderText: "Рим республикасы тежеу мен теңгерім жүйесіне негізделген. Билік Сенат, магистраттар және халық арасында бөлінді. Схеманы зерттеңіз.",
+                labelLaw: "Құқық негізі:",
+                hint1: "Сенат билігі", hint2: "Вето құқығы",
+                card1Title: "Консулдар",
+                card1Text: "Жоғарғы атқарушы билік. Бір жылдық өкілеттік мерзімі жеке билікті басып алу мүмкіндігін шектеді.",
+                card2Title: "Сенат",
+                card2Text: "Римнің стратегиялық орталығы. Мұнда мемлекеттік маңызы бар шешімдер қабылдаған ең тәжірибелі саясаткерлер жиналды.",
+                card3Title: "Халық трибундары",
+                card3Text: "Халықтың ақсүйектер озбырлығынан қорғаны. Олардың вето құқығы әлеуметтік әділеттіліктің қуатты құралы болды.",
+                footerQuote: "«Senatus Populusque Romanus — Рим Сенаты мен халқы».",
+                nodes: [
+                    { id: 1, tag: "Заң шығарушы", title: "Сенат", desc: "Биліктің басты органы. Сенаторлар өмір бойына тағайындалды. Олар қаржыны бақылап, сыртқы саясатты басқарды.", fact: "Сенаттың пікірі барлық римдік шенеуніктер үшін заң болды." },
+                    { id: 2, tag: "Атқарушы билік", title: "Магистраттар (Консулдар)", desc: "Жоғарғы лауазымды тұлғалар. Олар Сенатты шақырып, легиондарды басқарды.", fact: "Жорықтар кезінде консулдар жауынгерлер үстінен шексіз билікке ие болды." },
+                    { id: 3, tag: "Халық билігі", title: "Халық трибундары", desc: "Плебейлерден сайланды. Олар кез келген жарлыққа вето қою құқығына ие болды.", fact: "Халық трибунын өлтіру құдайлар алдындағы ең ауыр қылмыс саналды." },
+                    { id: 4, tag: "Жоғарғы орган", title: "Халық жиналысы", desc: "Барлық азаматтардың жиналысы. Мұнда консулдар сайланып, заңдар қабылданды.", fact: "Дауыс беру балауыз тақтайшалар арқылы жасырын жүргізілді." },
+                    { id: 5, tag: "Төтенше жағдай", title: "Диктатор", desc: "Қауіп төнгенде Сенат бір адамды жарты жылға тағайындаған. Оның билігі шексіз болды.", fact: "Ең танымал диктатор — жеңістен кейін өз соқасына оралған Цинциннат." }
+                ]
+            },
+            en: {
+                title: "The Roman Republic",
+                subtitle: "S.P.Q.R. — The Senate and People of Rome",
+                visualTitle: "Government Structure",
+                hint: "Click on institutions to study the system",
+                placeholderTitle: "Res Publica",
+                placeholderText: "The Roman Republic was built on a system of checks and balances. Power was shared between the Senate, magistrates, and the people. Explore the diagram.",
+                labelLaw: "Legal Basis:",
+                hint1: "Senate Power", hint2: "The Right of Veto",
+                card1Title: "Consuls",
+                card1Text: "Highest executive power. The one-year term limit prevented any individual from seizing absolute control in peacetime.",
+                card2Title: "The Senate",
+                card2Text: "The brain center of Rome. It consisted of experienced politicians making strategic state-level decisions.",
+                card3Title: "Tribunes of the Plebs",
+                card3Text: "The people's shield against aristocratic overreach. Their power to say 'Veto' was a vital tool for justice.",
+                footerQuote: "«Senatus Populusque Romanus — The Senate and People of Rome.»",
+                nodes: [
+                    { id: 1, tag: "Advisory/Legislative", title: "The Senate", desc: "The supreme governing body. Senators served for life, managing finances, foreign policy, and state security.", fact: "The 'advice' of the Senate (Senatus consultum) was virtually law for magistrates." },
+                    { id: 2, tag: "Executive Power", title: "Magistrates (Consuls)", desc: "Two highest officials who presided over the Senate and led the legions in war. Years were named after them.", fact: "On campaign, consuls held imperium—absolute power over life and death." },
+                    { id: 3, tag: "Protective Power", title: "Tribunes of the Plebs", desc: "Elected to protect commoners. Their persons were sacrosanct (untouchable). They could halt any legal process with a 'Veto'.", fact: "Harming a Tribune was a capital offense against the Roman gods." },
+                    { id: 4, tag: "Sovereign Body", title: "The Assemblies", desc: "Meetings of citizens organized by census or tribe to elect officials and vote on laws proposed by magistrates.", fact: "Voting was secret, using inscribed tablets to prevent intimidation." },
+                    { id: 5, tag: "Emergency Power", title: "The Dictator", desc: "Appointed by the Senate for max 6 months during total crises. His decisions were absolute and unappealable.", fact: "Cincinnatus is the model dictator who resigned immediately after saving the city." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('republicCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-law').innerText = t.labelLaw;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Connection Hierarchy
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 100);
+            ctx.lineTo(cx - 120, cy + 20);
+            ctx.lineTo(cx + 120, cy + 20);
+            ctx.lineTo(cx, cy - 100);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx, y: cy - 120, icon: "🏛️" },    // Senate
+                { id: 2, x: cx - 120, y: cy + 20, icon: "👔" }, // Consuls
+                { id: 3, x: cx + 120, y: cy + 20, icon: "🛡️" }, // Tribunes
+                { id: 4, x: cx, y: cy + 120, icon: "👥" },    // Assembly
+                { id: 5, x: cx + 150, y: cy - 80, icon: "⚡" }  // Dictator
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(245, 158, 11, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core Point
+                ctx.fillStyle = (i === 4) ? '#ef4444' : '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = (i === 4) ? 'white' : '#1e1b4b';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#fef3c7';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.title.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

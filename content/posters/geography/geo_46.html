@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biological Impact on Earth Shells</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0c0a09; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #fbbf24; color: #451a03; font-weight: 800; }
+        @keyframes float-o2 { from { bottom: -10px; opacity: 1; } to { bottom: 200px; opacity: 0; } }
+        .o2-bubble { position: absolute; width: 10px; height: 10px; border-radius: 50%; border: 1px solid #38bdf8; animation: float-o2 4s linear infinite; pointer-events: none; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b border-yellow-500/20">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-yellow-500"></h1>
+            <p id="sub-title" class="mt-1 text-white/30 font-bold uppercase tracking-widest text-[10px]"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Interactive Influence Scheme -->
+        <div class="glass rounded-custom p-10 flex flex-col justify-center relative min-h-[400px]">
+            <h3 id="impact-title" class="heading-font text-2xl text-yellow-400 mb-6 uppercase tracking-widest"></h3>
+            <div class="grid grid-cols-1 gap-6">
+                <div class="flex items-center gap-6 p-6 glass rounded-3xl border-l-8 border-sky-400">
+                    <span class="text-4xl">☁️</span>
+                    <div>
+                        <div class="font-bold text-sky-400 text-xs uppercase" id="label-atm">Atmosphere</div>
+                        <p id="impact-atm" class="text-sm text-white/70"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 p-6 glass rounded-3xl border-l-8 border-amber-600">
+                    <span class="text-4xl">🌱</span>
+                    <div>
+                        <div class="font-bold text-amber-600 text-xs uppercase" id="label-litho">Lithosphere</div>
+                        <p id="impact-litho" class="text-sm text-white/70"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 p-6 glass rounded-3xl border-l-8 border-blue-600">
+                    <span class="text-4xl">🐚</span>
+                    <div>
+                        <div class="font-bold text-blue-600 text-xs uppercase" id="label-hydro">Hydrosphere</div>
+                        <p id="impact-hydro" class="text-sm text-white/70"></p>
+                    </div>
+                </div>
+            </div>
+            <!-- O2 decoration -->
+            <div id="bubbles-container"></div>
+        </div>
+
+        <!-- Definition Panel -->
+        <div class="glass rounded-custom p-12 flex flex-col justify-center border-r-4 border-yellow-500">
+            <h3 id="info-title" class="heading-font text-4xl mb-6 text-white"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Сила Жизни", subtitle: "Воздействие организмов на Землю",
+                impactTitle: "Трансформация оболочек",
+                impactAtm: "Насыщение атмосферы кислородом ($O_2$) и регулирование уровня углекислого газа ($CO_2$) через фотосинтез.",
+                impactLitho: "Разрушение горных пород и создание почвы. Образование ископаемых: мела, известняка, угля, торфа.",
+                impactHydro: "Изменение солевого состава воды. Очистка вод фильтраторами и создание коралловых рифов.",
+                infoTitle: "Геологическая роль",
+                infoText: "Живые организмы — это мощнейшая геологическая сила. Они полностью изменили состав атмосферы и создали уникальное образование — почву."
+            },
+            kz: {
+                title: "Тіршілік Күші", subtitle: "Организмдердің Жерге әсері",
+                impactTitle: "Қабықтардың трансформациясы",
+                impactAtm: "Атмосфераны оттегімен ($O_2$) қанықтыру және фотосинтез арқылы көмірқышқыл газын ($CO_2$) реттеу.",
+                impactLitho: "Тау жыныстарын бұзу және топырақ түзу. Пайдалы қазбалардың түзілуі: бор, әктас, көмір.",
+                impactHydro: "Судың тұздық құрамын өзгерту. Сүзгіштер арқылы суды тазарту және маржан рифтерін құру.",
+                infoTitle: "Геологиялық рөл",
+                infoText: "Тірі организмдер — қуатты геологиялық күш. Олар атмосфера құрамын толығымен өзгертті және бірегей түзілім — топырақты жасады."
+            },
+            en: {
+                title: "Power of Life", subtitle: "Biogenic Impact on Earth",
+                impactTitle: "Shell Transformation",
+                impactAtm: "Oxygenating the atmosphere ($O_2$) and regulating carbon dioxide ($CO_2$) levels through photosynthesis.",
+                impactLitho: "Weathering rocks and creating soil. Formation of biogenic resources: chalk, limestone, coal, peat.",
+                impactHydro: "Modifying water salinity. Water purification by filter-feeders and coral reef building.",
+                infoTitle: "Geological Role",
+                infoText: "Living organisms are a formidable geological force. They transformed the atmosphere and created the unique interface of life — the soil."
+            }
+        };
+
+        window.setLang = function(l) {
+            const t = translations[l];
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('impact-title').textContent = t.impactTitle;
+            document.getElementById('impact-atm').innerHTML = t.impactAtm;
+            document.getElementById('impact-litho').innerHTML = t.impactLitho;
+            document.getElementById('impact-hydro').innerHTML = t.impactHydro;
+            document.getElementById('info-title').textContent = t.infoTitle;
+            document.getElementById('info-text').textContent = t.infoText;
+        }
+
+        function createBubbles() {
+            const container = document.getElementById('bubbles-container');
+            setInterval(() => {
+                const b = document.createElement('div');
+                b.className = 'o2-bubble';
+                b.style.left = Math.random() * 100 + '%';
+                b.style.bottom = '20px';
+                container.appendChild(b);
+                setTimeout(() => b.remove(), 4000);
+            }, 1000);
+        }
+
+        window.onload = () => { window.setLang('ru'); createBubbles(); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

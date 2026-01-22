@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Централизация: Рождение наций</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e3a8a, #1e1b4b, #000000);
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #3b82f6;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-200 uppercase">
+                Централизация
+            </h1>
+            <p id="sub-title" class="text-blue-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase italic">Собирание земель и власти</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-blue-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-blue-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-blue-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-blue-600 inline-block"></span>
+                Укрепление трона
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-blue-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="stateCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-blue-500/50 italic text-center uppercase tracking-widest">Нажмите на атрибуты власти для изучения основ государства</p>
+        </div>
+
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-blue-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Победа над хаосом</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        В XII-XV веках короли Европы начали борьбу с самоуправством феодалов. Они создавали единые суды, вводили налоги и опирались на поддержку городов. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-1" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Сословная монархия</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚔️</span>
+                            <span id="hint-2" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Единое ополчение</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-blue-950/40 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-stone-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-blue-950/20 rounded-[2.5rem] border border-blue-900/30 shadow-xl">
+                        <strong class="text-blue-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-state">Государственный итог:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-blue-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏙️</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Союз короля и городов</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Города страдали от грабежей рыцарей и бесконечных границ феодалов. Горожане давали королю деньги и ополчение, а король взамен даровал городам вольности и защиту.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-slate-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📜</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-white uppercase">Представительство</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Короли созывали представителей сословий для утверждения налогов. Так возникли <strong>Парламент</strong> в Англии (1265 г.) и <strong>Генеральные штаты</strong> во Франции (1302 г.).</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⚖️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-blue-300 uppercase">Единый закон</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Королевские судьи вытесняли суды феодалов. Появление «общего права» и единой монеты превращало жителей разных земель в подданных одного государства.</p>
+        </div>
+    </section>
+
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-blue-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-blue-100/70 leading-tight max-w-5xl mx-auto">
+            «Король — император в своем королевстве, его слово — закон, а его казна — сила всей нации».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Централизация",
+                subtitle: "Собирание земель и власти",
+                visualTitle: "Укрепление трона",
+                hint: "Нажмите на атрибуты власти для изучения основ государства",
+                placeholderTitle: "Победа над хаосом",
+                placeholderText: "Централизованное государство — это страна с единым управлением, налогами и законами. Изучите его главные опоры.",
+                labelState: "Государственный итог:",
+                hint1: "Сословная монархия", hint2: "Единое ополчение",
+                card1Title: "Союз короля и городов",
+                card1Text: "Города стали кошельком королей, оплачивая борьбу против непокорных герцогов и графов.",
+                card2Title: "Представительство",
+                card2Text: "Рождение диалога между властью и народом: сословные собрания ограничивали королей, но давали им законные деньги.",
+                card3Title: "Единый закон",
+                card3Text: "Королевская юстиция и администрация превратили разрозненные земли в единый политический организм.",
+                footerQuote: "«Король — император в своем королевстве, его слово — закон, а его казна — сила всей нации».",
+                nodes: [
+                    { id: 1, tag: "Финансы", title: "Единая Налоговая Система", desc: "Короли ввели постоянные налоги вместо случайных феодальных поборов. Это позволило содержать чиновников и наемную армию.", fact: "Одним из самых прибыльных налогов была 'соляная пошлина' (габель)." },
+                    { id: 2, tag: "Армия", title: "Профессиональное Войско", desc: "Вместо рыцарского ополчения короли начали нанимать воинов. Это лишило феодалов главного козыря — их военной незаменимости.", fact: "Появление пушек (артиллерии) сделало рыцарские замки уязвимыми для королевской власти." },
+                    { id: 3, tag: "Суд", title: "Королевская Юстиция", desc: "Все важные дела (убийства, заговоры) перешли в ведение короля. Граждане получили право апелляции к монарху против своих сеньоров.", fact: "Королевские судьи назывались юристами (легистами), они часто были выходцами из горожан." },
+                    { id: 4, tag: "Политика", title: "Сословное Представительство", desc: "Король признал право духовенства, дворянства и горожан участвовать в решении судеб страны. Это укрепило авторитет монархии.", fact: "Филипп IV Красивый созвал Генеральные штаты, чтобы получить поддержку народа в споре с папой римским." },
+                    { id: 5, tag: "География", title: "Собирание земель", desc: "Через браки, войны и конфискации короли увеличивали свой домен (личные земли). Во Франции Капетинги постепенно забрали земли английских королей.", fact: "К концу XV века Франция и Англия стали практически полностью централизованными странами." }
+                ]
+            },
+            kz: {
+                title: "Орталықтандыру",
+                subtitle: "Жер мен билікті біріктіру",
+                visualTitle: "Тақты нығайту",
+                hint: "Билік негіздерін зерттеу үшін нышандарды басыңыз",
+                placeholderTitle: "Хаос үстінен жеңіс",
+                placeholderText: "Орталықтандырылған мемлекет — бұл біртұтас басқару, салық және заңдары бар ел. Оның тіректерін зерттеңіз.",
+                labelState: "Мемлекеттік қорытынды:",
+                hint1: "Өкілдік монархия", hint2: "Біртұтас жасақ",
+                card1Title: "Патша мен қала одағы",
+                card1Text: "Қалалар патшалардың қаржы көзіне айналып, бағынбаған герцогтарға қарсы күресті қаржыландырды.",
+                card2Title: "Өкілдік",
+                card2Text: "Билік пен халық арасындағы диалогтың тууы: сословиелік жиналыстар патшаны шектегенімен, оған заңды қаражат берді.",
+                card3Title: "Біртұтас заң",
+                card3Text: "Патшалық сот пен әкімшілік шашыраңқы жерлерді біртұтас саяси ағзаға айналдырды.",
+                footerQuote: "«Патша — өз патшалығындағы император, оның сөзі — заң, ал қазынасы — ұлттың қуаты».",
+                nodes: [
+                    { id: 1, tag: "Қаржы", title: "Бірыңғай салық жүйесі", desc: "Патшалар тұрақты салықтарды енгізді. Бұл шенеуніктер мен жалдамалы әскерді ұстауға мүмкіндік берді.", fact: "Ең табысты салықтардың бірі 'тұз салығы' (габель) болды." },
+                    { id: 2, tag: "Әскер", title: "Кәсіби әскер", desc: "Рыцарьлар жасағының орнына патшалар жауынгерлерді жалдай бастады.", fact: "Зеңбіректердің пайда болуы рыцарь қамалдарын осал етті." },
+                    { id: 3, tag: "Сот", title: "Патшалық юстиция", desc: "Барлық маңызды істер патшаның қарамағына өтті. Азаматтар феодалдарға қарсы патшаға шағымдану құқығын алды.", fact: "Патша соттары көбіне қала тұрғындарынан шыққан заңгерлер болды." },
+                    { id: 4, tag: "Саясат", title: "Сословиелік өкілдік", desc: "Патша дінбасылардың, дворяндар мен қалалықтардың ел істеріне қатысу құқығын мойындады.", fact: "Филипп IV Сұлу Рим папасымен дауда халық қолдауын алу үшін Бас штаттарды шақырды." },
+                    { id: 5, tag: "Жағрафия", title: "Жерлерді жинау", desc: "Некелер, соғыстар және тәркілеу арқылы патшалар өз иеліктерін арттырды.", fact: "XV ғасырдың соңына қарай Франция мен Англия толықтай орталықтандырылды." }
+                ]
+            },
+            en: {
+                title: "Centralization",
+                subtitle: "Unifying Land and Power",
+                visualTitle: "Strengthening the Throne",
+                hint: "Click on power attributes to study state foundations",
+                placeholderTitle: "Victory Over Chaos",
+                placeholderText: "A centralized state is a country with unified administration, taxes, and laws. Explore its main pillars.",
+                labelState: "State Outcome:",
+                hint1: "Estate Monarchy", hint2: "Unified Militia",
+                card1Title: "King & Towns Alliance",
+                card1Text: "Cities became the bankers of kings, funding the fight against rebellious dukes and counts.",
+                card2Title: "Representation",
+                card2Text: "The birth of dialogue between power and people: representative assemblies limited kings but gave them legal revenue.",
+                card3Title: "Uniform Law",
+                card3Text: "Royal justice and administration transformed fragmented lands into a single political body.",
+                footerQuote: "«The King is emperor in his own realm; his word is law, and his treasury is the power of the nation.»",
+                nodes: [
+                    { id: 1, tag: "Finance", title: "Unified Tax System", desc: "Kings introduced permanent taxes instead of sporadic feudal dues. This funded a professional bureaucracy and mercenary army.", fact: "The 'Gabelle' (salt tax) was one of the most significant and hated sources of royal income." },
+                    { id: 2, tag: "Military", title: "Standing Army", desc: "Kings began hiring soldiers instead of relying on feudal levies. This stripped the nobility of their primary leverage.", fact: "The introduction of gunpowder and artillery made feudal castles obsolete against royal sieges." },
+                    { id: 3, tag: "Justice", title: "Royal Courts", desc: "Major crimes and disputes were moved to royal jurisdiction. Subjects could appeal to the monarch against their local lords.", fact: "Royal judges, often trained in Roman law, were frequently recruited from the rising middle class." },
+                    { id: 4, tag: "Politics", title: "Representative Estates", desc: "Kings recognized the right of clergy, nobles, and burghers to participate in governance. This bolstered the legitimacy of the monarchy.", fact: "Philip IV 'the Fair' called the Estates-General to gain national support during his conflict with the Papacy." },
+                    { id: 5, tag: "Geography", title: "Land Consolidation", desc: "Through marriage, war, and inheritance, kings expanded their personal domains (the Crown lands) into unified territories.", fact: "By the end of the 15th century, England and France emerged as the first modern nation-states." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('stateCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-state').innerText = t.labelState;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw stylized Crown in center
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.2)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(cx - 100, cy + 50);
+            ctx.lineTo(cx - 100, cy - 20);
+            ctx.lineTo(cx - 50, cy - 50);
+            ctx.lineTo(cx, cy - 100);
+            ctx.lineTo(cx + 50, cy - 50);
+            ctx.lineTo(cx + 100, cy - 20);
+            ctx.lineTo(cx + 100, cy + 50);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx - 150, y: cy - 100, icon: "💰" }, // Taxes
+                { id: 2, x: cx + 150, y: cy - 100, icon: "⚔️" }, // Army
+                { id: 3, x: cx - 150, y: cy + 100, icon: "⚖️" }, // Court
+                { id: 4, x: cx + 150, y: cy + 100, icon: "🏛️" }, // Estates
+                { id: 5, x: cx, y: cy, icon: "👑" }           // King
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 4) ? '#1e3a8a' : '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#93c5fd';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

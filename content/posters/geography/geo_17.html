@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tectonic Movements</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom, #b91c1c, #450a0a, #000);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #ef4444; color: white; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-red-600">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-red-500"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center">
+            <h2 id="canvas-heading" class="heading-font text-xl text-red-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="tectonicCanvas" class="w-full h-[400px] bg-black/20"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em]"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-red-600">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-red-400"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-red-600/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-red-500"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-red-600/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-red-500"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-red-600/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-red-500"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Тектоника",
+                subtitle: "Движения земной коры",
+                canvasHeading: "Симулятор землетрясения",
+                canvasHint: "Нажмите для создания эпицентра",
+                defaultTitle: "Движущаяся Земля",
+                defaultText: "Земная кора никогда не находится в покое. Медленные вековые движения меняют очертания материков, а быстрые (землетрясения) приводят к разрушениям.",
+                cards: [
+                    { title: "Землетрясения", desc: "Подземные толчки и колебания, вызванные смещением плит. Место разрыва — очаг, точка над ним — эпицентр." },
+                    { title: "Вулканизм", desc: "Процесс выхода магмы на поверхность. Часто происходит на границах литосферных плит." },
+                    { title: "Горообразование", desc: "Результат столкновения плит. Например, Гималаи растут из-за давления Индостана на Евразию." }
+                ]
+            },
+            kz: {
+                title: "Тектоника",
+                subtitle: "Жер қыртысының қозғалыстары",
+                canvasHeading: "Жер сілкінісі симуляторы",
+                canvasHint: "Эпицентр жасау үшін басыңыз",
+                defaultTitle: "Қозғалыстағы Жер",
+                defaultText: "Жер қыртысы ешқашан тыныштықта болмайды. Баяу ғасырлық қозғалыстар материктердің пішінін өзгертеді, ал жылдам қозғалыстар (жер сілкіністері) қирауға әкеледі.",
+                cards: [
+                    { title: "Жер сілкіністері", desc: "Плиталардың ығысуынан туындайтын жерасты дүмпулері. Жарылыс орны — ошақ, оның үстіндегі нүкте — эпицентр." },
+                    { title: "Вулканизм", desc: "Магманың жер бетіне шығу процесі. Жиі литосфералық плиталардың шекарасында болады." },
+                    { title: "Тау түзілу", desc: "Плиталардың соқтығысуының нәтижесі. Мысалы, Гималай Үндістанның Еуразияға қысымынан өсуде." }
+                ]
+            },
+            en: {
+                title: "Tectonics",
+                subtitle: "Movements of Earth's Crust",
+                canvasHeading: "Earthquake Simulator",
+                canvasHint: "Click to create epicenter",
+                defaultTitle: "Moving Earth",
+                defaultText: "Earth's crust is never at rest. Slow secular movements change continent shapes, while rapid ones (earthquakes) cause destruction.",
+                cards: [
+                    { title: "Earthquakes", desc: "Tremors caused by plate shifts. Rupture point is the focus, point above is the epicenter." },
+                    { title: "Volcanism", desc: "Magma escaping to the surface. Often occurs at plate boundaries." },
+                    { title: "Orogeny", desc: "Mountain building due to plate collision. e.g. Himalayas rising from India pushing Eurasia." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        let canvas, ctx;
+        let waves = [];
+
+        window.setLang = function(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+        }
+
+        function drawWaves() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Tectonic plate line
+            ctx.strokeStyle = '#7f1d1d'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, canvas.height/2); 
+            ctx.lineTo(canvas.width, canvas.height/2 + 20); ctx.stroke();
+
+            waves.forEach((w, i) => {
+                w.r += 2; w.opacity -= 0.01;
+                if(w.opacity <= 0) waves.splice(i, 1);
+                
+                ctx.beginPath();
+                ctx.arc(w.x, w.y, w.r, 0, Math.PI*2);
+                ctx.strokeStyle = `rgba(239, 68, 68, ${w.opacity})`;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            });
+            requestAnimationFrame(drawWaves);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('tectonicCanvas');
+            if(canvas) {
+                ctx = canvas.getContext('2d');
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 400;
+
+                canvas.addEventListener('click', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    waves.push({
+                        x: e.clientX - rect.left,
+                        y: e.clientY - rect.top,
+                        r: 0,
+                        opacity: 1
+                    });
+                });
+
+                setLang('ru');
+                drawWaves();
+            }
+        };
+
+        window.onresize = function() {
+            if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 400;
+            }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

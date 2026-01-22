@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Слово</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Очень светло-серый фон */
+            overflow-x: hidden;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Карточка-заголовок */
+        .header-card {
+            background-color: #15803d; /* Зеленый-700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(21, 128, 61, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Заголовок секции */
+        .section-heading {
+            color: #14532d; /* Зеленыый-900 */
+            border-bottom: 3px solid #86efac; /* Зеленый-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Карточка с правилом */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Блок с примером внутри карточки */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f0fdf4; /* Очень светлый зеленый */
+            border-left: 4px solid #4ade80; /* Зеленый-400 */
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Футер */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f1f59; /* Светло-серый */
+            border-radius: 1rem;
+            border-top: 4px solid #64748b; /* Серый */
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            list-style: none;
+            padding-left: 20px;
+            position: relative;
+        }
+        .feature-list li::before {
+            content: '🌳'; /* Эмодзи для пунктов */
+            position: absolute;
+            left: 0;
+            color: #15803d; /* Зеленый */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    " onmouseover="this.style.transform='translateX(-3px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="container">
+
+        <!-- ГЛАВНЫЙ ЗАГОЛОВОК -->
+        <header class="header-card text-center mb-10">
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
+                СЛОВО
+            </h1>
+            <p class="mt-2 text-xl font-medium text-gray-100">
+                Главная единица языка, которая всё называет.
+            </p>
+        </header>
+
+        <!-- 1. ЧТО ТАКОЕ СЛОВО? -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                1. Что такое Слово?
+            </h2>
+
+            <div class="rule-card border-t-green-500">
+                <h3 class="text-xl font-bold text-green-700 mb-3">Определение</h3>
+                <p class="text-base md:text-lg mb-3 text-gray-700">
+                    <strong>Слово</strong> - это основная единица языка. Оно состоит из звуков (в устной речи) или букв (в письменной речи) и имеет <strong>значение</strong>.
+                </p>
+                <ul class="feature-list text-base text-gray-700">
+                    <li>🌳 <strong>Называет:</strong> Слова называют предметы, людей, животных, действия, признаки.</li>
+                    <li>🌳 <strong>Имеет значение:</strong> Каждое слово что-то значит (это его лексическое значение).</li>
+                    <li>🌳 <strong>Строит предложения:</strong> Из слов, как из кирпичиков, строятся предложения.</li>
+                </ul>
+                <div class="example-block">
+                    <p class="font-semibold text-gray-800">Пример:</p>
+                    <p class="text-gray-700">Слово "<strong>дом</strong>" - это набор звуков [д], [о], [м], который обозначает (называет) строение для жилья.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. СЛОВА-НАЗВАНИЯ (ЧТО НАЗЫВАЮТ СЛОВА?) -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                2. Что называют слова? (Слова-названия)
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+
+                <!-- Названия предметов -->
+                <div class="rule-card border-t-green-400 p-4 md:p-6">
+                    <p class="text-3xl mb-2">🏠</p>
+                    <h3 class="text-lg font-bold text-gray-800">НАЗВАНИЯ ПРЕДМЕТОВ</h3>
+                    <p class="text-sm text-gray-700">Отвечают на вопросы: <strong>Кто?</strong> <strong>Что?</strong></p>
+                    <p class="mt-2 text-sm"><i>(ученик, кошка, стол, гроза)</i></p>
+                </div>
+
+                <!-- Названия признаков -->
+                <div class="rule-card border-t-blue-400 p-4 md:p-6">
+                    <p class="text-3xl mb-2">✨</p>
+                    <h3 class="text-lg font-bold text-gray-800">НАЗВАНИЯ ПРИЗНАКОВ</h3>
+                    <p class="text-sm text-gray-700">Отвечают на вопросы: <strong>Какой?</strong> <strong>Какая?</strong> <strong>Чей?</strong></p>
+                    <p class="mt-2 text-sm"><i>(синий, весёлая, мамин)</i></p>
+                </div>
+
+                <!-- Названия действий -->
+                <div class="rule-card border-t-purple-400 p-4 md:p-6">
+                    <p class="text-3xl mb-2">🏃</p>
+                    <h3 class="text-lg font-bold text-gray-800">НАЗВАНИЯ ДЕЙСТВИЙ</h3>
+                    <p class="text-sm text-gray-700">Отвечают на вопросы: <strong>Что делать?</strong> <strong>Что сделать?</strong></p>
+                    <p class="mt-2 text-sm"><i>(бежать, рисовать, пришёл)</i></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. СЛОВО И ЕГО ФОРМА -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                3. Слово и его форма
+            </h2>
+
+            <div class="rule-card border-t-yellow-500">
+                <h3 class="text-xl font-bold text-yellow-700 mb-3">Одно слово - много форм</h3>
+                <p class="text-base md:text-lg mb-3 text-gray-700">
+                    Слова в речи могут <strong>изменяться</strong> (менять свои окончания), чтобы связываться в предложении. Это <strong>формы</strong> одного и того же слова.
+                </p>
+                <ul class="feature-list text-base text-gray-700">
+                    <li>🌳 <strong>Начальная форма:</strong> "Имя" слова, как в словаре (И.п., ед.ч. - <i>стол</i>, <i>красивый</i>; инфинитив - <i>читать</i>).</li>
+                    <li>🌳 <strong>Формы слова:</strong> Это то же самое слово, но с другим окончанием. Лексическое значение у них <strong>одно и то же</strong>.</li>
+                </ul>
+                <div class="example-block">
+                    <p class="font-semibold text-gray-800">Пример (формы одного слова "КНИГА"):</p>
+                    <p class="text-gray-700"><i>У меня нет (чего?) <strong>книг<span class="font-bold text-red-600">и</span></strong>.</i></p>
+                    <p class="text-gray-700"><i>Я рад (чему?) <strong>книг<span class="font-bold text-red-600">е</span></strong>.</i></p>
+                    <p class="text-gray-700"><i>Я читаю (что?) <strong>книг<span class="font-bold text-red-600">у</span></strong>.</i></p>
+                    <p class="text-gray-700"><i>Все это - одно и то же слово "<strong>книга</strong>".</i></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ЗАКЛЮЧЕНИЕ -->
+        <footer class="footer-card">
+            <h3 class="text-xl font-extrabold mb-2 text-gray-800">
+                ГЛАВНАЯ МЫСЛЬ
+            </h3>
+            <p class="text-md font-semibold leading-relaxed text-gray-700">
+                <strong>Слово</strong> - это главный "строительный материал" языка. Каждое слово имеет <strong>значение</strong> (называет что-либо) и может изменять свою <strong>форму</strong> (окончание), чтобы строить предложения.
+            </p>
+        </footer>
+
+    </div>
+
+
+
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

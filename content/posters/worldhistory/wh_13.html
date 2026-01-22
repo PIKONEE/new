@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Искусство Древнего Египта: Канон и Вечность</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #2a2118, #050505);
+            color: #fef3c7;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(217, 119, 6, 0.15);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #d97706;
+            color: white;
+            box-shadow: 0 0 30px rgba(217, 119, 6, 0.4);
+        }
+        .accent-gold { color: #f59e0b; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d97706; border-radius: 10px; }
+        .info-panel-accent {
+            border-left: 6px solid #d97706;
+            background: linear-gradient(90deg, rgba(217, 119, 6, 0.1), transparent);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-200 uppercase">
+                Искусство Египта
+            </h1>
+            <p id="sub-title" class="text-amber-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Гармония камня и канона</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-amber-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-amber-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-amber-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-amber-600 inline-block"></span>
+                Шедевры архитектуры
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-amber-900/40 overflow-hidden shadow-inner">
+                <canvas id="artCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-amber-500/50 italic text-center uppercase tracking-widest">Нажмите на символы, чтобы изучить каноны и памятники</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-amber-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Язык вечности</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Искусство Египта создавалось для вечности. Оно подчинялось строгим правилам (канонам), которые не менялись более 3000 лет. Выберите объект на схеме, чтобы раскрыть секреты древних мастеров.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">📐</span>
+                            <span id="hint-1" class="text-amber-200/60 font-bold uppercase text-xs tracking-widest">Строгий канон</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-2" class="text-amber-200/60 font-bold uppercase text-xs tracking-widest">Гигантские храмы</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-amber-900/40 text-amber-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-amber-950/20 rounded-[2.5rem] border border-amber-500/20 shadow-xl">
+                        <strong class="text-amber-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-art">Секрет мастерства:</strong>
+                        <p id="info-fact" class="text-amber-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-amber-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📐</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-amber-400 uppercase">Канон изображения</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Лицо и ноги человека всегда изображались в профиль, а глаза и плечи — в фас (развернуты вперед). Рост фигуры зависел от её значимости: фараон всегда был выше всех.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-yellow-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⛏️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-amber-400 uppercase">Скульптура</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Статуи делались из цельных блоков камня. Позы были статичными: либо сидящие с руками на коленях, либо стоящие с одной ногой, выдвинутой вперед, и взглядом, устремленным в вечность.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⛩️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-amber-400 uppercase">Храмы-гиганты</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Храмы (Карнак, Луксор) поражали размерами. Аллеи сфинксов вели к массивным воротам — пилонам, а внутри находились леса из колонн, символизировавшие заросли папируса.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-amber-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-amber-100/70 leading-tight max-w-5xl mx-auto">
+            «Все на свете боится времени, но само время боится пирамид».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Искусство Египта",
+                subtitle: "Гармония камня и канона",
+                visualTitle: "Шедевры архитектуры",
+                hint: "Нажмите на символы, чтобы изучить каноны и памятники",
+                placeholderTitle: "Язык вечности",
+                placeholderText: "Искусство Египта подчинялось строгим канонам. Выберите объект на схеме, чтобы раскрыть секреты древних мастеров.",
+                labelArt: "Секрет мастерства:",
+                hint1: "Строгий канон", hint2: "Гигантские храмы",
+                card1Title: "Канон изображения",
+                card1Text: "Лицо в профиль, тело в фас. Размер фигуры определялся статусом: фараон — великан, рабы — карлики.",
+                card2Title: "Скульптура",
+                card2Text: "Статуи создавались как вместилище для душ Ка. Статичность поз символизировала покой вечности.",
+                card3Title: "Храмы-гиганты",
+                card3Text: "Пилоны, обелиски и залы с сотнями колонн. Храм был моделью мира, созданного богами.",
+                footerQuote: "«Все на свете боится времени, но само время боится пирамид».",
+                nodes: [
+                    { id: 1, tag: "Архитектура", title: "Великие Пирамиды", desc: "Усыпальницы фараонов Хеопса, Хефрена и Микерина в Гизе. Построены из миллионов известняковых блоков с идеальной точностью ориентировки по сторонам света.", fact: "Грандиозность пирамид должна была подчеркивать сверхчеловеческую природу власти фараона." },
+                    { id: 2, tag: "Скульптура", title: "Большой Сфинкс", desc: "Древнейшая монументальная скульптура в мире. Лев с лицом человека (фараона), вырубленный из цельного скального массива.", fact: "Сфинкс считался стражем некрополя и воплощением бога Гора." },
+                    { id: 3, tag: "Живопись", title: "Правило Канона", desc: "Художники рисовали человека по сетке. Каждая часть тела имела свой размер: голова — 2 клетки, туловище — 4. Это создавало идеальные, но застывшие пропорции.", fact: "Египтяне стремились показать предмет с самой узнаваемой стороны, даже если это нарушало реализм." },
+                    { id: 4, tag: "Архитектура", title: "Храмовые Колонны", desc: "Огромные опоры в гипостильных залах. Капители (верхние части) колонн делались в виде распустившихся или закрытых бутонов папируса и лотоса.", fact: "Колонна в Карнаке имеет высоту 24 метра и диаметр 3.5 метра." },
+                    { id: 5, tag: "Портрет", title: "Бюст Нефертити", desc: "Шедевр скульптора Тутмоса. Реалистичный портрет царицы, выполненный из известняка и покрытый гипсом. Идеал красоты Древнего Египта.", fact: "Это одно из немногих произведений, где мастер отошел от жесткого канона в сторону живого образа." }
+                ]
+            },
+            kz: {
+                title: "Мысыр өнері",
+                subtitle: "Тас пен канон үйлесімі",
+                visualTitle: "Сәулет жауһарлары",
+                hint: "Канондар мен ескерткіштерді зерттеу үшін белгілерді басыңыз",
+                placeholderTitle: "Мәңгілік тілі",
+                placeholderText: "Мысыр өнері қатаң канондарға бағынды. Ежелгі шеберлердің құпияларын ашу үшін нысанды таңдаңыз.",
+                labelArt: "Шеберлік құпиясы:",
+                hint1: "Қатаң канон", hint2: "Алып храмдар",
+                card1Title: "Бейнелеу каноны",
+                card1Text: "Беті бүйірінен, денесі алдынан. Тұлғаның көлемі мәртебесіне байланысты болды: перғауын — алып.",
+                card2Title: "Мүсін өнері",
+                card2Text: "Мүсіндер Ка жанының мекені ретінде жасалды. Қозғалыссыз қалып мәңгілік тыныштықты білдірді.",
+                card3Title: "Алып храмдар",
+                card3Text: "Пилондар, обелискілер және жүздеген бағаналары бар залдар. Храм құдайлар жасаған әлемнің үлгісі болды.",
+                footerQuote: "«Әлемдегінің бәрі уақыттан қорқады, ал уақыт пирамидалардан қорқады».",
+                nodes: [
+                    { id: 1, tag: "Сәулет", title: "Ұлы Пирамидалар", desc: "Гизадағы Хеопс, Хефрен және Микерин перғауындарының мазарлары. Миллиондаған әктас блоктарынан салынған.", fact: "Пирамидалардың асқақтығы перғауын билігінің адамнан тыс құдіретін көрсетуі тиіс болды." },
+                    { id: 2, tag: "Мүсін", title: "Үлкен Сфинкс", desc: "Әлемдегі ең көне монументалды мүсін. Тұтас жартастан қашалып жасалған адам басты арыстан.", fact: "Сфинкс некрополь күзетшісі және Гор құдайының бейнесі болып саналды." },
+                    { id: 3, tag: "Кескіндеме", title: "Канон ережесі", desc: "Суретшілер адамды тор бойынша салған. Дененің әр бөлігінің өз өлшемі болды. Бұл идеалды пропорциялар жасады.", fact: "Мысырлықтар затты ең танымал жағынан көрсетуге тырысты." },
+                    { id: 4, tag: "Сәулет", title: "Храм бағаналары", desc: "Гипостильді залдардағы алып тіректер. Бағаналардың жоғарғы жағы папирус пен лотос гүлдері түрінде жасалды.", fact: "Карнактағы бағананың биіктігі 24 метрге жетеді." },
+                    { id: 5, tag: "Портрет", title: "Нефертити бюсті", desc: "Тутмос мүсіншінің туындысы. Әктастан жасалып, гипспен қапталған патшайымның нақты портреті.", fact: "Бұл — шебердің қатаң каноннан ауытқып, тірі бейне жасаған санаулы туындыларының бірі." }
+                ]
+            },
+            en: {
+                title: "Art of Egypt",
+                subtitle: "Harmony of Stone and Canon",
+                visualTitle: "Architectural Masterpieces",
+                hint: "Click on symbols to study canons and monuments",
+                placeholderTitle: "Language of Eternity",
+                placeholderText: "Egyptian art followed strict canons for 3,000 years. Select an object on the diagram to reveal the secrets of ancient masters.",
+                labelArt: "Secret of Mastery:",
+                hint1: "Strict Canon", hint2: "Giant Temples",
+                card1Title: "Canon of Representation",
+                card1Text: "Face in profile, body in front. Figure size was determined by status: Pharaoh was a giant.",
+                card2Title: "Sculpture",
+                card2Text: "Statues were created as vessels for Ka souls. Static poses symbolized the peace of eternity.",
+                card3Title: "Giant Temples",
+                card3Text: "Pylons, obelisks, and halls with hundreds of columns. The temple was a model of the world created by gods.",
+                footerQuote: "«Everything fears time, but time fears the Pyramids.»",
+                nodes: [
+                    { id: 1, tag: "Architecture", title: "The Great Pyramids", desc: "The tombs of Khufu, Khafre, and Menkaure at Giza. Built from millions of limestone blocks with perfect precision.", fact: "The grandeur of the pyramids emphasized the superhuman nature of the Pharaoh's power." },
+                    { id: 2, tag: "Sculpture", title: "The Great Sphinx", desc: "The oldest monumental sculpture in the world. A lion with a human face carved from a single solid rock massif.", fact: "The Sphinx was considered the guardian of the necropolis and an embodiment of Horus." },
+                    { id: 3, tag: "Painting", title: "Rule of the Canon", desc: "Artists drew humans using a grid. Each body part had a specific size, creating ideal but frozen proportions.", fact: "Egyptians aimed to show an object from its most recognizable side, even if it broke realism." },
+                    { id: 4, tag: "Architecture", title: "Temple Columns", desc: "Huge supports in hypostyle halls. Capitals were shaped like papyrus or lotus buds, blooming or closed.", fact: "A column in Karnak stands 24 meters high with a diameter of 3.5 meters." },
+                    { id: 5, tag: "Portrait", title: "Bust of Nefertiti", desc: "A masterpiece by the sculptor Thutmose. A realistic limestone portrait of the queen. The ideal of beauty in Ancient Egypt.", fact: "This is one of the few works where the master moved away from the strict canon towards a life-like image." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('artCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-art').innerText = t.labelArt;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Background Stylized Sand Dunes
+            ctx.fillStyle = 'rgba(217, 119, 6, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height * 0.8);
+            ctx.bezierCurveTo(cx/2, canvas.height * 0.7, cx*1.5, canvas.height * 0.9, canvas.width, canvas.height * 0.75);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx - 120, y: cy - 40, icon: "📐" }, // Pyramid
+                { id: 2, x: cx - 150, y: cy + 80, icon: "🦁" }, // Sphinx
+                { id: 3, x: cx + 120, y: cy - 40, icon: "👤" }, // Canon
+                { id: 4, x: cx + 150, y: cy + 80, icon: "🏛️" }, // Columns
+                { id: 5, x: cx, y: cy + 140, icon: "👑" }      // Nefertiti
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(217, 119, 6, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = '#1c1917';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Icon text
+                ctx.fillStyle = 'white';
+                ctx.font = '18px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#fef3c7';
+                ctx.font = 'bold 10px Montserrat';
+                ctx.fillText(nodeInfo.title.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 45, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

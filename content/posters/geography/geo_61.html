@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Settlement and Races</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at top, #1e1b4b, #020617); color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #6366f1; color: white; font-weight: 800; }
+        .race-btn { transition: all 0.3s; }
+        .race-btn.active { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; color: #a5b4fc; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-6 flex flex-col md:flex-row justify-between items-center border-t border-indigo-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-2xl md:text-4xl uppercase tracking-tighter text-indigo-400"></h1>
+            <p id="sub-title" class="mt-1 text-white/30 font-bold uppercase tracking-widest text-[10px]"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        <div class="lg:col-span-3 flex flex-col gap-3">
+             <h3 id="nav-title" class="heading-font text-sm text-indigo-300 uppercase mb-2 tracking-widest">Races</h3>
+             <button onclick="showRace('euro')" id="btn-euro" class="race-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+             <button onclick="showRace('mong')" id="btn-mong" class="race-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+             <button onclick="showRace('negro')" id="btn-negro" class="race-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+        </div>
+
+        <div class="lg:col-span-9 glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-indigo-500 min-h-[400px] relative overflow-hidden">
+            <div id="display-view" class="transition-all duration-500">
+                <h3 id="display-title" class="heading-font text-4xl mb-6 text-white"></h3>
+                <div id="display-text" class="text-xl font-light leading-relaxed text-white/80 space-y-6"></div>
+            </div>
+            <!-- Decorative backdrop -->
+            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-500/10 blur-[120px] rounded-full"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass rounded-custom p-8">
+            <h4 id="fact-title" class="font-bold text-indigo-400 text-xs uppercase mb-2">History</h4>
+            <p id="fact-text" class="text-sm text-white/60"></p>
+        </div>
+        <div class="glass rounded-custom p-8 flex flex-col justify-center items-center text-center">
+            <div class="text-3xl mb-2">🌍 ➡️ 🌏</div>
+            <p id="migration-text" class="text-[10px] uppercase tracking-widest text-white/40"></p>
+        </div>
+        <div class="glass rounded-custom p-8">
+            <h4 id="equality-title" class="font-bold text-indigo-400 text-xs uppercase mb-2">Equality</h4>
+            <p id="equality-text" class="text-sm text-white/60"></p>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Расы и Заселение", subtitle: "Путь человечества сквозь тысячелетия",
+                navTitle: "Основные расы",
+                btnEuro: "Европеоидная", btnMong: "Монголоидная", btnNegro: "Негроидная",
+                races: {
+                    euro: { t: "Европеоидная раса", d: "Характерны светлая кожа, мягкие волосы, узкий нос. Сформировалась в условиях умеренного и холодного климата Европы и Азии." },
+                    mong: { t: "Монголоидная раса", d: "Характерны желтоватая кожа, прямые жесткие волосы, узкий разрез глаз. Сформировалась в открытых степях и пустынях Азии." },
+                    negro: { t: "Негроидная раса", d: "Характерны темная кожа, курчавые волосы, широкий нос. Темный пигмент защищает от жесткого солнечного излучения тропиков." }
+                },
+                history: "Предки человека начали заселение планеты из Восточной Африки около 70-100 тысяч лет назад.",
+                migration: "Великая миграция: Африка -> Евразия -> Америка",
+                equality: "Все расы биологически равны. Различия во внешности — это лишь адаптация к разным климатическим условиям."
+            },
+            kz: {
+                title: "Нәсілдер және Қоныстану", subtitle: "Адамзаттың мыңжылдықтардағы жолы",
+                navTitle: "Негізгі нәсілдер",
+                btnEuro: "Еуропеоидтық", btnMong: "Монголоидтық", btnNegro: "Негроидтық",
+                races: {
+                    euro: { t: "Еуропеоидтық нәсіл", d: "Ашық тері, жұмсақ шаш, жіңішке мұрын тән. Еуропа мен Азияның қоңыржай және суық климатында қалыптасқан." },
+                    mong: { t: "Монголоидтық нәсіл", d: "Сары тері, тік қайратты шаш, қысық көз тән. Азияның ашық далалары мен шөлдерінде қалыптасқан." },
+                    negro: { t: "Негроидтық нәсіл", d: "Қара тері, бұйра шаш, жалпақ мұрын тән. Қара пигмент тропиктің қатты күн сәулесінен қорғайды." }
+                },
+                history: "Адамның арғы аталары планетаны Шығыс Африкадан шамамен 70-100 мың жыл бұрын қоныстана бастаған.",
+                migration: "Ұлы миграция: Африка -> Евразия -> Америка",
+                equality: "Барлық нәсілдер биологиялық тұрғыдан тең. Сыртқы айырмашылықтар — климатқа бейімделу нәтижесі."
+            },
+            en: {
+                title: "Races & Settlement", subtitle: "Humanity's Journey Through the Ages",
+                navTitle: "Major Races",
+                btnEuro: "Caucasoid", btnMong: "Mongoloid", btnNegro: "Negroid",
+                races: {
+                    euro: { t: "Caucasoid Race", d: "Characterized by light skin, soft hair, and a narrow nose. Evolved in the temperate and cold climates of Europe and West Asia." },
+                    mong: { t: "Mongoloid Race", d: "Characterized by yellowish skin, straight coarse hair, and epicanthic eye folds. Evolved in the open steppes and deserts of Asia." },
+                    negro: { t: "Negroid Race", d: "Characterized by dark skin, curly hair, and a broad nose. Dark pigment protects from intense tropical solar radiation." }
+                },
+                history: "Human ancestors began settling the planet from East Africa approximately 70-100 thousand years ago.",
+                migration: "Great Migration: Africa -> Eurasia -> Americas",
+                equality: "All races are biologically equal. Physical differences are mere adaptations to diverse environmental conditions."
+            }
+        };
+
+        let currentLang = 'ru', activeRace = 'euro';
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.showRace = function(r) { activeRace = r; updateUI(); }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('nav-title').textContent = t.navTitle;
+            document.getElementById('btn-euro').textContent = t.btnEuro;
+            document.getElementById('btn-mong').textContent = t.btnMong;
+            document.getElementById('btn-negro').textContent = t.btnNegro;
+
+            document.querySelectorAll('.race-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${activeRace}`).classList.add('active');
+
+            const race = t.races[activeRace];
+            const view = document.getElementById('display-view');
+            view.style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('display-title').textContent = race.t;
+                document.getElementById('display-text').textContent = race.d;
+                view.style.opacity = '1';
+            }, 300);
+
+            document.getElementById('fact-text').textContent = t.history;
+            document.getElementById('migration-text').textContent = t.migration;
+            document.getElementById('equality-text').textContent = t.equality;
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

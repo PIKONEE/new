@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исторические труды XVI–XVII веков</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .ink-gradient {
+            background: radial-gradient(circle at top right, #1e1b4b, #020617 80%);
+        }
+
+        .manuscript-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 3rem;
+            border: 2px solid rgba(129, 140, 248, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .manuscript-card:hover {
+            border-color: #818cf8;
+            box-shadow: 0 0 60px rgba(99, 102, 241, 0.15);
+        }
+
+        .lang-active {
+            background-color: #818cf8;
+            color: #020617;
+            box-shadow: 0 0 25px rgba(129, 140, 248, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 3rem;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .info-panel {
+            background: rgba(30, 41, 59, 0.6);
+            border-left: 10px solid #818cf8;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .book-badge {
+            background: #1e1b4b;
+            color: #c7d2fe;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="ink-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-indigo-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-indigo-400 text-center">Исторические труды XVI–XVII веков</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-indigo-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Manuscript Nexus (Canvas) -->
+        <div class="manuscript-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-indigo-500 text-indigo-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Chronicle Archive Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic tracking-tighter">Свод Степных Летописей</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Труды XVI–XVII веков — это фундамент знаний о Казахском ханстве. Нажмите на фолианты Архива, чтобы раскрыть содержание великих хроник.
+                    </p>
+                    
+                    <div id="info-panel" class="info-panel transition-all duration-500">
+                        <h3 id="element-title" class="text-2xl font-bold text-indigo-300 mb-3 uppercase tracking-tighter">Выберите фолиант</h3>
+                        <p id="element-desc" class="text-slate-300 text-base leading-relaxed font-light italic">Кликните на «Тарих-и Рашиди», «Жами ат-таварих» или «Шежире-и тюрк» на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="manuscriptCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-indigo-900 font-mono uppercase tracking-[0.4em]">Manuscript Nexus Reconstruction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Content Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Dughlat -->
+            <div class="manuscript-card p-10 space-y-6">
+                <span class="book-badge" id="tag-1">Хроника</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Тарих-и Рашиди</h3>
+                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed">
+                    Труд **Мухаммада Хайдара Дулати** (написан в 1541–1546 гг. на персидском языке). Это единственный источник, точно зафиксировавший дату образования Казахского ханства (1465 г.). Книга описывает историю Могулистана и раннего Казахского государства, становясь «паспортом» нашей независимости.
+                </p>
+                <div class="pt-4 border-t border-indigo-900/50 text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">Автор: М. Х. Дулати</div>
+            </div>
+
+            <!-- Zhalayiri -->
+            <div class="manuscript-card p-10 space-y-6">
+                <span class="book-badge" id="tag-2">Свод летописей</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Жами ат-таварих</h3>
+                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed">
+                    Написан **Кадыргали Жалаири** в 1600–1602 гг. Это первый исторический труд на староказахском языке. Книга посвящена хану Ораз-Мухаммеду и содержит уникальные сведения о родоплеменном составе казахов, обычаях поднятия ханов и генеалогии Чингизидов (Торе).
+                </p>
+                <div class="pt-4 border-t border-indigo-900/50 text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">Автор: Кадыргали Жалаири</div>
+            </div>
+
+            <!-- Abulgazi -->
+            <div class="manuscript-card p-10 space-y-6">
+                <span class="book-badge" id="tag-3">Родословная</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Шежире-и тюрк</h3>
+                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed">
+                    «Родословная тюрков» **Абулгазы Бахадур-хана** (XVII в.). Фундаментальный труд, объясняющий происхождение тюркских и монгольских племен. Автор, будучи ханом Хивы, опирался на устные предания и архивы, создав стройную систему этнической истории Евразии.
+                </p>
+                <div class="pt-4 border-t border-indigo-900/50 text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">Автор: Абулгазы хан</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-indigo-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-500">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
+                «Исторические труды XVI–XVII веков — это голоса великих предков, запечатлевшие право казахского народа на свою землю и великую судьбу.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-indigo-700 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Исторические труды XVI–XVII веков",
+                vizTitle: "Свод Степных Летописей",
+                vizDesc: "Труды этой эпохи — фундамент знаний о Казахском ханстве. Нажмите на фолианты Архива для расшифровки содержания.",
+                badge: "Анализ исторического архива",
+                elementTitleDefault: "Выберите фолиант",
+                elementDescDefault: "Кликните на рукописи на холсте справа.",
+                tag1: "Хроника", tag2: "Свод летописей", tag3: "Родословная",
+                c1T: "Тарих-и Рашиди", c1D: "Написан в 1540-х гг. Мухаммадом Хайдаром Дулати. Единственный источник, называющий 1465 год датой рождения Казахского ханства. Охватывает историю Средней Азии и Казахстана.",
+                c2T: "Жами ат-таварих", c2D: "Труд Кадыргали Жалаири (1602 г.). Первая книга по истории Казахстана на тюркском языке. Описана система власти, роль биев и султанов в управлении Степью.",
+                c3T: "Шежире-и тюрк", c3D: "Труд Абулгазы хана. Описывает историю тюркских племен с древности до XVII века. Важный источник по генеалогии и этногенезу казахских родов.",
+                footer: "«Труды XVI–XVII веков — это голоса предков, запечатлевшие право казахского народа на свою землю.»",
+                works: {
+                    rashidi: { name: "Тарих-и Рашиди", text: "Свидетельство о 1465 годе. Описание походов, жизни Керея и Жанибека. Автор — великий ученый-гуманист М. Х. Дулати." },
+                    zhami: { name: "Жами ат-таварих", text: "Энциклопедия степной жизни. Сведения о 92 племенах, обрядах вступления на престол и дипломатии ханов." },
+                    shajara: { name: "Шежире-и тюрк", text: "Генеалогическая энциклопедия. Описание связи между тюркскими народами и их общего культурного корня." }
+                }
+            },
+            kz: {
+                title: "XVI–XVII ғғ. тарихи еңбектер",
+                vizTitle: "Дала шежірелерінің жинағы",
+                vizDesc: "Бұл дәуірдің еңбектері — Қазақ хандығы туралы білімнің негізі. Мазмұнын ашу үшін Мұрағат қолжазбаларын басыңыз.",
+                badge: "Тарихи мұрағатты талдау",
+                elementTitleDefault: "Қолжазбаны таңдаңыз",
+                elementDescDefault: "Оң жақтағы кенептегі қолжазбаларды басыңыз.",
+                tag1: "Шежіре", tag2: "Жылнамалар жинағы", tag3: "Ататегі",
+                c1T: "Тарих-и Рашиди", c1D: "1540 жылдары Мұхаммед Хайдар Дулати жазған. Қазақ хандығының құрылған жылын (1465 ж.) көрсеткен жалғыз дереккөз. Орта Азия мен Қазақстан тарихын қамтиды.",
+                c2T: "Жами ат-таварих", c2D: "Қадырғали Жалаиридің еңбегі (1602 ж.). Қазақстан тарихы бойынша түркі тілінде жазылған алғашқы кітап. Даланы басқарудағы билер мен сұлтандардың рөлі сипатталған.",
+                c3T: "Шежіре-и түрк", c3D: "Әбілғазы ханның еңбегі. Түркі тайпаларының ежелгі дәуірден XVII ғасырға дейінгі тарихын баяндайды. Қазақ руларының этногенезі бойынша маңызды дерек.",
+                footer: "«XVI–XVII ғасырлардағы еңбектер — қазақ халқының өз жеріне құқығын айғақтайтын ата-баба дауысы.»",
+                works: {
+                    rashidi: { name: "Тарих-и Рашиди", text: "1465 жыл туралы куәлік. Керей мен Жәнібектің өмірі мен жорықтарының сипаттамасы. Авторы — М. Х. Дулати." },
+                    zhami: { name: "Жами ат-таварих", text: "Дала өмірінің энциклопедиясы. 92 тайпа, хандарды таққа отырғызу ғұрыптары мен дипломатия туралы мәліметтер." },
+                    shajara: { name: "Шежіре-и түрк", text: "Генеалогиялық энциклопедия. Түркі халықтарының өзара байланысы мен ортақ мәдени тамырының сипаттамасы." }
+                }
+            },
+            en: {
+                title: "Historical Works of the 16th–17th Centuries",
+                vizTitle: "Steppe Chronicles Collection",
+                vizDesc: "The works of this era are the foundation of knowledge about the Kazakh Khanate. Click on the manuscripts to reveal the content.",
+                badge: "Historical Archive Analysis",
+                elementTitleDefault: "Select a Folio",
+                elementDescDefault: "Click on the manuscripts on the canvas to the right.",
+                tag1: "Chronicle", tag2: "Compendium", tag3: "Genealogy",
+                c1T: "Tarikh-i-Rashidi", c1D: "Written in the 1540s by Muhammad Haidar Dughlat. The only source providing 1465 AD as the formation date of the Kazakh Khanate.",
+                c2T: "Zhami at-Tavarikh", c2D: "The work of Kadyrgali Zhalayiri (1602). The first history of Kazakhstan written in the Turkic language. Describes power systems and diplomacy.",
+                c3T: "Shajara-i-Turk", c3D: "The work of Abulgazi Khan. It details the history of Turkic tribes from ancient times to the 17th century. Essential for ethnographic research.",
+                footer: "«The works of the 16th–17th centuries are the voices of ancestors, recording the Kazakh people's right to their land.»",
+                works: {
+                    rashidi: { name: "Tarikh-i-Rashidi", text: "Testimony of 1465 AD. Description of campaigns, the lives of Kerey and Janybek. Author: the scholar M. H. Dughlat." },
+                    zhami: { name: "Zhami at-Tavarikh", text: "Encyclopedia of steppe life. Information on 92 tribes, khan inauguration rituals, and diplomacy." },
+                    shajara: { name: "Shajara-i-Turk", text: "Genealogical encyclopedia. Description of the links between Turkic peoples and their common cultural roots." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('manuscriptCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 550;
+            drawArchive();
+        }
+
+        function drawArchive() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.height / 500;
+
+            // Manuscript positions
+            const folios = [
+                { id: 'rashidi', x: cx - 180 * scale, y: cy - 80 * scale, label: "TARIKH-I-RASHIDI", color: "#818cf8" },
+                { id: 'zhami', x: cx + 180 * scale, y: cy - 80 * scale, label: "ZHAMI AT-TAVARIKH", color: "#6366f1" },
+                { id: 'shajara', x: cx, y: cy + 120 * scale, label: "SHAJARA-I-TURK", color: "#4f46e5" }
+            ];
+
+            folios.forEach(f => {
+                ctx.save();
+                ctx.translate(f.x, f.y);
+                // Rect for book
+                ctx.beginPath();
+                ctx.roundRect(-80 * scale, -100 * scale, 160 * scale, 200 * scale, 10 * scale);
+                ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
+                ctx.fill();
+                ctx.strokeStyle = f.color;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Spine lines
+                ctx.beginPath();
+                ctx.moveTo(-60 * scale, -80 * scale);
+                ctx.lineTo(-60 * scale, 80 * scale);
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.stroke();
+
+                ctx.fillStyle = '#fff';
+                ctx.font = `bold ${10 * scale}px Montserrat`;
+                ctx.textAlign = 'center';
+                ctx.fillText(f.label, 0, 10 * scale);
+                
+                ctx.restore();
+            });
+
+            // Center glow connection
+            ctx.beginPath();
+            ctx.arc(cx, cy, 50 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(129, 140, 248, 0.05)';
+            ctx.fill();
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.height / 500;
+
+            let target = null;
+            if (Math.abs(x - (cx - 180 * scale)) < 80 * scale && Math.abs(y - (cy - 80 * scale)) < 100 * scale) target = 'rashidi';
+            else if (Math.abs(x - (cx + 180 * scale)) < 80 * scale && Math.abs(y - (cy - 80 * scale)) < 100 * scale) target = 'zhami';
+            else if (Math.abs(x - cx) < 80 * scale && Math.abs(y - (cy + 120 * scale)) < 100 * scale) target = 'shajara';
+
+            if (target) {
+                const info = translations[currentLang].works[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#818cf8';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-indigo-400 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

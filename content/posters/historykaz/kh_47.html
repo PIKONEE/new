@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ханство Абулхаира (1428–1468 гг.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .dusk-gradient {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a 90%);
+        }
+
+        .imperial-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .imperial-card:hover {
+            border-color: #f97316;
+            box-shadow: 0 0 50px rgba(249, 115, 22, 0.1);
+        }
+
+        .lang-active {
+            background-color: #f97316;
+            color: #0f172a;
+            box-shadow: 0 0 25px rgba(249, 115, 22, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: rgba(2, 6, 23, 0.5);
+        }
+
+        .fact-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-left: 4px solid #f97316;
+            padding: 2rem;
+            border-radius: 2rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .fact-card:hover {
+            transform: translateX(8px);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .term-badge {
+            background: #431407;
+            color: #fdba74;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="dusk-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header (Strict text, no emoji) -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-orange-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-orange-500">Ханство Абулхаира (1428–1468 гг.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-orange-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Strategic Map Analysis (Canvas) -->
+        <div class="imperial-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-orange-500/50 text-orange-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Geopolitical Crisis Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Точка распада: 1457 год</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Поражение под Сыгнаком стало катализатором конца империи. Нажмите на ключевые события на карте, чтобы увидеть, как рождалось Казахское ханство через откочевку.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-orange-950/20 border-l-8 border-orange-500 shadow-2xl transition-all duration-500">
+                        <h3 id="event-title" class="text-xl font-bold text-orange-300 mb-3 uppercase tracking-tighter">Сценарий истории</h3>
+                        <p id="event-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на Сыгнак, восточные рубежи или путь на юг.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="splitMapCanvas"></canvas>
+                    <div class="absolute bottom-8 right-10 text-[10px] text-orange-900 font-mono uppercase tracking-[0.3em]">Geopolitical Conflict Schematic</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed History (The Plan) -->
+        <div id="plan-section" class="space-y-12">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-orange-600">Государство кочевых узбеков</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                
+                <!-- Dynastic Power -->
+                <div class="fact-card">
+                    <div class="mb-4"><span class="term-badge" id="t-dyn">Династия</span></div>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Власть Шайбанидов</h3>
+                    <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        В **1428 году** 17-летний Абулхаир из рода Шайбани был провозглашен ханом в городе Тура. Он объединил 92 племени, создав «Узбекский улус». Его власть опиралась на военную силу и подавление сепаратизма потомков других ветвей Чингизидов.
+                    </p>
+                    <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest">40 лет правления</div>
+                </div>
+
+                <!-- Expansion & Centers -->
+                <div class="fact-card">
+                    <div class="mb-4"><span class="term-badge" id="t-geo">География</span></div>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Перенос столицы</h3>
+                    <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        В **1446 году** Абулхаир захватил города на Сырдарье. Политический центр переместился из Сибири в город **Сыгнак**. Это позволило хану контролировать торговлю с Мавераннахром и использовать ресурсы оседлых оазисов для укрепления армии.
+                    </p>
+                    <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest">От Тобола до Сырдарьи</div>
+                </div>
+
+                <!-- The Great Secession -->
+                <div class="fact-card">
+                    <div class="mb-4"><span class="term-badge" id="t-split">Раскол</span></div>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Откочевка Керея и Жанибека</h3>
+                    <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        После поражения от ойратов в 1457 году авторитет Абулхаира упал. Султаны **Керей** и **Жанибек** возглавили протест племен против жесткой налоговой политики и войн. Около 200 тысяч человек ушли в Могулистан, что стало моментом рождения Казахского ханства.
+                    </p>
+                    <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest">1459–1460 гг.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Section 3: Military Decline (Full Width) -->
+        <div class="bg-orange-950/20 rounded-[4rem] p-10 md:p-16 border border-orange-500/20 shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h3 id="end-t" class="text-3xl font-black text-white mb-8 uppercase italic tracking-widest">Закат империи</h3>
+                    <p id="end-d" class="text-slate-300 text-xl font-light leading-relaxed mb-10">
+                        Абулхаир хан пытался вернуть беглецов и восстановить власть, но в 1468 году он скончался во время похода против Керея и Жанибека. После его смерти государство фактически распалось под ударами внутренних врагов и внешних захватчиков, освободив место для новой казахской державы.
+                    </p>
+                    <div class="flex gap-4">
+                        <div id="end-tag" class="px-6 py-2 bg-orange-500/10 rounded-2xl border border-orange-500/20 text-xs font-black text-orange-400 uppercase">1468: Конец государства</div>
+                    </div>
+                </div>
+                <div class="flex justify-center relative">
+                    <div class="w-80 h-80 border-4 border-dashed border-orange-900/40 rounded-full flex items-center justify-center animate-spin-slow">
+                        <div class="text-center">
+                            <div class="text-7xl mb-4 opacity-30">🛡️</div>
+                            <div class="text-[10px] font-black uppercase text-orange-600 tracking-[0.5em]">Decline phase</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">UZBEK</div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-orange-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-zinc-600">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Ханство Абулхаира стало последней попыткой объединения Степи под знаменем Улуса Джучи, ставшей почвой для великой казахской откочевки.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-orange-900 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Ханство Абулхаира (1428–1468 гг.)",
+                vizTitle: "Точка распада: 1457 год",
+                vizDesc: "Поражение под Сыгнаком стало катализатором конца империи. Нажмите на события на карте для анализа кризиса.",
+                badge: "Анализ геополитического кризиса",
+                eventTitleDefault: "Сценарий истории",
+                eventDescDefault: "Кликните на Сыгнак, восточные рубежи или путь на юг.",
+                planTitle: "Государство кочевых узбеков",
+                tDyn: "Династия", tGeo: "География", tSplit: "Раскол",
+                c1T: "Власть Шайбанидов", c1D: "Абулхаир хан объединил 92 племени, создав мощное государство. Он жестко централизовал власть, опираясь на поддержку городской знати Сырдарьи.",
+                c2T: "Перенос столицы", c2D: "В 1446 году столицей стал Сыгнак. Город на Шелковом пути обеспечил хану доходы от торговли и контроль над ключевыми переправами.",
+                c3T: "Откочевка султанов", c3D: "В 1459–1460 гг. Керей и Жанибек увели часть племен в Могулистан. Это было не просто бегство, а политический протест против тирании хана.",
+                endT: "Закат империи", endD: "После смерти Абулхаира в 1468 году его государство не выдержало давления внутренних усобиц. Большинство племен перешло на сторону Керея и Жанибека.",
+                endTag: "1468: Распад",
+                footer: "«Ханство Абулхаира стало почвой для великой казахской откочевки и рождения новой нации.»",
+                events: {
+                    sygnak: { name: "Битва под Сыгнаком (1457)", text: "Абулхаир потерпел сокрушительное поражение от ойратов (калмыков). Он был вынужден подписать унизительный мир, что подорвало его авторитет среди племен." },
+                    oirat: { name: "Ойратская угроза", text: "С востока началось давление ойратских племен. Они разграбили города Сырдарьи, показав слабость обороны ханства." },
+                    migration: { name: "Путь Керея и Жанибека", text: "Маршрут откочевки племен на юго-восток в Жетысу (долина рек Чу и Козы-Баши), где было провозглашено Казахское ханство." }
+                }
+            },
+            kz: {
+                title: "Әбілқайыр хандығы (1428–1468 жж.)",
+                vizTitle: "Ыдырау нүктесі: 1457 жыл",
+                vizDesc: "Сығанақ түбіндегі жеңіліс империяның соңына әкелді. Дағдарысты талдау үшін картадағы оқиғаларды басыңыз.",
+                badge: "Геосаяси дағдарысты талдау",
+                eventTitleDefault: "Тарих сценарийі",
+                eventDescDefault: "Сығанақты, шығыс шекараны немесе оңтүстікке көшу жолын басыңыз.",
+                planTitle: "Көшпелі өзбектер мемлекеті",
+                tDyn: "Әулет", tGeo: "География", tSplit: "Бөліну",
+                c1T: "Шайбанидтер билігі", c1D: "Әбілқайыр хан 92 тайпаны біріктіріп, қуатты мемлекет құрды. Ол Сырдария ақсүйектеріне сүйене отырып, билікті орталықтандырды.",
+                c2T: "Астананы ауыстыру", c2D: "1446 жылы Сығанақ астана болды. Жібек жолындағы қала ханға саудадан табыс пен маңызды өткелдерді бақылауды қамтамасыз етті.",
+                c3T: "Сұлтандардың бөлінуі", c3D: "1459–1460 жж. Керей мен Жәнібек тайпалардың бір бөлігін Моғолстанға бастап кетті. Бұл хан тираниясына қарсы саяси наразылық еді.",
+                endT: "Империяның құлауы", endD: "1468 жылы Әбілқайыр қайтыс болғаннан кейін мемлекет ішкі тартыстарға шыдамады. Тайпалардың көбі Керей мен Жәнібек жағына шықты.",
+                endTag: "1468: Ыдырау",
+                footer: "«Әбілқайыр хандығы ұлы қазақ көші мен жаңа ұлттың дүниеге келуіне негіз болды.»",
+                events: {
+                    sygnak: { name: "Сығанақ шайқасы (1457)", text: "Әбілқайыр ойраттардан (қалмақтардан) жеңілді. Ол қорлық келісімге қол қоюға мәжбүр болды, бұл оның беделін түсірді." },
+                    oirat: { name: "Ойрат қаупі", text: "Шығыстан ойрат тайпаларының қысымы басталды. Олар Сырдария қалаларын талқандап, хандықтың әлсіздігін көрсетті." },
+                    migration: { name: "Керей мен Жәнібек көші", text: "Тайпалардың оңтүстік-шығысқа, Жетісуға (Шу және Қозыбасы алқабы) көшу бағыты, мұнда Қазақ хандығы жарияланды." }
+                }
+            },
+            en: {
+                title: "Abulkhair Khanate (1428–1468 AD)",
+                vizTitle: "The Split Point: 1457",
+                vizDesc: "The defeat at Sygnak catalyzed the empire's fall. Click on events on the map to analyze the geopolitical crisis.",
+                badge: "Geopolitical Crisis Analysis",
+                eventTitleDefault: "Historical Scenario",
+                eventDescDefault: "Click on Sygnak, the eastern borders, or the migration path.",
+                planTitle: "State of Nomadic Uzbeks",
+                tDyn: "Dynasty", tGeo: "Geography", tSplit: "The Split",
+                c1T: "Shaybanid Power", c1D: "Abulkhair Khan united 92 tribes, creating a powerful state. He strictly centralized authority, backed by the Syr Darya urban elite.",
+                c2T: "The New Capital", c2D: "In 1446, Sygnak became the capital. Located on the Silk Road, it provided trade revenues and control over key passages.",
+                c3T: "The Great Secession", c3D: "In 1459–1460, Kerey and Janibek led clans to Moghulistan. This was a political protest against the Khan's policies.",
+                endT: "Decline of Empire", endD: "After Abulkhair's death in 1468, the state collapsed under internal strife. Most tribes joined Kerey and Janibek.",
+                endTag: "1468: Dissolution",
+                footer: "«Abulkhair's Khanate provided the context for the Great Kazakh Migration and the birth of a new nation.»",
+                events: {
+                    sygnak: { name: "Battle of Sygnak (1457)", text: "Abulkhair suffered a crushing defeat by the Oirats. Forced to sign a humiliating peace, his authority among tribes shattered." },
+                    oirat: { name: "Oirat Threat", text: "Pressure from Oirat tribes began in the east. They sacked Syr Darya cities, exposing the khanate's military weaknesses." },
+                    migration: { name: "The Path of Kerey and Janibek", text: "The migration route to the southeast (Zhetysu, Chu river valley), where the Kazakh Khanate was proclaimed." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('splitMapCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Territory Outline (Abstract)
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 150 * scale);
+            ctx.lineTo(450 * scale, 100 * scale);
+            ctx.lineTo(500 * scale, 350 * scale);
+            ctx.lineTo(150 * scale, 450 * scale);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(249, 115, 22, 0.05)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(249, 115, 22, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 2. Oirat Strike (East to West - Red)
+            drawArrow(650 * scale, 250 * scale, 450 * scale, 300 * scale, '#dc2626', "Oirat Invasion");
+            
+            // 3. Migration Path (Syrdarya to Zhetysu - Blue)
+            drawArrow(380 * scale, 410 * scale, 650 * scale, 450 * scale, '#3b82f6', "Great Secession");
+
+            // 4. Cities
+            drawMarker(400 * scale, 380 * scale, '#f97316', "SYGNAK", true);
+            drawMarker(200 * scale, 150 * scale, '#94a3b8', "TURA", false);
+            drawMarker(650 * scale, 450 * scale, '#3b82f6', "ZHETYSU", false);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.font = 'bold 10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText("TAP ON MARKERS TO VIEW EVENTS", cx, 40 * scale);
+        }
+
+        function drawMarker(x, y, color, label, pulse) {
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'black 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y - 15);
+        }
+
+        function drawArrow(fromX, fromY, toX, toY, color, label) {
+            const headlen = 15;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.sqrt((x - 400*scale)**2 + (y - 380*scale)**2) < 30) target = 'sygnak';
+            else if (x > 500 * scale && y < 350 * scale) target = 'oirat';
+            else if (x > 450 * scale && y > 380 * scale) target = 'migration';
+
+            if (target) {
+                const info = translations[currentLang].events[target];
+                document.getElementById('event-title').innerText = info.name;
+                document.getElementById('event-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (target === 'migration' ? '#3b82f6' : '#f97316');
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('event-title').innerText = t.eventTitleDefault;
+            document.getElementById('event-desc').innerText = t.eventDescDefault;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('t-dyn').innerText = t.tDyn;
+            document.getElementById('t-geo').innerText = t.tGeo;
+            document.getElementById('t-split').innerText = t.tSplit;
+
+            document.getElementById('end-t').innerText = t.endT;
+            document.getElementById('end-d').innerText = t.endD;
+            document.getElementById('end-tag').innerText = t.endTag;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

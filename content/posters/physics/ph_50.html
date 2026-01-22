@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Удельная теплоемкость</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff7ed; /* orange-50 */
+            overflow-x: hidden;
+            color: #7c2d12; /* orange-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Orange Theme */
+        .header-card {
+            background-color: #f97316; /* orange-500 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #9a3412; /* orange-800 */
+            border-bottom: 3px solid #fdba74; /* orange-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #ffedd5; /* orange-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #c2410c; /* orange-700 */
+        }
+         .term {
+            font-weight: bold;
+            color: #f97316; /* orange-500 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #f97316;
+            background-color: #ffffff;
+            color: #f97316;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #fff7ed;
+        }
+        .lang-btn.active {
+            background-color: #f97316;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 250px;
+            margin: 15px 0;
+            border: 1px solid #fed7aa;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #9a3412;
+            text-anchor: middle;
+        }
+        .svg-fire {
+            fill: #ef4444;
+            stroke: #b91c1c;
+        }
+        .svg-water {
+            fill: #bae6fd;
+            opacity: 0.6;
+        }
+
+        /* Styles for the table */
+        .heat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .heat-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 2px solid #fdba74;
+            color: #9a3412;
+        }
+        .heat-table td {
+            padding: 8px;
+            border-bottom: 1px solid #fed7aa;
+            color: #7c2d12;
+        }
+        .heat-table tr:last-child td {
+            border-bottom: none;
+        }
+        .val-col {
+            text-align: right;
+            font-weight: bold;
+            color: #ea580c;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-orange-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(251, 146, 60, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(251, 146, 60, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(251, 146, 60, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">МЕНШІКТІ ЖЫЛУ СЫЙЫМДЫЛЫҒЫ (c)</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">SPECIFIC HEAT CAPACITY (c)</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">УДЕЛЬНАЯ ТЕПЛОЕМКОСТЬ (c)</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-orange-100">Заттың жылуды сақтау қабілеті.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-orange-100">Ability of a substance to store heat.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-orange-100">Способность вещества сохранять тепло.</p>
+        </header>
+
+        <!-- 1. АНЫҚТАМАСЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Бұл қандай шама?</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is it?</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что это за величина?</h2>
+
+            <div class="rule-card border-t-orange-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Меншікті жылу сыйымдылығы (c)</span> – массасы <strong>1 кг</strong> затты <strong>1°C-қа</strong> қыздыру үшін қанша жылу мөлшері (Q) қажет екенін көрсетеді.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="en">Specific heat capacity (c)</span> shows how much heat (Q) is needed to raise the temperature of <strong>1 kg</strong> of a substance by <strong>1°C</strong>.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Удельная теплоемкость (c)</span> показывает, какое количество теплоты (Q) нужно затратить, чтобы нагреть <strong>1 кг</strong> вещества на <strong>1°C</strong>.
+                </p>
+
+                <!-- Illustration 1: Heating 1kg -->
+                <svg class="illustration-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#ef4444" />
+                        </marker>
+                    </defs>
+
+                    <!-- Block 1kg -->
+                    <rect x="150" y="50" width="100" height="100" fill="#e5e7eb" stroke="#4b5563" stroke-width="2"/>
+                    <text x="200" y="100" font-size="20" font-weight="bold" fill="#374151" text-anchor="middle">1 kg</text>
+                    <text x="200" y="120" font-size="14" fill="#374151" text-anchor="middle">Material</text>
+
+                    <!-- Thermometer rising -->
+                    <rect x="270" y="50" width="10" height="100" fill="#fff" stroke="#4b5563"/>
+                    <rect x="272" y="80" width="6" height="68" fill="#ef4444"/> <!-- Liquid -->
+                    <circle cx="275" cy="150" r="8" fill="#ef4444"/>
+                    <text x="290" y="80" font-size="12" fill="#ef4444" font-weight="bold">+1°C</text>
+
+                    <!-- Heat Input -->
+                    <g transform="translate(180, 160)">
+                        <text x="20" y="20" font-size="14" fill="#ef4444" font-weight="bold" text-anchor="middle">Q = c</text>
+                        <!-- Fire -->
+                        <path d="M 10 30 Q 20 0, 30 30" fill="#facc15" stroke="#eab308"/>
+                        <path d="M 15 30 Q 20 10, 25 30" fill="#ef4444"/>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 2. ФОРМУЛА ЖӘНЕ БІРЛІГІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Формула және Бірлігі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Formula and Unit</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Формула и Единица измерения</h2>
+
+            <div class="rule-card border-t-red-500">
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                    <div class="example-block border-l-red-400 bg-red-50 text-center p-6 w-full">
+                        <p class="text-3xl font-bold text-red-900 mb-2">c = Q / (m · Δt)</p>
+                    </div>
+                    <div class="example-block border-l-orange-400 bg-orange-50 text-center p-6 w-full">
+                        <p class="text-xl font-bold text-orange-900 mb-2">Unit (Бірлік)</p>
+                        <p class="text-2xl font-bold text-orange-700">J / (kg · °C)</p>
+                        <p lang="ru" class="lang-content text-xs text-gray-600 mt-1">Джоуль бөлінген (килограмм көбейту градус)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. КЕСТЕ: ЗАТТАРДЫҢ МӘНДЕРІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Әр түрлі заттардың мәндері</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Table of Values</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Таблица значений</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Solids -->
+                <div class="rule-card border-t-gray-500">
+                    <h3 class="font-bold text-lg text-center mb-3 text-gray-700" lang="kk">Қатты денелер</h3>
+                    <h3 class="font-bold text-lg text-center mb-3 text-gray-700" lang="en">Solids</h3>
+                    <h3 class="font-bold text-lg text-center mb-3 text-gray-700" lang="ru">Твердые тела</h3>
+                    <table class="heat-table">
+                        <tr>
+                            <td lang="kk">Қорғасын (Pb)</td><td lang="en">Lead</td><td lang="ru">Свинец</td>
+                            <td class="val-col">140</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk">Мыс (Cu)</td><td lang="en">Copper</td><td lang="ru">Медь</td>
+                            <td class="val-col">400</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk">Темір (Fe)</td><td lang="en">Iron</td><td lang="ru">Железо</td>
+                            <td class="val-col">460</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk">Алюминий (Al)</td><td lang="en">Aluminum</td><td lang="ru">Алюминий</td>
+                            <td class="val-col">920</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk">Мұз (Ice)</td><td lang="en">Ice</td><td lang="ru">Лед</td>
+                            <td class="val-col">2100</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Liquids -->
+                <div class="rule-card border-t-blue-500">
+                    <h3 class="font-bold text-lg text-center mb-3 text-blue-700" lang="kk">Сұйықтар</h3>
+                    <h3 class="font-bold text-lg text-center mb-3 text-blue-700" lang="en">Liquids</h3>
+                    <h3 class="font-bold text-lg text-center mb-3 text-blue-700" lang="ru">Жидкости</h3>
+                    <table class="heat-table">
+                        <tr>
+                            <td lang="kk">Сынап (Hg)</td><td lang="en">Mercury</td><td lang="ru">Ртуть</td>
+                            <td class="val-col text-blue-600">140</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk">Май</td><td lang="en">Oil</td><td lang="ru">Масло</td>
+                            <td class="val-col text-blue-600">1700</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk">Керосин</td><td lang="en">Kerosene</td><td lang="ru">Керосин</td>
+                            <td class="val-col text-blue-600">2100</td>
+                        </tr>
+                        <tr class="bg-blue-50">
+                            <td lang="kk"><strong>Су (H₂O)</strong></td><td lang="en"><strong>Water</strong></td><td lang="ru"><strong>Вода</strong></td>
+                            <td class="val-col text-blue-800">4200</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Gases -->
+                <div class="rule-card border-t-purple-500">
+                    <h3 class="font-bold text-lg text-center mb-3 text-purple-700" lang="kk">Газдар</h3>
+                    <h3 class="font-bold text-lg text-center mb-3 text-purple-700" lang="en">Gases</h3>
+                    <h3 class="font-bold text-lg text-center mb-3 text-purple-700" lang="ru">Газы</h3>
+                    <p class="text-xs text-center text-gray-500 mb-2">(Тұрақты қысымда / Const Pressure)</p>
+                    <table class="heat-table">
+                        <tr>
+                            <td lang="kk">Ауа</td><td lang="en">Air</td><td lang="ru">Воздух</td>
+                            <td class="val-col text-purple-600">1000</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk">Су буы</td><td lang="en">Steam</td><td lang="ru">Водяной пар</td>
+                            <td class="val-col text-purple-600">2200</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. САЛЫСТЫРУ: СУ ЖӘНЕ ҚҰМ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">4. Су және Металл/Құм</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">4. Water vs Metal/Sand</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">4. Вода и Металл/Песок</h2>
+
+            <div class="rule-card border-t-blue-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <strong>Судың</strong> жылу сыйымдылығы өте үлкен (4200). Ол баяу қызады және баяу суиды.
+                    <strong>Металл мен құм</strong> тез қызады, өйткені олардың "c" мәні аз.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <strong>Water</strong> has a very high specific heat (4200). It heats up and cools down slowly.
+                    <strong>Metals and sand</strong> heat up fast because their "c" is low.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <strong>Вода</strong> имеет очень большую теплоемкость (4200). Она медленно нагревается и медленно остывает.
+                    <strong>Металл и песок</strong> нагреваются быстро, так как их "c" мало.
+                </p>
+
+                <!-- Illustration 3: Beach Day -->
+                <svg class="illustration-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Sun -->
+                    <circle cx="50" cy="40" r="25" fill="#facc15" stroke="#eab308"/>
+                    <line x1="80" y1="40" x2="100" y2="40" stroke="#facc15" stroke-width="2" stroke-dasharray="4"/>
+                    <line x1="70" y1="60" x2="90" y2="80" stroke="#facc15" stroke-width="2" stroke-dasharray="4"/>
+
+                    <!-- Sand (Left) -->
+                    <rect x="20" y="120" width="180" height="80" fill="#fcd34d"/>
+                    <text x="110" y="150" font-weight="bold" fill="#78350f" text-anchor="middle">SAND (Құм)</text>
+                    <text x="110" y="170" font-size="12" fill="#991b1b" text-anchor="middle">c ≈ 800</text>
+                    <text x="110" y="190" font-size="12" fill="#dc2626" text-anchor="middle" font-weight="bold">HOT! (Ыстық)</text>
+
+                    <!-- Water (Right) -->
+                    <rect x="200" y="130" width="180" height="70" fill="#60a5fa"/>
+                    <text x="290" y="150" font-weight="bold" fill="#fff" text-anchor="middle">WATER (Су)</text>
+                    <text x="290" y="170" font-size="12" fill="#1e3a8a" text-anchor="middle">c = 4200</text>
+                    <text x="290" y="190" font-size="12" fill="#1e40af" text-anchor="middle" font-weight="bold">COOL (Салқын)</text>
+
+                    <!-- Comparison text -->
+                    <text x="200" y="100" font-size="14" fill="#4b5563" text-anchor="middle">Күн астында (Under Sun)</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-orange-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-orange-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-orange-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-orange-800">
+                Су – табиғаттағы ең жылу сыйымды заттардың бірі. Сондықтан ол климатты жұмсартады (қыста жылу береді, жазда салқындатады).
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-orange-800">
+                Water is one of the most heat-capacitive substances in nature. That is why it moderates the climate (gives heat in winter, cools in summer).
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-orange-800">
+                Вода – одно из самых теплоемких веществ в природе. Поэтому она смягчает климат (отдает тепло зимой, охлаждает летом).
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

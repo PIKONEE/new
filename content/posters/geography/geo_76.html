@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA: Coordinates & Position</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #000; color: #fff; min-height: 100vh; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .grid-bg {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .neon-box { border: 1px solid #6366f1; box-shadow: 0 0 10px rgba(99, 102, 241, 0.3); background: rgba(17, 24, 39, 0.8); }
+    </style>
+</head>
+<body class="p-8 grid-bg relative overflow-hidden">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="absolute top-4 right-4 flex gap-2 z-20">
+         <button onclick="updateL('ru')" class="text-xs font-bold bg-white/10 px-2 py-1 hover:bg-white/20">RU</button>
+         <button onclick="updateL('kz')" class="text-xs font-bold bg-white/10 px-2 py-1 hover:bg-white/20">KZ</button>
+         <button onclick="updateL('en')" class="text-xs font-bold bg-white/10 px-2 py-1 hover:bg-white/20">EN</button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+        <!-- Interactive Coordinate Map -->
+        <div class="lg:col-span-8 relative h-[600px] border border-gray-800 rounded-xl bg-black">
+            <canvas id="coordCanvas" class="w-full h-full"></canvas>
+            
+            <div class="absolute top-4 left-4 mono text-xs text-green-500">
+                LAT: <span id="lat-disp">00.00</span> S <br>
+                LON: <span id="lon-disp">00.00</span> W
+            </div>
+        </div>
+
+        <!-- Data Panel -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            <div class="neon-box p-6 rounded-xl">
+                <h1 class="text-3xl font-black mb-2 text-indigo-400">LOCATION</h1>
+                <p id="main-text" class="text-sm text-gray-400 leading-relaxed"></p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="p-4 border-l-2 border-red-500 bg-gray-900/50">
+                    <div class="text-[10px] uppercase text-gray-500">Extreme North</div>
+                    <div class="font-bold">Point Gallinas (12° N)</div>
+                </div>
+                <div class="p-4 border-l-2 border-blue-500 bg-gray-900/50">
+                    <div class="text-[10px] uppercase text-gray-500">Extreme South</div>
+                    <div class="font-bold">Cape Froward (53° S)</div>
+                </div>
+            </div>
+            
+            <div class="mono text-xs text-gray-600 mt-auto">
+                // SYSTEM STATUS: TRACKING<br>
+                // TARGET: SOUTH AMERICA<br>
+                // MODE: PHYSICAL_GEO
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: "Южная Америка пересекается экватором в северной части. Большая часть материка расположена в Южном и Западном полушариях. Омывается двумя океанами. Имеет форму треугольника, сужающегося к югу.",
+            kz: "Оңтүстік Американың солтүстік бөлігін экватор кесіп өтеді. Материктің көп бөлігі Оңтүстік және Батыс жарты шарларда орналасқан. Екі мұхитпен шайылады.",
+            en: "South America is crossed by the Equator in the north. Most of the continent lies in the Southern and Western Hemispheres. It is bordered by two oceans and tapers southward."
+        };
+
+        let canvas, ctx;
+        let mouseX = 0, mouseY = 0;
+
+        window.updateL = (l) => document.getElementById('main-text').textContent = content[l];
+
+        function draw() {
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0,0,w,h);
+
+            // Grid lines
+            ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+            for(let i=0; i<w; i+=50) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+            for(let i=0; i<h; i+=50) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+
+            // Equator Line (Red)
+            const eqY = h * 0.2;
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
+            ctx.beginPath(); ctx.moveTo(0, eqY); ctx.lineTo(w, eqY); ctx.stroke();
+            ctx.fillStyle = '#ef4444'; ctx.fillText("EQUATOR 0°", 10, eqY - 10);
+            ctx.setLineDash([]);
+
+            // Continent shape (Wireframe style)
+            ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 3;
+            ctx.shadowBlur = 10; ctx.shadowColor = '#6366f1';
+            ctx.beginPath();
+            ctx.moveTo(w*0.3, h*0.15); 
+            ctx.lineTo(w*0.7, h*0.3); 
+            ctx.lineTo(w*0.45, h*0.85); 
+            ctx.lineTo(w*0.25, h*0.4); 
+            ctx.closePath();
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Crosshair
+            ctx.strokeStyle = 'white'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(mouseX, 0); ctx.lineTo(mouseX, h); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, mouseY); ctx.lineTo(w, mouseY); ctx.stroke();
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            canvas = document.getElementById('coordCanvas');
+            ctx = canvas.getContext('2d');
+            const resize = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; };
+            window.addEventListener('resize', resize);
+            resize();
+            
+            canvas.addEventListener('mousemove', e => {
+                const r = canvas.getBoundingClientRect();
+                mouseX = e.clientX - r.left; mouseY = e.clientY - r.top;
+                document.getElementById('lat-disp').textContent = ((mouseY / canvas.height)*90).toFixed(2);
+                document.getElementById('lon-disp').textContent = ((mouseX / canvas.width)*90 + 30).toFixed(2);
+            });
+
+            updateL('ru');
+            draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

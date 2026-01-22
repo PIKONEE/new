@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Появление древнейших людей</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        canvas {
+            background: radial-gradient(circle, #ffffff 0%, #f8fafc 100%);
+            border-radius: 1rem;
+        }
+    </style>
+<script src="../../libs/chart.umd.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header & Languages -->
+    <header class="sticky-header border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h1 id="title" class="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                Появление древнейших людей
+            </h1>
+            <div class="flex space-x-2 bg-slate-100 p-1 rounded-xl">
+                <button onclick="setLanguage('ru')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-ru">RU</button>
+                <button onclick="setLanguage('kz')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-kz">KZ</button>
+                <button onclick="setLanguage('en')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-en">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-12">
+        
+        <!-- Section 1: Map (Visual Analytics) -->
+        <section id="map-section" class="space-y-6">
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
+                <div class="flex items-center space-x-3 mb-6">
+                    <span class="text-3xl">⏳</span>
+                    <div>
+                        <h2 id="map-title" class="text-xl font-bold">Хронологическая карта эволюции</h2>
+                        <p id="map-subtitle" class="text-sm text-slate-500">Временные рамки появления видов (в миллионах лет назад)</p>
+                    </div>
+                </div>
+                <!-- Canvas Container -->
+                <div class="h-80 md:h-96 w-full">
+                    <canvas id="evolutionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Plan (Theory & Facts) -->
+        <section id="plan-section" class="space-y-8">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🦴</span>
+                <h2 id="plan-heading" class="text-2xl font-bold">Основные этапы и орудия труда</h2>
+            </div>
+
+            <div id="grid-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Cards will be rendered by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-white py-12 mt-20 border-t-4 border-orange-600">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <p id="footer-text" class="text-lg font-medium italic opacity-90 leading-relaxed">
+                Эволюция орудий и самого человека — это великий путь от простого выживания в природе к осознанному созиданию и культуре.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const content = {
+            ru: {
+                title: "Появление древнейших людей",
+                mapTitle: "Хронологическая карта эволюции",
+                mapSubtitle: "Временные рамки появления видов (в миллионах лет назад)",
+                planHeading: "Основные этапы и орудия труда",
+                footer: "Эволюция орудий и самого человека — это великий путь от простого выживания в природе к осознанному созиданию и культуре.",
+                chartLabel: "Миллионы лет назад",
+                cards: [
+                    { icon: "🐒", title: "Австралопитек", desc: "Жил 4-2 млн лет назад. Южная и Восточная Африка. Начал ходить на двух ногах." },
+                    { icon: "🛠️", title: "Человек умелый", desc: "Homo Habilis. 2.5-1.8 млн лет назад. Первые искусственные орудия из гальки (чопперы)." },
+                    { icon: "🔥", title: "Питекантроп", desc: "Homo Erectus. 1.8 млн - 300 тыс. лет назад. Овладение огнем. Найден на о. Ява." },
+                    { icon: "🏔️", title: "Синантроп", desc: "Китайский человек. Жил в пещерах, использовал шкуры животных как одежду." },
+                    { icon: "❄️", title: "Неандерталец", desc: "100-35 тыс. лет назад. Жил в ледниковый период. Появились первые захоронения." },
+                    { icon: "👤", title: "Кроманьонец", desc: "Homo Sapiens. 40-35 тыс. лет назад. Человек современного типа. Развитая речь." },
+                    { icon: "🪓", title: "Чоппер и Чоппинг", desc: "Древнейшие каменные орудия. Галька, оббитая с одной или двух сторон." },
+                    { icon: "🏹", title: "Загонная охота", desc: "Первый коллективный способ добычи мяса крупных животных (мамонтов, бизонов)." }
+                ]
+            },
+            kz: {
+                title: "Ең ежелгі адамдардың пайда болуы",
+                mapTitle: "Эволюцияның хронологиялық картасы",
+                mapSubtitle: "Түрлердің пайда болу уақыты (миллион жыл бұрын)",
+                planHeading: "Негізгі кезеңдер мен еңбек құралдары",
+                footer: "Еңбек құралдары мен адамның дамуы — бұл табиғаттағы жай ғана тіршілік етуден саналы шығармашылық пен мәдениетке дейінгі ұлы жол.",
+                chartLabel: "Миллион жыл бұрын",
+                cards: [
+                    { icon: "🐒", title: "Австралопитек", desc: "4-2 млн жыл бұрын өмір сүрген. Оңтүстік және Шығыс Африка. Екі аяқпен жүре бастады." },
+                    { icon: "🛠️", title: "Епті адам", desc: "Homo Habilis. 2.5-1.8 млн жыл бұрын. Малта тастан жасалған алғашқы құралдар (чоппер)." },
+                    { icon: "🔥", title: "Питекантроп", desc: "Homo Erectus. 1.8 млн - 300 мың жыл бұрын. Отты пайдалануды үйренді. Ява аралынан табылды." },
+                    { icon: "🏔️", title: "Синантроп", desc: "Қытай адамы. Үңгірлерде тұрды, жануар терісін киім ретінде пайдаланды." },
+                    { icon: "❄️", title: "Неандерталь", desc: "100-35 мың жыл бұрын. Мұз дәуірінде өмір сүрді. Алғашқы жерлеу ғұрыптары пайда болды." },
+                    { icon: "👤", title: "Кроманьон", desc: "Homo Sapiens. 40-35 мың жыл бұрын. Қазіргі саналы адам түрі. Сөйлеу қабілеті дамыған." },
+                    { icon: "🪓", title: "Чоппер және Чоппинг", desc: "Ең ежелгі тас құралдары. Бір немесе екі жағынан қайралған малта тас." },
+                    { icon: "🏹", title: "Ұжымдық аң аулау", desc: "Ірі жануарларды (мамонт, бизон) аулаудың алғашқы ұжымдық тәсілі." }
+                ]
+            },
+            en: {
+                title: "Appearance of Ancient Humans",
+                mapTitle: "Evolutionary Chronology Map",
+                mapSubtitle: "Timeframe of species appearance (millions of years ago)",
+                planHeading: "Main Stages and Labor Tools",
+                footer: "The evolution of tools and man himself is a grand journey from simple survival in nature to conscious creation and culture.",
+                chartLabel: "Millions of years ago",
+                cards: [
+                    { icon: "🐒", title: "Australopithecus", desc: "Lived 4-2 million years ago. South and East Africa. Started walking on two legs." },
+                    { icon: "🛠️", title: "Homo Habilis", desc: "Handy Man. 2.5-1.8 million years ago. First artificial tools made from pebbles (choppers)." },
+                    { icon: "🔥", title: "Pithecanthropus", desc: "Homo Erectus. 1.8M - 300K years ago. Mastery of fire. Found on Java island." },
+                    { icon: "🏔️", title: "Sinanthropus", desc: "Chinese man. Lived in caves, used animal skins as clothing." },
+                    { icon: "❄️", title: "Neanderthal", desc: "100-35 thousand years ago. Lived during the Ice Age. First burials appeared." },
+                    { icon: "👤", title: "Cro-Magnon", desc: "Homo Sapiens. 40-35 thousand years ago. Modern human type. Developed speech." },
+                    { icon: "🪓", title: "Chopper & Chopping", desc: "The oldest stone tools. Pebbles flaked on one or both sides." },
+                    { icon: "🏹", title: "Collective Hunt", desc: "The first collective way of hunting large animals (mammoths, bisons)." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        let chartInstance = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('evolutionChart').getContext('2d');
+            const species = {
+                ru: ["Австралопитек", "Человек умелый", "Питекантроп", "Неандерталец", "Кроманьонец"],
+                kz: ["Австралопитек", "Епті адам", "Питекантроп", "Неандерталь", "Кроманьон"],
+                en: ["Australopithecus", "Homo Habilis", "Pithecanthropus", "Neanderthal", "Cro-Magnon"]
+            };
+
+            const data = [4, 2.5, 1.8, 0.1, 0.04]; // млн лет назад
+
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: species[lang],
+                    datasets: [{
+                        label: content[lang].chartLabel,
+                        data: data,
+                        backgroundColor: [
+                            '#ea580c', '#f97316', '#fb923c', '#fdba74', '#fed7aa'
+                        ],
+                        borderRadius: 12,
+                        barThickness: 40
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.raw} ${content[lang].chartLabel}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            reverse: true,
+                            grid: { display: false },
+                            title: { display: true, text: content[lang].chartLabel }
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            // Update Text
+            document.getElementById('title').innerText = content[lang].title;
+            document.getElementById('map-title').innerText = content[lang].mapTitle;
+            document.getElementById('map-subtitle').innerText = content[lang].mapSubtitle;
+            document.getElementById('plan-heading').innerText = content[lang].planHeading;
+            document.getElementById('footer-text').innerText = content[lang].footer;
+
+            // Update Buttons Style
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-orange-600');
+            });
+            document.getElementById(`btn-${lang}`).classList.add('bg-white', 'shadow-sm', 'text-orange-600');
+
+            // Render Cards
+            const grid = document.getElementById('grid-content');
+            grid.innerHTML = content[lang].cards.map(card => `
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm card-hover">
+                    <div class="text-4xl mb-4">${card.icon}</div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">${card.title}</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">${card.desc}</p>
+                </div>
+            `).join('');
+
+            // Update Chart
+            initChart(lang);
+        }
+
+        // Initialize on Load
+        window.onload = () => {
+            setLanguage('ru');
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

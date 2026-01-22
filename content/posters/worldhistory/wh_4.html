@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зарождение Духа: Искусство и Вера</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #2c1a12, #0a0a0a);
+            color: #fdf4ff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(217, 119, 6, 0.15);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .btn-lang.active {
+            background: #a63d17;
+            color: white;
+            box-shadow: 0 0 30px rgba(166, 61, 23, 0.5);
+        }
+        .accent-ochre { color: #d97706; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #a63d17; border-radius: 10px; }
+        .info-panel-accent {
+            border-left: 6px solid #a63d17;
+            background: linear-gradient(90deg, rgba(166, 61, 23, 0.1), transparent);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-yellow-500 uppercase">
+                Зарождение Духа
+            </h1>
+            <p id="sub-title" class="text-orange-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Искусство и магия палеолита</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-orange-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-orange-950/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-orange-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-orange-700 inline-block"></span>
+                Стена предков
+            </h2>
+            <div class="relative flex-grow bg-stone-900/60 rounded-[2.5rem] border border-orange-900/40 overflow-hidden shadow-inner">
+                <canvas id="shamanCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-orange-500/50 italic text-center uppercase tracking-tighter">Нажмите на петроглифы, чтобы пробудить древние смыслы</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-orange-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Мир символов</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Около 40 тысяч лет назад человек начал изображать мир вокруг себя. Это был не просто декор, а способ общения с высшими силами и попытка управлять природой.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🦣</span>
+                            <span id="hint-1" class="text-orange-200/60 font-bold uppercase text-xs tracking-widest">Образ зверя</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">✨</span>
+                            <span id="hint-2" class="text-orange-200/60 font-bold uppercase text-xs tracking-widest">Первые ритуалы</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-orange-900/40 text-orange-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-orange-950/20 rounded-[2.5rem] border border-orange-500/20 shadow-xl">
+                        <strong class="text-orange-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-meaning">Сакральный смысл:</strong>
+                        <p id="info-fact" class="text-orange-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-orange-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🎨</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-orange-400 uppercase">Пещерные галереи</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Пещеры <strong>Альтамира</strong> (Испания) и <strong>Ласко</strong> (Франция) называют «Сикстинскими капеллами» палеолита. Здесь предки рисовали охрой и углем бизонов, лошадей и мамонтов в полный рост.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🗿</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-orange-400 uppercase">Палеолитические Венеры</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Маленькие фигурки женщин из кости или камня символизировали плодородие и продолжение рода. Это свидетельствует о культе <strong>Матери-прародительницы</strong> в эпоху матриархата.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-yellow-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🌑</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-orange-400 uppercase">Вера в душу</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Погребения с украшениями и оружием доказывают, что предки верили в <strong>загробную жизнь</strong>. Появление <em>анимизма</em> (веры в души) стало первой попыткой объяснить устройство мира.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-orange-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-orange-100/70 leading-tight max-w-5xl mx-auto">
+            «Искусство — это первый шаг человека от выживания к осознанию вечности».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Зарождение Духа",
+                subtitle: "Искусство и магия палеолита",
+                visualTitle: "Стена предков",
+                hint: "Нажмите на петроглифы, чтобы пробудить смыслы",
+                placeholderTitle: "Мир символов",
+                placeholderText: "Около 40 тысяч лет назад человек начал изображать мир. Это был способ общения с высшими силами и попытка управлять природой.",
+                labelMeaning: "Сакральный смысл:",
+                hint1: "Образ зверя", hint2: "Первые ритуалы",
+                card1Title: "Пещерные галереи",
+                card1Text: "Альтамира и Ласко — это шедевры древности. Рисунки охрой и углем показывают глубокое знание анатомии животных.",
+                card2Title: "Венеры палеолита",
+                card2Text: "Фигурки женщин символизировали плодородие и жизнь. Это основа древнейшего культа Матери.",
+                card3Title: "Вера в душу",
+                card3Text: "Первые захоронения с вещами говорят о вере в жизнь после смерти и зарождении анимизма и магии.",
+                footerQuote: "«Искусство — это первый шаг человека от выживания к осознанию вечности».",
+                nodes: [
+                    { id: 1, tag: "Живопись", title: "Магия Охоты", desc: "Изображая раненого зверя, охотник верил, что «заколдовывает» его. Ритуальные танцы перед рисунками должны были обеспечить успех в реальной схватке с хищником.", fact: "Многие рисунки найдены в самых труднодоступных частях пещер, где проводились тайные обряды инициации." },
+                    { id: 2, tag: "Верование", title: "Тотемизм", desc: "Вера в кровное родство между группой людей и определенным видом животных или растений (тотемом). Убить тотемное животное считалось строжайшим табу.", fact: "Тотемизм укреплял единство рода, давая людям общего мифического предка." },
+                    { id: 3, tag: "Верование", title: "Анимизм", desc: "Вера в то, что всё в мире — камни, реки, деревья — наделено душой или духом. Люди пытались задобрить духов природы жертвоприношениями.", fact: "Анимизм стал фундаментом для всех последующих мировых религий." },
+                    { id: 4, tag: "Ритуал", title: "Погребение", desc: "Первые обдуманные захоронения (например, в Сунгире) показывают, что смерть не считалась концом. Тела посыпали красной охрой (символ крови и жизни) и снабжали орудиями.", fact: "Наличие в могилах бус из бивня мамонта говорит о появлении первых представлений о статусе и красоте." }
+                ]
+            },
+            kz: {
+                title: "Рухтың оянуы",
+                subtitle: "Палеолит өнері мен сиқыры",
+                visualTitle: "Ата-баба қабырғасы",
+                hint: "Мағыналарды ояту үшін петроглифтерді басыңыз",
+                placeholderTitle: "Рәміздер әлемі",
+                placeholderText: "Шамамен 40 мың жыл бұрын адам әлемді бейнелей бастады. Бұл жоғарғы күштермен байланыс орнату әрекеті еді.",
+                labelMeaning: "Қасиетті мағынасы:",
+                hint1: "Аң бейнесі", hint2: "Алғашқы ритуалдар",
+                card1Title: "Үңгір галереялары",
+                card1Text: "Альтамира мен Ласко — ежелгі дәуірдің жауһарлары. Охрамен салынған суреттер жануарлар анатомиясын жақсы білгенін көрсетеді.",
+                card2Title: "Палеолит Венералары",
+                card2Text: "Әйел мүсіндері құнарлылық пен өмірді бейнеледі. Бұл ежелгі Ана культінің негізі.",
+                card3Title: "Жанға сену",
+                card3Text: "Алғашқы жерлеу ғұрыптары өлімнен кейінгі өмірге сенім мен анимизмнің пайда болғанын білдіреді.",
+                footerQuote: "«Өнер — адамның тірі қалудан мәңгілікті сезінуге жасаған алғашқы қадамы».",
+                nodes: [
+                    { id: 1, tag: "Кескіндеме", title: "Аңшылық сиқыры", desc: "Жараланған аңды бейнелей отырып, аңшы оны «арбап аламын» деп сенген. Сурет алдындағы билер сәттілік әкеледі деп есептелген.", fact: "Көптеген суреттер үңгірлердің ең терең, жетуі қиын жерлерінде табылған." },
+                    { id: 2, tag: "Сенім", title: "Тотемизм", desc: "Адамдар тобы мен жануарлардың немесе өсімдіктердің белгілі бір түрі (тотем) арасындағы қандас туыстыққа сену.", fact: "Тотемдік жануарды өлтіруге қатаң тыйым салынған (табу)." },
+                    { id: 3, tag: "Сенім", title: "Анимизм", desc: "Әлемдегі барлық нәрсенің — тастардың, өзендердің, ағаштардың жаны бар деп сену. Табиғат рухтарын разы етуге тырысу.", fact: "Анимизм барлық кейінгі әлемдік діндердің негізі болды." },
+                    { id: 4, tag: "Ритуал", title: "Жерлеу", desc: "Алғашқы жерлеу рәсімдері өлімді тіршіліктің соңы деп санамағанын көрсетеді. Мүрделерге қызыл охра себіліп, қару-жарақ қойылған.", fact: "Қабірлердегі мамонт сүйегінен жасалған моншақтар мәртебе мен сұлулық туралы алғашқы түсініктерді көрсетеді." }
+                ]
+            },
+            en: {
+                title: "Awakening of Spirit",
+                subtitle: "Paleolithic Art and Magic",
+                visualTitle: "Ancestral Wall",
+                hint: "Click on petroglyphs to awaken ancient meanings",
+                placeholderTitle: "World of Symbols",
+                placeholderText: "About 40,000 years ago, humans began to depict the world. It was a way to communicate with higher powers and control nature.",
+                labelMeaning: "Sacred Meaning:",
+                hint1: "Image of the Beast", hint2: "First Rituals",
+                card1Title: "Cave Galleries",
+                card1Text: "Altamira and Lascaux are masterpieces. Drawings in ochre and charcoal show deep knowledge of animal anatomy.",
+                card2Title: "Paleolithic Venuses",
+                card2Text: "Small female figurines symbolized fertility and life. They formed the basis of the ancient Mother cult.",
+                card3Title: "Belief in the Soul",
+                card3Text: "The first burials with grave goods suggest a belief in the afterlife and the birth of animism and magic.",
+                footerQuote: "«Art is man's first step from survival to the realization of eternity.»",
+                nodes: [
+                    { id: 1, tag: "Painting", title: "Hunting Magic", desc: "By depicting a wounded beast, the hunter believed he 'enchanted' it. Ritual dances before the drawings were meant to ensure success.", fact: "Many drawings are found in the deepest parts of caves where secret initiation rites were held." },
+                    { id: 2, tag: "Belief", title: "Totemism", desc: "The belief in a blood relationship between a human group and a specific animal or plant (totem). Killing the totem was a strict taboo.", fact: "Totemism strengthened clan unity by giving people a common mythical ancestor." },
+                    { id: 3, tag: "Belief", title: "Animism", desc: "The belief that everything—rocks, rivers, trees—possesses a soul or spirit. People tried to appease nature spirits with sacrifices.", fact: "Animism became the foundation for all subsequent world religions." },
+                    { id: 4, tag: "Ritual", title: "Burial", desc: "Deliberate burials (like Sungir) show death wasn't seen as the end. Bodies were sprinkled with red ochre and supplied with tools.", fact: "The presence of mammoth ivory beads in graves indicates early concepts of status and beauty." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('shamanCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-meaning').innerText = t.labelMeaning;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw Stylized Rock Texture (lines)
+            ctx.strokeStyle = 'rgba(217, 119, 6, 0.05)';
+            ctx.lineWidth = 1;
+            for(let i=0; i<30; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, Math.random()*canvas.height);
+                ctx.lineTo(canvas.width, Math.random()*canvas.height);
+                ctx.stroke();
+            }
+
+            const nodesData = [
+                { id: 1, x: canvas.width * 0.25, y: canvas.height * 0.3, symbol: "🦣" },
+                { id: 2, x: canvas.width * 0.75, y: canvas.height * 0.3, symbol: "🐺" },
+                { id: 3, x: canvas.width * 0.25, y: canvas.height * 0.7, symbol: "✨" },
+                { id: 4, x: canvas.width * 0.75, y: canvas.height * 0.7, symbol: "💀" }
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(166, 61, 23, 0.4)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Symbol Point
+                ctx.fillStyle = '#a63d17';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#d97706';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Icon / Text
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.symbol, pos.x, pos.y);
+
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                ctx.font = 'bold 11px Montserrat';
+                ctx.fillText(nodeInfo.title.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerHTML = `<p>${node.desc}</p>`;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

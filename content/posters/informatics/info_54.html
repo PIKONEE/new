@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Графы в решении задач</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5; /* Indigo-600 */
+            --primary-light: #eef2ff; /* Indigo-50 */
+            --primary-border: #6366f1; /* Indigo-500 */
+            --text-main: #334155;     /* Slate-700 */
+            --text-header: #0f172a;   /* Slate-900 */
+            --bg-body: #f8fafc;       /* Slate-50 */
+            --bg-card: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .poster-container {
+            background-color: var(--bg-card);
+            width: 100%;
+            max-width: 900px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 8px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--primary-light);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid #c7d2fe;
+            position: relative;
+        }
+
+        .icon-wrapper {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 90px;
+            height: 90px;
+            background-color: #c7d2fe; /* Indigo-200 */
+            color: #3730a3; /* Indigo-800 */
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--text-header);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .decorative-line {
+            width: 100px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+            margin: 20px auto 0;
+        }
+
+        /* Content */
+        .content {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .section-card {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 30px;
+            border-left: 8px solid var(--primary-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-color: var(--primary-border);
+        }
+
+        .section-header-group {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #3730a3; /* Indigo-800 */
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4338ca; /* Indigo-700 */
+            margin-top: 5px;
+            display: block;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-text {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            color: #475569;
+        }
+
+        .list-container {
+            background-color: #e0e7ff; /* Indigo-50 */
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .list-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .bullet {
+            min-width: 12px;
+            height: 12px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            margin-top: 6px;
+            transform: rotate(45deg);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-header);
+            padding: 40px;
+            text-align: center;
+            margin: 0 40px 40px;
+            border-radius: 16px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--primary-border);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 15px;
+        }
+
+        .footer-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Controls */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 800;
+            color: #64748b;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .btn:hover {
+            background-color: #e0e7ff;
+            color: var(--primary-color);
+            border-color: var(--primary-border);
+        }
+
+        .btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        @media (max-width: 700px) {
+            .title { font-size: 1.8rem; }
+            .content { padding: 20px; }
+            .controls { position: static; justify-content: center; margin-bottom: 30px; }
+            .header { padding-top: 20px; padding-bottom: 30px; }
+            .section-card { padding: 20px; }
+            .footer { margin: 0 20px 30px; padding: 30px 20px; }
+            .footer-text { font-size: 1.1rem; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="poster-container">
+        <!-- Controls (No Print Button) -->
+        <div class="header">
+            <div class="controls">
+                <button class="btn active" onclick="setLang('ru')">RU</button>
+                <button class="btn" onclick="setLang('kz')">KZ</button>
+                <button class="btn" onclick="setLang('en')">EN</button>
+            </div>
+
+            <div class="icon-wrapper">
+                <!-- SVG Icon: Share2 (Graph/Network) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+            </div>
+            <h1 class="title" id="main-title">Графы в решении задач</h1>
+            <div class="decorative-line"></div>
+        </div>
+
+        <div class="content">
+            <!-- Section 1 -->
+            <div class="section-card">
+                <div class="section-header-group">
+                    <h2 class="section-title" id="sec1-title">1. ТЕОРИЯ ГРАФОВ: НАЧАЛО</h2>
+                    <span class="section-subtitle" id="sec1-sub">🌉 Загадка семи мостов</span>
+                </div>
+                <p class="section-text" id="sec1-text">
+                    Графы — это не просто рисунки, а мощный математический инструмент. Все началось в 1736 году, когда Леонард Эйлер доказал, что невозможно пройти по всем 7 мостам Кёнигсберга, не пройдя по одному из них дважды. Так родилась теория графов.
+                </p>
+                <div class="list-container" id="sec1-list">
+                    <!-- List items injected by JS -->
+                </div>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="section-card">
+                <div class="section-header-group">
+                    <h2 class="section-title" id="sec2-title">2. ГДЕ ЭТО ПРИМЕНЯЕТСЯ?</h2>
+                    <span class="section-subtitle" id="sec2-sub">📱 От навигатора до соцсетей</span>
+                </div>
+                <p class="section-text" id="sec2-text">
+                    Графы окружают нас повсюду. Ваш GPS-навигатор строит маршрут по графу дорог, а социальные сети используют графы, чтобы предлагать вам друзей ("теория 6 рукопожатий").
+                </p>
+                <div class="list-container" id="sec2-list">
+                    <!-- List items injected by JS -->
+                </div>
+            </div>
+
+            <!-- Section 3 -->
+            <div class="section-card">
+                <div class="section-header-group">
+                    <h2 class="section-title" id="sec3-title">3. ЗНАМЕНИТЫЕ ЗАДАЧИ</h2>
+                    <span class="section-subtitle" id="sec3-sub">🧠 Алгоритмы поиска</span>
+                </div>
+                <p class="section-text" id="sec3-text">
+                    Самые известные задачи на графах — это поиск кратчайшего пути (как проехать быстрее?) и задача коммивояжера (как объехать все города и вернуться, потратив минимум топлива?).
+                </p>
+                <div class="list-container" id="sec3-list">
+                    <!-- List items injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-title" id="footer-title">ГЛАВНЫЙ ФАКТ</div>
+            <p class="footer-text" id="footer-text">Интернет — это самый большой граф в мире, где сайты — это вершины, а ссылки — это ребра.</p>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: {
+                mainTitle: "Графы в решении задач",
+
+                sec1Title: "1. ТЕОРИЯ ГРАФОВ: НАЧАЛО",
+                sec1Sub: "🌉 Загадка семи мостов",
+                sec1Text: "Графы — это мощный инструмент моделирования связей. Все началось в 1736 году с задачи о Кёнигсбергских мостах: можно ли пройти по всем 7 мостам, не пройдя ни по одному дважды? Эйлер доказал, что нет, превратив карту города в граф.",
+                sec1List: [
+                    "<b>Вершина (Узел):</b> Объект (город, человек, компьютер).",
+                    "<b>Ребро:</b> Связь между объектами (дорога, дружба, кабель).",
+                    "<b>Вес:</b> Стоимость связи (километры, минуты, цена билета)."
+                ],
+
+                sec2Title: "2. ГДЕ ЭТО ПРИМЕНЯЕТСЯ?",
+                sec2Sub: "📱 От навигатора до соцсетей",
+                sec2Text: "Графы скрыты в технологиях, которыми мы пользуемся каждый день. Они помогают находить связи там, где обычные таблицы бессильны.",
+                sec2List: [
+                    "<b>Навигация (GPS):</b> Поиск кратчайшего маршрута из точки А в Б.",
+                    "<b>Социальные сети:</b> Анализ друзей («Вы можете их знать»).",
+                    "<b>Логистика:</b> Как курьеру развести заказы быстрее всего?"
+                ],
+
+                sec3Title: "3. ЗНАМЕНИТЫЕ АЛГОРИТМЫ",
+                sec3Sub: "🧠 Как компьютер ищет путь",
+                sec3Text: "Компьютеры решают задачи на графах с помощью специальных алгоритмов. Самый известный — алгоритм Дейкстры, который находит самый быстрый путь в лабиринте дорог.",
+                sec3List: [
+                    "<b>Алгоритм Дейкстры:</b> Поиск кратчайшего пути во взвешенном графе.",
+                    "<b>Обход в ширину (BFS):</b> Поиск ближайших соседей (как волна).",
+                    "<b>Задача коммивояжера:</b> Как объехать все города с минимальными затратами?"
+                ],
+
+                footerTitle: "ГЛАВНЫЙ ФАКТ",
+                footerText: "Интернет — это самый большой граф в мире, где сайты — это вершины, а ссылки — это ребра."
+            },
+            kz: {
+                mainTitle: "Есептерді шығарудағы графтар",
+
+                sec1Title: "1. ГРАФТАР ТЕОРИЯСЫ: БАСТАУ",
+                sec1Sub: "🌉 Жеті көпір жұмбағы",
+                sec1Text: "Графтар — байланыстарды модельдеудің қуатты құралы. Барлығы 1736 жылы Кёнигсберг көпірлері туралы есептен басталды: 7 көпірдің барлығынан екі рет өтпей жүріп өтуге бола ма? Эйлер бұл мүмкін еместігін дәлелдеп, қала картасын графқа айналдырды.",
+                sec1List: [
+                    "<b>Төбе (Түйін):</b> Объект (қала, адам, компьютер).",
+                    "<b>Қабырға:</b> Объектілер арасындағы байланыс (жол, достық).",
+                    "<b>Салмақ:</b> Байланыс құны (шақырымдар, уақыт, баға)."
+                ],
+
+                sec2Title: "2. ҚАЙДА ҚОЛДАНЫЛАДЫ?",
+                sec2Sub: "📱 Навигатордан әлеуметтік желілерге дейін",
+                sec2Text: "Графтар біз күнделікті қолданатын технологияларда жасырылған. Олар қарапайым кестелер дәрменсіз жерде байланыстарды табуға көмектеседі.",
+                sec2List: [
+                    "<b>Навигация (GPS):</b> А нүктесінен Б нүктесіне ең қысқа жолды іздеу.",
+                    "<b>Әлеуметтік желілер:</b> Достарды талдау («Сіз оларды білуіңіз мүмкін»).",
+                    "<b>Логистика:</b> Курьер тапсырыстарды қалай тез жеткізе алады?"
+                ],
+
+                sec3Title: "3. ТАНЫМАЛ АЛГОРИТМДЕР",
+                sec3Sub: "🧠 Компьютер жолды қалай іздейді",
+                sec3Text: "Компьютерлер графтардағы есептерді арнайы алгоритмдер көмегімен шешеді. Ең танымалы — Дейкстра алгоритмі, ол жолдар лабиринтіндегі ең жылдам жолды табады.",
+                sec3List: [
+                    "<b>Дейкстра алгоритмі:</b> Өлшенген графта ең қысқа жолды іздеу.",
+                    "<b>Енінен іздеу (BFS):</b> Ең жақын көршілерді іздеу (толқын сияқты).",
+                    "<b>Коммивояжер есебі:</b> Барлық қалаларды ең аз шығынмен қалай аралап шығуға болады?"
+                ],
+
+                footerTitle: "БАСТЫ ДЕРЕК",
+                footerText: "Интернет — әлемдегі ең үлкен граф, онда сайттар — төбелер, ал сілтемелер — қабырғалар."
+            },
+            en: {
+                mainTitle: "Graphs in Problem Solving",
+
+                sec1Title: "1. GRAPH THEORY: THE BEGINNING",
+                sec1Sub: "🌉 The Seven Bridges Puzzle",
+                sec1Text: "Graphs are a powerful tool for modeling connections. It all started in 1736 with the Königsberg Bridge problem: is it possible to cross all 7 bridges without crossing any twice? Euler proved it wasn't, turning the city map into a graph.",
+                sec1List: [
+                    "<b>Vertex (Node):</b> An object (city, person, computer).",
+                    "<b>Edge:</b> Connection between objects (road, friendship).",
+                    "<b>Weight:</b> Cost of connection (km, minutes, price)."
+                ],
+
+                sec2Title: "2. WHERE IS IT USED?",
+                sec2Sub: "📱 From GPS to Social Media",
+                sec2Text: "Graphs are hidden in technologies we use every day. They help find connections where regular tables are powerless.",
+                sec2List: [
+                    "<b>Navigation (GPS):</b> Finding the shortest path from A to B.",
+                    "<b>Social Networks:</b> Analyzing friends ('People you may know').",
+                    "<b>Logistics:</b> How can a courier deliver orders fastest?"
+                ],
+
+                sec3Title: "3. FAMOUS ALGORITHMS",
+                sec3Sub: "🧠 How PCs find the way",
+                sec3Text: "Computers solve graph problems using special algorithms. The most famous is Dijkstra's algorithm, which finds the fastest path in a maze of roads.",
+                sec3List: [
+                    "<b>Dijkstra's Algorithm:</b> Shortest path in a weighted graph.",
+                    "<b>Breadth-First Search (BFS):</b> Finding nearest neighbors.",
+                    "<b>Traveling Salesman Problem:</b> How to visit all cities with min cost?"
+                ],
+
+                footerTitle: "KEY FACT",
+                footerText: "The Internet is the world's largest graph, where websites are vertices and links are edges."
+            }
+        };
+
+        function setLang(lang) {
+            // Update Text fields
+            document.getElementById('main-title').innerText = content[lang].mainTitle;
+
+            document.getElementById('sec1-title').innerText = content[lang].sec1Title;
+            document.getElementById('sec1-sub').innerText = content[lang].sec1Sub;
+            document.getElementById('sec1-text').innerText = content[lang].sec1Text;
+            updateList('sec1-list', content[lang].sec1List);
+
+            document.getElementById('sec2-title').innerText = content[lang].sec2Title;
+            document.getElementById('sec2-sub').innerText = content[lang].sec2Sub;
+            document.getElementById('sec2-text').innerText = content[lang].sec2Text;
+            updateList('sec2-list', content[lang].sec2List);
+
+            document.getElementById('sec3-title').innerText = content[lang].sec3Title;
+            document.getElementById('sec3-sub').innerText = content[lang].sec3Sub;
+            document.getElementById('sec3-text').innerText = content[lang].sec3Text;
+            updateList('sec3-list', content[lang].sec3List);
+
+            document.getElementById('footer-title').innerText = content[lang].footerTitle;
+            document.getElementById('footer-text').innerText = content[lang].footerText;
+
+            // Update Buttons State
+            document.querySelectorAll('.btn').forEach(btn => {
+                if (btn.innerText.toLowerCase() === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function updateList(elementId, items) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `<div class="bullet"></div><span>${item}</span>`;
+                container.appendChild(div);
+            });
+        }
+
+        // Initialize with Russian
+        setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ненасыщенные және ылықталған ұзындар</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #f3e8ff 0%, #e9d5ff 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #a855f7 0%, #6b21a8 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #6b21a8; border-bottom: 3px solid #e9d5ff; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #a855f7; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #a855f7; background: white; color: #a855f7; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #a855f7; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #a855f7; color: white; text-align: center; }
+        .info-box { background: linear-gradient(135deg, #e9d5ff 0%, #f3e8ff 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #a855f7; margin: 10px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .compare-card { background: #faf5ff; padding: 15px; border-radius: 0.5rem; border-left: 4px solid #a855f7; font-size: 11px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-purple-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Ненасыщенные және Ылықталған Ұзындар</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Unsaturated and Saturated Vapors</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Ненасыщенные и насыщенные пары</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-purple-100">Екі әрі қос төрлі ұзын.密度, T, қысым салыстыру. САЛЫСТЫРМАЛАУ СЫНЫ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-purple-100">Two different vapor types. Density, T, pressure comparison. COMPARISON ANALYSIS!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-purple-100">Два типа пара. Плотность, Т, давление сравнение. СРАВНИТЕЛЬНЫЙ АНАЛИЗ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. САЛЫСТЫРМАЛАУ ТАБЛИЦАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. COMPARISON TABLE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Таблица сравнения</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ПАРАМЕТР</th>
+                            <th lang="kk" class="lang-content">НЕНАСЫЩЕННЫЙ</th>
+                            <th lang="kk" class="lang-content">ЫЛЫҚТАЛҒАН</th>
+
+                            <th lang="en" class="lang-content">PARAMETER</th>
+                            <th lang="en" class="lang-content">UNSATURATED</th>
+                            <th lang="en" class="lang-content">SATURATED</th>
+
+                            <th lang="ru" class="lang-content">ПАРАМЕТР</th>
+                            <th lang="ru" class="lang-content">НЕНАСЫЩЕННЫЙ</th>
+                            <th lang="ru" class="lang-content">НАСЫЩЕННЫЙ</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Плотность</td>
+                            <td lang="kk" class="lang-content">Төмен, артуы мүмкін</td>
+                            <td lang="kk" class="lang-content">Максимум</td>
+
+                            <td lang="en" class="lang-content">Density</td>
+                            <td lang="en" class="lang-content">Low, can increase</td>
+                            <td lang="en" class="lang-content">Maximum</td>
+
+                            <td lang="ru" class="lang-content">Плотность</td>
+                            <td lang="ru" class="lang-content">Низкая, может расти</td>
+                            <td lang="ru" class="lang-content">Максимум</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Температура</td>
+                            <td lang="kk" class="lang-content">< T_қайнау</td>
+                            <td lang="kk" class="lang-content">= T_қайнау</td>
+
+                            <td lang="en" class="lang-content">Temperature</td>
+                            <td lang="en" class="lang-content">< T_boiling</td>
+                            <td lang="en" class="lang-content">= T_boiling</td>
+
+                            <td lang="ru" class="lang-content">Температура</td>
+                            <td lang="ru" class="lang-content">< T_кипения</td>
+                            <td lang="ru" class="lang-content">= T_кипения</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Деңсаулық</td>
+                            <td lang="kk" class="lang-content">сұйық қоспасындағы</td>
+                            <td lang="kk" class="lang-content">сұйық ұзын қоспасындағы</td>
+
+                            <td lang="en" class="lang-content">Equilibrium</td>
+                            <td lang="en" class="lang-content">No liquid</td>
+                            <td lang="en" class="lang-content">With liquid</td>
+
+                            <td lang="ru" class="lang-content">Равновесие</td>
+                            <td lang="ru" class="lang-content">Без жидкости</td>
+                            <td lang="ru" class="lang-content">С жидкостью</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Конденсация</td>
+                            <td lang="kk" class="lang-content">Т төмен → конденс</td>
+                            <td lang="kk" class="lang-content">Т тұрақты, ыңғайл = конденс</td>
+
+                            <td lang="en" class="lang-content">Condensation</td>
+                            <td lang="en" class="lang-content">T↓ → condenses</td>
+                            <td lang="en" class="lang-content">T const, evap = cond</td>
+
+                            <td lang="ru" class="lang-content">Конденсация</td>
+                            <td lang="ru" class="lang-content">Т↓ → конденсируется</td>
+                            <td lang="ru" class="lang-content">Т const, испар = конд</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ПРАКТИКАЛЫҚ МЫСАЛДАР</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. PRACTICAL EXAMPLES</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Практические примеры</h2>
+
+            <div class="rule-card">
+                <div class="grid-2">
+                    <div class="compare-card">
+                        <p lang="kk" class="lang-content"><strong>💨 НЕНАСЫЩЕННЫЙ ҰЗЫН</strong></p>
+                        <p lang="kk" class="lang-content">• Сулы құрамасындағы 50°C</p>
+                        <p lang="kk" class="lang-content">• T < 100°C қайнау</p>
+                        <p lang="kk" class="lang-content">• Төмен ығалдау</p>
+                        <p lang="kk" class="lang-content">• Сұйық құрамасындағы</p>
+                        <p lang="kk" class="lang-content">• Конденсация мүмкін</p>
+
+                        <p lang="en" class="lang-content"><strong>💨 UNSATURATED VAPOR</strong></p>
+                        <p lang="en" class="lang-content">• Water vapor at 50°C</p>
+                        <p lang="en" class="lang-content">• T < 100°C boiling</p>
+                        <p lang="en" class="lang-content">• Low humidity</p>
+                        <p lang="en" class="lang-content">• No liquid phase</p>
+                        <p lang="en" class="lang-content">• Condensation possible</p>
+
+                        <p lang="ru" class="lang-content"><strong>💨 НЕНАСЫЩЕННЫЙ ПАР</strong></p>
+                        <p lang="ru" class="lang-content">• Водяной пар при 50°C</p>
+                        <p lang="ru" class="lang-content">• Т < 100°C кипения</p>
+                        <p lang="ru" class="lang-content">• Низкая влажность</p>
+                        <p lang="ru" class="lang-content">• Без жидкой фазы</p>
+                        <p lang="ru" class="lang-content">• Конденсация возможна</p>
+                    </div>
+
+                    <div class="compare-card">
+                        <p lang="kk" class="lang-content"><strong>💧 ЫЛЫҚТАЛҒАН ҰЗЫН</strong></p>
+                        <p lang="kk" class="lang-content">• Сулы құрамасындағы 100°C</p>
+                        <p lang="kk" class="lang-content">• T = 100°C қайнау</p>
+                        <p lang="kk" class="lang-content">• Максимум ығалдау</p>
+                        <p lang="kk" class="lang-content">• Сұйық + газ қоспасындағы</p>
+                        <p lang="kk" class="lang-content">• Деңсаулық сақталады</p>
+
+                        <p lang="en" class="lang-content"><strong>💧 SATURATED VAPOR</strong></p>
+                        <p lang="en" class="lang-content">• Water vapor at 100°C</p>
+                        <p lang="en" class="lang-content">• T = 100°C boiling</p>
+                        <p lang="en" class="lang-content">• Maximum humidity</p>
+                        <p lang="en" class="lang-content">• Liquid + gas mixture</p>
+                        <p lang="en" class="lang-content">• Equilibrium maintained</p>
+
+                        <p lang="ru" class="lang-content"><strong>💧 НАСЫЩЕННЫЙ ПАР</strong></p>
+                        <p lang="ru" class="lang-content">• Водяной пар при 100°C</p>
+                        <p lang="ru" class="lang-content">• Т = 100°C кипения</p>
+                        <p lang="ru" class="lang-content">• Максимальная влажность</p>
+                        <p lang="ru" class="lang-content">• Жидкость + газ смесь</p>
+                        <p lang="ru" class="lang-content">• Равновесие сохраняется</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>🔑 ІРІЛІ ҰСТАНУ:</strong> Ненасыщенный ұзын - төмен плотность, дөнгелек. Ылықталған ұзын - максимум плотность, деңсаулық. Фазалық өзгеру байланысты!</p>
+                <p lang="en" class="lang-content text-sm"><strong>🔑 KEY POINTS:</strong> Unsaturated vapor - low density, can vary. Saturated vapor - max density, equilibrium. Phase transition related!</p>
+                <p lang="ru" class="lang-content text-sm"><strong>🔑 КЛЮЧЕВЫЕ МОМЕНТЫ:</strong> Ненасыщенный пар - низкая плотность, может изменяться. Насыщенный пар - макс плотность, равновесие. Связано с фазовым переходом!</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #e9d5ff; border-radius: 1rem; border-top: 4px solid #a855f7;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-purple-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Ненасыщенный ұзын - төмен плотность, T < T_қайнау, сұйық құрамасындағы. Ылықталған ұзын - максимум плотность, T = T_қайнау, деңсаулық. Фізика ұзындарының!</p>
+            <p lang="en" class="lang-content text-sm">Unsaturated vapor - low density, T < T_boiling, no liquid. Saturated vapor - max density, T = T_boiling, equilibrium. Physics of vapors!</p>
+            <p lang="ru" class="lang-content text-sm">Ненасыщенный пар - низкая плотность, Т < Т_кипения, без жидкости. Насыщенный пар - макс плотность, Т = Т_кипения, равновесие. Физика паров!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

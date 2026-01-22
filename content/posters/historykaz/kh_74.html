@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Казахи в Отечественной войне 1812 года</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #f5f5f4; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .military-gradient {
+            background: radial-gradient(circle at top right, #1e3a8a, #0c0a09 85%);
+        }
+
+        .premium-card {
+            background: rgba(28, 25, 23, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            border: 2px solid #3b82f6;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 0 60px rgba(59, 130, 246, 0.15);
+        }
+
+        .lang-active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: #1c1917;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+        }
+
+        .history-panel {
+            background: rgba(30, 41, 59, 0.5);
+            border-left: 10px solid #3b82f6;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+        }
+
+        .medal-badge {
+            background: #1e3a8a;
+            color: #93c5fd;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="military-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-blue-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.15em] text-blue-500">Казахи в Отечественной войне 1812 года</h1>
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-blue-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Visual Medal/Path (Canvas) -->
+        <div class="premium-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-blue-500 text-blue-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Imperial Military Contribution</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Медаль за Веру и Отечество</h2>
+                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
+                        Тысячи казахских всадников сражались в составе русской армии против Наполеона. Нажмите на части «Славы» на холсте, чтобы изучить награды и боевой путь воинов Степи.
+                    </p>
+                    
+                    <div id="info-panel" class="history-panel shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-blue-300 mb-3 uppercase tracking-tighter">Боевой путь</h3>
+                        <p id="element-desc" class="text-zinc-300 text-sm leading-relaxed italic font-light">Кликните на медали или стрелки маршрутов на чертеже справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="militaryCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-blue-900 font-mono uppercase tracking-[0.4em]">Strategic Campaign Analysis 1812-1814</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Core Data Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- Mobilization -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-blue-600">
+                <div>
+                    <span class="medal-badge mb-4 inline-block" id="tag-1">Мобилизация</span>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Вклад Степи</h3>
+                    <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed">
+                        Казахи Младшего и Среднего жузов активно поддержали борьбу против Наполеона. В русскую армию поставлялись тысячи лучших лошадей для кавалерии. Казахские всадники входили в состав Башкирских и Татарских полков, а также формировали отдельные иррегулярные отряды. Главной силой была мобильная конница, неуловимая для французской гвардии.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Heroes -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-slate-500">
+                <div>
+                    <span class="medal-badge mb-4 inline-block" id="tag-2">Герои</span>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Имена в истории</h3>
+                    <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed">
+                        Среди героев войны выделяются **Майлыбай-улы**, награжденный серебряной медалью, и **Нарынбай Жанбай-улы**, прошедший путь до Парижа. Воин **Карыбай-улы** прославился в боях под Лейпцигом. Казахские джигиты участвовали в Бородинском сражении, битвах при Малоярославце и Баутцене, вызывая восхищение своей отвагой.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Recognition -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-blue-600">
+                <div>
+                    <span class="medal-badge mb-4 inline-block" id="tag-3">Признание</span>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Серебро за Париж</h3>
+                    <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed">
+                        По окончании войны казахские воины были удостоены высших наград империи. Сотни участников получили серебряные медали «В память войны 1812 г.» и «За взятие Парижа». В народной памяти эти события остались как время, когда казахи доказали свою верность союзу и воинское мастерство на полях Европы.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-blue-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Подвиг казахских сарбазов в 1812 году — это символ чести и мужества, пронесенный от берегов Сырдарьи до площадей Парижа.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-blue-900 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Казахи в Отечественной войне 1812 года",
+                vizTitle: "Медаль за Веру и Отечество",
+                vizDesc: "Тысячи казахских всадников сражались против Наполеона. Нажмите на части схемы для анализа наград и маршрутов воинов Степи.",
+                badge: "Анализ имперского военного вклада",
+                elementTitleDefault: "Боевой путь",
+                elementDescDefault: "Кликните на медали или стрелки маршрутов на чертеже справа.",
+                tag1: "Мобилизация", tag2: "Герои", tag3: "Признание",
+                c1T: "Вклад Степи", c1D: "Казахи поставляли конский состав для всей русской кавалерии. Всадники Младшего жуза отличились в иррегулярных частях, используя тактику 'степной войны'.",
+                c2T: "Имена в истории", c2D: "Нарынбай Жанбайулы, Майлыбайулы и Карыбайулы стали легендами заграничных походов. Они участвовали в 'Битве народов' при Лейпциге и триумфальном входе в Париж.",
+                c3T: "Серебро за Париж", c3D: "За доблесть воины были награждены серебряными медалями. Это стало официальным признанием роли казахского народа в победе над Наполеоном.",
+                footer: "«Подвиг казахских сарбазов 1812 года — символ мужества от Сырдарьи до Парижа.»",
+                mil: {
+                    borodino: { name: "Бородинское сражение", text: "Казахские всадники в составе 1-го Тептярского полка участвовали в атаках на флангах, изматывая французскую кавалерию." },
+                    leipzig: { name: "Битва народов (Лейпциг)", text: "1813 год. Решающее сражение в Европе. Казахские отряды проявили исключительную храбрость в преследовании отступающих войск Наполеона." },
+                    paris: { name: "Взятие Парижа (1814)", text: "Казахские воины в составе победоносных полков вошли в столицу Франции, получив памятные серебряные медали за завершение кампании." }
+                }
+            },
+            kz: {
+                title: "1812 жылғы Отан соғысындағы қазақтар",
+                vizTitle: "Сенім мен Отан үшін медалі",
+                vizDesc: "Мыңдаған қазақ атты әскері Наполеонға қарсы соғысты. Марапаттар мен жауынгерлік жолды зерттеу үшін сызбаны басыңыз.",
+                badge: "Империялық әскери үлесті талдау",
+                elementTitleDefault: "Жауынгерлік жол",
+                elementDescDefault: "Оң жақтағы сызбадан медальдарды немесе бағыттарды басыңыз.",
+                tag1: "Мобилизация", tag2: "Батырлар", tag3: "Танылу",
+                c1T: "Дала үлесі", c1D: "Қазақтар орыс атты әскері үшін мыңдаған тұлпарлар жеткізді. Кіші жүз сарбаздары 'дала соғысы' тактикасын шебер қолданды.",
+                c2T: "Тарихи есімдер", c2D: "Нарынбай Жанбайұлы, Майлыбайұлы және Қарыбайұлы шетелдік жорықтардың аңызына айналды. Олар Лейпцигтегі 'Халықтар шайқасына' қатысты.",
+                c3T: "Париж үшін күміс", c3D: "Ерлігі үшін жауынгерлер күміс медальдармен марапатталды. Бұл Наполеонды жеңудегі қазақ халқының рөлін ресми мойындау еді.",
+                footer: "«1812 жылғы қазақ сарбаздарының ерлігі — Сырдариядан Парижге дейінгі намыс пен батырлықтың символы.»",
+                mil: {
+                    borodino: { name: "Бородино шайқасы", text: "Қазақ атты әскері 1-ші Тептяр полкі құрамында флангтарда шабуыл жасап, француз кавалериясын қажытты." },
+                    leipzig: { name: "Халықтар шайқасы (Лейпциг)", text: "1813 жыл. Еуропадағы шешуші шайқас. Қазақ жасақтары Наполеон әскерін қууда ерекше ерлік көрсетті." },
+                    paris: { name: "Парижді алу (1814)", text: "Қазақ жауынгерлері жеңімпаз полктер құрамында Франция астанасына кіріп, науқанды аяқтағаны үшін күміс медальдар алды." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('militaryCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 550;
+            drawMilitary();
+        }
+
+        function drawMilitary() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw Medals (Icons)
+            drawMedal(cx - 150 * scale, cy - 80 * scale, '#94a3b8', "1812", 'borodino');
+            drawMedal(cx + 150 * scale, cy - 80 * scale, '#cbd5e1', "1813", 'leipzig');
+            drawMedal(cx, cy + 120 * scale, '#e2e8f0', "1814", 'paris');
+
+            // 2. Connectors (The Path)
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 10]);
+            ctx.beginPath();
+            ctx.moveTo(cx - 130 * scale, cy - 80 * scale);
+            ctx.lineTo(cx + 130 * scale, cy - 80 * scale);
+            ctx.lineTo(cx, cy + 100 * scale);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 3. Central Glory Point
+            ctx.beginPath();
+            ctx.arc(cx, cy - 80 * scale, 10, 0, Math.PI*2);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fill();
+        }
+
+        function drawMedal(x, y, color, year, id) {
+            ctx.beginPath();
+            ctx.arc(x, y, 40, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(year, x, y + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let found = null;
+            if (Math.sqrt((x-(cx-150*scale))**2 + (y-(cy-80*scale))**2) < 45) found = 'borodino';
+            else if (Math.sqrt((x-(cx+150*scale))**2 + (y-(cy-80*scale))**2) < 45) found = 'leipzig';
+            else if (Math.sqrt((x-cx)**2 + (y-(cy+120*scale))**2) < 45) found = 'paris';
+
+            if (found) {
+                const info = translations[currentLang].mil[found];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#3b82f6';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

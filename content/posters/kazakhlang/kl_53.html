@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фразеологизмдер</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdfa; color: #111827; }
+        .container { max-width: 1000px; margin: auto; padding: 20px; }
+        .header-card {
+            background: linear-gradient(135deg, #b45309, #d97706);
+            border-radius: 1rem; color: white; padding: 40px; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(180, 83, 9, 0.4);
+        }
+        .phrase-card {
+            background-color: white; border-radius: 1rem; padding: 20px;
+            display: flex; align-items: center; border-left: 6px solid #d97706;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .icon { font-size: 3rem; margin-right: 20px; }
+        .phrase-title { font-size: 1.25rem; font-weight: 800; color: #92400e; margin-bottom: 5px; }
+        .phrase-meaning { color: #4b5563; font-style: italic; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div class="container">
+        <header class="header-card">
+            <h1 class="text-4xl font-extrabold mb-2">ФРАЗЕОЛОГИЗМДЕР</h1>
+            <p class="text-yellow-100 text-lg">Тұрақты сөз тіркестері</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="phrase-card">
+                <div class="icon">🦊</div>
+                <div>
+                    <h3 class="phrase-title">Қой аузынан шөп алмас</h3>
+                    <p class="phrase-meaning">Өте момын, жуас адам.</p>
+                </div>
+            </div>
+
+            <div class="phrase-card">
+                <div class="icon">🏃</div>
+                <div>
+                    <h3 class="phrase-title">Төбе шашы тік тұру</h3>
+                    <p class="phrase-meaning">Қатты қорқу, шошыну.</p>
+                </div>
+            </div>
+
+            <div class="phrase-card">
+                <div class="icon">👂</div>
+                <div>
+                    <h3 class="phrase-title">Құлақ асу</h3>
+                    <p class="phrase-meaning">Тыңдау, айтқанға көну.</p>
+                </div>
+            </div>
+
+            <div class="phrase-card">
+                <div class="icon">🤥</div>
+                <div>
+                    <h3 class="phrase-title">Көз бояу</h3>
+                    <p class="phrase-meaning">Алдау, шындықты жасыру.</p>
+                </div>
+            </div>
+
+            <div class="phrase-card">
+                <div class="icon">🤐</div>
+                <div>
+                    <h3 class="phrase-title">Жұмған аузын ашпау</h3>
+                    <p class="phrase-meaning">Үндемеу, сөйлемеу.</p>
+                </div>
+            </div>
+
+            <div class="phrase-card">
+                <div class="icon">👺</div>
+                <div>
+                    <h3 class="phrase-title">Мұрнын шүйіру</h3>
+                    <p class="phrase-meaning">Менсінбеу, тәкаппарлану.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Effect of Reactions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #450a0a, #020617, #1e1b4b);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #f87171; color: #450a0a; font-weight: 800; }
+        .energy-val { font-family: 'Montserrat', monospace; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-red-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-red-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-red-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="heatCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-red-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-red-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+            <div class="mt-10 p-6 bg-red-500/10 rounded-3xl border border-red-500/20 text-center">
+                <span class="text-xs uppercase tracking-widest text-red-400 block mb-2">Equation Type</span>
+                <span id="equation-display" class="energy-val text-3xl text-white">Q > 0</span>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-red-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-red-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed font-light"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-red-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-red-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed font-light"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-red-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-red-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed font-light"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-red-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-snug"></p>
+        <cite id="author" class="text-red-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Энергия Реакции",
+                subtitle: "Классификация реакций по тепловому эффекту",
+                canvasHeading: "Моделирование Exo/Endo энергии",
+                canvasHint: "Нажмите, чтобы переключить режим (Экзотермическая / Эндотермическая)",
+                defaultTitle: "Тепловой эффект",
+                defaultText: "Химические реакции всегда сопровождаются выделением или поглощением энергии. Эта энергия называется тепловым эффектом реакции (Q).",
+                exo: "Экзотермическая (+Q)",
+                endo: "Эндотермическая (-Q)",
+                cards: [
+                    { title: "Экзотермические", desc: "Реакции, идущие с ВЫДЕЛЕНИЕМ теплоты в окружающую среду. Примеры: горение, нейтрализация, большинство реакций соединения." },
+                    { title: "Эндотермические", desc: "Реакции, идущие с ПОГЛОЩЕНИЕМ теплоты. Требуют постоянного притока энергии. Примеры: разложение CaCO<sub>3</sub>, фотосинтез." },
+                    { title: "Термохимия", desc: "Раздел химии, изучающий тепловые эффекты. Уравнения реакций с указанием Q называют термохимическими." }
+                ],
+                quote: "«Химия — это не только превращение материи, но и превращение энергии»",
+                author: "Герман Гесс"
+            },
+            kz: {
+                title: "Реакция Энергиясы",
+                subtitle: "Реакцияларды жылу эффектісіне қарай жіктеу",
+                canvasHeading: "Экзо/Эндо энергиясын модельдеу",
+                canvasHint: "Режимді өзгерту үшін басыңыз (Экзотермиялық / Эндотермиялық)",
+                defaultTitle: "Жылу эффектісі",
+                defaultText: "Химиялық реакциялар әрқашан энергияның бөлінуімен немесе жұтылуымен жүреді. Бұл энергия реакцияның жылу эффектісі (Q) деп аталады.",
+                exo: "Экзотермиялық (+Q)",
+                endo: "Эндотермиялық (-Q)",
+                cards: [
+                    { title: "Экзотермиялық", desc: "Жылудың қоршаған ортаға БӨЛІНУІМЕН жүретін реакциялар. Мысалы: жану, бейтараптану реакциялары." },
+                    { title: "Эндотермиялық", desc: "Жылудың ЖҰТЫЛУЫМЕН жүретін реакциялар. Энергияның тұрақты келуін қажет етеді. Мысалы: CaCO<sub>3</sub> айырылуы." },
+                    { title: "Термохимия", desc: "Жылу эффектілерін зерттейтін химия бөлімі. Q көрсетілген теңдеулерді термохимиялық теңдеулер дейді." }
+                ],
+                quote: "«Химия — бұл тек материяның ғана емес, сонымен бірге энергияның айналуы»",
+                author: "Герман Гесс"
+            },
+            en: {
+                title: "Reaction Energy",
+                subtitle: "Reaction classification by thermal effect",
+                canvasHeading: "Exo/Endo Energy Modeling",
+                canvasHint: "Click to toggle mode (Exothermic / Endothermic)",
+                defaultTitle: "Thermal Effect",
+                defaultText: "Chemical reactions are always accompanied by the release or absorption of energy. This energy is known as the heat of reaction (Q).",
+                exo: "Exothermic (+Q)",
+                endo: "Endothermic (-Q)",
+                cards: [
+                    { title: "Exothermic", desc: "Reactions that RELEASE heat into the environment. Examples: combustion, neutralization, most synthesis reactions." },
+                    { title: "Endothermic", desc: "Reactions that ABSORB heat from the environment. They require constant energy input. e.g., decomposition of CaCO<sub>3</sub>." },
+                    { title: "Thermochemistry", desc: "The branch of chemistry studying thermal effects. Equations showing Q are called thermochemical equations." }
+                ],
+                quote: "«Chemistry is not just the transformation of matter, but the transformation of energy»",
+                author: "Germain Hess"
+            }
+        };
+
+        let currentLang = 'ru';
+        let mode = 'exo';
+        const canvas = document.getElementById('heatCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = mode === 'exo' ? t.exo : t.endo;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('equation-display').textContent = mode === 'exo' ? 'Q > 0' : 'Q < 0';
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function init() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            particles = [];
+            for(let i=0; i<60; i++) particles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx:(Math.random()-0.5)*2, vy:(Math.random()-0.5)*2});
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.002;
+
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
+                const dist = Math.sqrt((p.x-cx)**2 + (p.y-cy)**2);
+                const color = mode === 'exo' ? `rgba(239, 68, 68, ${1 - dist/500})` : `rgba(56, 189, 248, ${1 - dist/500})`;
+                
+                ctx.fillStyle = color;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
+            });
+
+            // Core Energy
+            ctx.fillStyle = mode === 'exo' ? '#ef4444' : '#38bdf8';
+            ctx.shadowBlur = 40; ctx.shadowColor = ctx.fillStyle;
+            ctx.beginPath(); ctx.arc(cx, cy, 30 + Math.sin(time)*10, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('click', () => { mode = mode === 'exo' ? 'endo' : 'exo'; updateUI(); });
+        window.onload = () => { init(); setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

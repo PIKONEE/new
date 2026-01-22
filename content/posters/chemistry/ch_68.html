@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemistry Grade 8: Final Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #020617;
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { border-color: #38bdf8; color: #38bdf8; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-sky-500">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase italic"></p>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn border-b-2 border-transparent transition-all uppercase text-xs font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn border-b-2 border-transparent transition-all uppercase text-xs font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn border-b-2 border-transparent transition-all uppercase text-xs font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-8 self-start"></h2>
+            <canvas id="reviewCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/20 uppercase tracking-[0.6em]"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-sky-500">
+            <div id="info-content">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-sky-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:border-sky-400 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:border-sky-400 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:border-sky-400 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-sky-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-snug"></p>
+        <cite id="author" class="text-sky-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Химический Олимп",
+                subtitle: "Повторение и углубление курса 8 класса",
+                canvasHeading: "Карта главных разделов",
+                canvasHint: "Нажмите на узлы, чтобы повторить основы",
+                defaultTitle: "Итоги года",
+                defaultText: "8 класс заложил фундамент химии: от атомного строения до классификации неорганических соединений и основ расчетных задач.",
+                nodes: {
+                    structure: { title: "Строение", text: "Атом = Ядро (p+, n0) + Оболочка (e-). Периодический закон — основа предсказания свойств." },
+                    compounds: { title: "Классы", desc: "Оксиды, Основания, Кислоты, Соли — четыре столпа неорганической химии." },
+                    math: { title: "Расчеты", desc: "Моль — мост между массой и числом частиц. Решение задач по уравнениям." }
+                },
+                cards: [
+                    { title: "Законы химии", desc: "Закон сохранения массы и закон постоянства состава — незыблемые правила материи." },
+                    { title: "Номенклатура", desc: "Умение называть вещества и составлять их формулы по валентности — базовый навык химика." },
+                    { title: "Практика", desc: "Химический эксперимент учит наблюдать признаки реакций и соблюдать технику безопасности." }
+                ],
+                quote: "«Химия — это не просто наука, это сама жизнь, упорядоченная в формулы»",
+                author: "Роберт Бойль"
+            },
+            kz: {
+                title: "Химия Олимпі",
+                subtitle: "8 сынып курсын қайталау және тереңдету",
+                canvasHeading: "Негізгі бөлімдер картасы",
+                canvasHint: "Негіздерді қайталау үшін түйіндерді басыңыз",
+                defaultTitle: "Жыл қорытындысы",
+                defaultText: "8 сынып химияның негізін қалады: атом құрылысынан бастап бейорганикалық қосылыстардың классификациясына дейін.",
+                nodes: {
+                    structure: { title: "Құрылыс", text: "Атом = Ядро (p+, n0) + Қабықша (e-). Периодтық заң — қасиеттерді болжау негізі." },
+                    compounds: { title: "Кластар", desc: "Оксидтер, Негіздер, Қышқылдар, Тұздар — бейорганикалық химияның төрт тірегі." },
+                    math: { title: "Есептеулер", desc: "Моль — масса мен бөлшектер саны арасындағы көпір. Теңдеулер бойынша есеп шығару." }
+                },
+                cards: [
+                    { title: "Химия заңдары", desc: "Массаның сақталу заңы мен құрам тұрақтылық заңы — материяның мызғымас ережелері." },
+                    { title: "Номенклатура", desc: "Заттарды атау және валенттілік бойынша формула құрастыру — химиктің базалық дағдысы." },
+                    { title: "Практика", desc: "Химиялық эксперимент реакция белгілерін бақылауға және қауіпсіздік техникасын сақтауға үйретеді." }
+                ],
+                quote: "«Химия — жай ғана ғылым емес, бұл формулаларға реттелген тіршіліктің өзі»",
+                author: "Роберт Бойль"
+            },
+            en: {
+                title: "Chemical Olympus",
+                subtitle: "Grade 8 Review and Deepening",
+                canvasHeading: "Main Topics Map",
+                canvasHint: "Click nodes to review fundamentals",
+                defaultTitle: "Course Summary",
+                defaultText: "Grade 8 laid the foundation of chemistry: from atomic structure to classification of inorganic compounds and basic stoichiometry.",
+                nodes: {
+                    structure: { title: "Structure", text: "Atom = Nucleus (p+, n0) + Shell (e-). Periodic Law is the key to predicting properties." },
+                    compounds: { title: "Classes", desc: "Oxides, Bases, Acids, Salts — the four pillars of inorganic chemistry." },
+                    math: { title: "Calculations", desc: "Mole is the bridge between mass and particle count. Solving equations." }
+                },
+                cards: [
+                    { title: "Chemical Laws", desc: "Conservation of mass and constant composition are the immutable rules of matter." },
+                    { title: "Nomenclature", desc: "Naming substances and building formulas by valence is a chemist's core skill." },
+                    { title: "Practice", desc: "Chemical experiments teach identifying reaction signs and following safety rules." }
+                ],
+                quote: "«Chemistry is not just a science, it is life itself ordered into formulas»",
+                author: "Robert Boyle"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('reviewCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.001;
+
+            const nodes = [
+                {l: 'Structure', c: '#38bdf8', r: 50, a: 0},
+                {l: 'Classes', c: '#fbbf24', r: 50, a: (Math.PI*2)/3},
+                {l: 'Math', c: '#10b981', r: 50, a: (Math.PI*2*2)/3}
+            ];
+
+            nodes.forEach(n => {
+                const x = cx + Math.cos(n.a + time*0.5)*120;
+                const y = cy + Math.sin(n.a + time*0.5)*120;
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.stroke();
+                ctx.fillStyle = n.c; ctx.beginPath(); ctx.arc(x, y, n.r, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'black'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center';
+                ctx.fillText(n.l, x, y + 5);
+            });
+
+            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(cx, cy, 40, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'black'; ctx.font = 'bold 14px Montserrat'; ctx.fillText('8 CLASS', cx, cy + 5);
+            requestAnimationFrame(drawMap);
+        }
+
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

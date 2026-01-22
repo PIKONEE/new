@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Көсемше</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fffbeb; color: #111827; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .header-card {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            border-radius: 1rem; color: white; padding: 40px; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.4);
+        }
+        .main-card {
+            background-color: white; border-radius: 1rem; padding: 30px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05); text-align: center;
+        }
+        .feature-item {
+            background-color: #fff7ed; padding: 15px; margin-top: 15px; border-radius: 0.5rem;
+            border: 1px solid #fed7aa; text-align: left;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div class="container">
+        <header class="header-card">
+            <h1 class="text-4xl font-extrabold mb-2 uppercase">Көсемше</h1>
+            <p class="text-amber-100 text-lg">Етістік + Үстеу қасиеті</p>
+        </header>
+
+        <div class="main-card">
+            <h2 class="text-2xl font-bold text-amber-800 mb-4">АНЫҚТАМАСЫ</h2>
+            <p class="text-lg text-gray-700 leading-relaxed">
+                Іс-әрекеттің амалын, қимылдың қалай орындалғанын білдіретін етістіктің ерекше түрі.
+            </p>
+
+            <div class="feature-item">
+                <h3 class="font-bold text-amber-700">🔍 Ерекшелігі:</h3>
+                <p class="text-gray-600">Сөйлемде көбінесе <b>пысықтауыш</b> (обстоятельство) қызметін атқарады.</p>
+            </div>
+
+            <div class="feature-item">
+                <h3 class="font-bold text-amber-700">❓ Сұрақтары:</h3>
+                <p class="text-gray-600">Қайтіп? Не істеп? Не қылып? Қашан?</p>
+            </div>
+
+            <div class="feature-item">
+                <h3 class="font-bold text-amber-700">💡 Мысал:</h3>
+                <p class="text-gray-800 italic mt-1">Ол күл<b>іп</b> сөйледі. (Қайтіп сөйледі?)</p>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features of Earth's Relief - Detailed Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #020617;
+            color: white;
+            min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #3b82f6; color: #fff; font-weight: 800; }
+        .point-tag { transition: all 0.3s; }
+        .point-tag:hover { background: rgba(59, 130, 246, 0.2); transform: scale(1.05); }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-blue-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-blue-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <!-- Visualization Area -->
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col relative min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-blue-200 uppercase mb-4 self-start opacity-70"></h2>
+            <canvas id="reliefCanvas" class="w-full h-full bg-black/20"></canvas>
+            <div class="absolute top-1/2 right-12 -translate-y-1/2 flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-[10px] uppercase font-bold text-white/40">
+                    <span class="w-3 h-3 bg-[#3f3f46] rounded"></span> Материковая кора
+                </div>
+                <div class="flex items-center gap-2 text-[10px] uppercase font-bold text-white/40">
+                    <span class="w-3 h-3 bg-[#18181b] rounded"></span> Океаническая кора
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-blue-500">
+            <div id="info-content" class="transition-all duration-500">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-blue-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+                <div id="stat-box" class="mt-8 p-6 bg-blue-500/10 rounded-3xl border border-blue-500/20 hidden">
+                    <div class="text-[10px] uppercase text-blue-400 font-bold tracking-widest mb-1">Record Depth/Height</div>
+                    <div id="stat-val" class="heading-font text-4xl text-white"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-8"><h4 id="ft1-t" class="heading-font text-blue-400 mb-2 uppercase"></h4><p id="ft1-d" class="text-xs text-white/50 leading-relaxed"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="ft2-t" class="heading-font text-blue-400 mb-2 uppercase"></h4><p id="ft2-d" class="text-xs text-white/50 leading-relaxed"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="ft3-t" class="heading-font text-blue-400 mb-2 uppercase"></h4><p id="ft3-d" class="text-xs text-white/50 leading-relaxed"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Планетарный Рельеф", subtitle: "Формы поверхности суши и дна океана",
+                canvasHeading: "Профиль земной поверхности",
+                defaultTitle: "Две формы рельефа",
+                defaultText: "Рельеф Земли — это совокупность всех неровностей поверхности. Главные планетарные формы: выступы материков и впадины океанов. Рельеф формируется под действием внутренних сил (тектоника) и внешних (вода, ветер).",
+                zones: {
+                    mountains: { t: "Горы (Эверест)", d: "Самые высокие участки суши. Образуются в зонах столкновения литосферных плит. Мощность материковой коры здесь максимальна (до 75 км).", val: "8848 м" },
+                    plains: { t: "Равнины", d: "Обширные территории с небольшими колебаниями высот. Занимают большую часть суши. Идеальны для жизни и хозяйства человека.", val: "0-200 м" },
+                    shelf: { t: "Шельф", d: "Продолжение материка под водой (до 200 м глубины). Самая продуктивная часть океана, богатая нефтью и жизнью.", val: "-200 м" },
+                    slope: { t: "Материковый склон", d: "Переходная зона между шельфом и ложем океана. Глубины резко растут от 200 до 3000 метров.", val: "-3000 м" },
+                    trench: { t: "Желоб (Марианский)", d: "Узкие и глубокие впадины в местах, где океаническая плита уходит под другую. Самые глубокие точки планеты.", val: "-11022 м" }
+                },
+                facts: [
+                    { t: "Абсолютная высота", d: "Высота точки над уровнем моря. Все рекорды планеты считаются от этого уровня." },
+                    { t: "Рельеф дна", desc: "Дно океана не менее разнообразно, чем суша: там есть хребты длиной в тысячи километров и огромные равнины." },
+                    { t: "Движение", desc: "Рельеф постоянно меняется: горы разрушаются выветриванием, а новые пики растут из-за вулканизма." }
+                ]
+            },
+            kz: {
+                title: "Планета Рельефі", subtitle: "Құрлық пен мұхит табанының пішіндері",
+                canvasHeading: "Жер бетінің профилі",
+                defaultTitle: "Рельефтің екі түрі",
+                defaultText: "Жер рельефі — жер бетінің барлық бұдырларының жиынтығы. Негізгі планетарлық формалар: материктер мен мұхит ойпаттары.",
+                zones: {
+                    mountains: { t: "Таулар (Эверест)", d: "Құрлықтың ең биік бөліктері. Литосфералық плиталардың соқтығысу аймақтарында түзіледі.", val: "8848 м" },
+                    plains: { t: "Жазықтар", d: "Биіктік ауытқулары аз кең аумақтар. Құрлықтың көп бөлігін алып жатыр.", val: "0-200 м" },
+                    shelf: { t: "Қайраң", d: "Материктің су астындағы жалғасы (200 м тереңдікке дейін). Мұхиттың ең өнімді бөлігі.", val: "-200 м" },
+                    slope: { t: "Материктік беткей", d: "Қайраң мен мұхит табаны арасындағы өтпелі аймақ. Тереңдік 200-ден 3000 метрге дейін күрт артады.", val: "-3000 м" },
+                    trench: { t: "Шұңғыма (Мариана)", d: "Мұхиттық плита басқа плитаның астына енген жердегі терең ойыстар.", val: "-11022 м" }
+                },
+                facts: [
+                    { t: "Абсолюттік биіктік", d: "Нүктенің теңіз деңгейінен биіктігі. Планета рекордтары осы деңгейден есептеледі." },
+                    { t: "Табан рельефі", desc: "Мұхит түбі құрлық сияқты алуан түрлі: онда мыңдаған шақырымға созылған жоталар бар." },
+                    { t: "Қозғалыс", desc: "Рельеф үнемі өзгереді: таулар үгілуден мүжіледі, ал жанартаулардан жаңа шыңдар өседі." }
+                ]
+            },
+            en: {
+                title: "Global Relief", subtitle: "Landforms and Ocean Floor Topography",
+                canvasHeading: "Global Topographic Profile",
+                defaultTitle: "Relief Forms",
+                defaultText: "Earth's relief consists of all the unevenness of the surface. Major planetary forms are continental rises and ocean depressions, shaped by internal and external forces.",
+                zones: {
+                    mountains: { t: "Mountains (Everest)", d: "Highest land sections, formed at plate collision zones. The continental crust is thickest here (up to 75 km).", val: "8848 m" },
+                    plains: { t: "Plains", d: "Vast leveled areas with minor height differences. They cover most of the land surface and are vital for human activity.", val: "0-200 m" },
+                    shelf: { t: "Shelf", d: "The continental edge underwater (up to 200m depth). Richest ocean part in terms of life and oil resources.", val: "-200 m" },
+                    slope: { t: "Continental Slope", d: "Transition zone between shelf and abyss. Depths drop sharply from 200m to 3000m.", val: "-3000 m" },
+                    trench: { t: "Trench (Mariana)", d: "Narrow, deep depressions where one tectonic plate subducts beneath another. The deepest points on Earth.", val: "-11022 m" }
+                },
+                facts: [
+                    { t: "Absolute Height", d: "Height above mean sea level. Global records are measured from this baseline." },
+                    { t: "Floor Relief", desc: "The ocean floor is as diverse as land, featuring mid-ocean ridges and abyssal plains." },
+                    { t: "Evolution", desc: "Relief constantly evolves: mountains are eroded by wind/water, and new ones are built by volcanism." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('stat-box').classList.add('hidden');
+            
+            document.getElementById('ft1-t').textContent = t.facts[0].t; document.getElementById('ft1-d').textContent = t.facts[0].d;
+            document.getElementById('ft2-t').textContent = t.facts[1].t; document.getElementById('ft2-d').textContent = t.facts[1].desc;
+            document.getElementById('ft3-t').textContent = t.facts[2].t; document.getElementById('ft3-d').textContent = t.facts[2].desc;
+            draw();
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+
+            // --- Profile Path ---
+            ctx.fillStyle = '#3f3f46'; // Crust
+            ctx.beginPath();
+            ctx.moveTo(0, h);
+            ctx.lineTo(0, h*0.2); // Himalayas peak
+            ctx.lineTo(w*0.15, h*0.2);
+            ctx.lineTo(w*0.3, h*0.5); // Plains
+            ctx.lineTo(w*0.4, h*0.55); // Coast
+            
+            // Submerged part
+            ctx.lineTo(w*0.55, h*0.6); // Shelf edge
+            ctx.lineTo(w*0.65, h*0.85); // Slope end
+            ctx.lineTo(w*0.75, h*0.85); // Bed
+            ctx.lineTo(w*0.82, h*0.95); // Trench bottom
+            ctx.lineTo(w*0.9, h*0.85); // Other side
+            ctx.lineTo(w, h*0.85);
+            ctx.lineTo(w, h);
+            ctx.fill();
+
+            // Water Overlay
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+            ctx.fillRect(w*0.4, h*0.55, w*0.6, h);
+
+            // Labels with interactions (Check click handler)
+            ctx.fillStyle = 'white'; ctx.font = 'bold 10px Inter';
+            ctx.fillText('EVEREST', 10, h*0.18);
+            ctx.fillText('PACIFIC OCEAN', w*0.7, h*0.5);
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('reliefCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight || 400;
+
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left;
+                const w = canvas.width;
+                const t = translations[currentLang].zones;
+                let zone = null;
+
+                if (mx < w*0.3) zone = t.mountains;
+                else if (mx < w*0.4) zone = t.plains;
+                else if (mx < w*0.55) zone = t.shelf;
+                else if (mx < w*0.75) zone = t.slope;
+                else if (mx < w*0.9) zone = t.trench;
+
+                if(zone) {
+                    document.getElementById('info-title').textContent = zone.t;
+                    document.getElementById('info-text').textContent = zone.d;
+                    document.getElementById('stat-box').classList.remove('hidden');
+                    document.getElementById('stat-val').textContent = zone.val;
+                }
+            });
+
+            setLang('ru');
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

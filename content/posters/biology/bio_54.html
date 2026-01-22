@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видоизменения побегов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f0ff; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #9333ea 0%, #581c87 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #581c87; border-bottom: 3px solid #e9d5ff; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #9333ea; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #9333ea; background: white; color: #9333ea; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #9333ea; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #f3f0ff 0%, #e9d5ff 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; border: 2px dashed #9333ea; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-purple-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Ынамдарының Өзгерістері</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Shoot Modifications</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Видоизменения побегов</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-purple-100">Ортасына адаптация - бәлінекі, ризом, клубень, луковица</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-purple-100">Adaptations - bulbs, rhizomes, tubers, storage</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-purple-100">Адаптации - луковицы, корневища, клубни, хранилища</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Ынамдарының Өзгерістері</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Types of Modified Shoots</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Типы видоизменённых побегов</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 700 350" style="height: 320px; width: 100%;">
+                        <!-- Луковица -->
+                        <circle cx="100" cy="120" r="45" fill="#F5DEB3" stroke="#8B7355" stroke-width="2"/>
+                        <ellipse cx="100" cy="120" rx="40" ry="43" fill="#FFE4B5" stroke="#DAA520" stroke-width="1"/>
+                        <ellipse cx="100" cy="120" rx="30" ry="38" fill="#FFFACD" stroke="#FFD700" stroke-width="1"/>
+                        <line x1="100" y1="80" x2="100" y2="50" stroke="#90EE90" stroke-width="2"/>
+                        <line x1="100" y1="165" x2="80" y2="200" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="100" y1="165" x2="100" y2="200" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="100" y1="165" x2="120" y2="200" stroke="#8B4513" stroke-width="2"/>
+                        <text x="100" y="250" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B7355">Луковица (лук)</text>
+
+                        <!-- Клубень -->
+                        <ellipse cx="280" cy="130" rx="50" ry="60" fill="#FFB6C1" stroke="#CD5C5C" stroke-width="2"/>
+                        <circle cx="265" cy="105" r="3" fill="#8B4513"/>
+                        <circle cx="280" cy="100" r="3" fill="#8B4513"/>
+                        <circle cx="295" cy="105" r="3" fill="#8B4513"/>
+                        <circle cx="265" cy="155" r="3" fill="#8B4513"/>
+                        <circle cx="280" cy="190" r="3" fill="#8B4513"/>
+                        <circle cx="295" cy="155" r="3" fill="#8B4513"/>
+                        <line x1="280" y1="190" x2="280" y2="220" stroke="#228B22" stroke-width="2"/>
+                        <text x="280" y="250" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B4513">Клубень (картофель)</text>
+
+                        <!-- Корневище -->
+                        <line x1="420" y1="130" x2="520" y2="130" stroke="#8B4513" stroke-width="4"/>
+                        <circle cx="440" cy="130" r="5" fill="#654321" stroke="#3d2817" stroke-width="1"/>
+                        <circle cx="470" cy="130" r="5" fill="#654321" stroke="#3d2817" stroke-width="1"/>
+                        <circle cx="500" cy="130" r="5" fill="#654321" stroke="#3d2817" stroke-width="1"/>
+                        <!-- Листья и корни -->
+                        <line x1="440" y1="130" x2="430" y2="90" stroke="#90EE90" stroke-width="2"/>
+                        <line x1="470" y1="130" x2="460" y2="80" stroke="#90EE90" stroke-width="2"/>
+                        <line x1="500" y1="130" x2="490" y2="90" stroke="#90EE90" stroke-width="2"/>
+                        <line x1="440" y1="130" x2="435" y2="170" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="470" y1="130" x2="465" y2="175" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="500" y1="130" x2="495" y2="170" stroke="#8B4513" stroke-width="2"/>
+                        <text x="470" y="250" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B4513">Корневище (имбирь)</text>
+
+                        <!-- Колючки -->
+                        <line x1="620" y1="80" x2="620" y2="180" stroke="#228B22" stroke-width="3"/>
+                        <line x1="620" y1="110" x2="600" y2="125" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="620" y1="110" x2="640" y2="125" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="620" y1="140" x2="600" y2="155" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="620" y1="140" x2="640" y2="155" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="620" y1="170" x2="600" y2="185" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="620" y1="170" x2="640" y2="185" stroke="#8B4513" stroke-width="2"/>
+                        <text x="620" y="250" font-size="11" text-anchor="middle" font-weight="bold" fill="#8B4513">Колючки (дереза)</text>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-purple-50 p-4 rounded border border-purple-300">
+                        <h4 lang="kk" class="lang-content font-bold text-purple-900 mb-3">📦 Сақтау Органдары</h4>
+                        <h4 lang="en" class="lang-content font-bold text-purple-900 mb-3">📦 Storage Organs</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-purple-900 mb-3">📦 Органы хранения</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Луковица:</strong> Өндіс төме + жалпақ жапырақ (лук, чеснок)</li>
+                            <li lang="en" class="lang-content"><strong>Bulb:</strong> Underground bud + fleshy leaves</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Луковица:</strong> Подземная почка + мясистые листья (лук)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Клубень:</strong> Сабақтың төлеу бөлімі (картофель)</li>
+                            <li lang="en" class="lang-content"><strong>Tuber:</strong> Enlarged shoot segment</li>
+                            <li lang="ru" class="lang-content"><strong>Клубень:</strong> Утолщение подземного стебля (картофель)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Корневище:</strong> Горизонталдық сабақ (имбирь, ирис)</li>
+                            <li lang="en" class="lang-content"><strong>Rhizome:</strong> Horizontal underground stem</li>
+                            <li lang="ru" class="lang-content"><strong>Корневище:</strong> Горизонтальный подземный стебель (имбирь)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-pink-50 p-4 rounded border border-pink-300">
+                        <h4 lang="kk" class="lang-content font-bold text-pink-900 mb-3">🛡️ Қорғау Органдары</h4>
+                        <h4 lang="en" class="lang-content font-bold text-pink-900 mb-3">🛡️ Protective Organs</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-pink-900 mb-3">🛡️ Защитные органы</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Шипы/колючки:</strong> Жүргіндіктің құндыруын тоқтату (дереза)</li>
+                            <li lang="en" class="lang-content"><strong>Spines/thorns:</strong> Herbivore protection</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Шипы:</strong> Защита от животных (дереза)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Қызыл өндіс:</strong> Жяндар ағарту (красные побеги)</li>
+                            <li lang="en" class="lang-content"><strong>Red shoots:</strong> Animal attraction</li>
+                            <li lang="ru" class="lang-content"><strong>Красные побеги:</strong> Привлечение животных</li>
+
+                            <li lang="kk" class="lang-content"><strong>Баллоты:</strong> Қоршету + сақтау (осьминог)</li>
+                            <li lang="en" class="lang-content"><strong>Bulbils:</strong> Protection + propagation</li>
+                            <li lang="ru" class="lang-content"><strong>Бульбилы:</strong> Защита + размножение</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #e9d5ff; border-radius: 1rem; border-top: 4px solid #9333ea;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-purple-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-purple-800">Ынамдарының өзгерістері - өндіс құндыру және орындарындағы адаптация. Луковица, клубень, корневище - өндіс сақтау және құндыруның құрамдарын ынамды еді</p>
+            <p lang="en" class="lang-content text-md font-semibold text-purple-800">Shoot modifications enable plant survival and reproduction. Storage and propagation adaptations</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-purple-800">Видоизменения побегов обеспечивают выживание и размножение. Адаптации к хранению и распространению</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мудрость Поднебесной: Учение Конфуция</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #450a0a, #1a1a1a, #0a0a0a);
+            color: #fef3c7;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #dc2626;
+            color: white;
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #dc2626;
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-500 uppercase">
+                Мудрость Конфуция
+            </h1>
+            <p id="sub-title" class="text-red-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Путь благородного мужа в Поднебесной</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-red-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-red-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-red-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-red-600 inline-block"></span>
+                Бамбуковый свиток
+            </h2>
+            <div class="relative flex-grow bg-black/40 rounded-[2.5rem] border border-red-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="wisdomCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-red-500/50 italic text-center uppercase tracking-widest">Нажмите на планки свитка для изучения пяти добродетелей</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-red-600 mb-8 font-black uppercase leading-tight" id="placeholder-title">Школа мудреца</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Конфуций жил в VI–V вв. до н.э. в эпоху «Сражающихся царств». Он учил, что порядок в государстве начинается с порядка в душе и семье. Выберите планку на бамбуковом свитке, чтобы раскрыть суть учения.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏮</span>
+                            <span id="hint-1" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Лунь Юй (Беседы)</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🎋</span>
+                            <span id="hint-2" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Власть как семья</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-red-950/40 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-100 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-red-950/20 rounded-[2.5rem] border border-red-500/20 shadow-xl">
+                        <strong class="text-red-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-meaning">Суть принципа:</strong>
+                        <p id="info-fact" class="text-yellow-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🤴</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-red-500 uppercase">Благородный муж</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Идеал человека по Конфуцию — <strong>Цзюнь-цзы</strong>. Он обладает высокой моралью, скромен, справедлив и всегда готов учиться. В отличие от «низкого человека», он ищет причину неудач в себе.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-yellow-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👴</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-yellow-500 uppercase">Сыновнее почтение</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Понятие <strong>Сяо</strong> (почитание родителей) — фундамент общества. Ребенок обязан заботиться о старших, а народ должен почитать императора как «отца народов».</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🎭</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-orange-500 uppercase">Правила поведения</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Ритуал <strong>Ли</strong> охватывает всё: от способа подносить чай до управления страной. Конфуций верил, что если все будут соблюдать традиции, в мире исчезнет вражда.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-red-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-red-100/70 leading-tight max-w-5xl mx-auto">
+            «Учиться и не размышлять — пустое занятие, размышлять и не учиться — опасно».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Мудрость Конфуция",
+                subtitle: "Путь благородного мужа в Поднебесной",
+                visualTitle: "Бамбуковый свиток",
+                hint: "Нажмите на планки свитка для изучения пяти добродетелей",
+                placeholderTitle: "Школа мудреца",
+                placeholderText: "Конфуций (Кун-цзы) создал систему, которая учит жить в гармонии с обществом и государством. Выберите добродетель на свитке.",
+                labelMeaning: "Суть принципа:",
+                hint1: "Лунь Юй (Беседы)", hint2: "Власть как семья",
+                card1Title: "Благородный муж",
+                card1Text: "Цзюнь-цзы — человек долга и знаний. Его достоинство не в рождении, а в постоянном совершенствовании души.",
+                card2Title: "Сыновнее почтение",
+                card2Text: "Сяо учит абсолютной преданности родителям. Эта этика переносится и на государство: император — отец подданных.",
+                card3Title: "Правила Ли",
+                card3Text: "Этикет и обряды — клей, скрепляющий общество. Правильное поведение важнее суровых законов и наказаний.",
+                footerQuote: "«Учиться и не размышлять — пустое занятие, размышлять и не учиться — опасно».",
+                nodes: [
+                    { id: 1, tag: "仁 — Жэнь", title: "Человеколюбие", desc: "Высшая добродетель. Это гуманность, милосердие и любовь к людям. Основное правило: 'Не делай другим того, чего не желаешь себе'.", fact: "Жэнь — это основа всех остальных качеств настоящего человека." },
+                    { id: 2, tag: "义 — И", title: "Справедливость", desc: "Чувство долга и честность. Благородный муж совершает поступки не ради выгоды, а потому что они правильны с точки зрения морали.", fact: "Конфуций говорил: 'Благородный муж знает только долг, низкий человек знает только выгоду'." },
+                    { id: 3, tag: "礼 — Ли", title: "Ритуал", desc: "Правила поведения и этикет. Ли помогает человеку найти свое место в обществе и поддерживать гармонию в отношениях с окружающими.", fact: "Согласно Ли, каждый должен знать свое место: государь должен быть государем, а сын — сыном." },
+                    { id: 4, tag: "智 — Чжи", title: "Мудрость", desc: "Умение отличать истину от лжи, знание истории и традиций. Чжи приобретается через постоянное учение и общение с мудрыми людьми.", fact: "Конфуций считал, что невежество — корень всех бед в государстве." },
+                    { id: 5, tag: "信 — Синь", title: "Искренность", desc: "Верность своему слову и честность перед собой. Без доверия (Синь) невозможно ни крепкое государство, ни дружба.", fact: "Народ не пойдет за правителем, которому он не может доверять." }
+                ]
+            },
+            kz: {
+                title: "Конфуций даналығы",
+                subtitle: "Аспан асты еліндегі ізгі адамның жолы",
+                visualTitle: "Бамбук шиыршығы",
+                hint: "Бес қасиетті зерттеу үшін шиыршықты басыңыз",
+                placeholderTitle: "Данышпан мектебі",
+                placeholderText: "Конфуций (Кун-цзы) қоғаммен және мемлекетпен үйлесімде өмір сүруді үйрететін жүйе жасады. Шиыршықтан қасиетті таңдаңыз.",
+                labelMeaning: "Қағиданың мәні:",
+                hint1: "Лунь Юй (Әңгімелер)", hint2: "Билік — үлкен отбасы",
+                card1Title: "Ізгі адам",
+                card1Text: "Цзюнь-цзы — міндет пен білім адамы. Оның қасиеті тегінде емес, жан дүниесін үнемі жетілдіруінде.",
+                card2Title: "Перзенттік құрмет",
+                card2Text: "Сяо ата-анаға шексіз берілгендікті үйретеді. Бұл этика мемлекетке де тән: император — халықтың әкесі.",
+                card3Title: "Ли ережелері",
+                card3Text: "Әдеп пен рәсімдер — қоғамды біріктіруші күш. Дұрыс мінез-құлық қатал заңдардан маңыздырақ.",
+                footerQuote: "«Оқу және ойланбау — бос әурешілік, ойлану және оқымау — қауіпті».",
+                nodes: [
+                    { id: 1, tag: "仁 — Жэнь", title: "Адамгершілік", desc: "Ең жоғары ізгілік. Бұл мейірімділік пен адамға деген сүйіспеншілік. 'Өзіңе тілемегенді өзгеге жасама'.", fact: "Жэнь — нағыз адамның барлық басқа қасиеттерінің негізі." },
+                    { id: 2, tag: "义 — И", title: "Әділдік", desc: "Парзын сезіну және адалдық. Ізгі адам іс-әрекетті пайда үшін емес, мораль тұрғысынан дұрыс болғандықтан жасайды.", fact: "Конфуций: 'Ізгі адам тек парызды біледі, пасық адам тек пайданы біледі'." },
+                    { id: 3, tag: "礼 — Ли", title: "Рәсім", desc: "Мінез-құлық ережелері мен әдеп. Ли адамға қоғамдағы өз орнын табуға және үйлесімділікті сақтауға көмектеседі.", fact: "Ли бойынша әркім өз орнын білуі тиіс: патша — патша, бала — бала болуы керек." },
+                    { id: 4, tag: "智 — Чжи", title: "Даналық", desc: "Ақиқатты жалғаннан ажырата білу, тарих пен дәстүрді білу. Чжи үнемі оқу арқылы келеді.", fact: "Конфуций надандықты мемлекеттегі барлық бәленің бастауы деп санады." },
+                    { id: 5, tag: "信 — Синь", title: "Шынайылық", desc: "Өз сөзіне беріктік және адалдық. Сенімсіз (Синь) мықты мемлекет те, достық та болмайды.", fact: "Халық өзі сенбейтін билеушінің соңынан ермейді." }
+                ]
+            },
+            en: {
+                title: "Confucius' Wisdom",
+                subtitle: "Path of the Superior Man in the Middle Kingdom",
+                visualTitle: "Bamboo Scroll",
+                hint: "Click on scroll slats to study the five virtues",
+                placeholderTitle: "Sage's School",
+                placeholderText: "Confucius (Kong Fuzi) created a system for living in harmony with society and the state. Select a virtue on the scroll.",
+                labelMeaning: "Principle Essence:",
+                hint1: "Analects (Lun Yu)", hint2: "State as Family",
+                card1Title: "Superior Man",
+                card1Text: "Junzi is a man of duty and knowledge. His merit lies not in birth, but in constant spiritual self-improvement.",
+                card2Title: "Filial Piety",
+                card2Text: "Xiao teaches absolute devotion to parents. This ethic extends to the state: the Emperor is the father of subjects.",
+                card3Title: "Rules of Li",
+                card3Text: "Etiquette and ritual are the glue of society. Proper behavior is more effective than harsh laws or punishments.",
+                footerQuote: "«Learning without thought is labor lost; thought without learning is perilous.»",
+                nodes: [
+                    { id: 1, tag: "仁 — Ren", title: "Benevolence", desc: "The supreme virtue. Humanity, mercy, and love for people. The Golden Rule: 'Do not do to others what you do not want for yourself'.", fact: "Ren is the foundation of all other qualities of a true human being." },
+                    { id: 2, tag: "义 — Yi", title: "Righteousness", desc: "A sense of duty and honesty. The superior man acts not for profit, but because it is morally correct.", fact: "Confucius said: 'The superior man understands righteousness; the inferior man understands profit'." },
+                    { id: 3, tag: "礼 — Li", title: "Ritual", desc: "Propriety and etiquette. Li helps individuals find their place in society and maintain harmony in all relationships.", fact: "According to Li, everyone must know their role: let the ruler be a ruler, and the son be a son." },
+                    { id: 4, tag: "智 — Zhi", title: "Wisdom", desc: "The ability to distinguish truth from falsehood, knowledge of history and traditions acquired through constant study.", fact: "Confucius believed that ignorance is the root of all social disorder." },
+                    { id: 5, tag: "信 — Xin", title: "Integrity", desc: "Loyalty to one's word and inner honesty. Without trust (Xin), neither a state nor a friendship can endure.", fact: "A people will not follow a ruler they cannot trust." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('wisdomCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-meaning').innerText = t.labelMeaning;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const count = 5;
+            const slatWidth = 60;
+            const slatGap = 15;
+            const totalWidth = (slatWidth + slatGap) * count - slatGap;
+            const startX = (canvas.width - totalWidth) / 2;
+            const startY = 40;
+            const slatHeight = canvas.height - 80;
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            for (let i = 0; i < count; i++) {
+                const x = startX + i * (slatWidth + slatGap);
+                
+                // Draw Bamboo Slat
+                const grad = ctx.createLinearGradient(x, startY, x + slatWidth, startY);
+                grad.addColorStop(0, '#78350f');
+                grad.addColorStop(0.5, '#b45309');
+                grad.addColorStop(1, '#78350f');
+                
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(x, startY, slatWidth, slatHeight, 10);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(254, 243, 199, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Draw Slat Threads
+                ctx.strokeStyle = '#450a0a';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(startX - 20, startY + 40);
+                ctx.lineTo(startX + totalWidth + 20, startY + 40);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(startX - 20, startY + slatHeight - 40);
+                ctx.lineTo(startX + totalWidth + 20, startY + slatHeight - 40);
+                ctx.stroke();
+
+                // Chinese Characters (Vertical)
+                const char = nodes[i].tag.split(' — ')[0];
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 24px "Noto Sans SC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(char, x + slatWidth/2, startY + slatHeight/2);
+
+                // Label (Vertical-ish)
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.font = 'bold 9px Montserrat';
+                const label = nodes[i].title.toUpperCase();
+                for(let j=0; j<label.length; j++) {
+                    ctx.fillText(label[j], x + slatWidth/2, startY + 40 + j*12);
+                }
+
+                canvasNodes.push({
+                    x: x,
+                    y: startY,
+                    w: slatWidth,
+                    h: slatHeight,
+                    id: nodes[i].id
+                });
+            }
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                if (mouseX > node.x && mouseX < node.x + node.w &&
+                    mouseY > node.y && mouseY < node.y + node.h) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Простые механизмы. Рычаг</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff7ed; /* orange-50 */
+            overflow-x: hidden;
+            color: #7c2d12; /* orange-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Orange Theme */
+        .header-card {
+            background-color: #ea580c; /* orange-600 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #9a3412; /* orange-800 */
+            border-bottom: 3px solid #fdba74; /* orange-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #ffedd5; /* orange-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #c2410c; /* orange-700 */
+        }
+         .term {
+            font-weight: bold;
+            color: #ea580c; /* orange-600 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #ea580c;
+            background-color: #ffffff;
+            color: #ea580c;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #fff7ed;
+        }
+        .lang-btn.active {
+            background-color: #ea580c;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 220px;
+            margin: 15px 0;
+            border: 1px solid #fed7aa;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #9a3412;
+            text-anchor: middle;
+        }
+        .svg-bar {
+            fill: #a8a29e; /* Stone/Metal color */
+            stroke: #57534e;
+            stroke-width: 2;
+        }
+        .svg-fulcrum {
+            fill: #ea580c;
+        }
+        .svg-force-arrow {
+            stroke: #dc2626;
+            stroke-width: 3;
+            marker-end: url(#arrowhead-red);
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-orange-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(249, 115, 22, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(249, 115, 22, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ЖАЙ МЕХАНИЗМДЕР. ИІНДІК (РЫЧАГ)</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">SIMPLE MACHINES. LEVER</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ПРОСТЫЕ МЕХАНИЗМЫ. РЫЧАГ</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-orange-100">Күшті түрлендіруге арналған құралдар.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-orange-100">Devices for transforming force.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-orange-100">Приспособления для преобразования силы.</p>
+        </header>
+
+        <!-- 1. ИІНДІК ДЕГЕНІМІЗ НЕ? -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Иіндік (Рычаг) дегеніміз не?</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is a Lever?</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое Рычаг?</h2>
+
+            <div class="rule-card border-t-orange-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Иіндік</span> – қозғалмайтын тіреу нүктесінің төңірегінде айнала алатын қатты дене.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    A <span class="term" lang="en">Lever</span> is a rigid body capable of rotating around a fixed point (fulcrum).
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Рычаг</span> – это твердое тело, способное вращаться вокруг неподвижной точки опоры.
+                </p>
+
+                <!-- Illustration 1: Lever Parts -->
+                <svg class="illustration-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" />
+                        </marker>
+                    </defs>
+
+                    <!-- Ground -->
+                    <line x1="0" y1="150" x2="400" y2="150" stroke="#a8a29e" stroke-width="2"/>
+
+                    <!-- Fulcrum (Triangle) -->
+                    <polygon points="180,150 200,120 220,150" class="svg-fulcrum"/>
+                    <text x="200" y="170" class="svg-label" font-size="12">
+                        <tspan lang="kk">Тіреу нүктесі (O)</tspan>
+                        <tspan lang="en">Fulcrum (O)</tspan>
+                        <tspan lang="ru">Точка опоры (O)</tspan>
+                    </text>
+
+                    <!-- Bar -->
+                    <rect x="50" y="115" width="300" height="10" class="svg-bar" transform="rotate(-5 200 120)"/>
+
+                    <!-- Force 1 (Load - Heavy) -->
+                    <rect x="60" y="80" width="40" height="40" fill="#4b5563" transform="rotate(-5 200 120)"/>
+                    <line x1="80" y1="100" x2="80" y2="140" class="svg-force-arrow"/>
+                    <text x="60" y="100" class="svg-label" fill="#dc2626" font-weight="bold">F₁</text>
+
+                    <!-- Force 2 (Effort - Hand) -->
+                    <line x1="330" y1="90" x2="330" y2="140" class="svg-force-arrow"/>
+                    <text x="350" y="110" class="svg-label" fill="#dc2626" font-weight="bold">F₂</text>
+
+                    <!-- Arms Labels -->
+                    <line x1="200" y1="120" x2="80" y2="120" stroke="#ea580c" stroke-dasharray="4"/>
+                    <text x="140" y="115" class="svg-label" font-size="12">L₁ (short)</text>
+
+                    <line x1="200" y1="120" x2="330" y2="120" stroke="#ea580c" stroke-dasharray="4"/>
+                    <text x="265" y="115" class="svg-label" font-size="12">L₂ (long)</text>
+                </svg>
+
+                <p lang="kk" class="lang-content mt-2 text-sm text-gray-600 text-center">Иін (L) – тіреу нүктесінен күш түсетін нүктеге дейінгі қашықтық.</p>
+                <p lang="en" class="lang-content mt-2 text-sm text-gray-600 text-center">Arm (L) – the distance from the fulcrum to the point where force is applied.</p>
+                <p lang="ru" class="lang-content mt-2 text-sm text-gray-600 text-center">Плечо (L) – расстояние от точки опоры до точки приложения силы.</p>
+            </div>
+        </section>
+
+        <!-- 2. ИІНДІКТІҢ ТЕПЕ-ТЕҢДІГІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Тепе-теңдік шарты</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Equilibrium Condition</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Условие равновесия</h2>
+
+            <div class="rule-card border-t-yellow-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Күштердің қатынасы иіндердің қатынасына <strong>кері пропорционал</strong> болғанда, иіндік тепе-теңдікте болады.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    The lever is in equilibrium when the ratio of forces is <strong>inversely proportional</strong> to the ratio of their arms.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Рычаг находится в равновесии, когда силы <strong>обратно пропорциональны</strong> плечам этих сил.
+                </p>
+
+                <div class="example-block border-l-yellow-400 bg-yellow-50 text-center mb-4">
+                    <p class="text-3xl font-bold text-yellow-900 mb-2">F₁ · L₁ = F₂ · L₂</p>
+                    <p class="text-sm text-yellow-800">Архимед ережесі / Archimedes' Rule</p>
+                </div>
+
+                <!-- Illustration 2: Balancing Scales -->
+                <svg class="illustration-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Fulcrum -->
+                    <polygon points="200,150 190,170 210,170" class="svg-fulcrum"/>
+
+                    <!-- Bar (Horizontal - Balanced) -->
+                    <rect x="50" y="145" width="300" height="5" class="svg-bar"/>
+
+                    <!-- Left Side (Big Weight, Small Arm) -->
+                    <rect x="140" y="105" width="40" height="40" fill="#4b5563"/> <!-- 4 units mass -->
+                    <text x="160" y="130" fill="#fff" text-anchor="middle" font-weight="bold">4m</text>
+                    <text x="170" y="165" font-size="10" text-anchor="middle">L=1</text>
+
+                    <!-- Right Side (Small Weight, Big Arm) -->
+                    <rect x="340" y="135" width="10" height="10" fill="#4b5563"/> <!-- 1 unit mass -->
+                    <text x="345" y="143" fill="#fff" text-anchor="middle" font-size="8">m</text>
+                    <text x="275" y="165" font-size="10" text-anchor="middle">L=4</text>
+
+                    <!-- Dimension lines -->
+                    <line x1="200" y1="155" x2="160" y2="155" stroke="#ea580c" marker-end="url(#tick)"/>
+                    <line x1="200" y1="155" x2="345" y2="155" stroke="#ea580c" marker-end="url(#tick)"/>
+
+                    <text x="200" y="50" class="svg-label" font-size="16">4 · 1 = 1 · 4</text>
+
+                    <defs>
+                        <marker id="tick" markerWidth="5" markerHeight="10" refX="2" refY="5" orient="auto">
+                            <line x1="2" y1="0" x2="2" y2="10" stroke="#ea580c" stroke-width="2"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 3. ЗОЛОТОЕ ПРАВИЛО МЕХАНИКИ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Механиканың "Алтын ережесі"</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. The "Golden Rule" of Mechanics</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. "Золотое правило" механики</h2>
+
+            <div class="rule-card border-t-red-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <strong>Ереже:</strong> Күштен қанша есе ұтсақ, жолдан сонша есе ұтыламыз. Жұмыстан ұтыс болмайды!
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <strong>Rule:</strong> How many times we gain in force, we lose as many times in distance. No gain in Work!
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <strong>Правило:</strong> Во сколько раз выигрываем в силе, во столько же раз проигрываем в расстоянии. Выигрыша в работе нет!
+                </p>
+
+                <!-- Illustration 3: Lifting a Stone with a Crowbar -->
+                <svg class="illustration-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Ground -->
+                    <line x1="0" y1="180" x2="400" y2="180" stroke="#a8a29e" stroke-width="2"/>
+
+                    <!-- Big Stone -->
+                    <path d="M 50 180 Q 30 140, 70 140 Q 110 140, 90 180 Z" fill="#57534e"/>
+                    <text x="70" y="165" fill="#fff" text-anchor="middle" font-size="10">Heavy Load</text>
+
+                    <!-- Small Stone (Fulcrum) -->
+                    <polygon points="110,180 120,160 130,180" fill="#78716c"/>
+
+                    <!-- Crowbar -->
+                    <line x1="60" y1="170" x2="350" y2="100" stroke="#1c1917" stroke-width="6" stroke-linecap="round"/>
+
+                    <!-- Hand pushing down (Long path) -->
+                    <line x1="350" y1="100" x2="350" y2="160" stroke="#2563eb" stroke-width="2" stroke-dasharray="4"/>
+                    <line x1="350" y1="100" x2="350" y2="120" stroke="#dc2626" stroke-width="3" marker-end="url(#arrowhead-red)"/>
+                    <text x="360" y="110" font-size="12" fill="#dc2626">Small F</text>
+                    <text x="360" y="140" font-size="12" fill="#2563eb">Long Distance</text>
+
+                    <!-- Stone lifting (Short path) -->
+                    <line x1="60" y1="170" x2="60" y2="155" stroke="#2563eb" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="20" y="160" font-size="12" fill="#2563eb">Short Distance</text>
+                    <text x="100" y="130" font-size="14" fill="#166534" font-weight="bold">Big Lift!</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-orange-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-orange-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-orange-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-orange-800">
+                Иіндік (рычаг) ауыр жүкті аз күшпен көтеруге мүмкіндік береді. Бірақ біз оны ұзақ қашықтыққа жылжытуымыз керек.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-orange-800">
+                A lever allows lifting heavy loads with little force. But we have to move it over a longer distance.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-orange-800">
+                Рычаг позволяет поднять тяжелый груз малой силой. Но нам приходится перемещать его на большее расстояние.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

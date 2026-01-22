@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qualitative Analysis of Ions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom left, #0f172a, #1e293b, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+        .test-tube { border-radius: 0 0 40px 40px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-sky-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+        <div class="lg:col-span-1 glass rounded-custom p-8 flex flex-col gap-4">
+            <h3 id="sidebar-title" class="heading-font text-lg text-sky-300 uppercase mb-4 tracking-wider">Реактивы</h3>
+            <button onclick="setIon('Cl')" class="p-4 glass rounded-2xl text-left text-xs font-bold uppercase hover:bg-white/10 border border-white/5 transition-all">AgNO₃ + Cl⁻</button>
+            <button onclick="setIon('SO4')" class="p-4 glass rounded-2xl text-left text-xs font-bold uppercase hover:bg-white/10 border border-white/5 transition-all">BaCl₂ + SO₄²⁻</button>
+            <button onclick="setIon('CO3')" class="p-4 glass rounded-2xl text-left text-xs font-bold uppercase hover:bg-white/10 border border-white/5 transition-all">HCl + CO₃²⁻</button>
+        </div>
+
+        <div class="lg:col-span-3 glass rounded-custom p-10 flex flex-col items-center min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <div class="flex-grow flex items-center justify-center w-full">
+                <canvas id="labCanvas" class="w-full h-[400px]"></canvas>
+            </div>
+            <div id="info-overlay" class="mt-8 p-6 glass rounded-3xl border-l-4 border-sky-500 w-full transition-all duration-300">
+                <h4 id="info-title" class="heading-font text-2xl text-sky-300 mb-2"></h4>
+                <p id="info-text" class="text-white/70 font-light leading-relaxed"></p>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all border border-white/5">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all border border-white/5">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all border border-white/5">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-sky-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-sky-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        // Global State
+        let currentLang = 'ru';
+        let currentIon = null;
+        let canvas, ctx;
+
+        const translations = {
+            ru: {
+                title: "Цвет Ионов",
+                subtitle: "Качественные реакции на неорганические ионы",
+                canvasHeading: "Виртуальная пробирка",
+                sidebarTitle: "Реактивы",
+                defaultTitle: "Аналитическая химия",
+                defaultText: "Качественные реакции позволяют обнаружить присутствие определенных ионов по изменению цвета, выпадению характерного осадка или выделению газа.",
+                ions: {
+                    Cl: { title: "Хлорид-ион (Cl⁻)", text: "При добавлении нитрата серебра AgNO₃ выпадает белый творожистый осадок AgCl, нерастворимый в азотной кислоте." },
+                    SO4: { title: "Сульфат-ион (SO₄²⁻)", text: "При добавлении солей бария (напр. BaCl₂) выпадает белый мелкокристаллический осадок BaSO₄." },
+                    CO3: { title: "Карбонат-ион (CO₃²⁻)", text: "При действии сильных кислот (HCl) происходит 'вскипание' раствора из-за выделения углекислого газа CO₂↑." }
+                },
+                cards: [
+                    { title: "Что такое качественная реакция?", desc: "Реакция, сопровождаемая характерным визуальным эффектом, специфичным для данного иона или вещества." },
+                    { title: "Реактив", desc: "Вещество, которое добавляют к исследуемому образцу для получения качественного эффекта." },
+                    { title: "Важность", desc: "Используется в медицине, криминалистике и экологическом мониторинге для определения состава воды и почвы." }
+                ],
+                quote: "«Химия — это не только числа, но и бесконечная палитра цветов материи»",
+                author: "Роберт Бойль"
+            },
+            kz: {
+                title: "Иондар Түсі",
+                subtitle: "Бейорганикалық иондарға сапалық реакциялар",
+                canvasHeading: "Виртуалды сынауық",
+                sidebarTitle: "Реактивтер",
+                defaultTitle: "Аналитикалық химия",
+                defaultText: "Сапалық реакциялар түстің өзгеруі, тән тұнбаның түсуі немесе газдың бөлінуі арқылы белгілі бір иондардың бар-жоғын анықтауға мүмкіндік береді.",
+                ions: {
+                    Cl: { title: "Хлорид-ион (Cl⁻)", text: "Күміс нитратын AgNO₃ қосқанда азот қышқылында ерімейтін ақ ірімшік тәрізді AgCl тұнбасы түзіледі." },
+                    SO4: { title: "Сульфат-ион (SO₄²⁻)", text: "Барий тұздарын (BaCl₂) қосқанда ақ ұсақ кристалды BaSO₄ тұнбасы түзіледі." },
+                    CO3: { title: "Карбонат-ион (CO₃²⁻)", text: "Күшті қышқылдармен (HCl) әрекеттескенде көмірқышқыл газының CO₂↑ бөлінуінен ерітінді 'қайнайды'." }
+                },
+                cards: [
+                    { title: "Сапалық реакция деген не?", desc: "Белгілі бір ионға немесе затқа тән көрнекі әсермен жүретін реакция." },
+                    { title: "Реактив", desc: "Сапалық әсер алу үшін зерттелетін үлгіге қосылатын зат." },
+                    { title: "Маңызы", desc: "Медицинада, криминалистикада және экологиялық мониторингте қолданылады." }
+                ],
+                quote: "«Химия — бұл тек сандар ғана емес, сонымен бірге материяның шексіз түстер палитрасы»",
+                author: "Роберт Бойль"
+            },
+            en: {
+                title: "Ion Colors",
+                subtitle: "Qualitative reactions for inorganic ions",
+                canvasHeading: "Virtual Test Tube",
+                sidebarTitle: "Reagents",
+                defaultTitle: "Analytical Chemistry",
+                defaultText: "Qualitative reactions allow detecting ions through color changes, specific precipitates, or gas evolution.",
+                ions: {
+                    Cl: { title: "Chloride Ion (Cl⁻)", text: "Adding silver nitrate AgNO₃ forms a white curdy precipitate AgCl, insoluble in nitric acid." },
+                    SO4: { title: "Sulfate Ion (SO₄²⁻)", text: "Adding barium salts (e.g., BaCl₂) forms a white fine-crystalline precipitate BaSO₄." },
+                    CO3: { title: "Carbonate Ion (CO₃²⁻)", text: "Adding strong acids (HCl) causes effervescence due to CO₂↑ gas evolution." }
+                },
+                cards: [
+                    { title: "What is a qualitative reaction?", desc: "A reaction accompanied by a characteristic visual effect specific to a given ion or substance." },
+                    { title: "Reagent", desc: "A substance added to a sample to produce a qualitative effect." },
+                    { title: "Importance", desc: "Used in medicine, forensics, and environmental monitoring to determine water and soil composition." }
+                ],
+                quote: "«Chemistry is not just numbers, but an infinite palette of matter's colors»",
+                author: "Robert Boyle"
+            }
+        };
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`btn-${lang}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            updateUI();
+        }
+
+        function setIon(ion) {
+            currentIon = ion;
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            if (!t) return;
+
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('sidebar-title').textContent = t.sidebarTitle;
+            
+            if (currentIon && t.ions[currentIon]) {
+                const data = t.ions[currentIon];
+                document.getElementById('info-title').textContent = data.title;
+                document.getElementById('info-text').textContent = data.text;
+            } else {
+                document.getElementById('info-title').textContent = t.defaultTitle;
+                document.getElementById('info-text').textContent = t.defaultText;
+            }
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+        }
+
+        function draw() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Test Tube Outline
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(cx - 40, cy - 150);
+            ctx.lineTo(cx - 40, cy + 100);
+            ctx.arc(cx, cy + 100, 40, Math.PI, 0, true);
+            ctx.lineTo(cx + 40, cy - 150);
+            ctx.stroke();
+
+            // Liquid filling logic
+            let color = 'rgba(56, 189, 248, 0.2)'; // Default: clear blue-ish
+            if (currentIon === 'Cl') color = 'rgba(240, 240, 240, 0.9)'; // White curdy
+            if (currentIon === 'SO4') color = 'rgba(255, 255, 255, 0.5)'; // White crystalline
+            if (currentIon === 'CO3') color = 'rgba(56, 189, 248, 0.4)'; // Clear bubbling
+
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(cx - 36, cy + 20);
+            ctx.lineTo(cx - 36, cy + 100);
+            ctx.arc(cx, cy + 100, 36, Math.PI, 0, true);
+            ctx.lineTo(cx + 36, cy + 20);
+            ctx.closePath();
+            ctx.fill();
+
+            // Bubbles animation for Carbonate
+            if (currentIon === 'CO3') {
+                for(let i=0; i<12; i++) {
+                    const time = Date.now();
+                    const bx = cx - 30 + ((i * 17 + time/10) % 60);
+                    const by = cy + 100 - ((i * 23 + time/5) % 80);
+                    if (by > cy + 20) {
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                        ctx.beginPath();
+                        ctx.arc(bx, by, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function init() {
+            canvas = document.getElementById('labCanvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+            
+            // Set internal resolution
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight || 400;
+
+            setLang('ru');
+            draw();
+        }
+
+        window.onload = init;
+        window.onresize = () => {
+            if (canvas && canvas.parentElement) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 400;
+            }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

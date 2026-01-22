@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Общественно-политическая жизнь Казахстана</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #fdf2f8; color: #1e293b; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .lang-active { background-color: #db2777 !important; color: white !important; font-weight: 900; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(190, 24, 93, 0.1); }
+        .social-grad { background: linear-gradient(135deg, #831843 0%, #db2777 100%); }
+    </style>
+</head>
+<body class="pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-slate-900/80 backdrop-blur p-1 rounded-full border border-white/20">
+        <button onclick="setLang('ru')" id="lang-ru" class="lang-active w-10 h-10 rounded-full text-xs transition-all">RU</button>
+        <button onclick="setLang('kz')" id="lang-kz" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">KZ</button>
+        <button onclick="setLang('en')" id="lang-en" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">EN</button>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-6 mt-12 space-y-10">
+        <header class="p-16 rounded-[4rem] text-white text-center shadow-2xl relative overflow-hidden social-grad">
+            <div class="relative z-10">
+                <span id="period" class="inline-block bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 tracking-widest">Середина XX века</span>
+                <h1 id="title" class="text-4xl md:text-6xl font-black uppercase mb-4 leading-none">Общественно-политическая жизнь</h1>
+                <p id="desc" class="text-xl font-light opacity-90">Формирование современного облика республики</p>
+            </div>
+            <div class="absolute top-0 right-0 text-[15rem] opacity-10 pointer-events-none font-black translate-x-1/4 -translate-y-1/4">👥</div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-pink-800">
+                <h3 id="f1T" class="font-black uppercase mb-4 text-pink-900">Покорители космоса</h3>
+                <p id="f1D" class="text-sm leading-relaxed font-medium">1955 г. — начало строительства Байконура. Казахстан становится космической гаванью планеты.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-pink-800">
+                <h3 id="f2T" class="font-black uppercase mb-4 text-pink-900">Инфраструктура</h3>
+                <p id="f2D" class="text-sm leading-relaxed font-medium">Рост городов-спутников вокруг Караганды и Темиртау. Строительство «Казахстанской Магнитки».</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-pink-800">
+                <h3 id="f3T" class="font-black uppercase mb-4 text-pink-900">Рабочее движение</h3>
+                <p id="f3D" class="text-sm leading-relaxed font-medium">1959 г. — восстание рабочих в Темиртау. Сигнал о социальных проблемах форсированной индустриализации.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl">
+                <h3 id="chartTitle" class="text-2xl font-black mb-6 uppercase text-pink-900">Сферы социального развития</h3>
+                <div class="h-[350px]">
+                    <canvas id="socialChart"></canvas>
+                </div>
+            </div>
+            <div class="p-10 rounded-[3rem] shadow-2xl text-white flex flex-col justify-center relative overflow-hidden bg-slate-900">
+                <h3 id="specialTitle" class="text-3xl font-black mb-6 uppercase text-pink-400">Демографический сдвиг</h3>
+                <p id="specialD" class="text-xl font-light leading-relaxed relative z-10">В результате целины и индустриализации доля коренного населения в республике временно снизилась до 30%, что создало уникальный мультикультурный ландшафт.</p>
+                <div class="absolute -bottom-10 -right-10 text-[20rem] opacity-5 pointer-events-none italic">LIFE</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                period: "Середина XX века", title: "Общественно-политическая жизнь", desc: "Формирование современного облика республики",
+                f1T: "Покорители космоса", f1D: "1955 г. — начало строительства Байконура. Казахстан становится космической гаванью планеты.",
+                f2T: "Инфраструктура", f2D: "Рост городов-спутников вокруг Караганды и Темиртау. Строительство «Казахстанской Магнитки».",
+                f3T: "Рабочее движение", f3D: "1959 г. — восстание рабочих в Темиртау. Сигнал о социальных проблемах форсированной индустриализации.",
+                chartTitle: "Сферы социального развития", specialTitle: "Демографический сдвиг",
+                specialD: "В результате целины и индустриализации доля коренного населения в республике временно снизилась до 30%, что создало уникальный мультикультурный ландшафт.",
+                labels: ['Образование', 'Медицина', 'Жилье', 'Культура', 'Наука']
+            },
+            kz: {
+                period: "XX ғасырдың ортасы", title: "Қоғамдық-саяси өмір", desc: "Республиканың заманауи бейнесінің қалыптасуы",
+                f1T: "Ғарышкерлер", f1D: "1955 ж. — Байқоңыр құрылысының басталуы. Қазақстан планетаның ғарыш айлағына айналды.",
+                f2T: "Инфрақұрылым", f2D: "Қарағанды және Теміртау маңындағы серіктес қалалардың өсуі. «Қазақстан Магниткасының» құрылысы.",
+                f3T: "Жұмысшылар қозғалысы", f3D: "1959 ж. — Теміртаудағы жұмысшылар көтерілісі. Жедел индустрияландырудың әлеуметтік мәселелерінің белгісі.",
+                chartTitle: "Әлеуметтік даму салалары", specialTitle: "Демографиялық өзгеріс",
+                specialD: "Тың игеру және индустрияландыру нәтижесінде республикадағы жергілікті халықтың үлесі уақытша 30%-ға дейін төмендеді.",
+                labels: ['Білім', 'Медицина', 'Тұрғын үй', 'Мәдениет', 'Ғылым']
+            },
+            en: {
+                period: "Mid-20th Century", title: "Socio-political Life", desc: "Shaping the Modern Face of the Republic",
+                f1T: "Space Pioneers", f1D: "1955 — start of Baikonur construction. Kazakhstan becomes the planet's space harbor.",
+                f2T: "Infrastructure", f2D: "Growth of satellite cities around Karaganda and Temirtau. Construction of the 'Kazakhstan Magnitka'.",
+                f3T: "Labor Movement", f3D: "1959 — workers' uprising in Temirtau. A signal of social issues from forced industrialization.",
+                chartTitle: "Social Development Spheres", specialTitle: "Demographic Shift",
+                specialD: "As a result of Virgin Lands and industrialization, the proportion of the indigenous population temporarily dropped to 30%.",
+                labels: ['Education', 'Medicine', 'Housing', 'Culture', 'Science']
+            }
+        };
+
+        let activeChart = null;
+
+        function setLang(lang) {
+            ['ru', 'kz', 'en'].forEach(l => document.getElementById(`lang-${l}`).classList.toggle('lang-active', l === lang));
+            const t = translations[lang];
+            document.getElementById('period').innerText = t.period;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('f1T').innerText = t.f1T; document.getElementById('f1D').innerText = t.f1D;
+            document.getElementById('f2T').innerText = t.f2T; document.getElementById('f2D').innerText = t.f2D;
+            document.getElementById('f3T').innerText = t.f3T; document.getElementById('f3D').innerText = t.f3D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('specialTitle').innerText = t.specialTitle;
+            document.getElementById('specialD').innerText = t.specialD;
+            renderChart(t.labels);
+        }
+
+        function renderChart(labels) {
+            const ctx = document.getElementById('socialChart').getContext('2d');
+            if (activeChart) activeChart.destroy();
+            activeChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: [80, 65, 50, 75, 90], backgroundColor: ['#831843', '#9d174d', '#be185d', '#db2777', '#f472b6']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

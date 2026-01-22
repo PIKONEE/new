@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ориентирование на Местности</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d221f; /* Темно-зеленый, лесной фон */
+            color: #e6ffec; /* Светлый текст */
+        }
+        .gradient-title {
+            background: linear-gradient(to right, #40e0d0, #008080); /* Бирюзово-зеленый градиент */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .fact-card {
+            background-color: #1a3632; /* Чуть светлее фон карточки */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-height: 250px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .fact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(64, 224, 208, 0.4);
+        }
+        .fact-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+        .fact-metric {
+            color: #ffc300; /* Золотистый акцент */
+            font-weight: 900;
+            font-size: 1.8rem;
+            line-height: 1.2;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .fact-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Ограничиваем ширину для радар-графика */
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+        }
+        .lang-button {
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 700;
+            background-color: #008080;
+            color: white;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .lang-button:hover {
+            background-color: #40e0d0;
+            color: #0d221f;
+        }
+        .lang-button.active {
+            background-color: #ffc300;
+            color: #0d221f;
+            box-shadow: 0 0 10px rgba(255, 195, 0, 0.7);
+        }
+    </style>
+    <script>
+        let currentLang = 'ru';
+
+        // --- 10 ПРАВИЛ ОРИЕНТИРОВАНИЯ (ПЛАН) ---
+        const orientationRules = [
+            { icon: '🧭', metric: 'Азимут', ru: 'Азимут — это угол между направлением на Север и направлением на объект, измеряется по часовой стрелке от $0^\circ$ до $360^\circ$.', kz: 'Азимут — Бұл Солтүстік бағыт пен объектіге бағытталған бұрыш, сағат тілі бойынша $0^\circ$-тан $360^\circ$-қа дейін өлшенеді.', en: 'Azimuth is the angle between North and the object direction, measured clockwise from $0^\circ$ to $360^\circ$.' },
+            { icon: '☀️', metric: 'Полдень', ru: 'В полдень (12:00 по солнечному времени) Солнце всегда находится на **Юге** в Северном полушарии.', kz: 'Түскі уақытта (Күн уақыты бойынша 12:00) Күн Солтүстік жарты шарда әрдайым **Оңтүстікте** болады.', en: 'At solar noon (12:00 solar time), the Sun is always in the **South** in the Northern Hemisphere.' },
+            { icon: '🌙', metric: 'Луна', ru: 'Положение Луны: При полной Луне ее фазы повторяют фазы Солнца (по отношению к направлению на Юг).', kz: 'Айдың орналасуы: Толық айда оның фазалары Күннің фазаларын қайталайды (Оңтүстікке бағыт бойынша).', en: 'Moon Position: During a full Moon, its phases repeat the Sun\'s phases (relative to the South direction).' },
+            { icon: '🌳', metric: 'Север', ru: 'Мхи и лишайники чаще всего растут на северной стороне стволов деревьев и камней (в Северном полушарии).', kz: 'Мүктер мен қыналар көбінесе ағаш діңдері мен тастардың солтүстік жағында өседі (Солтүстік жарты шарда).', en: 'Moss and lichen most often grow on the North side of tree trunks and stones (in the Northern Hemisphere).' },
+            { icon: '🌟', metric: 'Полярная', ru: 'Полярная звезда всегда указывает точно на **Север**. Найдите ее, следуя по Большому Ковшу.', kz: 'Поляр жұлдызы әрдайым нақты **Солтүстікті** көрсетеді. Оны Үлкен Шөміш арқылы табыңыз.', en: 'The North Star (Polaris) always points exactly to the **North**. Find it by following the Big Dipper.' },
+            { icon: '🕌', metric: 'Здания', ru: 'Алтари православных церквей обращены на Восток, а мусульманские мечети (михрабы) — на Мекку.', kz: 'Православ шіркеулерінің құрбандық орындары Шығысқа, ал мұсылман мешіттері (михрабтар) — Меккеге бағытталған.', en: 'Orthodox church altars face East, and Muslim mosques (mihrabs) face Mecca.' },
+            { icon: '🌲', metric: 'Кольца', ru: 'Годовые кольца на срезе дерева шире с южной стороны, так как там больше тепла и света.', kz: 'Ағаш кесіндісіндегі жылдық сақиналар оңтүстік жағында кеңірек болады, себебі ол жерде жылу мен жарық көп.', en: 'Annual rings on a tree cross-section are wider on the South side, due to more heat and light.' },
+            { icon: '🐜', metric: 'Муравей', ru: 'Муравейники почти всегда строятся с южной стороны дерева или пня и имеют более пологий южный склон.', kz: 'Құмырсқа илеулері әрдайым дерлік ағаштың немесе діңінің оңтүстік жағынан салынады және оңтүстік беткейі тіктеу болады.', en: 'Ant hills are almost always built on the South side of a tree or stump and have a gentler slope facing South.' },
+            { icon: '⌚', metric: 'Часы', ru: 'Ориентирование по часам: Направьте часовую стрелку на Солнце; биссектриса угла между часовой стрелкой и цифрой $12$ покажет направление **Юг-Север**.', kz: 'Сағат бойынша бағдарлау: Сағат тілін Күнге бағыттаңыз; сағат тілі мен $12$ саны арасындағы бұрыштың биссектрисасы **Оңтүстік-Солтүстік** бағытын көрсетеді.', en: 'Watch orientation: Point the hour hand at the Sun; the bisector of the angle between the hour hand and the number $12$ indicates the **South-North** direction.' },
+            { icon: '🔄', metric: 'Компас', ru: 'Компас показывает магнитный Север. Для точного навигации необходима поправка на **Магнитное склонение** (разницу между магнитным и истинным Севером).', kz: 'Компас магниттік Солтүстікті көрсетеді. Дәл навигация үшін **Магниттік ауытқуды** (магниттік және шынайы Солтүстік арасындағы айырмашылық) ескеру қажет.', en: 'Compass shows Magnetic North. For accurate navigation, you must account for **Magnetic Declination** (the difference between Magnetic and True North).' }
+        ];
+        // --- КОНЕЦ ПРАВИЛ ---
+
+        // Данные для Радар-карты (Надежность методов: 1=Низкая, 5=Высокая)
+        const radarLabels = {
+            ru: ['Компас', 'Солнце', 'Полярная звезда', 'Местные признаки', 'Часы'],
+            kz: ['Компас', 'Күн', 'Поляр жұлдызы', 'Жергілікті белгілер', 'Сағат'],
+            en: ['Compass', 'Sun', 'North Star', 'Local Signs', 'Watch Method']
+        };
+        const radarData = [5, 4, 4, 3, 3]; // Единые данные надежности
+
+        let orientationChart = null;
+
+        // Функция рендеринга фактов (ПЛАН)
+        function renderFacts(lang) {
+            const factsGrid = document.getElementById('facts-grid');
+            let factsHTML = '';
+
+            orientationRules.forEach(fact => {
+                const factText = fact[lang] || fact.ru;
+
+                factsHTML += `
+                    <div class="fact-card rounded-xl shadow-lg p-4 flex flex-col items-center justify-start border-b-4 border-[#ffc300]">
+                        <div class="fact-icon">${fact.icon}</div>
+                        <div class="fact-metric font-mono">${fact.metric}</div>
+
+                        <p class="fact-text font-bold text-center border-t border-gray-600 pt-2 mt-2">${factText}</p>
+                    </div>
+                `;
+            });
+
+            factsGrid.innerHTML = factsHTML;
+            updateActiveButton(lang);
+        }
+
+        // Функция: Обновление Радар-графика (КАРТА)
+        function updateChart(lang) {
+            if (orientationChart) {
+                orientationChart.data.labels = radarLabels[lang];
+
+                const chartTitle = {
+                    ru: 'Надежность Методов Ориентирования (5 - Макс)',
+                    kz: 'Бағдарлау Әдістерінің Сенімділігі (5 - Макс)',
+                    en: 'Orientation Methods Reliability (5 - Max)'
+                };
+
+                orientationChart.options.plugins.title.text = chartTitle[lang];
+
+                orientationChart.update();
+            }
+        }
+
+        // Функция: Управление видимостью языковых блоков
+        function updateContentVisibility(lang) {
+            const languages = ['ru', 'kz', 'en'];
+
+            languages.forEach(l => {
+                const elements = document.querySelectorAll(`.${l}-text`);
+                elements.forEach(el => {
+                    if (l === lang) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // Функция переключения языка
+        function switchLang(lang) {
+            currentLang = lang;
+            renderFacts(lang);
+            updateContentVisibility(lang);
+            updateChart(lang);
+        }
+
+        // Функция обновления активной кнопки
+        function updateActiveButton(activeLang) {
+            document.querySelectorAll('.lang-button').forEach(button => {
+                if (button.dataset.lang === activeLang) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация Chart.js (КАРТА: Радар-график)
+            const ctx = document.getElementById('orientationRadarChart').getContext('2d');
+
+            orientationChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: radarLabels.ru,
+                    datasets: [
+                        {
+                            label: 'Надежность',
+                            data: radarData,
+                            backgroundColor: 'rgba(64, 224, 208, 0.4)', // Бирюзовый с прозрачностью
+                            borderColor: '#40e0d0',
+                            pointBackgroundColor: '#ffc300',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#ffc300'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Надежность Методов Ориентирования (5 - Макс)',
+                            color: '#e6ffec',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(230, 255, 236, 0.3)' },
+                            grid: { color: 'rgba(230, 255, 236, 0.3)' },
+                            pointLabels: {
+                                color: '#e6ffec',
+                                font: { size: 14 }
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                            ticks: {
+                                display: false // Скрываем цифры на шкале
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Привязка событий к кнопкам
+            document.getElementById('lang-ru').addEventListener('click', () => switchLang('ru'));
+            document.getElementById('lang-kz').addEventListener('click', () => switchLang('kz'));
+            document.getElementById('lang-en').addEventListener('click', () => switchLang('en'));
+
+            // Первичный рендеринг
+            switchLang(currentLang);
+        });
+    </script>
+</head>
+<body class="text-gray-100">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="bg-[#1a3632] text-center p-8 shadow-2xl border-b-8 border-[#40e0d0]">
+
+        <!-- Language Switcher Buttons -->
+        <div class="flex justify-center space-x-4 mb-6">
+            <button id="lang-ru" data-lang="ru" class="lang-button">РУС</button>
+            <button id="lang-kz" data-lang="kz" class="lang-button">КАЗ</button>
+            <button id="lang-en" data-lang="en" class="lang-button">ENG</button>
+        </div>
+
+        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-wider gradient-title">ОРИЕНТИРОВАНИЕ</h1>
+        <!-- Subtitles controlled by visibility toggling -->
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ffc300] ru-text">СУТЬ НАВИГАЦИИ БЕЗ ГАДЖЕТОВ</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ffc300] kz-text hidden">ГАДЖЕТСІЗ НАВИГАЦИЯНЫҢ МӘНІ</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ffc300] en-text hidden">THE ESSENCE OF NAVIGATION WITHOUT GADGETS</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-10">
+
+        <!-- СЕКЦИЯ 1: КАРТА (Радар-график надежности) -->
+        <section class="mb-12 bg-[#1a3632] p-6 rounded-xl shadow-xl">
+
+            <!-- Map Titles (Fully localized) -->
+            <h2 class="text-3xl font-extrabold pb-2 text-[#40e0d0] ru-text">🗺️ Карта: Надежность Методов</h2>
+            <h2 class="text-3xl font-extrabold pb-2 text-[#40e0d0] kz-text hidden">🗺️ Карта: Әдістердің Сенімділігі</h2>
+            <h2 class="text-3xl font-extrabold pb-2 text-[#40e0d0] en-text hidden">🗺️ Map: Reliability of Methods</h2>
+
+            <!-- Description paragraphs (Fully localized) -->
+            <p class="text-lg text-gray-400 mb-4 ru-text">
+                **RU:** Карта визуализирует относительную надежность каждого метода. **Компас** — самый надежный ($5/5$), тогда как ориентирование по **местным признакам** требует внимательности ($3/5$).
+            </p>
+            <p class="text-lg text-gray-400 mb-4 kz-text hidden">
+                **KZ:** Карта әр әдістің салыстырмалы сенімділігін көрсетеді. **Компас** — ең сенімді ($5/5$), ал **жергілікті белгілер** бойынша бағдарлау мұқияттылықты қажет етеді ($3/5$).
+            </p>
+            <p class="text-lg text-gray-400 mb-4 en-text hidden">
+                **EN:** The Map visualizes the relative reliability of each method. The **Compass** is the most reliable ($5/5$), while relying on **local signs** requires close attention ($3/5$).
+            </p>
+
+            <!-- Chart Container (Radar Chart) -->
+            <div class="chart-container mt-6">
+                <canvas id="orientationRadarChart"></canvas>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ 2: ПЛАН (Сетка Фактов) -->
+
+        <!-- Title for the Fact Grid (Fully localized) -->
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ffc300] ru-text">📑 План: 10 Основных Правил</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ffc300] kz-text hidden">📑 Жоспар: 10 Негізгі Ереже</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ffc300] en-text hidden">📑 Plan: 10 Essential Rules</h2>
+
+        <!-- FACT GRID (Presents all 10 facts) -->
+        <div id="facts-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- Facts will be inserted here by JavaScript -->
+        </div>
+
+    </main>
+
+    <footer class="text-center p-6 mt-12 bg-[#1a3632] text-gray-400">
+        <p class="text-sm">Помните: в навигации всегда используйте несколько методов для проверки направления!</p>
+    </footer>
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

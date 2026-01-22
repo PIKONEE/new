@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Среды обитания</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4; /* green-50 */
+            overflow-x: hidden;
+            color: #064e3b; /* green-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Earth Theme */
+        .header-card {
+            background: linear-gradient(135deg, #059669 0%, #0891b2 100%); /* green to cyan */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #065f46; /* emerald-800 */
+            border-bottom: 3px solid #6ee7b7; /* emerald-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #d1fae5; /* emerald-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #059669; /* emerald-600 */
+        }
+         .term {
+            font-weight: bold;
+            color: #059669; /* emerald-600 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #059669;
+            background-color: #ffffff;
+            color: #059669;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #ecfdf5;
+        }
+        .lang-btn.active {
+            background-color: #059669;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 220px;
+            margin: 15px 0;
+            border: 1px solid #6ee7b7;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #064e3b;
+            text-anchor: middle;
+        }
+        .svg-water { fill: #bae6fd; }
+        .svg-sky { fill: #e0f2fe; }
+        .svg-soil { fill: #fef3c7; }
+        .svg-organism { fill: #fecdd3; }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-emerald-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(52, 211, 153, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(52, 211, 153, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ТІРШІЛІК ЕТУ ОРТАЛАРЫ</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">HABITATS OF ORGANISMS</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">СРЕДЫ ОБИТАНИЯ ОРГАНИЗМОВ</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-emerald-100">Су, Құрлық-Ауа, Топырақ, Ағза.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-emerald-100">Water, Ground-Air, Soil, Organism.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-emerald-100">Водная, Наземно-воздушная, Почвенная, Организменная.</p>
+        </header>
+
+        <!-- 1. ТӨРТ НЕГІЗГІ ОРТА -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Тіршілік орталарының түрлері</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Types of Habitats</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Виды сред обитания</h2>
+
+            <div class="rule-card border-t-emerald-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-6 text-gray-700">
+                    Жер бетінде тірі ағзалар мекендейтін төрт негізгі орта бар. Әр ортаның өз ерекшеліктері (температура, жарық, тығыздық) болады.
+                </p>
+
+                <!-- Illustration 1: The 4 Environments Diagram -->
+                <svg class="illustration-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 1. Ground-Air (Top Left) -->
+                    <rect x="0" y="0" width="200" height="100" class="svg-sky"/>
+                    <circle cx="180" cy="20" r="15" fill="#facc15"/> <!-- Sun -->
+                    <path d="M 20 80 L 40 40 L 60 80" fill="#22c55e"/> <!-- Tree -->
+                    <path d="M 100 90 L 110 70 L 120 90" fill="#a16207"/> <!-- Animal/Deer -->
+                    <line x1="0" y1="100" x2="200" y2="100" stroke="#166534" stroke-width="2"/>
+                    <text x="50" y="30" font-size="10" font-weight="bold" fill="#047857">1. Құрлық-Ауа</text>
+                    <text x="50" y="42" font-size="8" fill="#047857">Ground-Air</text>
+
+                    <!-- 2. Water (Bottom Left) -->
+                    <rect x="0" y="100" width="200" height="100" class="svg-water"/>
+                    <path d="M 50 140 Q 70 130, 90 140" fill="none" stroke="#3b82f6" stroke-width="2"/> <!-- Wave -->
+                    <path d="M 30 160 L 50 170 L 30 180 Z" fill="#2563eb"/> <!-- Fish -->
+                    <path d="M 10 200 L 10 160" stroke="#166534" stroke-width="2"/> <!-- Algae -->
+                    <text x="150" y="180" font-size="10" font-weight="bold" fill="#1e3a8a">2. Су</text>
+                    <text x="150" y="192" font-size="8" fill="#1e3a8a">Water</text>
+
+                    <!-- 3. Soil (Bottom Right) -->
+                    <rect x="200" y="100" width="200" height="100" class="svg-soil"/>
+                    <path d="M 220 150 Q 240 140, 260 150" fill="none" stroke="#b45309" stroke-width="3"/> <!-- Worm -->
+                    <path d="M 350 100 L 350 140" stroke="#a16207" stroke-width="2"/> <!-- Roots -->
+                    <path d="M 350 140 L 330 160 M 350 140 L 370 160" stroke="#a16207" stroke-width="1"/>
+                    <text x="250" y="180" font-size="10" font-weight="bold" fill="#78350f">3. Топырақ</text>
+                    <text x="250" y="192" font-size="8" fill="#78350f">Soil</text>
+
+                    <!-- 4. Organism (Top Right) -->
+                    <rect x="200" y="0" width="200" height="100" class="svg-organism"/>
+                    <circle cx="300" cy="50" r="30" fill="#fca5a5" stroke="#be123c"/> <!-- Host Body -->
+                    <circle cx="290" cy="45" r="3" fill="#be123c"/> <!-- Virus/Parasite -->
+                    <circle cx="310" cy="55" r="3" fill="#be123c"/>
+                    <text x="360" y="30" font-size="10" font-weight="bold" fill="#9f1239">4. Ағза</text>
+                    <text x="360" y="42" font-size="8" fill="#9f1239">Organism</text>
+
+                    <!-- Dividing lines -->
+                    <line x1="200" y1="0" x2="200" y2="200" stroke="#fff" stroke-width="4"/>
+                    <line x1="0" y1="100" x2="400" y2="100" stroke="#fff" stroke-width="4"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 2. ЕРЕКШЕЛІКТЕРІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Орталардың ерекшеліктері</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Features of Environments</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Особенности сред</h2>
+
+            <div class="rule-card border-t-teal-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Ground-Air -->
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h4 class="font-bold text-blue-900 mb-2">Құрлық-ауа (Наземно-воздушная)</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700">
+                            <li lang="kk">Оттегі көп.</li>
+                            <li lang="kk">Температура қатты өзгереді.</li>
+                            <li lang="kk">Жарық мол.</li>
+                            <li lang="ru">Много кислорода.</li>
+                            <li lang="ru">Сильные перепады температур.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Water -->
+                    <div class="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
+                        <h4 class="font-bold text-cyan-900 mb-2">Су (Водная)</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700">
+                            <li lang="kk">Тығыздығы жоғары.</li>
+                            <li lang="kk">Температура тұрақты.</li>
+                            <li lang="kk">Оттегі аз.</li>
+                            <li lang="ru">Высокая плотность.</li>
+                            <li lang="ru">Температура стабильна.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Soil -->
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <h4 class="font-bold text-yellow-900 mb-2">Топырақ (Почвенная)</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700">
+                            <li lang="kk">Жарық жоқ.</li>
+                            <li lang="kk">Тығыздығы өте жоғары.</li>
+                            <li lang="kk">Температура тұрақты.</li>
+                            <li lang="ru">Нет света.</li>
+                            <li lang="ru">Очень высокая плотность.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Organism -->
+                    <div class="bg-rose-50 p-4 rounded-lg border border-rose-200">
+                        <h4 class="font-bold text-rose-900 mb-2">Ағза (Организменная)</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700">
+                            <li lang="kk">Тұрақты қорек және температура.</li>
+                            <li lang="kk">Оттегі жоқ (немесе аз).</li>
+                            <li lang="kk">Қорғаныс қажет емес.</li>
+                            <li lang="ru">Постоянная еда и температура.</li>
+                            <li lang="ru">Нет кислорода (анаэробная).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. БЕЙІМДЕЛУШІЛІК -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Бейімделушілік (Адаптация)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Adaptation</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Приспособленность</h2>
+
+            <div class="rule-card border-t-green-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Әр ортада тіршілік ету үшін ағзалардың арнайы мүшелері мен қасиеттері дамыған.
+                </p>
+
+                <!-- Illustration 2: Adaptations -->
+                <svg class="illustration-svg" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Fish (Gills/Fins) -->
+                    <g transform="translate(50, 40)">
+                         <path d="M 0 20 Q 30 0, 60 20 Q 30 40, 0 20 Z" fill="#3b82f6"/>
+                         <path d="M 40 20 L 45 10" stroke="#fff" stroke-width="2"/> <!-- Gills -->
+                         <path d="M 42 22 L 47 12" stroke="#fff" stroke-width="2"/>
+                         <text x="30" y="60" font-size="10" text-anchor="middle">Fish: Gills (Желбезек)</text>
+                    </g>
+
+                    <!-- Bird (Wings) -->
+                    <g transform="translate(150, 30)">
+                        <path d="M 0 10 L 20 0 L 40 10 L 20 20 Z" fill="#fbbf24"/>
+                        <path d="M 20 0 L 30 -10 L 10 -10" fill="#fbbf24"/> <!-- Wing -->
+                        <text x="20" y="50" font-size="10" text-anchor="middle">Bird: Wings (Қанат)</text>
+                    </g>
+
+                    <!-- Mole (Digging Paws) -->
+                    <g transform="translate(250, 40)">
+                         <ellipse cx="20" cy="15" rx="20" ry="15" fill="#a16207"/>
+                         <path d="M 0 15 L -5 25 L 5 25 Z" fill="#713f12"/> <!-- Paw -->
+                         <text x="20" y="50" font-size="10" text-anchor="middle">Mole: Paws (Аяқ)</text>
+                    </g>
+
+                    <!-- Parasite (Hooks/Suckers) -->
+                    <g transform="translate(350, 40)">
+                         <circle cx="0" cy="10" r="10" fill="#f43f5e"/>
+                         <path d="M -5 0 L -10 -5 M 5 0 L 10 -5" stroke="#881337" stroke-width="2"/>
+                         <text x="0" y="50" font-size="10" text-anchor="middle">Parasite: Hooks (Ілгек)</text>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-emerald-800">
+                Төрт негізгі орта: Су, Құрлық-Ауа, Топырақ және Ағза. Әр ортаның тұрғындарының өз бейімделушіліктері (адаптациялары) бар.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-emerald-800">
+                Four main environments: Water, Ground-Air, Soil, and Organism. Inhabitants of each have their own adaptations.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-emerald-800">
+                Четыре основные среды: Водная, Наземно-воздушная, Почвенная и Организменная. Обитатели каждой среды имеют свои приспособления (адаптации).
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

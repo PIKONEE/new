@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atmospheric Precipitation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #60a5fa; color: #0f172a; font-weight: 800; }
+        .slider { -webkit-appearance: none; width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #60a5fa; cursor: pointer; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-blue-500/30">
+        <div><h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-blue-400"></h1></div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center relative min-h-[500px]">
+            <canvas id="rainCanvas" class="w-full h-full bg-black/20"></canvas>
+            <div class="absolute top-8 right-8 text-right p-4 glass rounded-2xl">
+                <div id="label-temp" class="text-[10px] uppercase text-blue-400 mb-1 font-bold">Temperature</div>
+                <div id="temp-val" class="heading-font text-3xl text-white">15°C</div>
+                <input type="range" min="-20" max="40" value="15" class="slider mt-4" id="tempSlider">
+            </div>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-blue-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-blue-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Осадки", labelTemp: "Температура",
+                defaultTitle: "Атмосферные осадки",
+                defaultText: "Вода, выпадающая из облаков или выделяющаяся из воздуха на поверхность Земли в жидком или твердом состоянии. Количество осадков измеряется толщиной слоя воды в миллиметрах (мм).",
+                rain: "Дождь", snow: "Снег", ice: "Град"
+            },
+            kz: {
+                title: "Жауын-шашын", labelTemp: "Температура",
+                defaultTitle: "Атмосфералық жауын-шашын",
+                defaultText: "Бұлттан түсетін немесе ауадан Жер бетіне сұйық немесе қатты күйде бөлінетін су. Жауын-шашын мөлшері миллиметрмен (мм) өлшенеді.",
+                rain: "Жаңбыр", snow: "Қар", ice: "Бұршақ"
+            },
+            en: {
+                title: "Precipitation", labelTemp: "Temperature",
+                defaultTitle: "Atmospheric Precipitation",
+                defaultText: "Water falling from clouds or condensing from the air onto Earth's surface in liquid or solid form. Amount is measured in millimeters (mm).",
+                rain: "Rain", snow: "Snow", ice: "Hail"
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx, particles = [];
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('label-temp').textContent = t.labelTemp;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const temp = parseInt(document.getElementById('tempSlider').value);
+            document.getElementById('temp-val').textContent = temp + "°C";
+
+            // Spawn particles
+            if(Math.random() > 0.3) {
+                particles.push({ x: Math.random()*w, y: 0, v: Math.random()*5+2, type: temp > 0 ? 'rain' : 'snow' });
+            }
+
+            particles.forEach((p, i) => {
+                p.y += p.v;
+                if(p.type === 'rain') {
+                    ctx.strokeStyle = '#60a5fa'; ctx.lineWidth = 1;
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y+10); ctx.stroke();
+                } else {
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
+                }
+                if(p.y > h) particles.splice(i, 1);
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('rainCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500;
+            setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

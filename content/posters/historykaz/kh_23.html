@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Общественный строй и быт сарматов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #e2e8f0; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .steel-gradient {
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+        }
+
+        .border-silver {
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            box-shadow: inset 0 0 20px rgba(148, 163, 184, 0.05);
+        }
+
+        .lang-active {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            box-shadow: 0 0 20px rgba(241, 245, 249, 0.3);
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 2.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: #94a3b8;
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        canvas {
+            cursor: pointer;
+        }
+
+        /* Декор в стиле чеканки */
+        .engraving {
+            border: 2px solid #334155;
+            position: relative;
+        }
+        .engraving::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            pointer-events: none;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="steel-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header (No emoji in title) -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-slate-800 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.3em] text-slate-100">Общественный строй и быт сарматов</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Hierarchy (The Map) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-8 glass-panel p-8 md:p-12 border-silver">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 id="viz-title" class="text-2xl font-black uppercase text-slate-100">Военная демократия</h2>
+                    <span id="hint" class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Interactive Hierarchy Explorer</span>
+                </div>
+                <div class="relative h-[400px] w-full flex justify-center">
+                    <canvas id="hierarchyCanvas"></canvas>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-4 flex flex-col gap-6">
+                <div id="info-box" class="flex-1 glass-panel p-8 border-silver border-t-4 border-t-slate-400">
+                    <h3 id="info-title" class="text-xl font-bold text-white mb-4 uppercase">Структура власти</h3>
+                    <p id="info-text" class="text-slate-400 leading-relaxed text-sm">
+                        Нажмите на уровни пирамиды слева, чтобы узнать о социальном устройстве сарматского общества.
+                    </p>
+                </div>
+                <div class="bg-slate-100 p-8 rounded-[2.5rem] text-slate-900">
+                    <div class="text-4xl mb-4">🛡️</div>
+                    <h4 id="feature-t" class="font-black uppercase text-sm mb-2 tracking-tight">Роль женщин</h4>
+                    <p id="feature-d" class="text-xs font-medium leading-relaxed opacity-70">У сарматов женщины наравне с мужчинами владели оружием и участвовали в народных собраниях.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Material Culture & Economy (The Plan) -->
+        <div class="space-y-12">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-slate-100 uppercase tracking-[0.4em]">Материальный мир</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Heavy Cavalry Armor -->
+                <div class="glass-panel p-10 border-silver flex flex-col justify-between engraving">
+                    <div>
+                        <div class="text-5xl mb-6">⛓️</div>
+                        <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Железный панцирь</h3>
+                        <p id="c1-d" class="text-slate-400 text-sm leading-relaxed">Сарматы первыми создали тяжеловооруженную конницу. Их воины и кони были защищены чешуйчатыми железными доспехами.</p>
+                    </div>
+                </div>
+
+                <!-- Nomad Economy -->
+                <div class="glass-panel p-10 border-silver flex flex-col justify-between engraving">
+                    <div>
+                        <div class="text-5xl mb-6">🌾</div>
+                        <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Хозяйство</h3>
+                        <p id="c2-d" class="text-slate-400 text-sm leading-relaxed">Основа — кочевое скотоводство. В поймах рек (Урал, Сырдарья) занимались вспомогательным земледелием и рыболовством.</p>
+                    </div>
+                </div>
+
+                <!-- Religion -->
+                <div class="glass-panel p-10 border-silver flex flex-col justify-between engraving">
+                    <div>
+                        <div class="text-5xl mb-6">🔥</div>
+                        <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Культ огня</h3>
+                        <p id="c3-d" class="text-slate-400 text-sm leading-relaxed">Сарматы поклонялись огню и солнцу. Огонь считался очищающей силой, его символы часто встречаются в декоре украшений.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Full Width Art Highlight -->
+            <div class="bg-slate-300 rounded-[3.5rem] p-1 md:p-14 shadow-2xl relative overflow-hidden">
+                <div class="bg-slate-900 p-10 md:p-16 rounded-[3rem] flex flex-col md:flex-row items-center gap-12 relative z-10">
+                    <div class="shrink-0 text-center">
+                        <div class="text-8xl mb-4">💍</div>
+                        <div id="art-badge" class="bg-slate-100 text-slate-900 px-6 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Sarmatian Style</div>
+                    </div>
+                    <div>
+                        <h3 id="art-title" class="text-3xl font-black text-white mb-6 uppercase italic tracking-tighter">Полихромный «Звериный стиль»</h3>
+                        <p id="art-desc" class="text-slate-400 text-xl font-light leading-relaxed">
+                            Сарматское искусство характеризуется обилием ярких вставок из бирюзы, сердолика и цветного стекла, вплетенных в изображения борьбы хищников.
+                        </p>
+                    </div>
+                </div>
+                <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5 text-white font-black rotate-45">SILVER</div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-slate-800 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Сарматская культура — это суровая эстетика железа и серебра, закаленная в бесконечных походах от Урала до Дуная.»
+            </p>
+            <div class="mt-12 text-[10px] uppercase font-bold tracking-[1em] text-slate-700">The Iron Age Legacy</div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Общественный строй и быт сарматов",
+                vizTitle: "Военная демократия",
+                hint: "Интерактивная пирамида общества",
+                infoBoxDefault: "Нажмите на уровни пирамиды слева, чтобы узнать о социальном устройстве сарматского общества.",
+                featureT: "Роль женщин", featureD: "У сарматов женщины наравне с мужчинами владели оружием, охотились и участвовали в политической жизни рода.",
+                planTitle: "Материальный мир",
+                c1T: "Железный панцирь", c1D: "Сарматы создали катафрактариев — всадников, полностью закрытых броней. Это изменило тактику войн той эпохи.",
+                c2T: "Хозяйство", c2D: "Ведущую роль играло кочевое скотоводство. На западе Казахстана найдены свидетельства развитого металлургического производства.",
+                c3T: "Культ огня", c3D: "Главным божеством было Солнце. Огонь играл сакральную роль в погребальных обрядах и повседневной магии.",
+                artTitle: "Сарматский стиль", artDesc: "Уникальное сочетание «звериного стиля» и полихромии. Мастера использовали золото и серебро с яркой инкрустацией камнями.",
+                artBadge: "Искусство сарматов",
+                footer: "«Сарматская культура — это суровая эстетика железа и серебра, закаленная в бесконечных походах от Урала до Дуная.»",
+                levels: [
+                    { title: "Цари и Вожди", text: "Возглавляли племена и союзы. Избирались из наиболее влиятельных и богатых родов." },
+                    { title: "Воины", text: "Опора общества. Сарматское войско состояло из профессиональных всадников-катафрактариев." },
+                    { title: "Общинники", text: "Свободные люди, занимавшиеся скотоводством. Имели право голоса в народном собрании." }
+                ]
+            },
+            kz: {
+                title: "Сарматтардың қоғамдық құрылымы мен тұрмысы",
+                vizTitle: "Әскери демократия",
+                hint: "Қоғамның интерактивті пирамидасы",
+                infoBoxDefault: "Сармат қоғамының әлеуметтік құрылымы туралы білу үшін сол жақтағы пирамида деңгейлерін басыңыз.",
+                featureT: "Әйелдер рөлі", featureD: "Сарматтарда әйелдер ерлермен бірдей қару меңгерген, аң аулаған және рудың саяси өміріне қатысқан.",
+                planTitle: "Материалдық дүние",
+                c1T: "Темір сауыт", c1D: "Сарматтар катафрактарийлерді — толықтай броньмен жабылған салт аттыларды құрды. Бұл сол дәуірдегі соғыс тактикасын өзгертті.",
+                c2T: "Шаруашылық", c2D: "Көшпелі мал шаруашылығы жетекші рөл атқарды. Батыс Қазақстанда дамыған металлургиялық өндірістің дәлелдері табылған.",
+                c3T: "Отқа табыну", c3D: "Басты құдай Күн болды. От жерлеу рәсімдерінде және күнделікті сиқырда қасиетті рөл атқарды.",
+                artTitle: "Сармат стилі", artDesc: "«Аң стилі» мен полихромияның бірегей үйлесімі. Шеберлер асыл тастармен безендірілген алтын мен күмісті пайдаланды.",
+                artBadge: "Сармат өнері",
+                footer: "«Сармат мәдениеті — Оралдан Дунайға дейінгі шексіз жорықтарда шыңдалған темір мен күмістің қатал эстетикасы.»",
+                levels: [
+                    { title: "Патшалар мен Көсемдер", text: "Тайпалар мен одақтарды басқарды. Ең ықпалды және бай рулардан сайланды." },
+                    { title: "Жауынгерлер", text: "Қоғамның тірегі. Сармат әскері кәсіби катафрактарий салт аттылардан тұрды." },
+                    { title: "Қатардағы қауым мүшелері", text: "Мал шаруашылығымен айналысатын еркін адамдар. Халық жиналысында дауыс беру құқығына ие болды." }
+                ]
+            },
+            en: {
+                title: "Sarmatian Social Structure and Life",
+                vizTitle: "Military Democracy",
+                hint: "Interactive Social Pyramid",
+                infoBoxDefault: "Click on the pyramid levels to the left to learn about the social structure of Sarmatian society.",
+                featureT: "Role of Women", featureD: "Sarmatian women wielded weapons, hunted, and participated in the political life of the clan alongside men.",
+                planTitle: "Material World",
+                c1T: "Iron Armor", c1D: "Sarmatians created cataphracts — riders fully covered in iron scale armor, changing the warfare of that era.",
+                c2T: "Economy", c2D: "Nomadic pastoralism played the leading role. Evidence of developed metallurgy has been found in Western Kazakhstan.",
+                c3T: "Fire Cult", c3D: "The Sun was the supreme deity. Fire played a sacred role in burial rites and daily magic rituals.",
+                artTitle: "Sarmatian Style", artDesc: "A unique blend of the 'animal style' and polychromy. Craftsmen used gold and silver with bright stone inlays.",
+                artBadge: "Sarmatian Art",
+                footer: "«Sarmatian culture is the stern aesthetics of iron and silver, tempered in endless marches from the Urals to the Danube.»",
+                levels: [
+                    { title: "Kings and Chiefs", text: "Led tribes and unions. Elected from the most influential and wealthy clans." },
+                    { title: "Warriors", text: "The backbone of society. The Sarmatian army consisted of professional cataphract cavalry." },
+                    { title: "Commoners", text: "Free people engaged in livestock breeding. They had the right to vote in the public assembly." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('hierarchyCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 400;
+            drawPyramid();
+        }
+
+        function drawPyramid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const baseY = 350;
+            const pyramidWidth = 300;
+            const levelHeight = 80;
+
+            const levels = [
+                { y: 110, w: 100, color: 'rgba(241, 245, 249, 0.8)', stroke: '#fff' }, // Top
+                { y: 190, w: 200, color: 'rgba(148, 163, 184, 0.5)', stroke: '#94a3b8' }, // Mid
+                { y: 270, w: 300, color: 'rgba(71, 85, 105, 0.3)', stroke: '#475569' }  // Bottom
+            ];
+
+            levels.forEach((lvl, i) => {
+                ctx.beginPath();
+                ctx.moveTo(centerX - lvl.w / 2, lvl.y + levelHeight);
+                ctx.lineTo(centerX + lvl.w / 2, lvl.y + levelHeight);
+                ctx.lineTo(centerX + (lvl.w - 100) / 2, lvl.y);
+                ctx.lineTo(centerX - (lvl.w - 100) / 2, lvl.y);
+                ctx.closePath();
+                
+                ctx.fillStyle = lvl.color;
+                ctx.fill();
+                ctx.strokeStyle = lvl.stroke;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Text labels on pyramid
+                ctx.fillStyle = i === 0 ? '#000' : '#fff';
+                ctx.font = "bold 12px Montserrat";
+                ctx.textAlign = "center";
+                ctx.fillText(translations[currentLang].levels[i].title, centerX, lvl.y + levelHeight/2 + 5);
+            });
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clickY = e.clientY - rect.top;
+            
+            let levelIndex = -1;
+            if (clickY > 110 && clickY < 190) levelIndex = 0;
+            else if (clickY >= 190 && clickY < 270) levelIndex = 1;
+            else if (clickY >= 270 && clickY < 350) levelIndex = 2;
+
+            if (levelIndex !== -1) {
+                const info = translations[currentLang].levels[levelIndex];
+                document.getElementById('info-title').innerText = info.title;
+                document.getElementById('info-text').innerText = info.text;
+                document.getElementById('info-box').style.borderColor = (levelIndex === 0 ? '#fff' : (levelIndex === 1 ? '#94a3b8' : '#475569'));
+            }
+        });
+
+        function changeLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('info-title').innerText = t.levels[0].title; // Reset to top level on lang change
+            document.getElementById('info-text').innerText = t.levels[0].text;
+            document.getElementById('feature-t').innerText = t.featureT;
+            document.getElementById('feature-d').innerText = t.featureD;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('art-title').innerText = t.artTitle;
+            document.getElementById('art-desc').innerText = t.artDesc;
+            document.getElementById('art-badge').innerText = t.artBadge;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-lg text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-200 transition-all";
+            });
+
+            resizeCanvas();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.onload = () => changeLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

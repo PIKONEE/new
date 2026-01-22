@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Атомдық және молекулалық массалар</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #dcfce7; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #15803d 0%, #166534 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #166534; border-bottom: 3px solid #bbf7d0; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #15803d; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #15803d; background: white; color: #15803d; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #15803d; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: center; font-size: 11px; }
+        th { background-color: #15803d; color: white; }
+        .calculation-box { background: linear-gradient(135deg, #bbf7d0 0%, #dcfce7 100%); padding: 20px; border-radius: 0.75rem; border-left: 5px solid #15803d; margin: 15px 0; font-family: 'Courier New', monospace; font-size: 13px; }
+        .formula-box { background: #dbeafe; padding: 15px; border-radius: 0.75rem; border-left: 4px solid #15803d; margin: 10px 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-green-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Салыстырмалы Атомдық және Молекулалық Массалар!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Relative Atomic & Molecular Masses!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Относительная атомная и молекулярная массы!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-green-100">Атомдық масса (Ar) = бір атомның салмағы. Молекулалық масса (Mr) = бірлі молекуланың салмағы. H₂O = 18, CO₂ = 44, NaCl = 58.5. ЕСТЕ ҚАЖЕТ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-green-100">Atomic mass (Ar) = mass of one atom. Molecular mass (Mr) = mass of one molecule. H₂O = 18, CO₂ = 44, NaCl = 58.5. REMEMBER!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-green-100">Атомная масса (Ar) = масса атома. Молярная масса (Mr) = масса молекулы. H₂O = 18, CO₂ = 44, NaCl = 58,5. ВАЖНО!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. АТОМДЫҚ МАССАЛАР ТАБЛИЦАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. ATOMIC MASSES TABLE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Таблица атомных масс</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ЭЛЕМЕНТ</th>
+                            <th lang="kk" class="lang-content">ТАҢБАСЫ</th>
+                            <th lang="kk" class="lang-content">Ar (МАССА)</th>
+                            <th lang="kk" class="lang-content">МЫСАЛ</th>
+
+                            <th lang="en" class="lang-content">ELEMENT</th>
+                            <th lang="en" class="lang-content">SYMBOL</th>
+                            <th lang="en" class="lang-content">Ar (MASS)</th>
+                            <th lang="en" class="lang-content">EXAMPLE</th>
+
+                            <th lang="ru" class="lang-content">ЭЛЕМЕНТ</th>
+                            <th lang="ru" class="lang-content">СИМВОЛ</th>
+                            <th lang="ru" class="lang-content">Ar (МАССА)</th>
+                            <th lang="ru" class="lang-content">ПРИМЕР</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Водород</td>
+                            <td lang="kk" class="lang-content">H</td>
+                            <td lang="kk" class="lang-content"><strong>1</strong></td>
+                            <td lang="kk" class="lang-content">H₂ = 2</td>
+
+                            <td lang="en" class="lang-content">Hydrogen</td>
+                            <td lang="en" class="lang-content">H</td>
+                            <td lang="en" class="lang-content"><strong>1</strong></td>
+                            <td lang="en" class="lang-content">H₂ = 2</td>
+
+                            <td lang="ru" class="lang-content">водород</td>
+                            <td lang="ru" class="lang-content">H</td>
+                            <td lang="ru" class="lang-content"><strong>1</strong></td>
+                            <td lang="ru" class="lang-content">H₂ = 2</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Углерод</td>
+                            <td lang="kk" class="lang-content">C</td>
+                            <td lang="kk" class="lang-content"><strong>12</strong></td>
+                            <td lang="kk" class="lang-content">C = 12</td>
+
+                            <td lang="en" class="lang-content">Carbon</td>
+                            <td lang="en" class="lang-content">C</td>
+                            <td lang="en" class="lang-content"><strong>12</strong></td>
+                            <td lang="en" class="lang-content">C = 12</td>
+
+                            <td lang="ru" class="lang-content">углерод</td>
+                            <td lang="ru" class="lang-content">C</td>
+                            <td lang="ru" class="lang-content"><strong>12</strong></td>
+                            <td lang="ru" class="lang-content">C = 12</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Азот</td>
+                            <td lang="kk" class="lang-content">N</td>
+                            <td lang="kk" class="lang-content"><strong>14</strong></td>
+                            <td lang="kk" class="lang-content">N = 14</td>
+
+                            <td lang="en" class="lang-content">Nitrogen</td>
+                            <td lang="en" class="lang-content">N</td>
+                            <td lang="en" class="lang-content"><strong>14</strong></td>
+                            <td lang="en" class="lang-content">N = 14</td>
+
+                            <td lang="ru" class="lang-content">азот</td>
+                            <td lang="ru" class="lang-content">N</td>
+                            <td lang="ru" class="lang-content"><strong>14</strong></td>
+                            <td lang="ru" class="lang-content">N = 14</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Оттегі</td>
+                            <td lang="kk" class="lang-content">O</td>
+                            <td lang="kk" class="lang-content"><strong>16</strong></td>
+                            <td lang="kk" class="lang-content">O₂ = 32</td>
+
+                            <td lang="en" class="lang-content">Oxygen</td>
+                            <td lang="en" class="lang-content">O</td>
+                            <td lang="en" class="lang-content"><strong>16</strong></td>
+                            <td lang="en" class="lang-content">O₂ = 32</td>
+
+                            <td lang="ru" class="lang-content">кислород</td>
+                            <td lang="ru" class="lang-content">O</td>
+                            <td lang="ru" class="lang-content"><strong>16</strong></td>
+                            <td lang="ru" class="lang-content">O₂ = 32</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Натрий</td>
+                            <td lang="kk" class="lang-content">Na</td>
+                            <td lang="kk" class="lang-content"><strong>23</strong></td>
+                            <td lang="kk" class="lang-content">Na = 23</td>
+
+                            <td lang="en" class="lang-content">Sodium</td>
+                            <td lang="en" class="lang-content">Na</td>
+                            <td lang="en" class="lang-content"><strong>23</strong></td>
+                            <td lang="en" class="lang-content">Na = 23</td>
+
+                            <td lang="ru" class="lang-content">натрий</td>
+                            <td lang="ru" class="lang-content">Na</td>
+                            <td lang="ru" class="lang-content"><strong>23</strong></td>
+                            <td lang="ru" class="lang-content">Na = 23</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Хлор</td>
+                            <td lang="kk" class="lang-content">Cl</td>
+                            <td lang="kk" class="lang-content"><strong>35.5</strong></td>
+                            <td lang="kk" class="lang-content">Cl₂ = 71</td>
+
+                            <td lang="en" class="lang-content">Chlorine</td>
+                            <td lang="en" class="lang-content">Cl</td>
+                            <td lang="en" class="lang-content"><strong>35.5</strong></td>
+                            <td lang="en" class="lang-content">Cl₂ = 71</td>
+
+                            <td lang="ru" class="lang-content">хлор</td>
+                            <td lang="ru" class="lang-content">Cl</td>
+                            <td lang="ru" class="lang-content"><strong>35,5</strong></td>
+                            <td lang="ru" class="lang-content">Cl₂ = 71</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. МОЛЕКУЛАЛЫҚ МАССАНЫ ЕСЕПТЕУ - МЫСАЛ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. CALCULATE MOLECULAR MASS - EXAMPLES</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Расчёт молярной массы - примеры</h2>
+
+            <div class="rule-card">
+                <div class="space-y-4">
+                    <div class="calculation-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ 1: H₂O молекулалық массасы</strong></p>
+                        <p lang="kk" class="lang-content">H₂O = 2×H + 1×O</p>
+                        <p lang="kk" class="lang-content">Mr(H₂O) = 2×1 + 1×16 = 2 + 16 = <strong>18</strong> ✓</p>
+
+                        <p lang="en" class="lang-content"><strong>📝 EXAMPLE 1: Molecular mass of H₂O</strong></p>
+                        <p lang="en" class="lang-content">H₂O = 2×H + 1×O</p>
+                        <p lang="en" class="lang-content">Mr(H₂O) = 2×1 + 1×16 = 2 + 16 = <strong>18</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content"><strong>📝 ПРИМЕР 1: Молярная масса H₂O</strong></p>
+                        <p lang="ru" class="lang-content">H₂O = 2×H + 1×O</p>
+                        <p lang="ru" class="lang-content">Mr(H₂O) = 2×1 + 1×16 = 2 + 16 = <strong>18</strong> ✓</p>
+                    </div>
+
+                    <div class="calculation-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ 2: CO₂ молекулалық массасы</strong></p>
+                        <p lang="kk" class="lang-content">CO₂ = 1×C + 2×O</p>
+                        <p lang="kk" class="lang-content">Mr(CO₂) = 1×12 + 2×16 = 12 + 32 = <strong>44</strong> ✓</p>
+
+                        <p lang="en" class="lang-content"><strong>📝 EXAMPLE 2: Molecular mass of CO₂</strong></p>
+                        <p lang="en" class="lang-content">CO₂ = 1×C + 2×O</p>
+                        <p lang="en" class="lang-content">Mr(CO₂) = 1×12 + 2×16 = 12 + 32 = <strong>44</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content"><strong>📝 ПРИМЕР 2: Молярная масса CO₂</strong></p>
+                        <p lang="ru" class="lang-content">CO₂ = 1×C + 2×O</p>
+                        <p lang="ru" class="lang-content">Mr(CO₂) = 1×12 + 2×16 = 12 + 32 = <strong>44</strong> ✓</p>
+                    </div>
+
+                    <div class="calculation-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ 3: NaCl молекулалық массасы</strong></p>
+                        <p lang="kk" class="lang-content">NaCl = 1×Na + 1×Cl</p>
+                        <p lang="kk" class="lang-content">Mr(NaCl) = 1×23 + 1×35.5 = 23 + 35.5 = <strong>58.5</strong> ✓</p>
+
+                        <p lang="en" class="lang-content"><strong>📝 EXAMPLE 3: Molecular mass of NaCl</strong></p>
+                        <p lang="en" class="lang-content">NaCl = 1×Na + 1×Cl</p>
+                        <p lang="en" class="lang-content">Mr(NaCl) = 1×23 + 1×35.5 = 23 + 35.5 = <strong>58.5</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content"><strong>📝 ПРИМЕР 3: Молярная масса NaCl</strong></p>
+                        <p lang="ru" class="lang-content">NaCl = 1×Na + 1×Cl</p>
+                        <p lang="ru" class="lang-content">Mr(NaCl) = 1×23 + 1×35,5 = 23 + 35,5 = <strong>58,5</strong> ✓</p>
+                    </div>
+
+                    <div class="calculation-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ 4: Ca(OH)₂ молекулалық массасы</strong></p>
+                        <p lang="kk" class="lang-content">Ca(OH)₂ = 1×Ca + 2×(O+H) = 1×Ca + 2×O + 2×H</p>
+                        <p lang="kk" class="lang-content">Mr(Ca(OH)₂) = 1×40 + 2×16 + 2×1 = 40 + 32 + 2 = <strong>74</strong> ✓</p>
+
+                        <p lang="en" class="lang-content"><strong>📝 EXAMPLE 4: Molecular mass of Ca(OH)₂</strong></p>
+                        <p lang="en" class="lang-content">Ca(OH)₂ = 1×Ca + 2×(O+H) = 1×Ca + 2×O + 2×H</p>
+                        <p lang="en" class="lang-content">Mr(Ca(OH)₂) = 1×40 + 2×16 + 2×1 = 40 + 32 + 2 = <strong>74</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content"><strong>📝 ПРИМЕР 4: Молярная масса Ca(OH)₂</strong></p>
+                        <p lang="ru" class="lang-content">Ca(OH)₂ = 1×Ca + 2×(O+H) = 1×Ca + 2×O + 2×H</p>
+                        <p lang="ru" class="lang-content">Mr(Ca(OH)₂) = 1×40 + 2×16 + 2×1 = 40 + 32 + 2 = <strong>74</strong> ✓</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #bbf7d0; border-radius: 1rem; border-top: 4px solid #15803d;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Салыстырмалы атомдық масса (Ar) = бір атомның салмағы. Салыстырмалы молекулалық масса (Mr) = бір молекуланың салмағы. Mr есептеу: 1) формула элементтерді анықта, 2) әр элементтің Ar масс табу, 3) индекстер көбейту, 4) барлықты қосу. H₂O=18, CO₂=44, NaCl=58.5, Ca(OH)₂=74!</p>
+            <p lang="en" class="lang-content text-sm">Relative atomic mass (Ar) = mass of one atom. Relative molecular mass (Mr) = mass of one molecule. Calculate Mr: 1) identify elements in formula, 2) find Ar for each, 3) multiply by subscripts, 4) add all. H₂O=18, CO₂=44, NaCl=58.5, Ca(OH)₂=74!</p>
+            <p lang="ru" class="lang-content text-sm">Относительная атомная масса (Ar) = масса атома. Относительная молярная масса (Mr) = масса молекулы. Расчёт Mr: 1) определить элементы, 2) найти Ar каждого, 3) умножить на индексы, 4) сложить. H₂O=18, CO₂=44, NaCl=58,5, Ca(OH)₂=74!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

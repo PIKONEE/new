@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport of Substances</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #172554; color: #dbeafe; font-family: 'Inter'; min-height: 100vh; }
+        .glass { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .rounded-custom { border-radius: 2rem; }
+        canvas { border-radius: 1.5rem; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="flex flex-col gap-6">
+        <h1 class="text-4xl font-bold text-blue-300">VASCULAR SYSTEM</h1>
+        <div class="glass p-8 rounded-custom border-l-8 border-blue-500">
+            <h2 class="text-2xl font-bold mb-4">Два потока (Two Flows)</h2>
+            <p class="text-sm opacity-80 leading-relaxed mb-4">
+                1. <strong>Ксилема (Древесина)</strong>: Восходящий ток. Вода и минералы от корней к листьям. Движущая сила: корневое давление и испарение.<br><br>
+                2. <strong>Флоэма (Луб)</strong>: Нисходящий ток. Растворы сахаров (органика) от листьев ко всем органам.
+            </p>
+        </div>
+    </div>
+
+    <div class="h-[600px] glass p-4 rounded-custom relative bg-black/30">
+        <canvas id="transpCanvas" class="w-full h-full"></canvas>
+        <div class="absolute bottom-4 left-0 right-0 text-center text-xs flex justify-center gap-8">
+            <span class="text-blue-400">↑ XYLEM (Water)</span>
+            <span class="text-pink-400">↓ PHLOEM (Sugar)</span>
+        </div>
+    </div>
+
+    <script>
+        let cx, cvs;
+        let pUp = [], pDown = [];
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            cx.clearRect(0,0,w,h);
+
+            // Stem Cross-section logic
+            const tubeW = 60;
+            const x1 = w/2 - 50; // Xylem
+            const x2 = w/2 + 50; // Phloem
+
+            // Pipes
+            cx.fillStyle = 'rgba(59, 130, 246, 0.1)'; cx.fillRect(x1 - tubeW/2, 20, tubeW, h-40);
+            cx.strokeStyle = '#3b82f6'; cx.lineWidth = 2; cx.strokeRect(x1 - tubeW/2, 20, tubeW, h-40);
+
+            cx.fillStyle = 'rgba(236, 72, 153, 0.1)'; cx.fillRect(x2 - tubeW/2, 20, tubeW, h-40);
+            cx.strokeStyle = '#ec4899'; cx.strokeRect(x2 - tubeW/2, 20, tubeW, h-40);
+
+            // Particles Up (Water)
+            if(pUp.length < 50) pUp.push({x: x1 + (Math.random()-0.5)*40, y: h-20, v: 2+Math.random()});
+            pUp.forEach((p, i) => {
+                p.y -= p.v;
+                cx.fillStyle = '#60a5fa'; cx.beginPath(); cx.arc(p.x, p.y, 3, 0, Math.PI*2); cx.fill();
+                if(p.y < 20) pUp.splice(i, 1);
+            });
+
+            // Particles Down (Sugar)
+            if(pDown.length < 50) pDown.push({x: x2 + (Math.random()-0.5)*40, y: 20, v: 1+Math.random()});
+            pDown.forEach((p, i) => {
+                p.y += p.v;
+                cx.fillStyle = '#f472b6'; cx.fillRect(p.x, p.y, 6, 6); // Squares for sugar
+                if(p.y > h-20) pDown.splice(i, 1);
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('transpCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

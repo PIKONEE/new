@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Взаимодействие тел. Масса</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Используем ту же розовую тему */
+        .header-card {
+            background-color: #be185d; /* Розовый-700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(190, 24, 93, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #9d174d; /* Розовый-800 */
+            border-bottom: 3px solid #f9a8d4; /* Розовый-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f1f5f9; /* Ашық сұр */
+            border-radius: 1rem;
+            border-top: 4px solid #64748b; /* Сұр */
+        }
+         .term {
+            font-weight: bold;
+            color: #9d174d; /* pink-800 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #be185d;
+            background-color: #ffffff;
+            color: #be185d;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #fdf2f8;
+        }
+        .lang-btn.active {
+            background-color: #be185d;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 200px;
+            margin: 15px 0;
+            border: 1px solid #fbcfe8;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #be185d;
+            text-anchor: middle;
+        }
+        .svg-force-arrow {
+            stroke: #dc2626;
+            stroke-width: 3;
+            marker-end: url(#arrowhead-red);
+        }
+        .svg-velocity-arrow {
+             stroke: #3b82f6;
+             stroke-width: 3;
+             marker-end: url(#arrowhead-blue);
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-100">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+<!-- КНОПКА НАЗАД (из шаблона) -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">Взаимодействие тел. Масса</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">Interaction of Bodies. Mass</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">Взаимодействие тел. Масса</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-gray-100">Денелердің бір-біріне әсері және инерттіліктің өлшемі.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-gray-100">The action of bodies on each other and the measure of inertia.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-gray-100">Действие тел друг на друга и мера инертности.</p>
+        </header>
+
+        <!-- 1. ВЗАИМОДЕЙСТВИЕ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Өзара әрекеттесу деген не?</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Interaction?</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое взаимодействие?</h2>
+
+            <div class="rule-card border-t-pink-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Денелердің жылдамдығы өздігінен өзгермейді, тек басқа денелердің әсерінен өзгереді. Бұл әсер әрқашан <span class="term" lang="kk">екі жақты</span> болады.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    The velocity of bodies does not change on its own, but only under the influence of other bodies. This action is always <span class="term" lang="en">mutual (two-sided)</span>.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Скорость тел не меняется сама по себе, а только под действием других тел. Это действие всегда является <span class="term" lang="ru">взаимным (двусторонним)</span>.
+                </p>
+
+                <!-- Иллюстрация 1: ЛОДКИ С ВЕРЕВКОЙ -->
+                <svg class="illustration-svg" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" />
+                        </marker>
+                        <marker id="arrowhead-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
+                        </marker>
+                    </defs>
+
+                    <!-- Вода -->
+                    <rect x="0" y="110" width="400" height="50" fill="#e0f2fe" />
+
+                    <!-- ---- ЛЕВАЯ СТОРОНА (ТЕЛО 1) ---- -->
+                    <g transform="translate(80, 100)">
+                        <!-- Лодка -->
+                        <path d="M -40 10 Q -10 30, 20 10 L 10 -10 L -30 -10 Z" fill="#f472b6" stroke="#be185d" stroke-width="2"/>
+                        <!-- Человек -->
+                        <circle cx="-10" cy="-20" r="12" fill="#be185d" />
+                        <line x1="-10" y1="-8" x2="-10" y2="10" stroke="#be185d" stroke-width="2"/>
+                        <!-- Рука держит веревку -->
+                        <line x1="-10" y1="-15" x2="10" y2="-5" stroke="#be185d" stroke-width="2"/>
+
+                        <!-- Подпись -->
+                        <text x="-10" y="45" class="svg-label" font-size="14">1</text>
+                    </g>
+
+                     <!-- ---- ПРАВАЯ СТОРОНА (ТЕЛО 2) ---- -->
+                    <g transform="translate(320, 100)">
+                        <!-- Лодка -->
+                        <path d="M 40 10 Q 10 30, -20 10 L -10 -10 L 30 -10 Z" fill="#f472b6" stroke="#be185d" stroke-width="2"/>
+                        <!-- Человек -->
+                        <circle cx="10" cy="-20" r="12" fill="#be185d" />
+                         <line x1="10" y1="-8" x2="10" y2="10" stroke="#be185d" stroke-width="2"/>
+                         <!-- Рука держит веревку -->
+                        <line x1="10" y1="-15" x2="-10" y2="-5" stroke="#be185d" stroke-width="2"/>
+
+                        <!-- Подпись -->
+                        <text x="10" y="45" class="svg-label" font-size="14">2</text>
+                    </g>
+
+                    <!-- Веревка (натянута между руками x=90 и x=310) -->
+                    <line x1="90" y1="95" x2="310" y2="95" stroke="#334155" stroke-width="2" />
+
+                    <!-- ---- СИЛЫ (Красные) ---- -->
+                    <!-- F12 (Сила действующая на 1 со стороны 2) - Тянет вправо -->
+                    <line x1="90" y1="95" x2="140" y2="95" class="svg-force-arrow" />
+                    <text x="115" y="85" class="svg-label" fill="#dc2626" font-weight="bold">F₁₂</text>
+
+                    <!-- F21 (Сила действующая на 2 со стороны 1) - Тянет влево -->
+                    <line x1="310" y1="95" x2="260" y2="95" class="svg-force-arrow" />
+                    <text x="285" y="85" class="svg-label" fill="#dc2626" font-weight="bold">F₂₁</text>
+
+                    <!-- ---- СКОРОСТИ (Синие) ---- -->
+                    <!-- v1 (Лодка 1 едет вправо) -->
+                    <line x1="40" y1="130" x2="80" y2="130" class="svg-velocity-arrow" />
+                    <text x="60" y="125" class="svg-label" fill="#3b82f6">v₁</text>
+
+                    <!-- v2 (Лодка 2 едет влево) -->
+                    <line x1="360" y1="130" x2="320" y2="130" class="svg-velocity-arrow" />
+                    <text x="340" y="125" class="svg-label" fill="#3b82f6">v₂</text>
+
+                     <!-- Центр текст -->
+                    <text x="200" y="50" class="svg-label" font-size="16">
+                        <tspan lang="kk">ТАРТЫЛУ / PULL</tspan>
+                        <tspan lang="en">PULL</tspan>
+                        <tspan lang="ru">ПРИТЯЖЕНИЕ</tspan>
+                    </text>
+                </svg>
+
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700"><strong>Қорытынды:</strong> Егер бірінші дене екінші денеге әсер етсе (F₁₂), онда екінші дене де біріншісіне дәл сондай күшпен әсер етеді (F₂₁). Екі дене де бір-біріне қарай қозғалады.</p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700"><strong>Conclusion:</strong> If body 1 acts on body 2 (F₁₂), then body 2 acts back on body 1 with equal force (F₂₁). Both bodies move towards each other.</p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700"><strong>Вывод:</strong> Если первое тело действует на второе (F₁₂), то и второе действует на первое с точно такой же силой (F₂₁). Оба тела движутся навстречу друг другу.</p>
+            </div>
+        </section>
+
+        <!-- 2. МАССА -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Масса – инерттілік өлшемі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Mass as a Measure of Inertia</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Масса – мера инертности</h2>
+
+            <div class="rule-card border-t-blue-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Барлық денелердің өз жылдамдығын сақтау қасиеті бар (<span class="term" lang="kk">инерция</span>). Бірақ әр түрлі денелер бұл қасиетті әр түрлі көрсетеді.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    All bodies have the property of maintaining their velocity (<span class="term" lang="en">inertia</span>). But different bodies manifest this property differently.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Все тела обладают свойством сохранять свою скорость (<span class="term" lang="ru">инерция</span>). Но разные тела проявляют это свойство по-разному.
+                </p>
+
+                <ul class="list-disc pl-6 mb-4 text-gray-700">
+                    <li lang="kk" class="lang-content mb-2">Кейбір денелер жылдамдығын тез өзгертеді (олар жеңіл).</li>
+                    <li lang="en" class="lang-content mb-2">Some bodies change their velocity quickly (they are light).</li>
+                    <li lang="ru" class="lang-content mb-2">Некоторые тела быстро меняют свою скорость (они легкие).</li>
+
+                    <li lang="kk" class="lang-content mb-2">Басқалары жылдамдығын баяу өзгертеді (олар ауыр, инертті).</li>
+                    <li lang="en" class="lang-content mb-2">Others change their velocity slowly (they are heavy, inert).</li>
+                    <li lang="ru" class="lang-content mb-2">Другие меняют скорость медленно (они тяжелые, инертные).</li>
+                </ul>
+
+                <div class="example-block border-l-blue-400 bg-blue-50">
+                    <p lang="kk" class="lang-content text-lg">
+                        <span class="term" lang="kk">Масса (m)</span> – бұл дененің инерттілігін көрсететін физикалық шама. Массасы көп дененің жылдамдығын өзгерту қиынырақ.
+                    </p>
+                    <p lang="en" class="lang-content text-lg">
+                        <span class="term" lang="en">Mass (m)</span> is a physical quantity that describes a body's inertia. It is harder to change the velocity of a body with more mass.
+                    </p>
+                    <p lang="ru" class="lang-content text-lg">
+                        <span class="term" lang="ru">Масса (m)</span> – это физическая величина, которая показывает инертность тела. Скорость тела с большей массой изменить труднее.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. МЫСАЛ / ТӘЖІРИБЕ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Өзара әрекеттесу мысалы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Interaction Example</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Пример взаимодействия</h2>
+
+            <div class="rule-card border-t-red-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Екі дене өзара әрекеттескенде, массасы <strong>АЗ</strong> дененің жылдамдығы <strong>КӨБІРЕК</strong> өзгереді.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    When two bodies interact, the velocity of the body with <strong>LESS</strong> mass changes <strong>MORE</strong>.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    При взаимодействии двух тел скорость тела с <strong>МЕНЬШЕЙ</strong> массой изменяется <strong>СИЛЬНЕЕ (больше)</strong>.
+                </p>
+
+                <!-- Иллюстрация 2: Взрослый и ребенок ОТТАЛКИВАЮТСЯ (Исправлено) -->
+                <svg class="illustration-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                     <!-- Пол -->
+                    <line x1="0" y1="150" x2="400" y2="150" stroke="#94a3b8" stroke-width="2"/>
+
+                    <!-- ---- Взрослый (Большая масса m1) СЛЕВА ---- -->
+                    <!-- Смещаем чуть ближе к центру -->
+                    <g transform="translate(160, 100)">
+                        <circle cx="0" cy="0" r="30" fill="#be185d" opacity="0.8"/>
+                        <!-- Тело -->
+                        <line x1="0" y1="0" x2="0" y2="30" stroke="#be185d" stroke-width="3"/>
+                        <!-- Ноги/Ролики -->
+                        <rect x="-20" y="30" width="40" height="10" fill="#334155"/>
+                        <circle cx="-10" cy="45" r="5" fill="#64748b"/>
+                        <circle cx="10" cy="45" r="5" fill="#64748b"/>
+                        <!-- Рука тянется вправо -->
+                        <line x1="0" y1="0" x2="35" y2="5" stroke="#be185d" stroke-width="4" stroke-linecap="round"/>
+
+                        <text x="0" y="-40" class="svg-label" font-size="14">m₁</text>
+                    </g>
+
+                    <!-- ---- Ребенок (Малая масса m2) СПРАВА ---- -->
+                    <!-- Смещаем чуть ближе к центру -->
+                    <g transform="translate(240, 115)">
+                        <circle cx="0" cy="0" r="15" fill="#f472b6" opacity="0.8"/>
+                         <!-- Тело -->
+                        <line x1="0" y1="0" x2="0" y2="15" stroke="#f472b6" stroke-width="2"/>
+                        <!-- Ноги/Ролики -->
+                        <rect x="-15" y="15" width="30" height="10" fill="#334155"/>
+                         <circle cx="-10" cy="30" r="5" fill="#64748b"/>
+                        <circle cx="10" cy="30" r="5" fill="#64748b"/>
+                        <!-- Рука тянется влево -->
+                        <line x1="0" y1="0" x2="-45" y2="-10" stroke="#f472b6" stroke-width="3" stroke-linecap="round"/>
+
+                        <text x="0" y="-25" class="svg-label" font-size="14">m₂</text>
+                    </g>
+
+                    <!-- ---- СИЛЫ (Красные) в точке контакта (примерно x=195) ---- -->
+                    <!-- F12 (Сила действующая на 1 со стороны 2) - Толкает взрослого влево -->
+                    <line x1="195" y1="105" x2="155" y2="105" class="svg-force-arrow" />
+                    <text x="175" y="95" class="svg-label" fill="#dc2626" font-weight="bold">F₁₂</text>
+
+                    <!-- F21 (Сила действующая на 2 со стороны 1) - Толкает ребенка вправо -->
+                    <line x1="195" y1="105" x2="235" y2="105" class="svg-force-arrow" />
+                    <text x="215" y="95" class="svg-label" fill="#dc2626" font-weight="bold">F₂₁</text>
+
+                    <!-- ---- СКОРОСТИ (Синие) ---- -->
+                    <!-- v1 (Взрослый едет влево, медленно) -->
+                    <line x1="120" y1="130" x2="90" y2="130" class="svg-velocity-arrow" />
+                    <text x="105" y="125" class="svg-label" fill="#3b82f6">v₁</text>
+
+                    <!-- v2 (Ребенок едет вправо, быстро) -->
+                    <line x1="280" y1="130" x2="340" y2="130" class="svg-velocity-arrow" />
+                    <text x="310" y="125" class="svg-label" fill="#3b82f6">v₂</text>
+
+                     <!-- Центр текст -->
+                     <text x="200" y="60" text-anchor="middle" font-weight="bold" fill="#dc2626" font-size="16">
+                        <tspan lang="kk">ИТЕРІСУ / PUSH</tspan>
+                        <tspan lang="en">PUSH</tspan>
+                        <tspan lang="ru">ТОЛЧОК</tspan>
+                     </text>
+
+                    <!-- Формула внизу -->
+                     <text x="200" y="175" class="svg-label" font-size="16">
+                        m₁ > m₂  ⇒  v₁ < v₂
+                    </text>
+                </svg>
+
+                <div class="example-block border-l-red-400 bg-red-50">
+                    <p lang="kk" class="lang-content"><strong>Тәжірибе:</strong> Мұз үстінде үлкен адам (m₁) мен бала (m₂) бір-бірін итерді. Екеуі де қозғалды, бірақ бала әлдеқайда жылдам қозғалды (v₂ > v₁), өйткені оның массасы аз.</p>
+                    <p lang="en" class="lang-content"><strong>Experiment:</strong> An adult (m₁) and a child (m₂) push off each other on ice. Both move, but the child moves away much faster (v₂ > v₁) because their mass is smaller.</p>
+                    <p lang="ru" class="lang-content"><strong>Опыт:</strong> Взрослый (m₁) и ребенок (m₂) оттолкнулись друг от друга на льду. Оба пришли в движение, но ребенок поехал гораздо быстрее (v₂ > v₁), так как его масса меньше.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-gray-800">БАСТЫ ОЙ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-gray-800">SUMMARY</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-gray-800">ГЛАВНАЯ МЫСЛЬ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                1. Әрекет әрқашан өзара болады (екі жақты).<br>
+                2. <span class="term" lang="kk">Масса</span> – дененің инерттілігінің өлшемі.<br>
+                3. Өзара әрекеттесу кезінде массасы үлкен дене жылдамдығын азырақ өзгертеді.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                1. Action is always mutual (interaction).<br>
+                2. <span class="term" lang="en">Mass</span> is the measure of inertia.<br>
+                3. During interaction, the body with greater mass changes its velocity less.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                1. Действие всегда взаимно (взаимодействие).<br>
+                2. <span class="term" lang="ru">Масса</span> – это мера инертности тела.<br>
+                3. При взаимодействии тело с большей массой меньше изменяет свою скорость.
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- СКРИПТЫ ИЗ ШАБЛОНА (БЕЗ ИЗМЕНЕНИЙ) -->
+    <script>
+        function switchLang(lang) {
+            // 1. Негізгі контейнерге класс орнату
+            const container = document.getElementById('poster-container');
+            if (container) {
+                // Алдымен барлық тіл кластарын алып тастау
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                // Жаңа тіл класын қосу
+                container.classList.add('lang-' + lang);
+            }
+
+            // 2. Батырмалардың 'active' класын жаңарту
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // 3. Бет жүктелгенде бастапқы тілді орнату
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Әдепкі тіл - қазақша
+        });
+    </script>
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

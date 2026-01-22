@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экология растений</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #d1fae5; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #047857; border-bottom: 3px solid #a7f3d0; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #059669; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #059669; background: white; color: #059669; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #059669; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-emerald-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Өндіс Экология</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Plant Ecology</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Экология растений</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-emerald-100">Өндіс және табиғат ортасының өзара әрекеті - ерекшелік өндіс адаптация</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-emerald-100">Plant and environment relationships - how plants adapt to conditions</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-emerald-100">Растения и окружающая среда - адаптация растений к условиям</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Экология өндіс - Негіздік Түсінік</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Plant Ecology - Fundamental Concepts</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Экология растений - основные понятия</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-emerald-50 p-4 rounded border border-emerald-300">
+                        <h4 lang="kk" class="lang-content font-bold text-emerald-900 mb-3">🔬 Экология (Ecology) Анықтамасы</h4>
+                        <h4 lang="en" class="lang-content font-bold text-emerald-900 mb-3">🔬 Ecology Definition</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-emerald-900 mb-3">🔬 Определение экологии</h4>
+                        <p lang="kk" class="lang-content text-sm text-gray-700 mb-3">Экология (від грец. "oikos" = дом, "logos" = наука) - наука о қатынас организмдер мен табиғат ортасының құрылымы және динамикасы.</p>
+                        <p lang="en" class="lang-content text-sm text-gray-700 mb-3">Ecology (from Greek "oikos" = home, "logos" = study) - science of organism-environment relationships and ecological systems.</p>
+                        <p lang="ru" class="lang-content text-sm text-gray-700 mb-3">Экология (от греч. "oikos" = дом, "logos" = наука) - наука о взаимодействии организмов и окружающей среды.</p>
+
+                        <h4 lang="kk" class="lang-content font-bold text-emerald-900 mb-3">🌿 Өндіс Экология (Plant Ecology)</h4>
+                        <h4 lang="en" class="lang-content font-bold text-emerald-900 mb-3">🌿 Plant Ecology</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-emerald-900 mb-3">🌿 Экология растений</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content"><strong>Мақсаты:</strong> Өндіс және оның ортасының өзара әрекетін зерттеу</li>
+                            <li lang="en" class="lang-content"><strong>Goal:</strong> Study plant-environment interactions</li>
+                            <li lang="ru" class="lang-content"><strong>Цель:</strong> изучение растений и их среды обитания</li>
+
+                            <li lang="kk" class="lang-content"><strong>Деңгейлері:</strong> Организм → Популяция → Сұрыпындағы → Биом</li>
+                            <li lang="en" class="lang-content"><strong>Levels:</strong> Organism → Population → Community → Biome</li>
+                            <li lang="ru" class="lang-content"><strong>Уровни:</strong> организм → популяция → сообщество → биом</li>
+
+                            <li lang="kk" class="lang-content"><strong>Салалары:</strong> Аутэкология, синэкология, глобальная экология</li>
+                            <li lang="en" class="lang-content"><strong>Branches:</strong> Autecology, synecology, global ecology</li>
+                            <li lang="ru" class="lang-content"><strong>Разделы:</strong> аутэкология, синэкология, глобальная</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-teal-50 p-4 rounded border border-teal-300">
+                        <h4 lang="kk" class="lang-content font-bold text-teal-900 mb-3">⚖️ Экологиялық факторлар</h4>
+                        <h4 lang="en" class="lang-content font-bold text-teal-900 mb-3">⚖️ Ecological Factors</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-teal-900 mb-3">⚖️ Экологические факторы</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>1. Абиотиялық факторлар:</strong> Өндіс организмдер ортасын анықтайды
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>☀️ Жарық (свет) - фотосинтез энергия</li>
+                                    <li>🌡️ Температура - ферменттердің іс-әрекеті</li>
+                                    <li>💧 Су - 90% растения, транспорт</li>
+                                    <li>🌍 Топырақ (pH, N, P, K) - питание</li>
+                                    <li>💨 Ветер - опыление, корневое расширение</li>
+                                    <li>🧂 Соль (атмосфера, почва) - адаптация</li>
+                                </ul>
+                            </li>
+                            <li lang="en" class="lang-content"><strong>1. Abiotic factors:</strong> Physical environment
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>☀️ Light - photosynthesis energy</li>
+                                    <li>🌡️ Temperature - enzyme activity</li>
+                                    <li>💧 Water - 90% plant, transport</li>
+                                    <li>🌍 Soil - nutrients (N, P, K)</li>
+                                    <li>💨 Wind - pollination, root expansion</li>
+                                    <li>🧂 Salt tolerance - adaptation</li>
+                                </ul>
+                            </li>
+                            <li lang="ru" class="lang-content"><strong>1. Абиотические факторы:</strong> Физическая среда
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>☀️ Свет - энергия фотосинтеза</li>
+                                    <li>🌡️ Температура - активность ферментов</li>
+                                    <li>💧 Вода - 90% растения, транспорт</li>
+                                    <li>🌍 Почва - питательные вещества (N, P, K)</li>
+                                    <li>💨 Ветер - опыление, распространение</li>
+                                    <li>🧂 Соль - адаптация</li>
+                                </ul>
+                            </li>
+
+                            <li lang="kk" class="lang-content"><strong>2. Биотиялық факторлар:</strong> Өндіс өндіс қатынасы
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>🌿 Өндіс - өндіс конкурс, симбиоз</li>
+                                    <li>🦁 Жануарлар - травоядные, полинизаторы</li>
+                                    <li>🍄 Микрооргу - разложение, микориза</li>
+                                </ul>
+                            </li>
+                            <li lang="en" class="lang-content"><strong>2. Biotic factors:</strong> Living interactions
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>🌿 Plants - competition, symbiosis</li>
+                                    <li>🦁 Animals - herbivores, pollinators</li>
+                                    <li>🍄 Microorganisms - decomposition, mycorrhiza</li>
+                                </ul>
+                            </li>
+                            <li lang="ru" class="lang-content"><strong>2. Биотические факторы:</strong> Живые организмы
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>🌿 Растения - конкуренция, симбиоз</li>
+                                    <li>🦁 Животные - травоядные, опылители</li>
+                                    <li>🍄 Микроорганизмы - разложение</li>
+                                </ul>
+                            </li>
+
+                            <li lang="kk" class="lang-content"><strong>3. Антропогендік факторлар:</strong> Адам әсері
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>🏭 Өндіріс - ластану, үдіктері</li>
+                                    <li>🌳 Лесолюч - ағас ксеме</li>
+                                    <li>🚜 Сельськог - монокультура</li>
+                                </ul>
+                            </li>
+                            <li lang="en" class="lang-content"><strong>3. Anthropogenic factors:</strong> Human impact
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>🏭 Industry - pollution, deforestation</li>
+                                    <li>🌳 Forestry - tree cutting, monoculture</li>
+                                    <li>🚜 Agriculture - pesticides, fertilizers</li>
+                                </ul>
+                            </li>
+                            <li lang="ru" class="lang-content"><strong>3. Антропогенные факторы:</strong> Влияние человека
+                                <ul class="text-xs text-gray-600 ml-4">
+                                    <li>🏭 Промышленность - загрязнение, вырубка</li>
+                                    <li>🌳 Лесничество - вырубка деревьев</li>
+                                    <li>🚜 Сельского хоз. - пестициды</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-green-100 p-4 rounded border-l-4 border-green-600">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-3">🎯 Адаптация</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-3">🎯 Adaptation</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-3">🎯 Адаптация</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Түсінігі:</strong> Өндіс факторға әсері өсімендеген</li>
+                            <li lang="en" class="lang-content"><strong>Definition:</strong> Plant response to factors</li>
+                            <li lang="ru" class="lang-content"><strong>Определение:</strong> ответ растений на факторы</li>
+
+                            <li lang="kk" class="lang-content"><strong>Морфологиялық:</strong> Лист пішімі, стебель құрылымы, корень</li>
+                            <li lang="en" class="lang-content"><strong>Morphological:</strong> Leaf shape, stem structure, root</li>
+                            <li lang="ru" class="lang-content"><strong>Морфологические:</strong> форма листьев, корни</li>
+
+                            <li lang="kk" class="lang-content"><strong>Физиологиялық:</strong> Фотосинтез, су сақтау, тыну</li>
+                            <li lang="en" class="lang-content"><strong>Physiological:</strong> Photosynthesis, water storage</li>
+                            <li lang="ru" class="lang-content"><strong>Физиологические:</strong> фотосинтез, дыхание</li>
+
+                            <li lang="kk" class="lang-content"><strong>Экологиялық:</strong> Жануарлар әсері, қышқыл, өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Ecological:</strong> Animal defense, plant associations</li>
+                            <li lang="ru" class="lang-content"><strong>Экологические:</strong> защита от животных</li>
+
+                            <li lang="kk" class="lang-content"><strong>Эволюциялық:</strong> Естественный отбор - миллионлеуі жыл</li>
+                            <li lang="en" class="lang-content"><strong>Evolutionary:</strong> Natural selection over millions years</li>
+                            <li lang="ru" class="lang-content"><strong>Эволюционные:</strong> естественный отбор миллионы лет</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-emerald-100 p-4 rounded border-l-4 border-emerald-600">
+                        <h4 lang="kk" class="lang-content font-bold text-emerald-900 mb-3">🌍 Нише</h4>
+                        <h4 lang="en" class="lang-content font-bold text-emerald-900 mb-3">🌍 Ecological Niche</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-emerald-900 mb-3">🌍 Экологическая ниша</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Анықтамасы:</strong> Өндіс орыны, рөлі экосистемада</li>
+                            <li lang="en" class="lang-content"><strong>Definition:</strong> Plant role in ecosystem</li>
+                            <li lang="ru" class="lang-content"><strong>Определение:</strong> роль растения в экосистеме</li>
+
+                            <li lang="kk" class="lang-content"><strong>Топографиялық ниша:</strong> Төменгі, ортащы, төбе өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Topographic niche:</strong> Low, mid, top plants</li>
+                            <li lang="ru" class="lang-content"><strong>Топографическая ниша:</strong> нижний, средний, верхний слой</li>
+
+                            <li lang="kk" class="lang-content"><strong>Пищевая ниша:</strong> Автотроф (өндіс), гетеротроф</li>
+                            <li lang="en" class="lang-content"><strong>Nutritional niche:</strong> Autotroph (plant), heterotroph</li>
+                            <li lang="ru" class="lang-content"><strong>Пищевая ниша:</strong> автотроф (растения)</li>
+
+                            <li lang="kk" class="lang-content"><strong>Салыстырмалы ниша:</strong> Екі өндіс болмайтын</li>
+                            <li lang="en" class="lang-content"><strong>Unique niche:</strong> No two plants exactly same</li>
+                            <li lang="ru" class="lang-content"><strong>Уникальная ниша:</strong> каждое растение уникально</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-lime-100 p-4 rounded border-l-4 border-lime-600">
+                        <h4 lang="kk" class="lang-content font-bold text-lime-900 mb-3">🔄 Сукцессия</h4>
+                        <h4 lang="en" class="lang-content font-bold text-lime-900 mb-3">🔄 Ecological Succession</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-lime-900 mb-3">🔄 Сукцессия</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Анықтамасы:</strong> Өндіс құрамының өзгерісі уақыт</li>
+                            <li lang="en" class="lang-content"><strong>Definition:</strong> Plant community change over time</li>
+                            <li lang="ru" class="lang-content"><strong>Определение:</strong> изменение сообщества во времени</li>
+
+                            <li lang="kk" class="lang-content"><strong>Бастапқы сукцессия:</strong> Жаңа өндіс және қос</li>
+                            <li lang="en" class="lang-content"><strong>Primary succession:</strong> New plants on bare rock</li>
+                            <li lang="ru" class="lang-content"><strong>Первичная сукцессия:</strong> новые растения на голой скале</li>
+
+                            <li lang="kk" class="lang-content"><strong>Қайта сукцессия:</strong> Орманда өндіс өндіст</li>
+                            <li lang="en" class="lang-content"><strong>Secondary succession:</strong> Forest plants return after burn</li>
+                            <li lang="ru" class="lang-content"><strong>Вторичная сукцессия:</strong> возврат растений после пожара</li>
+
+                            <li lang="kk" class="lang-content"><strong>Климакс:</strong> Стабильді құрылым (1000+ жыл)</li>
+                            <li lang="en" class="lang-content"><strong>Climax:</strong> Stable community (1000+ years)</li>
+                            <li lang="ru" class="lang-content"><strong>Климакс:</strong> стабильное сообщество (1000+ лет)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #a7f3d0; border-radius: 1rem; border-top: 4px solid #059669;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-emerald-800">Өндіс экология - өндіс және ортасының өзара әрекеті. Факторлар: абиотиялық (жарық, су, температура), биотиялық (жануарлар, өндіс), антропогендік (адам). Адаптация - өндіс факторға әсері. Нише - өндіс рөлі. Сукцессия - құрамының өзгерісі.</p>
+            <p lang="en" class="lang-content text-md font-semibold text-emerald-800">Plant ecology - plants and environment relationships. Factors: abiotic (light, water, temperature), biotic (animals, plants), anthropogenic (humans). Adaptation - plant response. Niche - plant role. Succession - community change over time.</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-emerald-800">Экология растений - взаимодействие растений и окружающей среды. Факторы: абиотические, биотические, антропогенные. Адаптация, экологическая ниша, сукцессия - ключевые понятия.</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

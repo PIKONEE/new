@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рим: Покорение Италии</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #450a0a, #1a1a1a, #000000);
+            color: #fef3c7;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(185, 28, 28, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #b91c1c;
+            color: white;
+            box-shadow: 0 0 30px rgba(185, 28, 28, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #b91c1c;
+            background: linear-gradient(90deg, rgba(185, 28, 28, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #b91c1c; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-stone-400 to-red-400 uppercase">
+                Завоевание Италии
+            </h1>
+            <p id="sub-title" class="text-red-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Железом и волей: Объединение полуострова</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-red-900/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-red-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-red-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-red-700 inline-block"></span>
+                Италийские войны
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-red-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="conquestCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-red-500/50 italic text-center uppercase tracking-widest">Нажмите на регионы для изучения этапов экспансии</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-red-600 mb-8 font-black uppercase leading-tight" id="placeholder-title">Марш Легионов</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        В течение 200 лет Рим вел непрекращающиеся войны с соседями. От нашествия диких галлов до битв с обученной армией царя Пирра — так ковалось величие будущего Рима. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚔️</span>
+                            <span id="hint-1" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Разделяй и властвуй</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🛡️</span>
+                            <span id="hint-2" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Гуси спасли Рим</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-red-950/40 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-red-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-red-950/20 rounded-[2.5rem] border border-red-900/30 shadow-xl">
+                        <strong class="text-red-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-quote">Исторический девиз:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🦢</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-red-500 uppercase">Нашествие Галлов</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">В 390 г. до н.э. Рим был сожжен галлами. По легенде, только гуси в храме Юноны услышали врага и разбудили стражу. Вождь галлов Бренн бросил меч на весы со словами: «Горе побежденным!»</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-amber-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🐘</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-amber-500 uppercase">Пиррова победа</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Греческий царь Пирр пришел на помощь Таренту с боевыми слонами. Он побеждал римлян, но с такими потерями, что воскликнул: «Еще одна такая победа, и я останусь без войска!»</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⚖️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Разделяй и властвуй</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Римляне не давали врагам объединиться. Они заключали союзы с одними племенами против других, превращая покоренных в «союзников», обязанных поставлять воинов для новых войн.</p>
+        </div>
+    </section>
+
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-red-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-red-100/70 leading-tight max-w-5xl mx-auto">
+            «Римляне умеют проигрывать битвы, но они никогда не проигрывают войн».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Завоевание Италии",
+                subtitle: "Железом и волей: Объединение полуострова",
+                visualTitle: "Италийские войны",
+                hint: "Нажмите на регионы для изучения этапов экспансии",
+                placeholderTitle: "Марш Легионов",
+                placeholderText: "Рим прошел путь от обороны Капитолия до полного контроля над Италией. Изучите, как пали противники республики.",
+                labelQuote: "Исторический девиз:",
+                hint1: "Разделяй и властвуй", hint2: "Гуси спасли Рим",
+                card1Title: "Нашествие Галлов",
+                card1Text: "Битва на реке Аллия и сожжение Рима научили римлян строить мощные стены и никогда не сдаваться.",
+                card2Title: "Пиррова победа",
+                card2Text: "Выражение, означающее победу, купленную слишком дорогой ценой. Пирр был первым серьезным врагом Рима из Греции.",
+                card3Title: "Разделяй и властвуй",
+                card3Text: "Divide et impera — дипломатический принцип, позволивший Риму удержать огромные территории через сеть союзов.",
+                footerQuote: "«Римляне умеют проигрывать битвы, но они никогда не проигрывают войн».",
+                nodes: [
+                    { id: 1, tag: "390 г. до н.э.", title: "Нашествие галлов", desc: "Дикие кельтские племена разгромили римское ополчение. Римляне укрылись на Капитолийском холме. Галлы ушли, только получив огромный выкуп золотом.", fact: "Vae victis! (Горе побежденным!) — крикнул вождь Бренн, требуя больше золота." },
+                    { id: 2, tag: "Центральная Италия", title: "Самнитские войны", desc: "Самый упорный противник Рима — горцы-самниты. Войны длились полвека. Римляне учились у них тактике боя в горах малыми отрядами.", fact: "В Кавдинском ущелье римляне попали в ловушку и были вынуждены пройти под 'ярмом', признав поражение." },
+                    { id: 3, tag: "Южная Италия", title: "Война с Пирром", desc: "Греческие города во главе с Тарентом призвали царя Пирра. Впервые римляне увидели 'луканийских быков' — боевых слонов, которые наводили ужас на конницу.", fact: "Римляне научились бороться со слонами, закидывая их горящими стрелами." },
+                    { id: 4, tag: "Дипломатия", title: "Римский союз", desc: "Покоренные народы становились 'союзниками'. Они не платили налогов, но отдавали своих сыновей в римскую армию. Это сделало людские ресурсы Рима неисчерпаемыми.", fact: "Римские дороги (например, Аппиева дорога) строились прежде всего для быстрой переброски легионов." },
+                    { id: 5, tag: "265 г. до н.э.", title: "Финал объединения", desc: "К середине III века до н.э. Рим захватил последний свободный город Италии — вольсинии. Весь полуостров от реки Рубикон до пролива в Сицилию стал римским.", fact: "Рим превратился в сильнейшую державу Западного Средиземноморья." }
+                ]
+            },
+            kz: {
+                title: "Италияны жаулап алу",
+                subtitle: "Темір мен ерік-жігер: Түбекті біріктіру",
+                visualTitle: "Италия соғыстары",
+                hint: "Экспансия кезеңдерін зерттеу үшін аймақтарды басыңыз",
+                placeholderTitle: "Легиондар шеруі",
+                placeholderText: "Рим Капитолийді қорғаудан бастап, бүкіл Италияны бақылауға дейінгі жолдан өтті. Республика қарсыластарының қалай құлағанын зерттеңіз.",
+                labelQuote: "Тарихи ұран:",
+                hint1: "Бөліп ал да, билей бер", hint2: "Қаздар Римді құтқарды",
+                card1Title: "Галлдар шапқыншылығы",
+                card1Text: "б.з.б. 390 жылы Римді галлдар өртеп жіберді. Тек Юнона храмындағы қаздар жауды естіп, күзетті оятқан деген аңыз бар.",
+                card2Title: "Пирр жеңісі",
+                card2Text: "Тым қымбатқа түскен жеңісті білдіретін тіркес. Пирр Римнің Грекиядан келген алғашқы ірі жауы болды.",
+                card3Title: "Бөліп ал да, билей бер",
+                card3Text: "Divide et impera — Римге одақтар желісі арқылы орасан зор аумақтарды ұстап тұруға мүмкіндік берген дипломатиялық қағида.",
+                footerQuote: "«Римдіктер шайқастарда жеңілуі мүмкін, бірақ олар соғыста ешқашан жеңілмейді».",
+                nodes: [
+                    { id: 1, tag: "б.з.б. 390 ж.", title: "Галлдар шапқыншылығы", desc: "Кельт тайпалары Рим әскерін талқандап, қаланы өртеді. Римдіктер Капитолий төбесіне жасырынды.", fact: "Vae victis! (Жеңілгендерге сор!) — деп айқайлады Бренн көсем." },
+                    { id: 2, tag: "Орталық Италия", title: "Самнит соғыстары", desc: "Римнің ең табанды қарсыласы — таулық самниттер болды. Соғыс жарты ғасырға созылды.", fact: "Кавдин өткелінде римдіктер тұзаққа түсіп, жеңілісін мойындауға мәжбүр болды." },
+                    { id: 3, tag: "Оңтүстік Италия", title: "Пиррмен соғыс", desc: "Грек қалалары Пирр патшаны көмекке шақырды. Римдіктер алғаш рет жауынгерлік пілдерді көрді.", fact: "Римдіктер пілдерге қарсы жанып жатқан жебелерді қолдануды үйренді." },
+                    { id: 4, tag: "Дипломатия", title: "Рим одағы", desc: "Бағындырылған халықтар 'одақтастар' болды. Олар салық төлемегенімен, Рим әскеріне жауынгер беруге міндетті болды.", fact: "Аппий жолы сияқты Рим жолдары легиондарды жылдам тасымалдау үшін салынды." },
+                    { id: 5, tag: "б.з.б. 265 ж.", title: "Бірігудің аяқталуы", desc: "б.з.б. III ғасырдың ортасына қарай Рим Италиядағы соңғы еркін қаланы басып алды.", fact: "Рим Батыс Жерорта теңізіндегі ең қуатты державаға айналды." }
+                ]
+            },
+            en: {
+                title: "The Conquest of Italy",
+                subtitle: "By Iron and Will: Unifying the Peninsula",
+                visualTitle: "Italian Wars",
+                hint: "Click on regions to study stages of expansion",
+                placeholderTitle: "March of the Legions",
+                placeholderText: "Rome grew from defending the Capitol to total control over Italy. Explore how the Republic's enemies were overcome.",
+                labelQuote: "Historical Motto:",
+                hint1: "Divide and Conquer", hint2: "Geese Saved Rome",
+                card1Title: "Invasion of Gauls",
+                card1Text: "In 390 BC, Rome was sacked by Gauls. Legend says geese in Juno's temple alerted the guards. Brennus cried: 'Woe to the vanquished!'",
+                card2Title: "Pyrrhic Victory",
+                card2Text: "An idiom for a victory won at such a devastating cost that it is tantamount to defeat. Pyrrhus was Rome's first Hellenistic foe.",
+                card3Title: "Divide and Conquer",
+                card3Text: "Divide et impera—the diplomatic principle allowing Rome to manage vast lands through a network of unequal alliances.",
+                footerQuote: "«Romans may lose battles, but they never lose wars.»",
+                nodes: [
+                    { id: 1, tag: "390 BC", title: "Sack of Rome", desc: "Celtic tribes routed the Roman militia. Romans took refuge on the Capitoline Hill and had to pay a massive gold ransom to make the Gauls leave.", fact: "Vae victis! (Woe to the vanquished!) — shouted the chieftain Brennus while weighing the gold." },
+                    { id: 2, tag: "Central Italy", title: "Samnite Wars", desc: "The Samnite highlanders were Rome's toughest rivals. During 50 years of war, Romans adapted their tactics to mountain fighting.", fact: "At the Caudine Forks, Romans were trapped and forced to pass under a 'yoke' in humiliation." },
+                    { id: 3, tag: "Southern Italy", title: "Pyrrhic War", desc: "Greek cities led by Tarentum hired King Pyrrhus. Romans first encountered 'Lucanian oxen' — war elephants that terrified their horses.", fact: "Romans learned to drive the elephants mad by pelting them with flaming javelins." },
+                    { id: 4, tag: "Diplomacy", title: "Roman Alliance", desc: "Conquered peoples became 'socii' (allies). They provided troops for the legions instead of paying taxes, making Rome's army replenishable.", fact: "Roman roads (like the Via Appia) were built to move these vast armies across the peninsula rapidly." },
+                    { id: 5, tag: "265 BC", title: "Unification Finalized", desc: "By the middle of the 3rd century BC, Rome captured the last free city in Italy. The peninsula from the Rubicon to Sicily was now Roman.", fact: "Rome became the dominant power in the Western Mediterranean." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('conquestCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-quote').innerText = t.labelQuote;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Italy "Boot"
+            ctx.fillStyle = 'rgba(185, 28, 28, 0.1)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 100, 50); // Alps
+            ctx.lineTo(cx + 100, 50);
+            ctx.lineTo(cx + 150, 300); // South East
+            ctx.lineTo(cx + 80, 400); // Heel
+            ctx.lineTo(cx - 20, 320); // Arch
+            ctx.lineTo(cx - 80, 400); // Toe
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(185, 28, 28, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx - 20, y: 100, icon: "🔥" }, // Gauls/North
+                { id: 2, x: cx + 20, y: 200, icon: "🏔️" }, // Samnites
+                { id: 3, x: cx + 70, y: 350, icon: "🐘" }, // Pyrrhus/South
+                { id: 4, x: cx - 40, y: 250, icon: "🛣️" }, // Roads
+                { id: 5, x: cx - 60, y: 380, icon: "🚩" }  // Final
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(185, 28, 28, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = '#b91c1c';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#fca5a5';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

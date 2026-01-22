@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Казахстан в 1917 году: Февральская революция</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .february-theme {
+            background: linear-gradient(to bottom right, #f1f5f9, #e2e8f0);
+        }
+
+        .state-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #1e40af;
+            box-shadow: 0 10px 30px -5px rgba(30, 64, 175, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .state-card:hover {
+            transform: translateY(-5px);
+            border-color: #1d4ed8;
+        }
+
+        .power-glow {
+            box-shadow: 0 0 25px rgba(30, 64, 175, 0.2);
+        }
+
+        .btn-active {
+            background-color: #1e3a8a;
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+
+        canvas {
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+        }
+    </style>
+</head>
+<body class="february-theme text-slate-900 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-blue-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🏛️</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-blue-900">Февраль 1917</h1>
+            </div>
+            <div class="flex bg-blue-100/50 p-1 rounded-full border border-blue-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
+        
+        <!-- Section 1: Political Analysis (Chart) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-blue-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Political Crisis</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase text-blue-900">Феномен Двоевластия</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    Революция в Казахстане имела свои особенности: здесь одновременно действовали органы Временного правительства, Советы депутатов и национальные комитеты Алаш.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="powerChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Important Event (Focus) -->
+        <div class="bg-blue-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl power-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">🕊️</div>
+                    <div id="focus-label" class="text-blue-300 font-black text-sm uppercase tracking-[0.3em]">Spring of Freedom</div>
+                </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="focus-title" class="text-3xl font-black tracking-tight uppercase text-blue-200">Демократические перемены</h3>
+                    <p id="focus-desc" class="text-xl text-blue-50 font-light leading-relaxed">
+                        Революция принесла свободу слова и печати. Вернулись мобилизованные в 1916 году «на тыловые работы», была объявлена амнистия участникам восстания, а национальный вопрос стал центральным в политике.
+                    </p>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none">📰</div>
+        </div>
+
+        <!-- Section 3: Key Structures -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="state-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-900">
+                <div class="text-5xl mb-4">⚖️</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Временное правительство</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">Создавало Областные исполкомы. Назначало комиссаров (А. Букейханов в Торгае), стараясь сохранить порядок старыми методами.</p>
+            </div>
+            <div class="state-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-600">
+                <div class="text-5xl mb-4">🚩</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Советы депутатов</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">Органы рабочих и солдат. Требовали немедленного мира, 8-часового рабочего дня и передачи земли крестьянам.</p>
+            </div>
+            <div class="state-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-amber-500">
+                <div class="text-5xl mb-4">🦅</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Казахские комитеты</h4>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">Национальные органы власти, ставшие базой для будущего правительства Алаш-Орды. Проводили съезды по всей степи.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-slate-900 text-slate-400">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Февраль 1917 года превратил Казахстан из колонии в бурлящий котел политической жизни».
+            </p>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-slate-600">History of Kazakhstan: Revolution of 1917</div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Февраль 1917",
+                vizTitle: "Феномен Двоевластия",
+                vizDesc: "В Казахстане Февральская революция привела к переплетению трех сил: либеральной власти центра, революционных советов и национального движения.",
+                statusBadge: "Политический кризис",
+                focusTitle: "Демократическая весна",
+                focusDesc: "Отмена национальных ограничений, легализация политических партий и возвращение 'реквизированных' рабочих в аулы изменили социальный климат края.",
+                fact1T: "Временное правительство", fact1D: "Органы либеральной буржуазии. Включали представителей интеллигенции, стремившихся к реформам без потрясений.",
+                fact2T: "Советы депутатов", fact2D: "Революционные органы в городах и на железных дорогах. Опирались на вооруженных солдат и рабочих.",
+                fact3T: "Движение «Алаш»", fact3D: "Главная политическая сила казахов. Формировала национальные комитеты и готовила созыв Общеказахского съезда.",
+                footer: "«Февраль 1917 года превратил Казахстан из колонии в бурлящий котел политической жизни».",
+                chartLabels: ["Временное правительство", "Советы (большевики/эсеры)", "Движение Алаш", "Другие силы"],
+                chartTitle: "Распределение политического влияния (%)"
+            },
+            kz: {
+                title: "Ақпан 1917",
+                vizTitle: "Қос билік феномені",
+                vizDesc: "Қазақстанда Ақпан төңкерісі үш күштің: орталықтың либералды билігі, революциялық кеңестер мен ұлттық қозғалыстың тоғысуына әкелді.",
+                statusBadge: "Саяси дағдарыс",
+                focusTitle: "Демократиялық көктем",
+                focusDesc: "Ұлттық шектеулердің жойылуы, саяси партиялардың заңдастырылуы және тыл жұмыстарынан жұмысшылардың оралуы өлкенің әлеуметтік ахуалын өзгертті.",
+                fact1T: "Уақытша үкімет", fact1D: "Либералды буржуазия органдары. Көбіне зиялы қауым өкілдерінен тұрды, реформаларды бейбіт жолмен өткізуді көздеді.",
+                fact2T: "Депутаттар кеңестері", fact2D: "Қалалар мен теміржол бойындағы революциялық органдар. Қарулы солдаттар мен жұмысшыларға сүйенді.",
+                fact3T: "«Алаш» қозғалысы", fact3D: "Қазақтардың басты саяси күші. Ұлттық комитеттер құрып, жалпықазақ съезін шақыруға дайындалды.",
+                footer: "«1917 жылғы Ақпан төңкерісі Қазақстанды отардан саяси өмір қайнаған ортаға айналдырды».",
+                chartLabels: ["Уақытша үкімет", "Кеңестер", "Алаш қозғалысы", "Басқа күштер"],
+                chartTitle: "Саяси ықпалдың бөлінуі (%)"
+            },
+            en: {
+                title: "February 1917",
+                vizTitle: "Dual Power Phenomenon",
+                vizDesc: "In Kazakhstan, the February Revolution led to the intertwining of three forces: central liberal authority, revolutionary soviets, and the national movement.",
+                statusBadge: "Political Crisis",
+                focusTitle: "Democratic Spring",
+                focusDesc: "The abolition of national restrictions, legalization of parties, and the return of mobilized rear workers changed the region's social climate.",
+                fact1T: "Provisional Govt", fact1D: "Liberal bourgeois organs. Comprised of intellectuals aiming for gradual reforms without radical upheavals.",
+                fact2T: "Soviets of Deputies", fact2D: "Revolutionary bodies in cities and railways, supported by armed soldiers and industrial workers.",
+                fact3T: "Alash Movement", fact3D: "The primary Kazakh political force. It formed national committees and prepared for the All-Kazakh Congress.",
+                footer: "«February 1917 transformed Kazakhstan from a colony into a bubbling cauldron of political activity.»",
+                chartLabels: ["Provisional Govt", "Soviets", "Alash Movement", "Other Forces"],
+                chartTitle: "Political Influence Distribution (%)"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('powerChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        data: [35, 25, 30, 10],
+                        backgroundColor: [
+                            'rgba(30, 64, 175, 0.7)', 
+                            'rgba(220, 38, 38, 0.7)', 
+                            'rgba(245, 158, 11, 0.7)', 
+                            'rgba(100, 116, 139, 0.7)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: { ticks: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    }
+                }
+            });
+        }
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('focus-title').innerText = t.focusTitle;
+            document.getElementById('focus-desc').innerText = t.focusDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-blue-700 hover:bg-blue-100 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => changeLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

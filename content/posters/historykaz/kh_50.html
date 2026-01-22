@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Развитие культуры Казахстана в XIV-XV веках</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fcfaf7; color: #1c1917; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .manuscript-gradient {
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #fde68a 100%);
+        }
+
+        .premium-panel {
+            background: white;
+            border-radius: 3rem;
+            border: 1px solid #d6d3d1;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-panel:hover {
+            border-color: #a8a29e;
+            box-shadow: 0 30px 60px -15px rgba(28, 25, 23, 0.1);
+        }
+
+        .lang-active {
+            background-color: #451a03;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(69, 26, 3, 0.3);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2rem;
+            background: #fff;
+            border: 1px solid #e7e5e4;
+        }
+
+        .fact-card {
+            background: white;
+            border-radius: 2.5rem;
+            border-left: 8px solid #78350f;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .fact-card:hover {
+            transform: translateY(-8px);
+            border-color: #451a03;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        .term-tag {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="manuscript-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-amber-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-amber-950">Развитие культуры Казахстана в XIV-XV веках</h1>
+            <div class="flex bg-amber-50 p-1 rounded-2xl border border-amber-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Heritage Circle (Canvas) -->
+        <div class="premium-panel p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Spiritual Heritage Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic">Свод духовного наследия</h2>
+                    <p id="viz-desc" class="text-lg text-amber-900/60 font-light leading-relaxed">
+                        В XIV-XV веках завершился процесс формирования казахского языка и мировоззрения. Нажмите на сегменты диаграммы, чтобы изучить основы культуры этой эпохи.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-amber-50 border-l-8 border-amber-700 shadow-xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-amber-900 mb-3 uppercase">Выберите раздел</h3>
+                        <p id="element-desc" class="text-amber-800/70 text-sm leading-relaxed italic font-light">Кликните на элементы «Колеса знаний» на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="cultureCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.4em]">Schematic of Cultural Evolution</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Information Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            
+            <!-- Language and Script -->
+            <div class="fact-card">
+                <div class="mb-4"><span class="term-tag" id="t-lang">Язык</span></div>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-amber-950">Формирование языка</h3>
+                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed mb-6">
+                    К XIV веку на территории Казахстана окончательно сложился **кыпчакский язык**, ставший основой казахского. Письменная традиция развивалась на базе чагатайского языка. В этот период были созданы такие памятники, как «Кодекс Куманикус» и произведения суфийской литературы.
+                </p>
+                <div class="mt-auto pt-4 border-t border-amber-100 text-[10px] font-black text-amber-700 uppercase tracking-widest">Основа: Кыпчакские диалекты</div>
+            </div>
+
+            <!-- Folklore and Epics -->
+            <div class="fact-card">
+                <div class="mb-4"><span class="term-tag" id="t-folk">Фольклор</span></div>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-amber-950">Героический эпос</h3>
+                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed mb-6">
+                    Это время расцвета устного народного творчества. Складываются великие эпосы: **«Алпамыс-батыр»**, **«Ер-Таргын»**, **«Кобланды-батыр»**. Жирау (сказители), такие как легендарный **Асан Кайгы**, становились не только поэтами, но и политическими советниками ханов.
+                </p>
+                <div class="mt-auto pt-4 border-t border-amber-100 text-[10px] font-black text-amber-700 uppercase tracking-widest">Асан Кайгы: Степной философ</div>
+            </div>
+
+            <!-- Religion and Science -->
+            <div class="fact-card">
+                <div class="mb-4"><span class="term-tag" id="t-rel">Духовность</span></div>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-amber-950">Суфизм и Знания</h3>
+                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed mb-6">
+                    Ислам окончательно утвердился как государственная религия. Огромное влияние имел орден **Ясавия**. Города Туркестан, Отрар и Сауран стали центрами богословия и науки. Здесь работали медресе, где изучали логику, астрономию и право.
+                </p>
+                <div class="mt-auto pt-4 border-t border-amber-100 text-[10px] font-black text-amber-700 uppercase tracking-widest">Центр: Хазрет Султан</div>
+            </div>
+
+        </div>
+
+        <!-- Section 3: Key Figure Highlight -->
+        <div class="bg-amber-900 p-10 md:p-16 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h3 id="special-t" class="text-3xl font-black mb-8 uppercase italic tracking-widest">Асан Кайгы: Пророк единства</h3>
+                    <p id="special-d" class="text-amber-100/70 text-xl font-light leading-relaxed mb-10">
+                        Философ и поэт XV века, ставший идеологом объединения казахских родов. Его поиски «Жеруйык» (Земли обетованной) — это метафора стремления народа к мирной жизни, достатку и независимости. Его мудрость стала моральным кодексом эпохи.
+                    </p>
+                    <div class="inline-flex items-center gap-4 bg-white/10 px-6 py-2 rounded-full border border-white/20">
+                        <span id="special-tag" class="text-sm font-bold uppercase tracking-widest">Идеолог Казахского ханства</span>
+                    </div>
+                </div>
+                <div class="flex justify-center relative">
+                    <div class="w-80 h-80 border-4 border-dashed border-amber-700/50 rounded-full flex items-center justify-center animate-spin-slow">
+                        <div class="text-center">
+                            <div class="text-6xl mb-4 grayscale opacity-30">📜</div>
+                            <div id="found-label" class="text-[10px] font-black uppercase text-amber-500 tracking-[0.5em]">Spiritual Wisdom</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 font-black rotate-12 pointer-events-none uppercase">WISDOM</div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-amber-950 text-amber-100/30 text-center border-t border-amber-900/20">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
+                «Культура XIV-XV веков стала тем фундаментом, на котором выросло здание казахской нации, объединив суфийскую мудрость и степную волю.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-amber-700 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Развитие культуры Казахстана в XIV-XV веках",
+                vizTitle: "Свод духовного наследия",
+                vizDesc: "Нажмите на сегменты диаграммы, чтобы изучить основы культуры этой эпохи: язык, философию и музыку.",
+                badge: "Анализ духовного наследия",
+                elementTitleDefault: "Выберите раздел",
+                elementDescDefault: "Кликните на сегменты «Колеса знаний» на чертеже.",
+                tLang: "Язык", tFolk: "Фольклор", tRel: "Духовность",
+                c1T: "Формирование языка", c1D: "Процесс обособления казахского языка из кыпчакского ядра. Использование чагатайского письма в официальной переписке и трудах ученых.",
+                c2T: "Героический эпос", c2D: "Создание классических поэм о батырах. Формирование института жирау — носителей народной памяти и политических мыслителей.",
+                c3T: "Суфизм и Знания", c3D: "Распространение учения Ахмета Ясави. Туркестан становится духовной столицей Степи, местом паломничества и образования.",
+                specialT: "Асан Кайгы: Пророк единства", specialD: "Легендарный философ, искавший благодатную землю (Жеруйык) для своего народа. Символ мудрости и консолидации племен в канун создания ханства.",
+                specialTag: "Идеолог ханства",
+                footer: "«Культура XIV-XV веков стала фундаментом казахской нации, объединив мудрость и волю.»",
+                sections: {
+                    lit: { name: "Письменность", text: "Переход на арабскую графику. Появление трудов на тюрки, ставших основой для классической литературы Востока." },
+                    phil: { name: "Философия", text: "Господство исламской мысли и суфизма. Учение о самосовершенствовании и гармонии человека с Творцом и природой." },
+                    music: { name: "Музыка и Кюи", text: "Формирование жанра кюя. Использование домбры и кобыза для передачи истории и эмоций народа через звуки." },
+                    law: { name: "Обычное право", text: "Зарождение основ 'Жеты Жаргы'. Регулирование жизни общины через советы биев и авторитет старейшин." }
+                }
+            },
+            kz: {
+                title: "XIV-XV ғғ. Қазақстан мәдениетінің дамуы",
+                vizTitle: "Рухани мұра жинағы",
+                vizDesc: "Диаграмма сегменттерін басып, сол дәуірдің мәдениет негіздерін зерттеңіз: тіл, философия және музыка.",
+                badge: "Рухани мұраны талдау",
+                elementTitleDefault: "Бөлімді таңдаңыз",
+                elementDescDefault: "Кенептегі «Білім дөңгелегі» элементтерін басыңыз.",
+                tLang: "Тіл", tFolk: "Фольклор", tRel: "Руханият",
+                c1T: "Тілдің қалыптасуы", c1D: "Қазақ тілінің қыпшақ негізінен оқшаулану процесі. Ресми хат-хабарлар мен ғалымдардың еңбектерінде шағатай жазуын қолдану.",
+                c2T: "Батырлар жыры", c2D: "Батырлар туралы классикалық жырлардың жасалуы. Халық жадының иелері — жыраулар институтының қалыптасуы.",
+                c3T: "Суфизм және Білім", c3D: "Ахмет Ясауи ілімінің таралуы. Түркістанның Даланың рухани астанасына, зиярат пен білім орталығына айналуы.",
+                specialT: "Асан Қайғы: Бірлік насихатшысы", specialD: "Өз халқы үшін құтты қоныс — Жерұйықты іздеген аңызға айналған философ. Хандық құрылар алдындағы тайпалардың бірлігінің нышаны.",
+                specialTag: "Хандық идеологы",
+                footer: "«XIV-XV ғасырлардағы мәдениет даналық пен ерік-жігерді біріктіріп, қазақ ұлтының іргетасына айналды.»",
+                sections: {
+                    lit: { name: "Жазу мәдениеті", text: "Араб графикасына көшу. Шығыстың классикалық әдебиетінің негізі болған түркі тіліндегі еңбектердің пайда болуы." },
+                    phil: { name: "Философия", text: "Исламдық ой мен сопылықтың үстемдігі. Адамның Жаратушымен және табиғатпен үйлесімі туралы ілім." },
+                    music: { name: "Музыка мен Күй", text: "Күй жанрының қалыптасуы. Халықтың тарихы мен эмоциясын дыбыс арқылы жеткізу үшін домбыра мен қобызды қолдану." },
+                    law: { name: "Әдет-ғұрып құқығы", text: "«Жеті жарғы» негіздерінің пайда болуы. Билер кеңесі мен ақсақалдар беделі арқылы қауым өмірін реттеу." }
+                }
+            },
+            en: {
+                title: "Development of Kazakhstan's Culture in the 14-15th Centuries",
+                vizTitle: "Spiritual Heritage Core",
+                vizDesc: "Click on the diagram segments to study the foundations of the culture: language, philosophy, and music.",
+                badge: "Spiritual Heritage Analysis",
+                elementTitleDefault: "Select a Section",
+                elementDescDefault: "Click on the segments of the 'Knowledge Wheel' on the canvas.",
+                tLang: "Language", tFolk: "Folklore", tRel: "Spirituality",
+                c1T: "Language Formation", c1D: "The process of the Kazakh language isolating from the Kipchak core. Using the Chaghatai script in official documents and scientific works.",
+                c2T: "Heroic Epics", c2D: "The creation of classical poems about batyrs. Formation of the 'Zhyrau' institute — keepers of national memory.",
+                c3T: "Sufism & Knowledge", c3D: "Spread of Ahmed Yasawi's teachings. Turkestan becomes the spiritual capital of the Steppe, a center for pilgrimage and education.",
+                specialT: "Asan Kaigy: Prophet of Unity", specialD: "A legendary philosopher who sought the promised land (Zheruyuk) for his people. A symbol of wisdom and tribal consolidation.",
+                specialTag: "Khanate Ideologue",
+                footer: "«The culture of the 14-15th centuries became the foundation of the Kazakh nation, merging wisdom and will.»",
+                sections: {
+                    lit: { name: "Written Tradition", text: "Transition to Arabic graphics. The emergence of works in Turkic that laid the basis for Eastern classical literature." },
+                    phil: { name: "Philosophy", text: "Dominance of Islamic thought and Sufism. Teachings on self-perfection and harmony with the Creator and nature." },
+                    music: { name: "Music and Kuys", text: "Formation of the Kuy genre. Using the dombra and kobyz to convey history and emotions through sound." },
+                    law: { name: "Common Law", text: "The roots of 'Zheti Zhargy'. Regulating community life through councils of biys and the authority of elders." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('cultureCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawWheel();
+        }
+
+        function drawWheel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = 180 * (canvas.width / 800);
+
+            const parts = ['lit', 'phil', 'music', 'law'];
+            const colors = ['#78350f', '#92400e', '#b45309', '#d97706'];
+            const labels = ["SCRIPT", "PHILOSOPHY", "MUSIC", "LAW"];
+
+            parts.forEach((p, i) => {
+                const startAngle = (i * Math.PI) / 2;
+                const endAngle = ((i + 1) * Math.PI) / 2;
+                
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = colors[i] + '22';
+                ctx.fill();
+                ctx.strokeStyle = colors[i];
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Text
+                const midAngle = startAngle + Math.PI / 4;
+                const tx = cx + Math.cos(midAngle) * (radius * 0.7);
+                const ty = cy + Math.sin(midAngle) * (radius * 0.7);
+                ctx.fillStyle = colors[i];
+                ctx.font = 'bold 10px Montserrat';
+                ctx.textAlign = 'center';
+                ctx.fillText(labels[i], tx, ty);
+            });
+
+            // Center
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#451a03';
+            ctx.stroke();
+            ctx.fillStyle = '#451a03';
+            ctx.font = 'bold 14px Montserrat';
+            ctx.fillText("HERITAGE", cx, cy + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            const angle = Math.atan2(y - cy, x - cx);
+            const normAngle = angle < 0 ? angle + 2 * Math.PI : angle;
+            
+            const index = Math.floor(normAngle / (Math.PI / 2));
+            const parts = ['music', 'law', 'lit', 'phil']; // Adjusting to canvas coordinates
+            const key = parts[index];
+
+            if (key) {
+                const info = translations[currentLang].sections[key];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#451a03';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            
+            document.getElementById('t-lang').innerText = t.tLang;
+            document.getElementById('t-folk').innerText = t.tFolk;
+            document.getElementById('t-rel').innerText = t.tRel;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('special-t').innerText = t.specialT;
+            document.getElementById('special-d').innerText = t.specialD;
+            document.getElementById('special-tag').innerText = t.specialTag;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-amber-800 hover:bg-white transition-all";
+            });
+
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

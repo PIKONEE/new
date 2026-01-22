@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1991: Год Решающего Выбора</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #fffbeb; color: #78350f; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .lang-active { background-color: #d97706 !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #d97706; position: relative; min-height: 1100px; box-shadow: 0 40px 80px rgba(180, 83, 9, 0.3); }
+        .highlight-box { border: 2px solid #fde68a; background: #fffaf0; padding: 2rem; border-radius: 2rem; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-amber-200">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">EN</button>
+    </div>
+
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-amber-600 pb-10 mb-12 text-center">
+            <h1 id="title" class="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-tight mb-4">Решающий Шаг</h1>
+            <p id="desc" class="text-xl font-bold text-amber-600 uppercase tracking-widest">1991: Год великих свершений нации</p>
+        </header>
+
+        <div class="space-y-12">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-6">
+                    <h2 id="sec1T" class="text-3xl font-black uppercase text-amber-800">Мир без атома</h2>
+                    <p id="sec1D" class="text-sm leading-relaxed text-slate-700 font-bold">
+                        29 августа 1991 г. — исторический Указ Президента о закрытии Семипалатинского полигона. Это был первый шаг к становлению Казахстана как лидера глобальной безопасности.
+                    </p>
+                    <div class="p-6 bg-amber-50 rounded-3xl border-l-8 border-amber-400 italic text-amber-900 text-sm">
+                        "Мы доказали миру, что суверенитет — это прежде всего ответственность."
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-[2.5rem] border border-amber-100 flex flex-col justify-center shadow-inner">
+                    <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-6 text-amber-800">Общественный выбор</h4>
+                    <div class="h-44">
+                        <canvas id="supportChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-slate-900 text-white p-12 rounded-[4rem] relative overflow-hidden shadow-2xl border-b-[15px] border-amber-500">
+                <h2 id="sec2T" class="text-3xl font-black uppercase text-amber-400 mb-6 italic tracking-tight">1 декабря 1991</h2>
+                <p id="sec2D" class="text-lg font-light leading-relaxed opacity-90 text-center">
+                    Первые всенародные выборы Президента. Народ Казахстана выдал мандат доверия своему лидеру, определив курс на стабильность и независимость.
+                </p>
+                <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5">🗳️</div>
+            </section>
+
+            <section class="highlight-box text-center">
+                <h3 id="learnTitle" class="text-xl font-black uppercase text-amber-900 mb-4 tracking-widest italic">Важный факт</h3>
+                <p id="learnD" class="text-sm font-medium text-slate-600 px-10">Закрытие полигона и президентские выборы заложили правовой и моральный фундамент для провозглашения полной независимости через 15 дней.</p>
+            </section>
+        </div>
+
+        <footer class="mt-20 pt-8 border-t border-amber-100 flex justify-between items-center text-[10px] font-black uppercase text-amber-400 tracking-[0.5em]">
+            Kazakhstan History • 1991 Milestone
+        </footer>
+    </div>
+
+    <script>
+        const content = {
+            ru: {
+                title: "Решающий Шаг", desc: "1991: Год великих свершений нации",
+                sec1T: "Мир без атома", sec1D: "29 августа 1991 г. — Указ о закрытии Семипалатинского полигона. Казахстан стал первым в истории государством, добровольно отказавшимся от ядерных испытаний.",
+                chartTitle: "Приоритеты нации 1991 (%)", sec2T: "1 декабря 1991",
+                sec2D: "Первые всенародные выборы Президента. Нурсултан Назарбаев избран главой государства с результатом более 98% голосов.",
+                learnTitle: "Важный факт", learnD: "Политика мира и единства, начатая в 1991 году, позволила Казахстану избежать конфликтов, характерных для периода распада СССР."
+            },
+            kz: {
+                title: "Шешуші қадам", desc: "1991: Ұлттың ұлы жетістіктер жылы",
+                sec1T: "Атомсыз әлем", sec1D: "1991 ж. 29 тамыз — Семей полигонын жабу туралы Жарлық. Қазақстан тарихта ядролық сынақтардан ерікті түрде бас тартқан тұңғыш мемлекет болды.",
+                chartTitle: "Ұлттық басымдықтар (%)", sec2T: "1991 жылғы 1 желтоқсан",
+                sec2D: "Тұңғыш бүкілхалықтық Президент сайлауы. Нұрсұлтан Назарбаев 98%-дан астам дауыспен мемлекет басшысы болып сайланды.",
+                learnTitle: "Маңызды дерек", learnD: "1991 жылы басталған бейбітшілік пен бірлік саясаты Қазақстанға КСРО ыдыраған кезеңдегі қақтығыстардан аман өтуге мүмкіндік берді."
+            },
+            en: {
+                title: "The Decisive Step", desc: "1991: The year of great national achievements",
+                sec1T: "World without Atoms", sec1D: "August 29, 1991 — The Decree closing the Semipalatinsk test site. Kazakhstan became the first state in history to voluntarily end nuclear testing.",
+                chartTitle: "National Priorities 1991 (%)", sec2T: "December 1, 1991",
+                sec2D: "First national Presidential elections. Nursultan Nazarbayev was elected head of state with over 98% of the vote.",
+                learnTitle: "Key Fact", learnD: "The policy of peace and unity initiated in 1991 allowed Kazakhstan to avoid the conflicts typical of the USSR collapse era."
+            }
+        };
+
+        let chart = null;
+
+        function setLang(lang) {
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('learnTitle').innerText = t.learnTitle;
+            document.getElementById('learnD').innerText = t.learnD;
+            renderChart();
+        }
+
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('supportChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['Независимость', 'Мир', 'Единство'], datasets: [{ data: [55, 30, 15], backgroundColor: ['#d97706', '#78350f', '#fbbf24'], borderWidth: 4, borderColor: '#ffffff' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

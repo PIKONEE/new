@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Византия и славяне: Культурный мост</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #1e3a8a, #0f172a, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #3b82f6;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-200 uppercase">
+                Византия и славяне
+            </h1>
+            <p id="sub-title" class="text-blue-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase italic">Соседи, враги и духовные братья</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-blue-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-blue-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-blue-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-blue-600 inline-block"></span>
+                Балканский узел
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-blue-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="slavicCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-blue-500/50 italic text-center uppercase tracking-widest">Нажмите на регионы для изучения славяно-византийских связей</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-blue-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Славянский мир</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        В VI веке славяне начали массовое заселение Балканского полуострова. Это привело к долгому противостоянию, которое закончилось принятием славянами византийской веры и культуры. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🖋️</span>
+                            <span id="hint-1" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Кирилл и Мефодий</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">☦️</span>
+                            <span id="hint-2" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Христианизация</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-blue-950/40 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-stone-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-blue-950/20 rounded-[2.5rem] border border-blue-900/30 shadow-xl">
+                        <strong class="text-blue-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-influence">Культурное влияние:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Recap Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-blue-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👣</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Миграция славян</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Славянские племена пересекали Дунай целыми семьями. Они не только воевали, но и селились рядом с греками, перенимая их опыт ведения хозяйства и архитектуры.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📜</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-white uppercase">Азбука для славян</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Византийские миссионеры <strong>Кирилл и Мефодий</strong> создали славянскую письменность. Это позволило перевести Библию и приобщить славян к мировой культуре.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-slate-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏰</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-blue-300 uppercase">Закат империи</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">После XI века Византия начала слабеть. Ударам крестоносцев (1204 г.) и турок-османов предшествовал долгий период борьбы с Болгарским царством и Руси.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-blue-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-blue-100/70 leading-tight max-w-5xl mx-auto">
+            «Славяне стали мечом Византии на севере и наследниками её духа, сохранившими православную веру сквозь века».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Византия и славяне",
+                subtitle: "Соседи, враги и духовные братья",
+                visualTitle: "Балканский узел",
+                hint: "Нажмите на регионы для изучения связей",
+                placeholderTitle: "Славянский мир",
+                placeholderText: "Славяне изменили этническое лицо Балкан. Византия дала им веру и письменность. Изучите этапы этого взаимодействия.",
+                labelInfluence: "Культурное влияние:",
+                hint1: "Кирилл и Мефодий", hint2: "Христианизация",
+                card1Title: "Миграция славян",
+                card1Text: "С VI века славяне стали доминирующим населением Балкан, вынудив Византию признать новые реалии.",
+                card2Title: "Азбука для славян",
+                card2Text: "Создание кириллицы стало актом высшей дипломатии Византии, привязавшим славян к православному миру.",
+                card3Title: "Закат империи",
+                card3Text: "Внутренние распри и внешние удары привели к тому, что некогда великая держава превратилась в осажденную крепость.",
+                footerQuote: "«Славяне стали мечом Византии на севере и наследниками её духа, сохранившими православную веру сквозь века».",
+                nodes: [
+                    { id: 1, tag: "Север", title: "Дунайский лимес", desc: "Граница империи, которую славяне начали прорывать в VI веке. Византия строила сотни крепостей, но натиск был слишком велик.", fact: "Императоры часто нанимали славян на службу для защиты этих же границ от кочевников." },
+                    { id: 2, tag: "Центр", title: "Болгарское царство", desc: "Возникло в VII веке как союз славян и тюрок-протоболгар. Византия вела с ним ожесточенные войны на протяжении столетий.", fact: "Император Василий II получил прозвище 'Болгаробойца' за сокрушительную победу над болгарами." },
+                    { id: 3, tag: "Культура", title: "Кириллица", desc: "Кирилл и Мефодий разработали азбуку, взяв за основу греческий алфавит. Это событие в IX веке сделало славянский язык языком церкви и государства.", fact: "Первой книгой, переведенной на славянский язык, было Евангелие." },
+                    { id: 4, tag: "Вера", title: "Крещение славян", desc: "Болгария, Сербия и Русь приняли христианство из Константинополя. Это определило их исторический путь и культурный код.", fact: "Византийское православие принесло славянам традиции иконописи и храмового зодчества." },
+                    { id: 5, tag: "1204 г.", title: "Удар крестоносцев", desc: "Во время Четвертого крестового похода рыцари захватили и разграбили Константинополь. Это был смертельный удар, от которого империя так и не оправилась полностью.", fact: "Византийская империя временно распалась на несколько мелких государств." }
+                ]
+            },
+            kz: {
+                title: "Византия мен славяндар",
+                subtitle: "Көршілер, жаулар және рухани бауырлар",
+                visualTitle: "Балқан түйіні",
+                hint: "Байланыстарды зерттеу үшін аймақтарды басыңыз",
+                placeholderTitle: "Славян әлемі",
+                placeholderText: "Славяндар Балқанның этникалық бейнесін өзгертті. Византия оларға сенім мен жазу берді. Осы қарым-қатынасты зерттеңіз.",
+                labelInfluence: "Мәдени әсер:",
+                hint1: "Кирилл мен Мефодий", hint2: "Христиандандыру",
+                card1Title: "Славяндар миграциясы",
+                card1Text: "VI ғасырдан бастап славяндар Балқанның негізгі халқына айналды.",
+                card2Title: "Славян алфавиті",
+                card2Text: "Кириллицаның жасалуы славяндарды православие әлеміне тығыз байланыстырды.",
+                card3Title: "Империяның соңы",
+                card3Text: "Ішкі алауыздықтар мен сыртқы соққылар ұлы державаны құлдыратты.",
+                footerQuote: "«Славяндар Византияның солтүстіктегі қорғанына және оның рухани мұрагерлеріне айналды».",
+                nodes: [
+                    { id: 1, tag: "Солтүстік", title: "Дунай шекарасы", desc: "Славяндар VI ғасырда бұзып өткен империя шекарасы.", fact: "Императорлар славяндарды жалдамалы әскер ретінде де пайдаланды." },
+                    { id: 2, tag: "Орталық", title: "Болгар патшалығы", desc: "VII ғасырда славяндар мен протоболгарлардың одағы ретінде құрылды.", fact: "Василий II патша болгарларды жеңгені үшін 'Болгарды жоюшы' атанды." },
+                    { id: 3, tag: "Мәдениет", title: "Кириллица", desc: "Кирилл мен Мефодий грек алфавиті негізінде славян жазуын жасады.", fact: "Славян тіліне аударылған алғашқы кітап — Інжіл болды." },
+                    { id: 4, tag: "Сенім", title: "Славяндардың шоқынуы", desc: "Болгария, Сербия және Русь христиандықты Константинопольден қабылдады.", fact: "Православие славяндарға икона салу және сәулет өнерін әкелді." },
+                    { id: 5, tag: "1204 ж.", title: "Крестшілер соққысы", desc: "Төртінші крест жорығы кезінде рыцарлар Константинопольді басып алып, тонады.", fact: "Осыдан кейін Византия бірнеше ұсақ мемлекетке бөлініп кетті." }
+                ]
+            },
+            en: {
+                title: "Byzantium and the Slavs",
+                subtitle: "Neighbors, Enemies, and Spiritual Brothers",
+                visualTitle: "The Balkan Knot",
+                hint: "Click on regions to study the connections",
+                placeholderTitle: "The Slavic World",
+                placeholderText: "Slavs reshaped the ethnic map of the Balkans. Byzantium provided them with faith and script. Explore the stages of this interaction.",
+                labelInfluence: "Cultural Influence:",
+                hint1: "Cyril and Methodius", hint2: "Christianization",
+                card1Title: "Slavic Migration",
+                card1Text: "From the 6th century, Slavs became the dominant population of the Balkans, forcing New Rome to adapt.",
+                card2Title: "A Script for Slavs",
+                card2Text: "The creation of the Cyrillic alphabet was a masterstroke of Byzantine diplomacy, linking Slavs to the Orthodox world.",
+                card3Title: "The Decline",
+                card3Text: "Internal strife and external blows, such as the 1204 Crusade, led the empire toward its inevitable end.",
+                footerQuote: "«The Slavs became the sword of Byzantium in the north and the heirs of its spirit, preserving the Orthodox faith through ages.»",
+                nodes: [
+                    { id: 1, tag: "The North", title: "Danube Limes", desc: "The imperial frontier breached by Slavic tribes in the 6th century. Byzantium built hundreds of forts, but the tide was unstoppable.", fact: "Byzantine emperors often recruited Slavic warriors to defend the borders against nomadic tribes." },
+                    { id: 2, tag: "The Center", title: "Bulgarian Empire", desc: "Established in the 7th century, it was a constant rival of Byzantium for control over the Balkan peninsula.", fact: "Emperor Basil II earned the grim title 'Bulgar-Slayer' after his decisive victory over them." },
+                    { id: 3, tag: "Culture", title: "Cyrillic Script", desc: "Cyril and Methodius developed the alphabet based on Greek letters in the 9th century to spread literacy and faith.", fact: "The first book translated into Old Church Slavonic was the Holy Gospel." },
+                    { id: 4, tag: "Faith", title: "Christianization", desc: "Bulgaria, Serbia, and Kyivan Rus' adopted Christianity from Constantinople, defining their cultural and political futures.", fact: "Orthodoxy brought the rich traditions of Byzantine art and architecture to the Slavic peoples." },
+                    { id: 5, tag: "1204 AD", title: "Crusader Sack", desc: "The Fourth Crusade diverted to Constantinople, resulting in a brutal sack that fatally weakened the empire.", fact: "The empire was temporarily replaced by a Latin Kingdom and several Greek successor states." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('slavicCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-influence').innerText = t.labelInfluence;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Balkan Outline (Stylized)
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 150, 50); // North
+            ctx.lineTo(cx + 100, 50);
+            ctx.lineTo(cx + 80, 400); // South
+            ctx.lineTo(cx - 120, 400);
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx - 40, y: 100, icon: "🏰" }, // Danube
+                { id: 2, x: cx - 80, y: 220, icon: "⚔️" }, // Bulgaria
+                { id: 3, x: cx + 100, y: 150, icon: "🖋️" }, // Alphabet
+                { id: 4, x: cx + 40, y: 300, icon: "☦️" }, // Faith
+                { id: 5, x: cx + 60, y: 380, icon: "🔥" }  // Sack
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 4) ? '#1e1b4b' : '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#bae6fd';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

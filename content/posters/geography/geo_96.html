@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lithosphere Structure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom, #431407, #1c1917, #000000);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { cursor: pointer; }
+        .lang-btn.active { background: #f97316; color: #fff; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-orange-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-orange-500"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-orange-200 uppercase absolute top-8 left-8 opacity-70"></h2>
+            <canvas id="lithoCanvas" class="w-full h-full"></canvas>
+            <p id="canvas-hint" class="absolute bottom-8 text-[10px] text-white/30 uppercase tracking-[0.4em]"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-orange-600">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-orange-400"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 border-b-4 border-orange-700 hover:bg-orange-900/20 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-orange-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 border-b-4 border-red-700 hover:bg-red-900/20 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-orange-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 border-b-4 border-yellow-700 hover:bg-yellow-900/20 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-orange-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Литосфера Земли",
+                subtitle: "Внутреннее строение: Ядро, Мантия, Кора",
+                canvasHeading: "Сейсмический разрез",
+                canvasHint: "Наведите и нажмите на слои для анализа",
+                defaultTitle: "Строение планеты",
+                defaultText: "Литосфера — это твердая оболочка Земли. Она включает земную кору и верхнюю часть мантии. Под ней находится раскаленное вещество.",
+                layers: {
+                    core: { title: "Ядро", text: "Радиус ~3500 км. Внутреннее ядро твердое (железо-никель), внешнее — жидкое, создающее магнитное поле." },
+                    mantle: { title: "Мантия", text: "Толщина ~2900 км. Состоит из силикатов. Вещество находится в пластичном состоянии и медленно движется (конвекция)." },
+                    crust: { title: "Земная кора", text: "Тонкая внешняя оболочка (5-75 км). Состоит из осадочных, магматических и метаморфических пород." }
+                },
+                cards: [
+                    { title: "Температура", desc: "С глубиной температура растет. В ядре она достигает 6000°C, что сопоставимо с поверхностью Солнца." },
+                    { title: "Давление", desc: "В центре Земли давление достигает 3.6 млн атмосфер, из-за чего внутреннее ядро остается твердым." },
+                    { title: "Астеносфера", desc: "Вязкий слой в верхней мантии, по которому 'плывут' литосферные плиты." }
+                ]
+            },
+            kz: {
+                title: "Жер Литосферасы",
+                subtitle: "Ішкі құрылысы: Ядро, Мантия, Қыртыс",
+                canvasHeading: "Сейсмикалық қима",
+                canvasHint: "Талдау үшін қабаттарға апарып басыңыз",
+                defaultTitle: "Планета құрылысы",
+                defaultText: "Литосфера — Жердің қатты қабығы. Ол жер қыртысы мен мантияның жоғарғы бөлігін қамтиды.",
+                layers: {
+                    core: { title: "Ядро", text: "Радиусы ~3500 км. Ішкі ядро қатты (темір-никель), сыртқысы — сұйық, магнит өрісін тудырады." },
+                    mantle: { title: "Мантия", text: "Қалыңдығы ~2900 км. Силикаттардан тұрады. Зат пластикалық күйде және баяу қозғалады." },
+                    crust: { title: "Жер қыртысы", text: "Жұқа сыртқы қабық (5-75 км). Шөгінді, магмалық және метаморфтық жыныстардан тұрады." }
+                },
+                cards: [
+                    { title: "Температура", desc: "Тереңдікке қарай температура өседі. Ядрода ол 6000°C-қа жетеді." },
+                    { title: "Қысым", desc: "Жер орталығында қысым 3.6 млн атмосфераға жетеді, сондықтан ішкі ядро қатты болып қалады." },
+                    { title: "Астеносфера", desc: "Жоғарғы мантиядағы тұтқыр қабат, оның үстімен литосфералық плиталар 'жүзеді'." }
+                ]
+            },
+            en: {
+                title: "Earth's Lithosphere",
+                subtitle: "Internal Structure: Core, Mantle, Crust",
+                canvasHeading: "Seismic Cross-section",
+                canvasHint: "Hover and click layers to analyze",
+                defaultTitle: "Planet Structure",
+                defaultText: "The lithosphere is the solid shell of Earth. It includes the crust and the upper mantle. Below it lies superheated matter.",
+                layers: {
+                    core: { title: "Core", text: "Radius ~3500 km. Inner core is solid (Fe-Ni), outer is liquid, generating the magnetic field." },
+                    mantle: { title: "Mantle", text: "Thickness ~2900 km. Made of silicates. Matter is plastic and moves slowly (convection)." },
+                    crust: { title: "Crust", text: "Thin outer shell (5-75 km). Consists of sedimentary, igneous, and metamorphic rocks." }
+                },
+                cards: [
+                    { title: "Temperature", desc: "Temperature rises with depth. In the core, it reaches 6000°C, comparable to the Sun's surface." },
+                    { title: "Pressure", desc: "Pressure in the center reaches 3.6 million atm, keeping the inner core solid." },
+                    { title: "Asthenosphere", desc: "A viscous layer in the upper mantle upon which tectonic plates 'float'." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        let canvas, ctx;
+
+        window.setLang = function(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            
+            // Only reset if showing default
+            const infoTitle = document.getElementById('info-title');
+            if (!infoTitle.hasAttribute('data-locked')) {
+                infoTitle.textContent = t.defaultTitle;
+                document.getElementById('info-text').textContent = t.defaultText;
+            }
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const r = Math.min(canvas.width, canvas.height) * 0.4;
+
+            // Mantle (Orange)
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+            const gradMantle = ctx.createRadialGradient(cx, cy, r*0.5, cx, cy, r);
+            gradMantle.addColorStop(0, '#ea580c'); gradMantle.addColorStop(1, '#7c2d12');
+            ctx.fillStyle = gradMantle; ctx.fill();
+
+            // Core (Yellow)
+            ctx.beginPath(); ctx.arc(cx, cy, r*0.5, 0, Math.PI*2);
+            ctx.fillStyle = '#facc15'; ctx.shadowBlur = 30; ctx.shadowColor = '#facc15'; ctx.fill(); ctx.shadowBlur = 0;
+
+            // Crust (Green/Blue Thin Line)
+            ctx.strokeStyle = '#a3e635'; ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = 'white'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
+            ctx.fillText('CORE', cx, cy+5);
+            ctx.fillText('MANTLE', cx, cy - r*0.7);
+            ctx.fillText('CRUST', cx, cy - r - 10);
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('lithoCanvas');
+            if (canvas) {
+                ctx = canvas.getContext('2d');
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+                
+                canvas.addEventListener('click', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const cx = canvas.width/2, cy = canvas.height/2;
+                    const r = Math.min(canvas.width, canvas.height) * 0.4;
+                    const dist = Math.sqrt((e.clientX - rect.left - cx)**2 + (e.clientY - rect.top - cy)**2);
+                    
+                    const t = translations[currentLang];
+                    let layer = '';
+                    if (dist < r*0.5) layer = 'core';
+                    else if (dist < r) layer = 'mantle';
+                    else if (dist < r+10) layer = 'crust';
+
+                    if (layer) {
+                        const infoTitle = document.getElementById('info-title');
+                        infoTitle.textContent = t.layers[layer].title;
+                        infoTitle.setAttribute('data-locked', 'true'); // Keep selection on lang switch
+                        document.getElementById('info-text').textContent = t.layers[layer].text;
+                    }
+                });
+                
+                setLang('ru');
+                draw();
+            }
+        };
+        
+        window.onresize = function() {
+            if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+            }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

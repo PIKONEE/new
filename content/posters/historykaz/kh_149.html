@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Внутреннее и внешнее положение Казахского ханства</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .geopolitic-bg {
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #020617 100%);
+        }
+
+        .dashboard-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dashboard-card:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.1);
+        }
+
+        .lang-active {
+            background: #38bdf8;
+            color: #020617;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-badge {
+            background: rgba(56, 189, 248, 0.1);
+            color: #7dd3fc;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="geopolitic-bg min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-sky-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-sky-400 text-center">Внутреннее и внешнее положение ханства</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-sky-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Strategic Nexus (Canvas) -->
+        <div class="dashboard-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-sky-500/50 text-sky-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Global Power Balance</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Роза ветров Степи</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Ханство находилось в эпицентре интересов великих держав. Нажмите на векторы внешней политики, чтобы изучить отношения с соседями.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-sky-950/20 border-l-8 border-sky-500 shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-sky-300 mb-3 uppercase tracking-tighter">Вектор интересов</h3>
+                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic font-light">Кликните на направления: Север, Юг, Запад или Восток.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="nexusCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-sky-900 font-mono uppercase tracking-[0.4em]">Geopolitical Vector Simulation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Content Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            
+            <!-- Administration -->
+            <div class="dashboard-card p-10 border-t-4 border-sky-500">
+                <span class="stat-badge mb-4 inline-block" id="t-int">Внутренний строй</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Вертикаль власти</h3>
+                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    Ханство базировалось на системе «Еты Жаргы». На вершине — **Хан** (из рода Торе), ниже — **Султаны** (правители улусов) и **Бии** (судебная власть и лидеры родов). Решения общенационального масштаба принимались на Маслихате (съезде).
+                </p>
+                <div class="pt-4 border-t border-white/10 text-[10px] font-black text-sky-500 uppercase tracking-widest italic">Основа: Родоплеменной союз</div>
+            </div>
+
+            <!-- External Neighbors -->
+            <div class="dashboard-card p-10 border-t-4 border-amber-500">
+                <span class="stat-badge mb-4 inline-block" id="t-ext">Внешние связи</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Кольцо соседей</h3>
+                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    На западе — **Ногайская Орда**, на севере — **Сибирское ханство**, на юге — **Шайбаниды** (Бухара) и **Могулистан**. Отношения варьировались от кровопролитных войн за присырдарьинские города до династических союзов.
+                </p>
+                <div class="pt-4 border-t border-white/10 text-[10px] font-black text-amber-500 uppercase tracking-widest italic">Цель: Контроль Шелкового пути</div>
+            </div>
+
+            <!-- Military Potential -->
+            <div class="dashboard-card p-10 border-t-4 border-emerald-500">
+                <span class="stat-badge mb-4 inline-block" id="t-mil">Военный ресурс</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Степная конница</h3>
+                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    Мобилизационный ресурс достигал **200-300 тысяч всадников**. Основная тактика — «толгама» (охват флангов). Каждый казах был воином по определению, обязанным иметь «бес кару» (пять видов оружия) при явке к хану.
+                </p>
+                <div class="pt-4 border-t border-white/10 text-[10px] font-black text-emerald-500 uppercase tracking-widest italic">Бес кару: Лук, Меч, Копье, Секира, Кинжал</div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-black border-t border-sky-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-500">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
+                «Казахское ханство возникло как уникальный политический ответ на вызовы времени, объединив Степь в кольце великих цивилизаций.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-sky-900 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Внутреннее и внешнее положение Казахского ханства",
+                vizTitle: "Роза ветров Степи",
+                vizDesc: "Ханство находилось в эпицентре интересов великих держав. Нажмите на векторы политики, чтобы изучить отношения с соседями.",
+                badge: "Баланс мировых сил",
+                elementTitleDefault: "Вектор интересов",
+                elementDescDefault: "Кликните на направления: Север, Юг, Запад или Восток на холсте.",
+                tInt: "Внутренний строй", tExt: "Внешние связи", tMil: "Военный ресурс",
+                c1T: "Вертикаль власти", c1D: "Система управления опиралась на авторитет ханов и мудрость биев. Улусная система позволяла эффективно управлять огромными территориями через лояльных султанов-чингизидов.",
+                c2T: "Кольцо соседей", c2D: "Основные геополитические соперники: Шайбаниды (борьба за города Сырдарьи), Ногайская Орда (борьба за западные пастбища) и усиливающееся Московское государство.",
+                c3T: "Степная конница", c3D: "Военная организация строилась на десятичном принципе. Высокая мобильность и знание местности позволяли казахам успешно противостоять превосходящим силам врага.",
+                footer: "«Казахское ханство возникло как политический ответ на вызовы времени, объединив Степь в кольце великих цивилизаций.»",
+                vectors: {
+                    north: { name: "Северный вектор (Сибирь и Русь)", text: "Отношения с Сибирским ханством и первые контакты с Москвой. Обмен посольствами при Иване III и Касым-хане." },
+                    south: { name: "Южный вектор (Мавераннахр)", text: "Постоянная борьба с Шайбанидами за города Отрар, Сыгнак, Туркестан. Эти города были ключом к налогам и международной торговле." },
+                    west: { name: "Западный вектор (Ногаи)", text: "Сложные отношения с Ногайской Ордой. Периоды войн чередовались с периодами мирного объединения родов под властью казахских ханов." },
+                    east: { name: "Восточный вектор (Могулистан)", text: "Союз с Могулистаном против жунгар и ойратов. Жетысу было первоначальной базой ханства и его восточным щитом." }
+                }
+            },
+            kz: {
+                title: "Қазақ хандығының ішкі және сыртқы жағдайы",
+                vizTitle: "Даланың бағыттар картасы",
+                vizDesc: "Хандық ірі державалардың мүдделерінің ортасында болды. Көршілермен қарым-қатынасты зерттеу үшін саясат бағыттарын басыңыз.",
+                badge: "Әлемдік күштер теңгерімі",
+                elementTitleDefault: "Мүдделер бағыты",
+                elementDescDefault: "Кенептегі Солтүстік, Оңтүстік, Батыс немесе Шығыс бағыттарын басыңыз.",
+                tInt: "Ішкі құрылым", tExt: "Сыртқы байланыстар", tMil: "Әскери ресурс",
+                c1T: "Билік вертикалы", c1D: "Басқару жүйесі хандардың беделі мен билердің даналығына негізделді. Ұлыстық жүйе адал сұлтандар арқылы кең аумақты тиімді басқаруға мүмкіндік берді.",
+                c2T: "Көршілер шеңбері", c2D: "Негізгі геосаяси қарсыластар: Шайбанидтер (Сырдария қалалары үшін күрес), Ноғай Ордасы (батыс жайылымдар үшін) және күшейіп келе жатқан Мәскеу мемлекеті.",
+                c3T: "Дала атты әскері", c3D: "Әскери ұйым ондық жүйеге негізделді. Жоғары мобильділік пен жер жағдайын білу қазақтарға жаудың басым күштеріне сәтті қарсы тұруға мүмкіндік берді.",
+                footer: "«Қазақ хандығы заман талабына саяси жауап ретінде пайда болып, Даланы ұлы өркениеттер шеңберінде біріктірді.»",
+                vectors: {
+                    north: { name: "Солтүстік бағыт (Сібір және Русь)", text: "Сібір хандығымен қарым-қатынас және Мәскеумен алғашқы байланыстар. Иван III пен Қасым хан тұсындағы елшіліктер алмасу." },
+                    south: { name: "Оңтүстік бағыт (Мәуереннахр)", text: "Шайбанидтермен Отырар, Сығанақ, Түркістан қалалары үшін тұрақты күрес. Бұл қалалар салық пен халықаралық сауданың кілті болды." },
+                    west: { name: "Батыс бағыт (Ноғайлар)", text: "Ноғай Ордасымен күрделі қатынастар. Соғыс кезеңдері қазақ хандарының билігі астындағы рулардың бейбіт бірігу кезеңдерімен алмасып отырды." },
+                    east: { name: "Шығыс бағыт (Моғолстан)", text: "Жоңғарлар мен ойраттарға қарсы Моғолстанмен одақ. Жетісу хандықтың алғашқы базасы және оның шығыс қалқаны болды." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('nexusCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawNexus();
+        }
+
+        function drawNexus() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Center: The Khanate
+            ctx.beginPath();
+            ctx.arc(cx, cy, 60 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.1)';
+            ctx.fill();
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText("KAZAKH KHANATE", cx, cy + 5);
+
+            // Vectors (Arrows)
+            const directions = [
+                { id: 'north', x: cx, y: cy - 180 * scale, label: "NORTH" },
+                { id: 'south', x: cx, y: cy + 180 * scale, label: "SOUTH" },
+                { id: 'west', x: cx - 220 * scale, y: cy, label: "WEST" },
+                { id: 'east', x: cx + 220 * scale, y: cy, label: "EAST" }
+            ];
+
+            directions.forEach(d => {
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(d.x, d.y);
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+                ctx.setLineDash([5, 10]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, 40 * scale, 0, Math.PI * 2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+                ctx.strokeStyle = '#38bdf8';
+                ctx.stroke();
+                
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 10px Inter';
+                ctx.fillText(d.label, d.x, d.y + 5);
+            });
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let zone = null;
+            if (Math.sqrt((x-cx)**2 + (y-(cy-180*scale))**2) < 50*scale) zone = 'north';
+            else if (Math.sqrt((x-cx)**2 + (y-(cy+180*scale))**2) < 50*scale) zone = 'south';
+            else if (Math.sqrt((x-(cx-220*scale))**2 + (y-cy)**2) < 50*scale) zone = 'west';
+            else if (Math.sqrt((x-(cx+220*scale))**2 + (y-cy)**2) < 50*scale) zone = 'east';
+
+            if (zone) {
+                const info = translations[currentLang].vectors[zone];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#38bdf8';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('t-int').innerText = t.tInt;
+            document.getElementById('t-ext').innerText = t.tExt;
+            document.getElementById('t-mil').innerText = t.tMil;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

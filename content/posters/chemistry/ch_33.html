@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реакция теңдеулері бойынша газдардың көлемі есептемелері</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #dcfce7; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #047857; border-bottom: 3px solid #dcfce7; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #059669; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #059669; background: white; color: #059669; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #059669; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .calc-box { background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #059669; margin: 10px 0; font-family: 'Courier New', monospace; font-size: 13px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-green-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Реакция Теңдеулері Бойынша Газдар Көлемі!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Gas Volumes by Reaction Equations!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Объёмы газов по уравнениям реакций!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-green-100">2H₂ + O₂ → 2H₂O. 4 л H₂ + 2 л O₂ = 4 л H₂O(бу). Пропорциялық өндіктеліктер. Газ есептемелері!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-green-100">2H₂ + O₂ → 2H₂O. 4 L H₂ + 2 L O₂ = 4 L H₂O(vapor). Proportional relationships. Gas calculations!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-green-100">2H₂ + O₂ → 2H₂O. 4 л H₂ + 2 л O₂ = 4 л H₂O(пар). Пропорциональные отношения. Расчёты газов!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ГАЗДАРДЫҢ КӨЛЕМ ӨНДІКТЕЛІКТЕРІ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. VOLUME RATIOS OF GASES</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Объёмные отношения газов</h2>
+
+            <div class="rule-card">
+                <div class="space-y-3">
+                    <div class="calc-box">
+                        <p lang="kk" class="lang-content"><strong>📐 АВОГАДРО ЗАҢЫ:</strong></p>
+                        <p lang="kk" class="lang-content">Бірдей шарттарда (T, P), кез келген газдың тең көлемдері тең мол-сандар құрайды.</p>
+                        <p lang="kk" class="lang-content">Коэффициенттері = өлшем өндіктеліктері!</p>
+
+                        <p lang="en" class="lang-content"><strong>📐 AVOGADRO'S LAW:</strong></p>
+                        <p lang="en" class="lang-content">Under same conditions (T, P), equal volumes of any gas contain equal number of moles.</p>
+                        <p lang="en" class="lang-content">Coefficients = volume ratios!</p>
+
+                        <p lang="ru" class="lang-content"><strong>📐 ЗАКОН АВОГАДРО:</strong></p>
+                        <p lang="ru" class="lang-content">При одинаковых условиях (T, P), равные объёмы любого газа содержат равное число молей.</p>
+                        <p lang="ru" class="lang-content">Коэффициенты = объёмные соотношения!</p>
+                    </div>
+
+                    <div class="calc-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ: 2H₂ + O₂ → 2H₂O</strong></p>
+                        <p lang="kk" class="lang-content">Коэффициенттер: 2 : 1 : 2</p>
+                        <p lang="kk" class="lang-content">Өлшем өндіктеліктері: 2 л : 1 л : 2 л</p>
+                        <p lang="kk" class="lang-content">4 л H₂ + 2 л O₂ = 4 л H₂O(бу) ✓</p>
+
+                        <p lang="en" class="lang-content"><strong>📝 EXAMPLE: 2H₂ + O₂ → 2H₂O</strong></p>
+                        <p lang="en" class="lang-content">Coefficients: 2 : 1 : 2</p>
+                        <p lang="en" class="lang-content">Volume ratios: 2 L : 1 L : 2 L</p>
+                        <p lang="en" class="lang-content">4 L H₂ + 2 L O₂ = 4 L H₂O(vapor) ✓</p>
+
+                        <p lang="ru" class="lang-content"><strong>📝 ПРИМЕР: 2H₂ + O₂ → 2H₂O</strong></p>
+                        <p lang="ru" class="lang-content">Коэффициенты: 2 : 1 : 2</p>
+                        <p lang="ru" class="lang-content">Объёмные соотношения: 2 л : 1 л : 2 л</p>
+                        <p lang="ru" class="lang-content">4 л H₂ + 2 л O₂ = 4 л H₂O(пар) ✓</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ПРАКТИКАЛЫҚ ЕСЕПТЕМЕЛЕР</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. PRACTICAL CALCULATIONS</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Практические расчёты</h2>
+
+            <div class="rule-card">
+                <div class="calc-box">
+                    <p lang="kk" class="lang-content"><strong>📝 СҰРАҚ: 6 л H₂ жануы үшін нешеше л O₂ қажет?</strong></p>
+                    <p lang="kk" class="lang-content">2H₂ + O₂ → 2H₂O</p>
+                    <p lang="kk" class="lang-content">2 л H₂ : 1 л O₂ = 6 л H₂ : x л O₂</p>
+                    <p lang="kk" class="lang-content">x = (6 × 1) / 2 = 3 л O₂ ✓</p>
+
+                    <p lang="en" class="lang-content"><strong>📝 QUESTION: How much O₂ needed for 6 L H₂ combustion?</strong></p>
+                    <p lang="en" class="lang-content">2H₂ + O₂ → 2H₂O</p>
+                    <p lang="en" class="lang-content">2 L H₂ : 1 L O₂ = 6 L H₂ : x L O₂</p>
+                    <p lang="en" class="lang-content">x = (6 × 1) / 2 = 3 L O₂ ✓</p>
+
+                    <p lang="ru" class="lang-content"><strong>📝 ВОПРОС: Сколько л O₂ нужно для горения 6 л H₂?</strong></p>
+                    <p lang="ru" class="lang-content">2H₂ + O₂ → 2H₂O</p>
+                    <p lang="ru" class="lang-content">2 л H₂ : 1 л O₂ = 6 л H₂ : x л O₂</p>
+                    <p lang="ru" class="lang-content">x = (6 × 1) / 2 = 3 л O₂ ✓</p>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #dcfce7; border-radius: 1rem; border-top: 4px solid #059669;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Газдарда Авогадро заңы: коэффициенттері = өлшем өндіктеліктері. 2H₂ + O₂ → 2H₂O: 2 л + 1 л = 2 л. Пропорция құру арқылы газ көлемін табамыз. Авогадро заңы - газ есептемелердің негіздері!</p>
+            <p lang="en" class="lang-content text-sm">For gases Avogadro's law: coefficients = volume ratios. 2H₂ + O₂ → 2H₂O: 2 L + 1 L = 2 L. Using proportion we find gas volume. Avogadro's law - foundation of gas calculations!</p>
+            <p lang="ru" class="lang-content text-sm">Для газов закон Авогадро: коэффициенты = объёмные отношения. 2H₂ + O₂ → 2H₂O: 2 л + 1 л = 2 л. По пропорции находим объём газа. Закон Авогадро - основа расчётов газов!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хозяйство и быт кангюев</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .river-gradient {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .clay-card {
+            background: #ffffff;
+            border-radius: 2.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .clay-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(14, 165, 233, 0.2);
+            border-color: #0ea5e9;
+        }
+
+        .lang-active {
+            background-color: #0c4a6e;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(12, 74, 110, 0.3);
+        }
+
+        .accent-oasis {
+            background: linear-gradient(to bottom right, #0ea5e9, #0369a1);
+            color: white;
+        }
+
+        canvas {
+            filter: drop-shadow(0 15px 20px rgba(14, 165, 233, 0.15));
+        }
+    </style>
+</head>
+<body class="river-gradient text-slate-900 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-sky-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl">🪙</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tighter text-sky-900">Кангюи: Труд и Торговля</h1>
+            </div>
+            <div class="flex bg-sky-50 p-1 rounded-2xl border border-sky-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Economic Map (Visual Analytics) -->
+        <div class="bg-white rounded-[4rem] p-8 md:p-16 shadow-2xl border border-sky-50 relative overflow-hidden">
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-200/30 rounded-full blur-3xl"></div>
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-sky-600 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">Economic Balance</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-sky-950 leading-tight">Процветание Оазисов</h2>
+                    <p id="viz-desc" class="text-lg text-slate-500 font-light leading-relaxed">
+                        Экономика кангюев была уникальной: они успешно сочетали высокопродуктивное ирригационное земледелие с международным транзитом товаров.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="border-l-4 border-sky-600 pl-4">
+                            <div class="text-2xl font-black text-sky-900">2000+</div>
+                            <div id="stat1" class="text-xs uppercase font-bold text-slate-400">Находок монет</div>
+                        </div>
+                        <div class="border-l-4 border-sky-600 pl-4">
+                            <div class="text-2xl font-black text-sky-900">100 км</div>
+                            <div id="stat2" class="text-xs uppercase font-bold text-slate-400">Длина каналов</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 h-80 md:h-[450px]">
+                    <canvas id="economyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Life and Crafts (The Plan) -->
+        <div class="space-y-10">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-sky-900 uppercase tracking-[0.3em]">Основы жизни</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Irrigation -->
+                <div class="clay-card p-10 flex flex-col items-center text-center">
+                    <div class="text-6xl mb-6">🌊</div>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Ирригация</h3>
+                    <p id="c1-d" class="text-slate-500 text-sm leading-relaxed">Кангюи строили сложные водоканалы (арыки), такие как Зах. Это позволило выращивать зерно, хлопок и бахчевые культуры в засушливых степях.</p>
+                </div>
+
+                <!-- Coins & Trade -->
+                <div class="accent-oasis p-10 rounded-[3rem] shadow-xl flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-6">🪙</div>
+                        <h3 id="c2-t" class="text-2xl font-bold mb-4 uppercase">Собственная монета</h3>
+                        <p id="c2-d" class="text-sky-50 text-sm leading-relaxed">
+                            Кангюи чеканили собственные монеты. Археологи находят тысячи их монет в Отрарском оазисе, что доказывает развитую внутреннюю и внешнюю торговлю.
+                        </p>
+                    </div>
+                    <div class="absolute -bottom-10 -right-10 text-9xl opacity-10">💰</div>
+                </div>
+
+                <!-- Metallurgy -->
+                <div class="clay-card p-10 flex flex-col items-center text-center">
+                    <div class="text-6xl mb-6">⚒️</div>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Кузнечное дело</h3>
+                    <p id="c3-d" class="text-slate-500 text-sm leading-relaxed">Центром металлургии был регион Шаш (совр. Ташкент). Здесь изготавливали качественное оружие и инструменты, которыми снабжали всю Сырдарью.</p>
+                </div>
+
+                <!-- Housing -->
+                <div class="clay-card p-10 flex flex-col items-center text-center lg:col-span-2">
+                    <div class="flex flex-col md:flex-row items-center gap-8 text-left">
+                        <div class="text-7xl">🏰</div>
+                        <div>
+                            <h3 id="c4-t" class="text-2xl font-bold mb-4 uppercase text-sky-900">Города и Поселения</h3>
+                            <p id="c4-d" class="text-slate-500 text-sm leading-relaxed">
+                                Кангюи жили в укрепленных городах (Кок-Мардан) и поселениях Джетыасарской культуры. Дома строились из сырцового кирпича с широкими общими очагами.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Livestock -->
+                <div class="bg-amber-100/50 p-10 rounded-[3rem] border border-amber-200 flex flex-col items-center text-center">
+                    <div class="text-6xl mb-6">🐎</div>
+                    <h3 id="c5-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Скотоводство</h3>
+                    <p id="c5-d" class="text-amber-800/70 text-sm leading-relaxed">Разводили лошадей, овец и верблюдов. Скотоводство было отгонным, обеспечивая людей мясом, кожей и транспортом.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-sky-950 text-sky-400/50">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-white/90">
+                «Быт кангюев — это пример того, как человеческая воля и инженерный расчет превратили сухие берега Сырдарьи в цветущие сады Евразии.»
+            </p>
+            <div class="mt-12 text-[10px] uppercase font-bold tracking-[0.5em]">Kangju Civilization Heritage</div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Кангюи: Труд и Торговля",
+                vizTitle: "Процветание Оазисов",
+                vizDesc: "Экономика кангюев была уникальной: они успешно сочетали высокопродуктивное земледелие с международным транзитом товаров.",
+                badge: "Экономический профиль",
+                stat1: "Найденных монет", stat2: "Длина каналов",
+                planTitle: "Основы жизни",
+                c1T: "Ирригация", c1D: "Кангюи строили сложные водоканалы (арыки), такие как Зах. Это позволило выращивать зерно и хлопок в степях.",
+                c2T: "Собственная монета", c2D: "Кангюи чеканили свои деньги. Археологи находят тысячи монет, что доказывает высокий уровень торговли.",
+                c3T: "Кузнечное дело", c3D: "Регион Шаш был центром металлургии. Здесь ковали лучшее оружие и инструменты для всей долины Сырдарьи.",
+                c4T: "Города и Поселения", c4D: "Жили в укрепленных городах (Кок-Мардан). Дома из сырцового кирпича имели сложные системы отопления и общие очаги.",
+                c5T: "Скотоводство", c5D: "Разводили лошадей и верблюдов. Скотоводство дополняло земледелие, обеспечивая транспорт и одежду.",
+                footer: "«Быт кангюев — это пример того, как человеческая воля и инженерный расчет превратили берега Сырдарьи в цветущие сады Евразии.»",
+                chartLabels: ["Земледелие", "Торговля", "Металлургия", "Скотоводство", "Ремесло"],
+                chartTitle: "Структура экономики Кангюев (%)"
+            },
+            kz: {
+                title: "Қаңлылар: Еңбек пен Сауда",
+                vizTitle: "Шұраттардың гүлденуі",
+                vizDesc: "Қаңлылар экономикасы бірегей болды: олар өнімді егіншілік пен халықаралық тауар транзитін сәтті ұштастыра білді.",
+                badge: "Экономикалық профиль",
+                stat1: "Табылған монеталар", stat2: "Каналдар ұзындығы",
+                planTitle: "Өмір негіздері",
+                c1T: "Суару жүйесі", c1D: "Қаңлылар Зах сияқты күрделі су каналдарын (арықтар) салды. Бұл далада астық пен мақта өсіруге мүмкіндік берді.",
+                c2T: "Меншікті монета", c2D: "Қаңлылар өз ақшасын соқты. Археологтардың мыңдаған монета табуы сауданың жоғары деңгейін дәлелдейді.",
+                c3T: "Ұсталық өнер", c3D: "Шаш аймағы металлургия орталығы болды. Мұнда Сырдария алқабына қажетті ең жақсы қару мен құралдар соғылды.",
+                c4T: "Қалалар мен Қоныстар", c4D: "Көк-Мардан сияқты бекіністі қалаларда тұрды. Шикі кірпіштен салынған үйлерде жылыту жүйелері мен ортақ ошақтар болды.",
+                c5T: "Мал шаруашылығы", c5D: "Жылқы мен түйе өсірді. Мал шаруашылығы егіншілікті толықтырып, көлік пен киіммен қамтамасыз етті.",
+                footer: "«Қаңлылардың тұрмысы — адамның еркі мен инженерлік есебі Сырдария жағасын Еуразияның гүлденген бағына айналдырғанының мысалы.»",
+                chartLabels: ["Егіншілік", "Сауда", "Металлургия", "Мал шаруашылығы", "Қолөнер"],
+                chartTitle: "Қаңлы экономикасының құрылымы (%)"
+            },
+            en: {
+                title: "Kangju: Labor and Trade",
+                vizTitle: "Oasis Prosperity",
+                vizDesc: "The Kangju economy was unique: they successfully combined highly productive agriculture with international trade transit.",
+                badge: "Economic Profile",
+                stat1: "Coins found", stat2: "Canal length",
+                planTitle: "Life Basics",
+                c1T: "Irrigation", c1D: "The Kangju built complex water canals like Zakh. This allowed growing grain and cotton in the dry steppes.",
+                c2T: "Own Coinage", c2D: "The Kangju minted their own money. Archaeologists find thousands of coins, proving a high level of trade.",
+                c3T: "Blacksmithing", c3D: "The Shash region was the center of metallurgy. Here they forged the best weapons and tools for the Syr Darya valley.",
+                c4T: "Cities and Settlements", c4D: "They lived in fortified cities (Kok-Mardan). Mudbrick houses had complex heating systems and common hearths.",
+                c5T: "Livestock", c5D: "They raised horses and camels. Cattle breeding complemented farming, providing transport and clothing.",
+                footer: "«The life of the Kangju is an example of how human will and engineering turned the Syr Darya banks into the blooming gardens of Eurasia.»",
+                chartLabels: ["Agriculture", "Trade", "Metallurgy", "Livestock", "Crafts"],
+                chartTitle: "Kangju Economy Structure (%)"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('economyChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        data: [35, 25, 15, 15, 10],
+                        backgroundColor: ['#0284c7', '#f59e0b', '#0369a1', '#0ea5e9', '#38bdf8'],
+                        borderWidth: 0,
+                        hoverOffset: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    }
+                }
+            });
+        }
+
+        function setLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('stat1').innerText = t.stat1;
+            document.getElementById('stat2').innerText = t.stat2;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
+            document.getElementById('c5-t').innerText = t.c5T; document.getElementById('c5-d').innerText = t.c5D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-xl text-sm font-bold text-sky-600 hover:bg-sky-100 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

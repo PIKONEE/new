@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Казахско-Китайские торговые связи (II пол. XIX в.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #064e3b; color: #f0fdf4; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .silk-gradient {
+            background: radial-gradient(circle at top right, #065f46, #022c22 90%);
+        }
+
+        .premium-panel {
+            background: rgba(6, 78, 59, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 3rem;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .premium-panel:hover {
+            border-color: #34d399;
+            box-shadow: 0 0 60px rgba(52, 211, 153, 0.15);
+        }
+
+        .lang-active {
+            background-color: #34d399;
+            color: #022c22;
+            box-shadow: 0 0 25px rgba(52, 211, 153, 0.5);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .info-card {
+            background: rgba(6, 78, 59, 0.5);
+            border-left: 10px solid #10b981;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.4s ease;
+            height: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateX(10px);
+            background: rgba(6, 78, 59, 0.8);
+        }
+
+        .tag-emerald {
+            background: #065f46;
+            color: #6ee7b7;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="silk-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-emerald-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.15em] text-emerald-400 text-center">Казахско-Китайские торговые связи (II пол. XIX в.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-emerald-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Trade Pulse Visualization (Canvas) -->
+        <div class="premium-panel p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-emerald-500 text-emerald-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Trade Dynamics Model</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic tracking-tighter">Вектор Илийской торговли</h2>
+                    <p id="viz-desc" class="text-lg text-emerald-200/60 font-light leading-relaxed">
+                        Во второй половине XIX века торговля перешла на новый уровень благодаря открытию консульств и пароходства по реке Или. Нажмите на узлы на схеме, чтобы изучить пункты обмена.
+                    </p>
+                    
+                    <div id="info-panel" class="info-card shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-emerald-300 mb-3 uppercase">Торговые хабы</h3>
+                        <p id="element-desc" class="text-emerald-100/70 text-sm leading-relaxed italic">Кликните на Жаркент, Кульджу или Семипалатинск на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="tradeCanvas"></canvas>
+                    <div class="absolute bottom-12 right-12 text-[10px] text-emerald-900 font-mono uppercase tracking-[0.4em]">Late 19th Century Trade Logistics</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Content Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Treaties -->
+            <div class="info-card">
+                <span class="tag-emerald mb-4 inline-block" id="t-dipl">Дипломатия</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Правовой прорыв</h3>
+                <p id="c1-d" class="text-emerald-100/70 text-sm leading-relaxed mb-6">
+                    **Петербургский договор 1881 года** стал поворотным моментом. Он вернул Илийский край Китаю, но закрепил за Россией и Казахстаном право беспошлинной торговли. Были открыты новые консульства в Кульдже, Чугучаке и Кашгаре, что обеспечило юридическую защиту купцов и упорядочило караванную логистику.
+                </p>
+            </div>
+
+            <!-- Goods -->
+            <div class="info-card">
+                <span class="tag-emerald mb-4 inline-block" id="t-trade">Товары</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Экспорт и Импорт</h3>
+                <p id="c2-d" class="text-emerald-100/70 text-sm leading-relaxed mb-6">
+                    Казахстан экспортировал огромное количество скота, кожи и шерсти. В обмен из Китая поступали «колониальные товары»: элитный кирпичный чай, шелковые ткани и фарфор. В конце века к экспорту добавились хлеб и продукты промышленного производства через развивающиеся города Жетысу.
+                </p>
+            </div>
+
+            <!-- New Centers -->
+            <div class="info-card">
+                <span class="tag-emerald mb-4 inline-block" id="t-city">Города</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Жаркент и Верный</h3>
+                <p id="c3-d" class="text-emerald-100/70 text-sm leading-relaxed mb-6">
+                    Возникновение **Жаркента** как таможенного узла и развитие **Верного** (Алматы) превратило Юго-Восточный Казахстан в мощный торговый плацдарм. Открытие пароходства по реке Или (1883 г.) позволило значительно снизить стоимость перевозок и увеличить объемы торговли в десятки раз.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-emerald-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Во второй половине XIX века торговля с Китаем превратила Жетысу в ворота Евразии, соединив промышленный порыв Запада с ресурсами Востока.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-emerald-800 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Казахско-Китайские торговые связи (II пол. XIX в.)",
+                vizTitle: "Вектор Илийской торговли",
+                vizDesc: "Торговля перешла на уровень государственных договоров. Нажмите на узлы обмена на холсте для анализа логистики и значимости центров.",
+                badge: "Анализ торговой динамики",
+                elementTitleDefault: "Торговые хабы",
+                elementDescDefault: "Кликните на Жаркент, Кульджу или Семипалатинск на чертеже справа.",
+                tDipl: "Дипломатия", tTrade: "Товары", tCity: "Города",
+                c1T: "Правовой прорыв", c1D: "Петербургский договор 1881 г. обеспечил право беспошлинной торговли. Открытие консульств в Кульдже и Кашгаре сделало Степь безопасным транзитным коридором.",
+                c2T: "Экспорт и Импорт", c2D: "Казахи поставляли миллионы голов скота, получая взамен чай, шелк и сахар. Чай стал не просто товаром, а элементом национальной идентичности и быта.",
+                c3T: "Жаркент и Верный", c3D: "Города Юго-Востока стали таможенными и логистическими базами. Открытие водного пути по реке Или в 1883 г. совершило революцию в стоимости транзита.",
+                footer: "«Торговля с Китаем превратила Жетысу в ворота Евразии в конце XIX века.»",
+                nodes: {
+                    zharkent: { name: "Жаркент (Таможенный узел)", text: "Главный пункт пропуска на границе. Город вырос как центр торговли, где караванные пути встречались с имперской администрацией." },
+                    kulja: { name: "Кульджа (Российское консульство)", text: "Центр Илийского края. После 1881 г. здесь была создана фактория для казахских купцов, торговавших тканями и чаем." },
+                    semey: { name: "Семипалатинск", text: "Северный торговый хаб. Отсюда шли основные караваны с российскими промышленными товарами вглубь Цинской империи." }
+                }
+            },
+            kz: {
+                title: "Қазақ-Қытай сауда байланыстары (XIX ғ. ІІ жартысы)",
+                vizTitle: "Іле саудасының бағыты",
+                vizDesc: "Сауда мемлекеттік келісімдер деңгейіне өтті. Логистика мен орталықтардың маңызын талдау үшін кенептегі нүктелерді басыңыз.",
+                badge: "Сауда динамикасын талдау",
+                elementTitleDefault: "Сауда хабтары",
+                elementDescDefault: "Оң жақтағы сызбадан Жаркент, Құлжа немесе Семей қалаларын басыңыз.",
+                tDipl: "Дипломатия", tTrade: "Тауарлар", tCity: "Қалалар",
+                c1T: "Құқықтық серпіліс", c1D: "1881 жылғы Петербург келісімі бажсыз сауда құқығын қамтамасыз етті. Құлжа мен Қашқарда консулдықтардың ашылуы Даланы қауіпсіз транзиттік дәлізге айналдырды.",
+                c2T: "Экспорт және Импорт", c2D: "Қазақтар миллиондаған мал басын жеткізіп, орнына шай, жібек және қант алды. Шай ұлттық болмыс пен тұрмыстың ажырамас бөлігіне айналды.",
+                c3T: "Жаркент пен Верный", c3D: "Оңтүстік-шығыс қалалары кедендік және логистикалық базаларға айналды. 1883 жылы Іле өзенімен су жолының ашылуы транзит құнын айтарлықтай арзандатты.",
+                footer: "«Қытаймен сауда XIX ғасырдың соңында Жетісуды Еуразияның қақпасына айналдырды.»"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('tradeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 550;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw River Ili (Modern style)
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 450);
+            ctx.bezierCurveTo(300 * scale, 400, 500 * scale, 480, 750 * scale, 350);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 12 * scale;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // 2. City Nodes
+            drawNode(180 * scale, 410, '#34d399', "SEMEY", 15 * scale);
+            drawNode(500 * scale, 440, '#6ee7b7', "ZHARKENT", 18 * scale);
+            drawNode(680 * scale, 370, '#fbbf24', "KULJA", 15 * scale);
+
+            // 3. Flow indicators (small arrows)
+            ctx.fillStyle = '#fde68a';
+            for(let i=0; i<3; i++) {
+                ctx.beginPath();
+                ctx.arc((250 + i*150) * scale, 410 + (i%2*20), 4, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        function drawNode(x, y, color, label, size) {
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + size + 20);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const scale = canvas.width / 800;
+
+            let found = null;
+            if (x < 300 * scale) found = 'semey';
+            else if (x >= 300 * scale && x < 600 * scale) found = 'zharkent';
+            else found = 'kulja';
+
+            if (found) {
+                const info = translations[currentLang].nodes[found];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (found === 'kulja' ? '#fbbf24' : '#10b981');
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('t-dipl').innerText = t.tDipl;
+            document.getElementById('t-trade').innerText = t.tTrade;
+            document.getElementById('t-city').innerText = t.tCity;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-emerald-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

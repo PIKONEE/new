@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Освободительная борьба казахского народа (60–70-е гг. XIX в.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #f5f5f4; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .battle-gradient {
+            background: radial-gradient(circle at bottom left, #7f1d1d, #0c0a09 90%);
+        }
+
+        .premium-card {
+            background: rgba(28, 25, 23, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            border: 2px solid #ef4444;
+            transition: all 0.5s ease;
+        }
+
+        .premium-card:hover {
+            border-color: #f87171;
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.2);
+        }
+
+        .lang-active {
+            background-color: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 2.5rem;
+            background: rgba(2, 6, 23, 0.5);
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.8);
+            border-left: 8px solid #ef4444;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge {
+            background: #450a0a;
+            color: #fca5a5;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="battle-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-red-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-red-500 text-center">Освободительная борьба (1860–1870-е гг.)</h1>
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-red-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Strategic Resistance Map (Canvas) -->
+        <div class="premium-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-red-500 text-red-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Resistance Operations Model</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Карта Степного Пламени</h2>
+                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
+                        Реформы 1867-68 гг. вызвали мощную волну протеста. Нажмите на основные очаги восстаний на карте Казахстана, чтобы изучить действия повстанцев.
+                    </p>
+                    
+                    <div id="info-panel" class="info-box shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-red-400 mb-3 uppercase">Выберите очаг</h3>
+                        <p id="element-desc" class="text-zinc-300 text-sm leading-relaxed italic">Кликните на маркеры Уральской области, Торгая или Мангыстау.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="warCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-red-900 font-mono uppercase tracking-[0.4em]">Conflict Zone Tactical Map</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Content Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- 1868-69 Uprising -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-red-600">
+                <div>
+                    <span class="status-badge mb-4 inline-block" id="tag-1">Запад и Центр</span>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white italic">Уральск и Торгай</h3>
+                    <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
+                        Протест начался в ответ на введение «Временного положения». Повстанцы (более 10 000 чел.) блокировали торговые караваны и штурмовали имперские пикеты. Крупнейшие столкновения произошли в урочище **Жамансай**. Лидеры родов требовали отмены новых налогов и вывода казачьих отрядов из Степи.
+                    </p>
+                </div>
+                <div class="text-[10px] font-black text-red-500 uppercase tracking-widest italic">1868–1869 гг.</div>
+            </div>
+
+            <!-- Adaev Uprising -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-slate-500">
+                <div>
+                    <span class="status-badge mb-4 inline-block" id="tag-2">Мангыстау</span>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white italic">Восстание рода Адай</h3>
+                    <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
+                        Одно из самых ожесточенных восстаний под предводительством **Досана Тажиулы** и **Исы Тленбайулы**. Повстанцы сожгли Александровский форт. Причиной стал запрет перекочевки на «внутреннюю сторону» и резкое повышение налогов. Восстание было подавлено регулярными войсками, переброшенными из Кавказа.
+                    </p>
+                </div>
+                <div class="text-[10px] font-black text-red-500 uppercase tracking-widest italic">1870 г.</div>
+            </div>
+
+            <!-- Significance -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-red-600">
+                <div>
+                    <span class="status-badge mb-4 inline-block" id="tag-3">Итоги</span>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white italic">Значение борьбы</h3>
+                    <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
+                        Хотя восстания были подавлены из-за плохой координации и технологического превосходства империи, они заставили власти временно замедлить колонизацию и продемонстрировали неприятие народом новых порядков. Эти события стали предтечей мощных протестов 1916 года.
+                    </p>
+                </div>
+                <div class="text-[10px] font-black text-red-500 uppercase tracking-widest italic">Дух сопротивления</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-red-900/30 text-center text-zinc-600">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-zinc-500">
+                «Освободительная борьба 60–70-х годов — это яростный крик Степи против имперской сетки, сковавшей древнюю волю кочевника.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-red-900 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Освободительная борьба (1860–1870-е гг.)",
+                vizTitle: "Карта Степного Пламени",
+                vizDesc: "Реформы 1867-68 гг. вызвали мощную волну протеста. Нажмите на основные очаги восстаний на холсте для анализа событий.",
+                badge: "Анализ антиколониальной борьбы",
+                elementTitleDefault: "Выберите очаг",
+                elementDescDefault: "Кликните на маркеры Уральской области, Торгая или Мангыстау на холсте справа.",
+                tag1: "Запад и Центр", tag2: "Мангыстау", tag3: "Итоги",
+                c1T: "Уральск и Торгай", c1D: "Массовое движение 1868-1869 гг. Протест против введения имперской администрации и земельных изъятий. Повстанцы использовали тактику ночных атак.",
+                c2T: "Восстание рода Адай", c2D: "В 1870 г. на Мангыстау Досан Тажиулы и Иса Тленбайулы штурмовали имперские укрепления. Это было одно из самых долгих и упорных восстаний.",
+                c3T: "Значение борьбы", c3D: "Борьба показала единство родов в защите пастбищ. Поражение было неизбежно из-за неравенства сил, но дух сопротивления не был сломлен.",
+                footer: "«Освободительная борьба 60–70-х годов — яростный крик Степи против имперской сетки.»",
+                nodes: {
+                    uralsk: { name: "Уральская обл. (1869)", text: "Очаг под предводительством Бермухамеда Касымулы. Битва в урочище Жамансай. Повстанцы требовали возврата земель." },
+                    torgai: { name: "Торгай (1869)", text: "Объединение отрядов Младшего и Среднего жузов. Уничтожение почтовых станций и нападения на казачьи отряды." },
+                    mangystau: { name: "Мангыстау (1870)", text: "Восстание рода Адай. Штурм форта Александровск. Лидеры: Досан Тажиулы, Иса Тленбайулы." }
+                }
+            },
+            kz: {
+                title: "Азаттық күресі (1860–1870-жж.)",
+                vizTitle: "Дала жалыны картасы",
+                vizDesc: "1867-68 жж. реформалар наразылықтың қуатты толқынын туғызды. Оқиғаларды талдау үшін кенептегі көтеріліс ошақтарын басыңыз.",
+                badge: "Отаршылдыққа қарсы күресті талдау",
+                elementTitleDefault: "Ошақты таңдаңыз",
+                elementDescDefault: "Оң жақтағы кенептен Орал, Торғай немесе Маңғыстау маркерлерін басыңыз.",
+                tag1: "Батыс пен Орталық", tag2: "Маңғыстау", tag3: "Қорытынды",
+                c1T: "Орал мен Торғай", c1D: "1868-1869 жж. жаппай қозғалыс. Империялық әкімшілікті енгізуге және жерді тартып алуға қарсылық. Көтерілісшілер түнгі шабуыл тактикасын қолданды.",
+                c2T: "Адай руының көтерілісі", c2D: "1870 ж. Маңғыстауда Досан Тәжіұлы мен Иса Тіленбайұлы империялық бекіністерді шабуылдады. Бұл ең ұзақ және табанды көтерілістердің бірі болды.",
+                c3T: "Күрестің маңызы", c3D: "Күрес жайылымдарды қорғаудағы рулардың бірлігін көрсетті. Күштердің тең болмауынан жеңіліс болғанымен, қарсылық рухы сынбады.",
+                footer: "«60–70-жылдардағы азаттық күресі — көшпелінің ежелгі еркіндігін тұсаған империялық торға қарсы Даланың айбары.»",
+                nodes: {
+                    uralsk: { name: "Орал обл. (1869)", text: "Бермұхамед Қасымұлы бастаған ошақ. Жамансай алқабындағы шайқас. Көтерілісшілер жерді қайтаруды талап етті." },
+                    torgai: { name: "Торғай (1869)", text: "Кіші және Орта жүз жасақтарының бірігуі. Пошта бекеттерін жою және казак жасақтарына шабуыл жасау." },
+                    mangystau: { name: "Маңғыстау (1870)", text: "Адай руының көтерілісі. Александровск фортын шабуылдау. Көсемдері: Досан Тәжіұлы, Иса Тіленбайұлы." }
+                }
+            },
+            en: {
+                title: "Liberation Struggle (1860–1870s)",
+                vizTitle: "Map of the Steppe Flame",
+                vizDesc: "The 1867-68 reforms triggered a wave of protest. Click on the main uprising sites on the canvas to analyze events.",
+                badge: "Anti-colonial Struggle Analysis",
+                elementTitleDefault: "Select a Site",
+                elementDescDefault: "Click on the markers for Uralsk, Torgay, or Mangystau on the canvas.",
+                tag1: "West & Center", tag2: "Mangystau", tag3: "Outcomes",
+                c1T: "Uralsk & Torgay", c1D: "Mass movement of 1868-1869. Protest against the introduction of imperial administration and land seizures. Rebels used night attack tactics.",
+                c2T: "Adaev Clan Uprising", c2D: "In 1870 on Mangystau, Dosan Tazhiuly and Isa Tlenbaiuly stormed imperial fortifications. It was one of the most persistent uprisings.",
+                c3T: "Significance", c3D: "The struggle showed the unity of clans in protecting pastures. Defeat was inevitable due to uneven forces, but the spirit of resistance was not broken.",
+                footer: "«The liberation struggle of the 1860-70s was a fierce cry of the Steppe against the imperial grid.»",
+                nodes: {
+                    uralsk: { name: "Uralsk Region (1869)", text: "Uprising led by Bermukhamed Kasymuly. Battle at Zhamansay. Rebels demanded the return of their lands." },
+                    torgai: { name: "Torgay (1869)", text: "Unification of Junior and Middle Zhuz detachments. Destruction of postal stations and attacks on Cossack units." },
+                    mangystau: { name: "Mangystau (1870)", text: "Adaev clan uprising. Storming of Fort Alexandrovsk. Leaders: Dosan Tazhiuly, Isa Tlenbaiuly." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('warCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Territory Outline (Abstract)
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 150 * scale);
+            ctx.lineTo(400 * scale, 50 * scale);
+            ctx.lineTo(750 * scale, 250 * scale);
+            ctx.lineTo(400 * scale, 450 * scale);
+            ctx.lineTo(150 * scale, 400 * scale);
+            ctx.closePath();
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.15)';
+            ctx.setLineDash([5, 10]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Battle Markers
+            drawMarker(250 * scale, 180 * scale, '#dc2626', "URALSK (1869)");
+            drawMarker(450 * scale, 150 * scale, '#ef4444', "TORGAI (1869)");
+            drawMarker(220 * scale, 350 * scale, '#991b1b', "MANGYSTAU (1870)");
+
+            // Visual instruction
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
+            ctx.font = 'bold 10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText("TAP ON MARKERS TO ANALYZE RESISTANCE", cx, 40 * scale);
+        }
+
+        function drawMarker(x, y, color, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, 15, 0, Math.PI * 2);
+            ctx.fillStyle = color + '33';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y - 25);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.sqrt((x-250*scale)**2 + (y-180*scale)**2) < 30) target = 'uralsk';
+            else if (Math.sqrt((x-450*scale)**2 + (y-150*scale)**2) < 30) target = 'torgai';
+            else if (Math.sqrt((x-220*scale)**2 + (y-350*scale)**2) < 30) target = 'mangystau';
+
+            // Fixed language and target data check
+            if (target && translations[currentLang] && translations[currentLang].nodes && translations[currentLang].nodes[target]) {
+                const info = translations[currentLang].nodes[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#ef4444';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            if (!t) return;
+
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

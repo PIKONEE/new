@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Казахстан в середине XVIII века: Эпоха Лавирования</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .geopolitic-gradient {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a 90%);
+        }
+
+        .balance-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 3.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .balance-panel:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 0 60px rgba(56, 189, 248, 0.1);
+        }
+
+        .lang-active {
+            background-color: #38bdf8;
+            color: #0f172a;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 2.5rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .node-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-top: 6px solid #38bdf8;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.4s ease;
+            height: 100%;
+        }
+
+        .node-card:hover {
+            transform: translateY(-10px);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .trait-badge {
+            background: #082f49;
+            color: #7dd3fc;
+            padding: 4px 14px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="geopolitic-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-sky-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-sky-400">Казахстан в середине XVIII века</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-sky-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Geopolitical Balance (Canvas) -->
+        <div class="balance-panel p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-sky-500 text-sky-400 px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Diplomatic Equilibrium Model</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Весы Абылай-хана</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Середина XVIII века — это время тончайшей дипломатии. Абылай-хан мастерски балансировал между «Львом» (Россия) и «Драконом» (Цинский Китай). Нажмите на векторы влияния.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[3rem] bg-sky-950/20 border-l-8 border-sky-500 shadow-2xl transition-all duration-500">
+                        <h3 id="role-title" class="text-xl font-bold text-sky-300 mb-3 uppercase">Вектор политики</h3>
+                        <p id="role-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на Россию, Китай или центр власти в Степи.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="balanceCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-sky-900 font-mono uppercase tracking-[0.4em]">Strategic Neutrality Simulation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Analysis Content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Internal Unity -->
+            <div class="node-card">
+                <div class="mb-4"><span class="trait-badge" id="tag-1">Власть</span></div>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Возвышение Абылая</h3>
+                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    В **1771 году** Абылай был официально провозглашен ханом всех трех жузов в Туркестане. Его главной целью было восстановление территориальной целостности Казахстана. Он ограничил власть султанов и укрепил институт Биев, создав сильную централизованную армию, способную защищать границы от любых посягательств.
+                </p>
+                <div class="text-[10px] font-black text-sky-500 uppercase tracking-widest">Туркестан — столица единства</div>
+            </div>
+
+            <!-- Trade & Economy -->
+            <div class="node-card">
+                <div class="mb-4"><span class="trait-badge" id="tag-2">Экономика</span></div>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Торговый симбиоз</h3>
+                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    Середина века — это расцвет приграничной торговли. Были открыты крупные ярмарки в **Семипалатинске**, **Петропавловске** и **Троицке**. Казахи поставляли скот и пушнину в обмен на ткани, железо и хлеб. Абылай активно поощрял торговлю как с Россией, так и с Китаем, делая Степь экономическим мостом.
+                </p>
+                <div class="text-[10px] font-black text-sky-500 uppercase tracking-widest italic">Пушнина и Скот — валюта Степи</div>
+            </div>
+
+            <!-- External Crisis -->
+            <div class="node-card">
+                <div class="mb-4"><span class="trait-badge" id="tag-3">Внешний мир</span></div>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Падение Джунгарии</h3>
+                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    В **1755–1758 гг.** Жунгарское ханство было полностью уничтожено Цинской империей. Это сняло вековую угрозу, но поставило Казахстан перед лицом новой мощной империи на Востоке. Абылай первым понял необходимость принятия подданства обеих империй (**«двойное подданство»**) для сохранения независимости.
+                </p>
+                <div class="text-[10px] font-black text-sky-500 uppercase tracking-widest italic">1756: Первый контакт с Пекином</div>
+            </div>
+        </div>
+
+        <!-- Section 3: Summary Feature -->
+        <div class="bg-sky-900/20 p-10 md:p-16 rounded-[4rem] border border-sky-500/20 shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h3 id="sum-t" class="text-3xl font-black text-white mb-8 uppercase italic tracking-widest">Уроки Лавирования</h3>
+                    <p id="sum-d" class="text-slate-300 text-xl font-light leading-relaxed mb-10">
+                        Политика Абылая в середине XVIII века стала классическим примером кочевой дипломатии. Не имея возможности победить империи силой, он побеждал их мудростью, используя противоречия между Петербургом и Пекином в интересах Казахского ханства.
+                    </p>
+                    <div class="flex gap-4">
+                        <span id="tag-sum" class="px-6 py-2 bg-sky-500/10 rounded-2xl border border-sky-500/30 text-xs font-black text-sky-400 uppercase">Суверенитет через баланс</span>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <div class="w-80 h-80 border-4 border-dashed border-sky-800/40 rounded-full flex items-center justify-center animate-pulse">
+                        <div class="text-center">
+                            <div class="text-7xl mb-4">⚖️</div>
+                            <div id="label-re" class="text-[10px] font-black uppercase text-sky-600 tracking-[0.5em]">The Balance of Power</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 font-black rotate-12 pointer-events-none uppercase">ABLAI</div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-black border-t border-sky-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-600">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Абылай-хан превратил Степь в пространство высокой политики, где воля одного лидера смогла удержать единство нации между жерновами двух империй.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-sky-800 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Казахстан в середине XVIII века",
+                vizTitle: "Весы Абылай-хана",
+                vizDesc: "Середина XVIII века — время дипломатии выживания. Абылай-хан балансировал между мировыми империями. Нажмите на векторы влияния для анализа.",
+                badge: "Модель нейтралитета",
+                roleTitleDefault: "Вектор политики",
+                roleDescDefault: "Кликните на Россию, Китай или центр власти в Степи на холсте.",
+                tag1: "Власть", tag2: "Экономика", tag3: "Внешний мир",
+                c1T: "Возвышение Абылая", c1D: "В 1771 году Абылай был провозглашен ханом всех казахов. Он восстановил институт центральной власти, ограничил сепаратизм султанов и создал сильное войско.",
+                c2T: "Торговый симбиоз", c2D: "Расцвет ярмарок в Семипалатинске и Троицке. Степь стала транзитным хабом для российских и китайских товаров, что принесло хану финансовый ресурс.",
+                c3T: "Падение Джунгарии", c3D: "Разгром джунгар Цинской империей в 1758 году. Абылай использовал этот момент, чтобы вернуть исконные земли Жетысу и Тарбагатая.",
+                sumT: "Уроки Лавирования", sumD: "Дипломатия Абылая — это искусство сохранения независимости в условиях окружения. Он принял подданство России и Китая одновременно, не подчинившись ни одному из них полностью.",
+                footer: "«Абылай-хан удержал единство нации между жерновами двух империй.»",
+                vectors: {
+                    russia: { name: "Северный вектор (Россия)", text: "Признание протектората для получения оружия и защиты границ. Дипломатические миссии в Петербург при Елизавете Петровне." },
+                    china: { name: "Восточный вектор (Цин)", text: "После падения Джунгарии (1758) — торговля с Пекином и признание вассалитета для предотвращения экспансии на казахские земли." },
+                    center: { name: "Ядро власти (Абылай)", text: "Централизация управления. Ставка в Кокшетау. Объединение трех жузов под единым знаменем." }
+                }
+            },
+            kz: {
+                title: "XVIII ғ. ортасындағы Қазақстан",
+                vizTitle: "Абылай ханның таразысы",
+                vizDesc: "XVIII ғасырдың ортасы — дипломатиялық шеберлік кезеңі. Абылай хан державалар арасындағы теңгерімді сақтады. Талдау жасау үшін бағыттарды басыңыз.",
+                badge: "Бейтараптық моделі",
+                roleTitleDefault: "Саясат бағыты",
+                roleDescDefault: "Кенептегі Ресей, Қытай немесе Дала билігінің орталығын басыңыз.",
+                tag1: "Билік", tag2: "Экономика", tag3: "Сыртқы әлем",
+                c1T: "Абылайдың өрлеуі", c1D: "1771 жылы Абылай барлық қазақтардың ханы болып сайланды. Ол орталық билікті қалпына келтіріп, сұлтандардың сепаратизмін шектеді.",
+                c2T: "Сауда симбиозы", c2D: "Семей мен Троицк жәрмеңкелерінің гүлденуі. Дала ресейлік және қытайлық тауарлар үшін транзиттік хабқа айналды.",
+                c3T: "Жоңғарияның құлауы", c3D: "1758 жылы Жоңғар хандығының Цин империясынан талқандалуы. Абылай осы сәтті пайдаланып, Жетісу мен Тарбағатай жерлерін қайтарды.",
+                sumT: "Саяси теңгерім", sumD: "Абылай дипломатиясы — қоршаудағы тәуелсіздікті сақтау өнері. Ол Ресей мен Қытайдың бодандығын бір мезгілде қабылдап, ешқайсысына толық бағынбады.",
+                footer: "«Абылай хан екі империяның қыспағында ұлттың біртұтастығын сақтап қалды.»",
+                vectors: {
+                    russia: { name: "Солтүстік бағыт (Ресей)", text: "Қару-жарақ алу және шекараны қорғау үшін протекторатты мойындау. Елизавета Петровна тұсында Петербургке дипломатиялық миссиялар." },
+                    china: { name: "Шығыс бағыт (Цин)", text: "Жоңғария құлағаннан кейін (1758) — Пекинмен сауда және қазақ жеріне экспансияны болдырмау үшін вассалитетті мойындау." },
+                    center: { name: "Билік өзегі (Абылай)", text: "Басқаруды орталықтандыру. Көкшетаудағы орда. Үш жүзді біртұтас ту астына біріктіру." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('balanceCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+            drawBalance();
+        }
+
+        function drawBalance() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Central Core (Ablai)
+            ctx.beginPath();
+            ctx.arc(cx, cy, 60 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.1)';
+            ctx.fill();
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText("KHAN ABLAI", cx, cy + 5);
+
+            // 2. Russia Vector (Left)
+            drawNode(cx - 220 * scale, cy - 80 * scale, 45 * scale, '#64748b', "RUSSIA");
+            // 3. China Vector (Right)
+            drawNode(cx + 220 * scale, cy - 80 * scale, 45 * scale, '#94a3b8', "QING CHINA");
+
+            // 4. Balance Beam
+            ctx.beginPath();
+            ctx.moveTo(cx - 200 * scale, cy - 80 * scale);
+            ctx.lineTo(cx + 200 * scale, cy - 80 * scale);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Connect to center
+            ctx.setLineDash([5, 10]);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 80 * scale); ctx.lineTo(cx, cy - 60 * scale);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawNode(x, y, r, color, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = '#0f172a';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const cx = canvas.width / 2;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (x < cx - 100 * scale) target = 'russia';
+            else if (x > cx + 100 * scale) target = 'china';
+            else target = 'center';
+
+            if (target) {
+                const info = translations[currentLang].vectors[target];
+                document.getElementById('role-title').innerText = info.name;
+                document.getElementById('role-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#38bdf8';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('role-title').innerText = t.roleTitleDefault;
+            document.getElementById('role-desc').innerText = t.roleDescDefault;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('sum-t').innerText = t.sumT;
+            document.getElementById('sum-d').innerText = t.sumD;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-sky-600 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

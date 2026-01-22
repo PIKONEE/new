@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate-forming Factors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at center, #1e293b, #0f172a, #020617); color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-sky-500/30">
+        <div><h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1></div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 glass rounded-custom p-10 flex flex-col relative overflow-hidden min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="factorCanvas" class="w-full h-full bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-sky-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-sky-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Код Климата", subtitle: "Причины формирования климата", canvasHeading: "Матрица факторов",
+                canvasHint: "Нажмите на узлы для изучения факторов",
+                defaultTitle: "Климатообразующие факторы",
+                defaultText: "Климат любой территории формируется под влиянием трех основных причин: географической широты, перемещения воздушных масс и характера подстилающей поверхности.",
+                factors: {
+                    latitude: { t: "Широта", d: "Определяет количество солнечной радиации. Главный фактор, создающий климатические пояса." },
+                    relief: { t: "Рельеф", d: "Горы преграждают путь ветрам. С высотой температура падает, а количество осадков часто растет." },
+                    ocean: { t: "Океан", d: "Морские течения и близость моря смягчают климат, делая его влажным и менее контрастным." }
+                }
+            },
+            kz: {
+                title: "Климат Коды", subtitle: "Климатты қалыптастырушы себептер", canvasHeading: "Факторлар матрицасы",
+                canvasHint: "Факторларды зерттеу үшін түйіндерді басыңыз",
+                defaultTitle: "Климат түзуші факторлар",
+                defaultText: "Кез келген аумақтың климаты үш негізгі себептің әсерінен қалыптасады: географиялық ендік, ауа массаларының қозғалысы және жер бетінің сипаты.",
+                factors: {
+                    latitude: { t: "Ендік", d: "Күн радиациясының мөлшерін анықтайды. Климаттық белдеулерді құрайтын басты фактор." },
+                    relief: { t: "Рельеф", d: "Таулар желдің жолын бөгейді. Биіктікке қарай температура төмендейді." },
+                    ocean: { t: "Мұхит", d: "Теңіз ағыстары мен мұхитқа жақындық климатты жұмсартады, оны ылғалды етеді." }
+                }
+            },
+            en: {
+                title: "Climate Code", subtitle: "Causes of Climate Variation", canvasHeading: "Factor Matrix",
+                canvasHint: "Click nodes to explore factors",
+                defaultTitle: "Climate-forming Factors",
+                defaultText: "The climate of any territory is formed under the influence of three main causes: geographical latitude, air mass movement, and the nature of the underlying surface.",
+                factors: {
+                    latitude: { t: "Latitude", d: "Determines the amount of solar radiation. The main factor creating climatic zones." },
+                    relief: { t: "Relief", d: "Mountains block wind paths. Temperature drops with altitude, while precipitation often increases." },
+                    ocean: { t: "Ocean", d: "Ocean currents and proximity to the sea moderate the climate, making it humid and less extreme." }
+                }
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx, nodes = [];
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            draw();
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const cx = canvas.width/2, cy = canvas.height/2;
+            nodes = [
+                { id: 'latitude', x: cx, y: cy - 100, r: 50, c: '#fbbf24' },
+                { id: 'relief', x: cx - 120, y: cy + 80, r: 50, c: '#f87171' },
+                { id: 'ocean', x: cx + 120, y: cy + 80, r: 50, c: '#38bdf8' }
+            ];
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[1].x, nodes[1].y); ctx.lineTo(nodes[2].x, nodes[2].y); ctx.closePath(); ctx.stroke();
+
+            nodes.forEach(n => {
+                ctx.fillStyle = n.c; ctx.shadowBlur = 20; ctx.shadowColor = n.c;
+                ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'white'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center';
+                ctx.fillText(translations[currentLang].factors[n.id].t.toUpperCase(), n.x, n.y + 5);
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('factorCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500;
+            canvas.addEventListener('click', e => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                nodes.forEach(n => {
+                    if(Math.sqrt((x-n.x)**2 + (y-n.y)**2) < n.r) {
+                        const d = translations[currentLang].factors[n.id];
+                        document.getElementById('info-title').textContent = d.t;
+                        document.getElementById('info-text').textContent = d.d;
+                    }
+                });
+            });
+            setLang('ru');
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бұйрықты сөйлем</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fef2f2; color: #111827; }
+        .container { max-width: 900px; margin: auto; padding: 20px; }
+        .header-card {
+            background: linear-gradient(135deg, #b91c1c, #ef4444);
+            border-radius: 1rem; color: white; padding: 40px; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(185, 28, 28, 0.4);
+        }
+        .content-box {
+            background-color: white; border-radius: 1rem; padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 6px solid #dc2626;
+        }
+        .list-item { margin-bottom: 15px; border-bottom: 1px dashed #fee2e2; padding-bottom: 10px; }
+        .list-item:last-child { border-bottom: none; }
+        .label { font-weight: 800; color: #b91c1c; display: block; margin-bottom: 4px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div class="container">
+        <header class="header-card">
+            <h1 class="text-3xl font-extrabold mb-2 uppercase">БҰЙРЫҚТЫ СӨЙЛЕМ</h1>
+            <p class="text-red-100 text-lg">Бұйрық, тілек, өтініш, кеңес мағынасын білдіреді</p>
+        </header>
+
+        <div class="content-box">
+            <h2 class="text-2xl font-bold text-red-800 mb-6">ЖАСАЛУ ЖОЛДАРЫ:</h2>
+
+            <div class="list-item">
+                <span class="label">1. Етістіктің бұйрық райы арқылы</span>
+                <p class="text-gray-600">Негізінен 2-жақта айтылады.</p>
+                <div class="bg-red-50 p-2 rounded mt-2 italic text-red-900">
+                    Сен тез <b>оқы</b>. Үйге <b>қайт</b>.
+                </div>
+            </div>
+
+            <div class="list-item">
+                <span class="label">2. -шы / -ші шылаулары арқылы (Өтініш)</span>
+                <p class="text-gray-600">Сыпайы түрде сұрау.</p>
+                <div class="bg-red-50 p-2 rounded mt-2 italic text-red-900">
+                    Дәптеріңді бере тұр<b>шы</b>.
+                </div>
+            </div>
+
+            <div class="list-item">
+                <span class="label">3. 3-жақтағы бұйрық (-сын / -сін)</span>
+                <p class="text-gray-600">Тілек, ниет мәнінде.</p>
+                <div class="bg-red-50 p-2 rounded mt-2 italic text-red-900">
+                    Сапарыңыз оң <b>болсын</b>!
+                </div>
+            </div>
+
+            <div class="list-item">
+                <span class="label">4. Тыйым салу (-ма / -ме)</span>
+                <p class="text-gray-600">Іс-әрекетті жасамауды бұйыру.</p>
+                <div class="bg-red-50 p-2 rounded mt-2 italic text-red-900">
+                    Шөпті <b>баспа</b>. Айқайла<b>ма</b>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

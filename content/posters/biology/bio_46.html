@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корень растения</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f5f3ff; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #6d28d9; border-bottom: 3px solid #ddd6fe; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #8b5cf6; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #8b5cf6; background: white; color: #8b5cf6; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #8b5cf6; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; border: 2px dashed #8b5cf6; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-violet-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Түбіртегі</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Root System</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Система корней</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-violet-100">Су және мінерал абсорбциясының орган</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-violet-100">Organ for water and mineral absorption</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-violet-100">Орган поглощения воды и минералов</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Түбіндіктің Құрамдары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Root Structure</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Структура корня</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 700 400" style="height: 350px; width: 100%;">
+                        <!-- Типы корней слева -->
+                        <!-- Стержневой корень -->
+                        <line x1="80" y1="50" x2="80" y2="150" stroke="#8B4513" stroke-width="4"/>
+                        <line x1="80" y1="100" x2="60" y2="130" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="80" y1="120" x2="100" y2="150" stroke="#8B4513" stroke-width="2"/>
+                        <circle cx="80" cy="50" r="4" fill="#654321"/>
+                        <text x="80" y="180" font-size="11" text-anchor="middle" font-weight="bold" fill="#654321">Стержневой</text>
+
+                        <!-- Мочковатый корень -->
+                        <line x1="180" y1="50" x2="180" y2="80" stroke="#8B4513" stroke-width="3"/>
+                        <line x1="180" y1="70" x2="160" y2="130" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="180" y1="70" x2="180" y2="140" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="180" y1="70" x2="200" y2="130" stroke="#8B4513" stroke-width="2"/>
+                        <circle cx="180" cy="50" r="4" fill="#654321"/>
+                        <text x="180" y="180" font-size="11" text-anchor="middle" font-weight="bold" fill="#654321">Мочковатый</text>
+
+                        <!-- Придаточный корень -->
+                        <line x1="280" y1="50" x2="280" y2="80" stroke="#228B22" stroke-width="3"/>
+                        <line x1="280" y1="65" x2="260" y2="120" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="280" y1="65" x2="280" y2="130" stroke="#8B4513" stroke-width="2"/>
+                        <line x1="280" y1="65" x2="300" y2="120" stroke="#8B4513" stroke-width="2"/>
+                        <circle cx="280" cy="50" r="4" fill="#228B22"/>
+                        <text x="280" y="180" font-size="11" text-anchor="middle" font-weight="bold" fill="#228B22">Придаточный</text>
+
+                        <!-- Продольный разрез корня -->
+                        <!-- Корневой чехлик -->
+                        <ellipse cx="480" cy="80" rx="15" ry="25" fill="#D2B48C" stroke="#8B6F47" stroke-width="2"/>
+                        <text x="525" y="85" font-size="10" fill="#333">Корневой чехлик</text>
+
+                        <!-- Зона деления -->
+                        <rect x="455" y="105" width="50" height="20" fill="#FFE4B5" stroke="#DAA520" stroke-width="1"/>
+                        <text x="525" y="120" font-size="10" fill="#333">Зона деления</text>
+
+                        <!-- Зона растяжения -->
+                        <rect x="455" y="130" width="50" height="30" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+                        <text x="525" y="150" font-size="10" fill="#333">Зона растяжения</text>
+
+                        <!-- Зона всасывания -->
+                        <rect x="455" y="165" width="50" height="40" fill="#FFA500" stroke="#FF8C00" stroke-width="1"/>
+                        <!-- Волоски -->
+                        <line x1="505" y1="170" x2="530" y2="175" stroke="#FF8C00" stroke-width="1"/>
+                        <line x1="505" y1="180" x2="535" y2="185" stroke="#FF8C00" stroke-width="1"/>
+                        <line x1="505" y1="190" x2="530" y2="200" stroke="#FF8C00" stroke-width="1"/>
+                        <line x1="505" y1="200" x2="535" y2="205" stroke="#FF8C00" stroke-width="1"/>
+                        <text x="525" y="200" font-size="10" fill="#333">Зона всасывания</text>
+
+                        <!-- Зона проведения -->
+                        <rect x="455" y="210" width="50" height="35" fill="#87CEEB" stroke="#4169E1" stroke-width="1"/>
+                        <text x="525" y="230" font-size="10" fill="#333">Зона проведения</text>
+
+                        <!-- Микроскопическое сечение корня -->
+                        <!-- Эпидермис -->
+                        <circle cx="600" cy="150" r="80" fill="#F5E6D3" stroke="#8B6F47" stroke-width="2"/>
+                        <!-- Коровая парнихма -->
+                        <circle cx="600" cy="150" r="65" fill="#FFE4B5" stroke="#DAA520" stroke-width="1"/>
+                        <!-- Эндодермис -->
+                        <circle cx="600" cy="150" r="50" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                        <!-- Цилиндр проведения -->
+                        <circle cx="600" cy="150" r="35" fill="#87CEEB" stroke="#4169E1" stroke-width="1"/>
+                        <!-- Флоэм -->
+                        <circle cx="585" cy="145" r="8" fill="#FFB6C1" stroke="#FF69B4" stroke-width="1"/>
+                        <!-- Ксилем -->
+                        <circle cx="615" cy="155" r="10" fill="#98FB98" stroke="#228B22" stroke-width="1"/>
+
+                        <text x="600" y="235" font-size="11" text-anchor="middle" font-weight="bold" fill="#666">Поперечный разрез</text>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-purple-50 p-4 rounded border border-purple-300">
+                        <h4 lang="kk" class="lang-content font-bold text-purple-900 mb-3">📍 Түндік Бөліндігі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-purple-900 mb-3">📍 Root Zones</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-purple-900 mb-3">📍 Зоны корня</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>1. Түбік конус:</strong> Қорғау, жасу</li>
+                            <li lang="en" class="lang-content"><strong>1. Root cap:</strong> Protection, mucus secretion</li>
+                            <li lang="ru" class="lang-content"><strong>1. Чехлик:</strong> Защита, слизь</li>
+
+                            <li lang="kk" class="lang-content"><strong>2. Бөлінді зоны:</strong> Ҳүйін өндіс (1-2 мм)</li>
+                            <li lang="en" class="lang-content"><strong>2. Cell division:</strong> Growth (1-2 mm)</li>
+                            <li lang="ru" class="lang-content"><strong>2. Деление:</strong> Рост (1-2 мм)</li>
+
+                            <li lang="kk" class="lang-content"><strong>3. Ұзарту зоны:</strong> Ұзарту (1-10 мм)</li>
+                            <li lang="en" class="lang-content"><strong>3. Extension:</strong> Elongation (1-10 mm)</li>
+                            <li lang="ru" class="lang-content"><strong>3. Растяжение:</strong> Удлинение (1-10 мм)</li>
+
+                            <li lang="kk" class="lang-content"><strong>4. Сіңіру зоны:</strong> Сүлгі түбітігі (2-20 см)</li>
+                            <li lang="en" class="lang-content"><strong>4. Absorption:</strong> Root hairs (2-20 cm)</strong></li>
+                            <li lang="ru" class="lang-content"><strong>4. Всасывание:</strong> Волоски (2-20 см)</li>
+
+                            <li lang="kk" class="lang-content"><strong>5. Өткізу зоны:</strong> Су және мінерал өткізу</li>
+                            <li lang="en" class="lang-content"><strong>5. Conduction:</strong> Transport zone</li>
+                            <li lang="ru" class="lang-content"><strong>5. Проведение:</strong> Транспорт</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-3">🔬 Ішінегі Құрамдары</h4>
+                        <h4 lang="en" class="lang-content font-bold text-blue-900 mb-3">🔬 Internal Structure</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-blue-900 mb-3">🔬 Внутренняя структура</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Эпидермис:</strong> Сыртқы қорғау, түбітігі сіңіру</li>
+                            <li lang="en" class="lang-content"><strong>Epidermis:</strong> Outer layer, root hairs for absorption</li>
+                            <li lang="ru" class="lang-content"><strong>Эпидермис:</strong> Внешний слой, волоски</li>
+
+                            <li lang="kk" class="lang-content"><strong>Коровая паренхима:</strong> Су сақтау, өндіс құрамдарын сақтау</li>
+                            <li lang="en" class="lang-content"><strong>Cortex:</strong> Storage, transport</li>
+                            <li lang="ru" class="lang-content"><strong>Корковая ткань:</strong> Хранение, транспорт</li>
+
+                            <li lang="kk" class="lang-content"><strong>Эндодермис:</strong> Сүзінді сақтау - байлық өткізу</li>
+                            <li lang="en" class="lang-content"><strong>Endodermis:</strong> Selective transport</li>
+                            <li lang="ru" class="lang-content"><strong>Эндодермис:</strong> Избирательный транспорт</li>
+
+                            <li lang="kk" class="lang-content"><strong>Цилиндр проведения:</strong> Ксилем + флоэм</li>
+                            <li lang="en" class="lang-content"><strong>Vascular cylinder:</strong> Xylem + Phloem</li>
+                            <li lang="ru" class="lang-content"><strong>Сосудистый цилиндр:</strong> Ксилем + флоэм</li>
+
+                            <li lang="kk" class="lang-content"><strong>Ксилем:</strong> Су және мінерал өткізу (өйде жағасында)</li>
+                            <li lang="en" class="lang-content"><strong>Xylem:</strong> Water/minerals (star shape)</li>
+                            <li lang="ru" class="lang-content"><strong>Ксилем:</strong> Вода/минералы (звёзда)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Түндік Түрлері</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Root Types</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Типы корней</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-50 p-4 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-3">🌰 Түндік Түбіндік</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-3">🌰 Tap Root</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-3">🌰 Стержневой корень</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Ерекшеліктері:</strong> Бір негіз, ағасы түндіктер</li>
+                            <li lang="en" class="lang-content"><strong>Features:</strong> Main root, deep</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Особенности:</strong> Главный корень, глубокий</li>
+
+                            <li lang="kk" class="lang-content"><strong>Орта:</strong> Двудольные, деревья</li>
+                            <li lang="en" class="lang-content"><strong>Habitat:</strong> Dicots, trees</li>
+                            <li lang="ru" class="lang-content"><strong>Среда:</strong> Двудольные, деревья</li>
+
+                            <li lang="kk" class="lang-content"><strong>Өндіс:</strong> Су ілінік орындарында</li>
+                            <li lang="en" class="lang-content"><strong>Function:</strong> Finds water sources</li>
+                            <li lang="ru" class="lang-content"><strong>Функция:</strong> Поиск воды</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Сосна, морковь, редис</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Pine, carrot, radish</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> Сосна, морковь, редис</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-3">🌾 Мочковатый Түбіндік</h4>
+                        <h4 lang="en" class="lang-content font-bold text-blue-900 mb-3">🌾 Fibrous Root</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-blue-900 mb-3">🌾 Мочковатый корень</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Ерекшеліктері:</strong> Көлемді түндіктер, бәрі теңсіз</li>
+                            <li lang="en" class="lang-content"><strong>Features:</strong> Many roots, equal size</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Особенности:</strong> Много корней, равный размер</li>
+
+                            <li lang="kk" class="lang-content"><strong>Орта:</strong> Однодольные, өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Habitat:</strong> Monocots, grasses</li>
+                            <li lang="ru" class="lang-content"><strong>Среда:</strong> Однодольные, травы</li>
+
+                            <li lang="kk" class="lang-content"><strong>Өндіс:</strong> Байлық бөлімге түндіктер</li>
+                            <li lang="en" class="lang-content"><strong>Function:</strong> Stabilization</li>
+                            <li lang="ru" class="lang-content"><strong>Функция:</strong> Стабилизация</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Өндіс, ячмень, рис</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Grass, wheat, rice</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> Трава, пшеница, рис</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-purple-50 p-4 rounded border border-purple-300">
+                        <h4 lang="kk" class="lang-content font-bold text-purple-900 mb-3">🌿 Орындық Түбіндік</h4>
+                        <h4 lang="en" class="lang-content font-bold text-purple-900 mb-3">🌿 Adventitious Root</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-purple-900 mb-3">🌿 Придаточные корни</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Ерекшеліктері:</strong> Сабақта өндіс болады</li>
+                            <li lang="en" class="lang-content"><strong>Features:</strong> Grow from stems/leaves</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Особенности:</strong> Растут из стебля/листьев</li>
+
+                            <li lang="kk" class="lang-content"><strong>Орта:</strong> Әрғала өндіс орындарында</li>
+                            <li lang="en" class="lang-content"><strong>Habitat:</strong> Various plants</li>
+                            <li lang="ru" class="lang-content"><strong>Среда:</strong> Разные растения</li>
+
+                            <li lang="kk" class="lang-content"><strong>Өндіс:</strong> Құндыру, өндіс өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Function:</strong> Reproduction</li>
+                            <li lang="ru" class="lang-content"><strong>Функция:</strong> Размножение</li>
+
+                            <li lang="kk" class="lang-content"><strong>Мысалдар:</strong> Адам, сәндік өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Examples:</strong> Ivy, sweet potato</li>
+                            <li lang="ru" class="lang-content"><strong>Примеры:</strong> Плющ, батат</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Түндіктердің Қызметі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Root Functions</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Функции корней</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-100 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">💧 Су Сіңіру</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Сүлгі түбітігімен су абсорбция. Осмос процесі</span>
+                            <span lang="en" class="lang-content">Water absorption through root hairs. Osmosis</span>
+                            <span lang="ru" class="lang-content">Поглощение воды волосками. Осмос</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-100 p-3 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-2">⛏️ Мінерал Орындау</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Азот, фосфор, калий және өндіс элементтер</span>
+                            <span lang="en" class="lang-content">Nitrogen, phosphorus, potassium uptake</span>
+                            <span lang="ru" class="lang-content">Поглощение азота, фосфора, калия</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-100 p-3 rounded border border-purple-300">
+                        <h4 lang="kk" class="lang-content font-bold text-purple-900 mb-2">📍 Тіктеу және Қорғау</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Өндіс тіктеу, топырақта қорғау</span>
+                            <span lang="en" class="lang-content">Plant anchoring in soil</span>
+                            <span lang="ru" class="lang-content">Закрепление в почве, защита</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-100 p-3 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">🏭 Өндіс Сақтау</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Өндіс құрамдарын сақтау (морковь, батат)</span>
+                            <span lang="en" class="lang-content">Nutrient storage (carrot, potato)</span>
+                            <span lang="ru" class="lang-content">Хранение питательных веществ</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-green-100 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">🔬 Ассимиляция</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Азот ассимиляция, белік құрау</span>
+                            <span lang="en" class="lang-content">Nitrogen assimilation, symbiosis</span>
+                            <span lang="ru" class="lang-content">Ассимиляция азота, симбиоз</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-100 p-3 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-2">🌱 Құндыру</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Орындық түндіктер - құндыру (драцена)</span>
+                            <span lang="en" class="lang-content">Vegetative reproduction</span>
+                            <span lang="ru" class="lang-content">Вегетативное размножение</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #ede9fe; border-radius: 1rem; border-top: 4px solid #8b5cf6;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-violet-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-violet-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-violet-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-violet-800">Түндіктер - құндыру өндіс құрамдарының ең маңызды органы. Су және мінерал абсорбциясы, тіктеу, сақтау және өндіс құндыруының құрамдарын орындайды</p>
+            <p lang="en" class="lang-content text-md font-semibold text-violet-800">Roots are vital organs. They absorb water and minerals, anchor plants, store nutrients, and enable reproduction</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-violet-800">Корни - жизненные органы растений. Поглощение воды, минералов, закрепление, хранение и размножение</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Культура саков: Наследие Великой Степи</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #1e1b4b; color: #f8fafc; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .museum-bg {
+            background: radial-gradient(circle at top right, #312e81, #1e1b4b, #0f172a);
+        }
+
+        .gold-glow {
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.15);
+            border: 1px solid rgba(234, 179, 8, 0.2);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fde68a 0%, #eab308 50%, #b45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .lang-active {
+            background-color: #eab308;
+            color: #1e1b4b;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+        }
+
+        .exhibit-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .exhibit-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            background: rgba(30, 41, 59, 0.8);
+            border-color: #eab308;
+        }
+
+        canvas {
+            filter: drop-shadow(0 0 30px rgba(234, 179, 8, 0.1));
+        }
+    </style>
+    <script src="../../libs/chart.umd.min.js"></script>
+</head>
+<body class="museum-bg min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-[#1e1b4b]/80 backdrop-blur-xl border-b border-amber-500/10 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🏺</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tighter gold-gradient-text italic">Наследие Саков</h1>
+            </div>
+            <div class="flex bg-slate-900/50 p-1 rounded-full border border-slate-700">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-24">
+        
+        <!-- Section 1: The Cultural Star (Map) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-5 space-y-8">
+                <div id="badge" class="inline-block bg-amber-500/20 text-amber-400 border border-amber-500/30 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Heritage Profile</div>
+                <h2 id="viz-title" class="text-4xl md:text-5xl font-black text-white leading-tight">Гармония духа и металла</h2>
+                <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                    Культура саков — это сплав кочевых традиций и высокого искусства. Она оказала колоссальное влияние на развитие всей Евразийской степи.
+                </p>
+                <div class="flex items-center space-x-4">
+                    <div class="h-1 w-20 bg-amber-500 rounded-full"></div>
+                    <span id="viz-stat" class="text-xs uppercase font-black text-amber-500 tracking-[0.3em]">Digital Museum Exhibit</span>
+                </div>
+            </div>
+            <div class="lg:col-span-7 h-96 md:h-[500px] flex items-center justify-center">
+                <canvas id="cultureChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Section 2: Heritage Showcase (Plan) -->
+        <div class="space-y-16">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.4em]">Экспозиция</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Large Feature: Animal Style -->
+                <div class="exhibit-card p-10 rounded-[3rem] gold-glow flex flex-col justify-center">
+                    <div class="text-6xl mb-8">🐆</div>
+                    <h3 id="card1-t" class="text-3xl font-black mb-6 text-amber-400 uppercase italic">Звериный стиль</h3>
+                    <p id="card1-d" class="text-slate-300 text-lg leading-relaxed font-light">
+                        Главная особенность сакского искусства. Животные изображались в динамичных, порой фантастических позах, что символизировало движение жизни и силу природы.
+                    </p>
+                </div>
+
+                <!-- Worldview -->
+                <div class="exhibit-card p-10 rounded-[3rem] flex flex-col justify-center border-l-8 border-amber-500">
+                    <div class="text-6xl mb-8">🌌</div>
+                    <h3 id="card2-t" class="text-3xl font-black mb-6 text-white uppercase italic text-nowrap">Мировоззрение</h3>
+                    <p id="card2-d" class="text-slate-300 text-lg leading-relaxed font-light">
+                        Саки верили в трехчастное деление мира: подземный, земной и небесный. Это отражалось в одежде «Золотого человека» и в архитектуре курганов.
+                    </p>
+                </div>
+
+                <!-- Burials -->
+                <div class="md:col-span-2 exhibit-card p-10 md:p-16 rounded-[4rem] flex flex-col md:flex-row items-center gap-12">
+                    <div class="shrink-0 text-center">
+                        <div class="text-8xl mb-4">🏛️</div>
+                        <div id="burial-tag" class="bg-amber-500 text-slate-900 px-6 py-1 rounded-full text-xs font-black uppercase tracking-widest">Great Kurgans</div>
+                    </div>
+                    <div class="space-y-6">
+                        <h3 id="card3-t" class="text-3xl font-black text-white italic">Архитектура смерти</h3>
+                        <p id="card3-d" class="text-slate-400 text-xl font-light leading-relaxed">
+                            Берельские курганы и Иссыкский памятник — это не просто могилы, а сложные инженерные сооружения. Захоронения с лошадьми подчеркивали статус вождя в загробном мире.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Clothes & Jewelry -->
+                <div class="exhibit-card p-10 rounded-[3rem] border-r-8 border-amber-500 text-right">
+                    <div class="text-6xl mb-8 flex justify-end">💎</div>
+                    <h3 id="card4-t" class="text-2xl font-black mb-6 text-white uppercase italic">Ювелирное дело</h3>
+                    <p id="card4-d" class="text-slate-300 text-sm leading-relaxed">
+                        Использование инкрустации драгоценными камнями, техник скани и зерни. Сакские мастера достигли невероятного совершенства в работе с золотом.
+                    </p>
+                </div>
+
+                <!-- Epic & Music -->
+                <div class="exhibit-card p-10 rounded-[3rem] gold-glow">
+                    <div class="text-6xl mb-8">🎶</div>
+                    <h3 id="card5-t" class="text-2xl font-black mb-6 text-amber-400 uppercase italic">Музыка и Эпос</h3>
+                    <p id="card5-d" class="text-slate-300 text-sm leading-relaxed">
+                        Зарождение героического эпоса. Археологические находки прообразов музыкальных инструментов говорят о богатой песенной культуре кочевников.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-slate-950 border-t border-amber-900/30 text-center">
+        <div class="max-w-3xl mx-auto px-6">
+            <div class="text-amber-500 text-5xl mb-10">“</div>
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic text-slate-400 leading-tight">
+                «Культура саков — это золотая нить, связавшая древность и современность, ставшая фундаментом идентичности народов Великой Степи.»
+            </p>
+            <div class="mt-12 text-[10px] uppercase font-bold tracking-[0.5em] text-slate-600">Saka Heritage Museum</div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Наследие Саков",
+                vizTitle: "Гармония духа и металла",
+                vizDesc: "Культура саков — это сплав кочевых традиций и высокого искусства. Она оказала колоссальное влияние на развитие всей Евразийской степи.",
+                badge: "Культурный профиль",
+                vizStat: "Цифровая экспозиция",
+                planTitle: "Экспозиция",
+                card1T: "Звериный стиль", card1D: "Главная особенность искусства. Животные изображались в динамичных позах, что символизировало движение жизни и силу природы.",
+                card2T: "Мировоззрение", card2D: "Саки верили в трехчастное деление мира: подземный, земной и небесный. Это отражалось в искусстве и обрядах.",
+                card3T: "Архитектура смерти", card3D: "Берельские и Иссыкские курганы — это сложные сооружения. Захоронения с лошадьми подчеркивали статус вождя в загробном мире.",
+                burialTag: "Великие Курганы",
+                card4T: "Ювелирное дело", card4D: "Использование инкрустации, скани и зерни. Сакские мастера достигли совершенства в работе с чистым золотом.",
+                card5T: "Музыка и Эпос", card5D: "Зарождение героического эпоса. Находки прообразов музыкальных инструментов говорят о богатой духовной культуре.",
+                footer: "«Культура саков — это золотая нить, связавшая древность и современность, ставшая фундаментом идентичности народов Великой Степи.»",
+                chartLabels: ["Искусство", "Религия", "Ювелирка", "Музыка", "Архитектура", "Быт"]
+            },
+            kz: {
+                title: "Сақтар мұрасы",
+                vizTitle: "Рух пен металл үйлесімі",
+                vizDesc: "Сақ мәдениеті — көшпелі дәстүрлер мен жоғары өнердің тоғысуы. Ол бүкіл Еуразия даласының дамуына орасан зор ықпал етті.",
+                badge: "Мәдени профиль",
+                vizStat: "Цифрлық экспозиция",
+                planTitle: "Экспозиция",
+                card1T: "Аң стилі", card1D: "Өнердің басты ерекшелігі. Жануарлар динамикалық қалыпта бейнеленген, бұл өмір қозғалысы мен табиғат күшін білдірген.",
+                card2T: "Дүниетаным", card2D: "Сақтар әлемнің үш деңгейлі құрылымына сенген: жер асты, жер үсті және аспан әлемі. Бұл өнер мен ғұрыптарда көрініс тапты.",
+                card3T: "Өлім сәулеті", card3D: "Берел және Есік қорғандары — күрделі инженерлік құрылыстар. Жылқылармен бірге жерлеу көсемнің о дүниедегі мәртебесін көрсеткен.",
+                burialTag: "Ұлы Қорғандар",
+                card4T: "Зергерлік өнер", card4D: "Инкрустация, зерлеу әдістерін қолдану. Сақ шеберлері таза алтынмен жұмыс істеуде кемелдікке жеткен.",
+                card5T: "Музыка мен Эпос", card5D: "Батырлық жырлардың бастауы. Музыкалық аспаптардың прототиптерінің табылуы бай рухани мәдениетті дәлелдейді.",
+                footer: "«Сақ мәдениеті — ежелгі дәуір мен бүгінді жалғаған алтын жіп, Ұлы Дала халықтарының бірегейлігінің негізі.»",
+                chartLabels: ["Өнер", "Дін", "Зергерлік", "Музыка", "Сәулет", "Тұрмыс"]
+            },
+            en: {
+                title: "Saka Heritage",
+                vizTitle: "Harmony of Spirit and Metal",
+                vizDesc: "Saka culture is a blend of nomadic traditions and high art. It has had a colossal impact on the development of the entire Eurasian steppe.",
+                badge: "Cultural Profile",
+                vizStat: "Digital Exhibition",
+                planTitle: "Exposition",
+                card1T: "Animal Style", card1D: "The main feature of art. Animals were depicted in dynamic poses, symbolizing the movement of life and the power of nature.",
+                card2T: "Worldview", card2D: "The Sakas believed in a tripartite division of the world: underworld, earth, and sky. This was reflected in art and rituals.",
+                card3T: "Architecture of Death", card3D: "The Berel and Issyk kurgans are complex structures. Burials with horses emphasized the chief's status in the afterlife.",
+                burialTag: "Great Kurgans",
+                card4T: "Jewelry Making", card4D: "Using incrustation and filigree techniques. Saka masters achieved perfection in working with pure gold.",
+                card5T: "Music and Epic", card5D: "The origin of heroic epics. Discoveries of musical instrument prototypes speak of a rich spiritual culture.",
+                footer: "«Saka culture is the golden thread that linked antiquity and modernity, becoming the foundation of the identity of the Great Steppe peoples.»",
+                chartLabels: ["Art", "Religion", "Jewelry", "Music", "Architecture", "Daily Life"]
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('cultureChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        data: [95, 90, 100, 75, 85, 80],
+                        backgroundColor: [
+                            'rgba(234, 179, 8, 0.6)',
+                            'rgba(245, 158, 11, 0.6)',
+                            'rgba(217, 119, 6, 0.6)',
+                            'rgba(180, 83, 9, 0.6)',
+                            'rgba(146, 64, 14, 0.6)',
+                            'rgba(120, 53, 15, 0.6)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: 'rgba(234, 179, 8, 0.3)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            ticks: { display: false },
+                            grid: { color: 'rgba(251, 191, 36, 0.1)' },
+                            pointLabels: {
+                                color: '#fbbf24',
+                                font: { family: 'Montserrat', size: 12, weight: 'bold' }
+                            }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('viz-stat').innerText = t.vizStat;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('card1-t').innerText = t.card1T; document.getElementById('card1-d').innerText = t.card1D;
+            document.getElementById('card2-t').innerText = t.card2T; document.getElementById('card2-d').innerText = t.card2D;
+            document.getElementById('card3-t').innerText = t.card3T; document.getElementById('card3-d').innerText = t.card3D;
+            document.getElementById('burial-tag').innerText = t.burialTag;
+            document.getElementById('card4-t').innerText = t.card4T; document.getElementById('card4-d').innerText = t.card4D;
+            document.getElementById('card5-t').innerText = t.card5T; document.getElementById('card5-d').innerText = t.card5D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-amber-500 hover:bg-white/5 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => changeLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

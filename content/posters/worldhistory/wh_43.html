@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Закат Эллады: Возвышение Македонии</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #312e81, #1e1b4b, #0c0a09);
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #8b5cf6;
+            color: white;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #8b5cf6;
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #8b5cf6; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-white to-blue-400 uppercase">
+                Македонское господство
+            </h1>
+            <p id="sub-title" class="text-purple-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Закат независимых полисов Эллады</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-purple-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-purple-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-purple-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-purple-600 inline-block"></span>
+                Карта экспансии Филиппа II
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-purple-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="macedoniaCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-purple-500/50 italic text-center uppercase tracking-widest">Нажмите на узлы для изучения стратегии объединения Греции</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-purple-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Северная угроза</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        После Пелопоннесской войны Греция была ослаблена распрями. Филипп II Македонский создал мощную армию и умело использовал раздоры греков, чтобы подчинить их своей воле.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🛡️</span>
+                            <span id="hint-1" class="text-purple-200/60 font-bold uppercase text-xs tracking-widest">Македонская фаланга</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚔️</span>
+                            <span id="hint-2" class="text-purple-200/60 font-bold uppercase text-xs tracking-widest">Битва при Херонее</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-purple-950/40 text-purple-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-purple-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-purple-950/20 rounded-[2.5rem] border border-purple-900/30 shadow-xl">
+                        <strong class="text-purple-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-history">Исторический след:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-purple-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👑</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-purple-400 uppercase">Царь Филипп II</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Гениальный политик и полководец. Он говорил: «Осел, груженный золотом, возьмет любую крепость». Филипп превратил Македонию из отсталой страны в мировую державу.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-blue-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-white uppercase">Сарисса и Фаланга</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Филипп вооружил пехоту огромными копьями — <strong>сариссами</strong> (до 6 метров). Глубокая македонская фаланга была неприступна с фронта и сметала всё на своем пути.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🗣️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-red-400 uppercase">Демосфен</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Великий афинский оратор, предупреждавший греков об опасности македонского нашествия. Его гневные речи против царя получили название <strong>филиппики</strong>.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-purple-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-purple-100/70 leading-tight max-w-5xl mx-auto">
+            «Здесь, на полях Херонеи, погибла свобода Греции, но родилась великая империя, шагнувшая за край земли».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Македонское господство",
+                subtitle: "Закат независимых полисов Эллады",
+                visualTitle: "Карта экспансии Филиппа II",
+                hint: "Нажмите на узлы для изучения стратегии",
+                placeholderTitle: "Северная угроза",
+                placeholderText: "К середине IV века до н.э. Македония стала силой, способной объединить Грецию железной рукой. Изучите путь к господству Филиппа II.",
+                labelHistory: "Исторический след:",
+                hint1: "Македонская фаланга", hint2: "Битва при Херонее",
+                card1Title: "Царь Филипп II",
+                card1Text: "Человек, объединивший тактику, дипломатию и подкуп для создания величайшей армии своего времени.",
+                card2Title: "Сарисса и Фаланга",
+                card2Text: "Техническое новшество — длинное копье — сделало македонских пехотинцев непобедимыми в лобовом столкновении.",
+                card3Title: "Демосфен",
+                card3Text: "Защитник демократии, чьи речи — филиппики — стали образцом политической борьбы за свободу отечества.",
+                footerQuote: "«Здесь, на полях Херонеи, погибла свобода Греции, но родилась великая империя, шагнувшая за край земли».",
+                nodes: [
+                    { id: 1, tag: "Север", title: "Столица Пелла", desc: "Центр Македонского царства. Филипп II окружил себя учеными и художниками со всей Греции, сделав свой двор культурным центром.", fact: "Учителем сына Филиппа, Александра, стал величайший философ Аристотель." },
+                    { id: 2, tag: "Армия", title: "Реформа фаланги", desc: "Филипп увеличил глубину строя и ввел сариссы. Первые ряды держали копья горизонтально, а задние — под углом, создавая непробиваемый лес остриев.", fact: "Македонская фаланга имела 16 рядов в глубину, в отличие от 8 рядов греческой." },
+                    { id: 3, tag: "Политика", title: "Дипломатия золота", desc: "Филипп умело ссорил греческие города между собой и подкупал сторонников. 'Золото Филиппа' работало лучше его мечей.", fact: "Филипп захватил золотые прииски во Фракии, что дало ему средства на содержание огромной армии." },
+                    { id: 4, tag: "338 г. до н.э.", title: "Битва при Херонее", desc: "Решающее сражение, в котором Филипп разгромил объединенное войско Афин и Фив. Этим боем командовал его 18-летний сын Александр.", fact: "После битвы Филипп проявил милосердие к Афинам, стремясь сделать греков союзниками в походе на Персию." },
+                    { id: 5, tag: "Итог", title: "Коринфский союз", desc: "Филипп созвал греков в Коринф и заставил их признать его верховным вождем (гегемоном). Полисы сохранили законы, но потеряли право на внешнюю политику.", fact: "Официальной целью союза была объявлена война против Персии за осквернение греческих храмов." }
+                ]
+            },
+            kz: {
+                title: "Македония үстемдігі",
+                subtitle: "Эллада полистерінің тәуелсіздігінің аяқталуы",
+                visualTitle: "Филипп II экспансиясының картасы",
+                hint: "Стратегияны зерттеу үшін түйіндерді басыңыз",
+                placeholderTitle: "Солтүстік қауіп",
+                placeholderText: "б.з.б. IV ғасырдың ортасына қарай Македония Грекияны біріктіре алатын күшке айналды. Филипп II-нің билікке жолын зерттеңіз.",
+                labelHistory: "Тарихи із:",
+                hint1: "Македония фалангасы", hint2: "Херонея шайқасы",
+                card1Title: "Филипп II патша",
+                card1Text: "Тактиканы, дипломатияны және парақорлықты шебер ұштастырған ұлы қолбасшы.",
+                card2Title: "Сарисса мен Фаланга",
+                card2Text: "Техникалық жаңалық — ұзын найза — македониялық жаяу әскерді жеңілмейтін күшке айналдырды.",
+                card3Title: "Демосфен",
+                card3Text: "Демократия қорғаушысы, оның 'филиппикалары' Отан еркіндігі үшін күрестің үлгісіне айналды.",
+                footerQuote: "«Херонея даласында Грекияның бостандығы аяқталды, бірақ әлемді жаулаған ұлы империя дүниеге келді».",
+                nodes: [
+                    { id: 1, tag: "Солтүстік", title: "Пелла астанасы", desc: "Македония патшалығының орталығы. Филипп II өз сарайын мәдени орталыққа айналдырды.", fact: "Аристотель Филипптің ұлы Ескендірдің (Александр) ұстазы болды." },
+                    { id: 2, tag: "Әскер", title: "Фаланга реформасы", desc: "Филипп саптың тереңдігін арттырып, сариссаларды енгізді. Бұл сапты бұзып өту мүмкін болмады.", fact: "Македония фалангасының тереңдігі 16 қатардан тұрды." },
+                    { id: 3, tag: "Саясат", title: "Алтын дипломатиясы", desc: "Филипп грек қалаларын бір-бірімен араздастырып, жақтастарын сатып алды.", fact: "Филипп Фракиядағы алтын кен орындарын басып алып, әскерін қаржыландырды." },
+                    { id: 4, tag: "б.з.б. 338 ж.", title: "Херонея шайқасы", desc: "Филипп Афины мен Фивының біріккен әскерін талқандаған шешуші шайқас.", fact: "Бұл шайқаста 18 жасар Александр (Ескендір) алғаш рет қолбасшылық етті." },
+                    { id: 5, tag: "Қорытынды", title: "Коринф одағы", desc: "Филипп гректерді Коринфке жинап, өзін жоғарғы көсем (гегемон) ретінде мойындатты.", fact: "Одақтың ресми мақсаты — Парсы еліне қарсы соғыс жариялау болды." }
+                ]
+            },
+            en: {
+                title: "Macedonian Dominance",
+                subtitle: "The Sunset of Independent Greek Poleis",
+                visualTitle: "Map of Philip II's Expansion",
+                hint: "Click on nodes to study the strategy",
+                placeholderTitle: "The Northern Threat",
+                placeholderText: "By the mid-4th century BC, Macedonia became a power capable of uniting Greece with an iron fist. Study the path of Philip II.",
+                labelHistory: "Historical Trace:",
+                hint1: "Macedonian Phalanx", hint2: "Battle of Chaeronea",
+                card1Title: "King Philip II",
+                card1Text: "A brilliant politician and commander who unified tactics, diplomacy, and bribery to create a global power.",
+                card2Title: "Sarissa and Phalanx",
+                card2Text: "The technical innovation of the long pike made the Macedonian infantry unstoppable in frontal assaults.",
+                card3Title: "Demosthenes",
+                card3Text: "The defender of democracy whose speeches—Philippics—became models of the struggle for liberty.",
+                footerQuote: "«On the fields of Chaeronea, the freedom of Greece perished, but a great empire was born, stepping beyond the edge of the world.»",
+                nodes: [
+                    { id: 1, tag: "North", title: "Capital Pella", desc: "The heart of the Macedonian Kingdom. Philip II transformed his court into a cultural hub for sages and artists.", fact: "Aristotle, the greatest philosopher, was the tutor of Philip's son, Alexander." },
+                    { id: 2, tag: "Army", title: "Phalanx Reform", desc: "Philip introduced the sarissa and increased formation depth. The result was a forest of pikes that shattered enemy lines.", fact: "The Macedonian phalanx was 16 ranks deep, twice as thick as the standard Greek one." },
+                    { id: 3, tag: "Politics", title: "Diplomacy of Gold", desc: "Philip famously said: 'No wall is high enough to stop a donkey laden with gold'. He used bribes to win allies.", fact: "Capturing the Thracian gold mines provided Philip with the wealth to fund his professional army." },
+                    { id: 4, tag: "338 BC", title: "Battle of Chaeronea", desc: "The decisive victory of Philip over the combined forces of Athens and Thebes, ending Greek city-state independence.", fact: "Philip's 18-year-old son Alexander led the decisive cavalry charge in this battle." },
+                    { id: 5, tag: "Outcome", title: "League of Corinth", desc: "Philip forced the Greeks to recognize him as 'Hegemon' (Supreme Leader) of a pan-Hellenic alliance against Persia.", fact: "The League promised 'eternal peace' among the Greeks under Macedonian oversight." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('macedoniaCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-history').innerText = t.labelHistory;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Coast of Greece & Macedonia
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 150, 50); // Macedonia North
+            ctx.lineTo(cx + 100, 50);
+            ctx.lineTo(cx + 120, 400); // Peloponnese South
+            ctx.lineTo(cx - 180, 400);
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx - 40, y: 100, icon: "🏰" },  // Pella
+                { id: 2, x: cx - 120, y: 180, icon: "🛡️" }, // Phalanx
+                { id: 3, x: cx + 100, y: 120, icon: "💰" }, // Gold
+                { id: 4, x: cx + 20, y: 280, icon: "⚔️" },  // Chaeronea
+                { id: 5, x: cx + 80, y: 350, icon: "🤝" }   // Corinth
+            ];
+
+            // Arrows from Pella
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#8b5cf6';
+            ctx.lineWidth = 2;
+            for(let i=1; i<nodesData.length; i++) {
+                ctx.beginPath();
+                ctx.moveTo(nodesData[0].x, nodesData[0].y);
+                ctx.lineTo(nodesData[i].x, nodesData[i].y);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core
+                ctx.fillStyle = (i === 3) ? '#ef4444' : '#8b5cf6';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#c084fc';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

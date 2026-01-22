@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экономика Казахстана: Великая Трансформация</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f1f5f9; transition: all 0.5s ease; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .lang-active { background-color: #f43f5e !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #f43f5e; color: #0f172a; position: relative; min-height: 1100px; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); }
+        .crisis-bg { background: #fff1f2; border-radius: 2rem; padding: 2rem; border: 2px dashed #f43f5e; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Переключатель языков -->
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-white/10">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-slate-400">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-slate-400">EN</button>
+    </div>
+
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-rose-600 pb-10 mb-12">
+            <h1 id="title" class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6 text-rose-900 italic">Положение в экономике</h1>
+            <p id="desc" class="text-xl font-bold text-rose-600 uppercase tracking-widest">Трансформация: От планового дефицита к рынку</p>
+        </header>
+
+        <div class="space-y-12">
+            <section class="crisis-bg">
+                <h2 id="sec1T" class="text-2xl font-black uppercase text-rose-700 mb-4">Системный кризис</h2>
+                <p id="sec1D" class="text-lg leading-relaxed text-slate-700 font-medium">
+                    К концу 1980-х плановая экономика достигла дна. Гиперинфляция, разрыв связей и дефицит товаров первой необходимости заставили страну пойти на радикальные меры — «шоковую терапию».
+                </p>
+            </section>
+
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col justify-center">
+                    <h3 id="sec2T" class="text-2xl font-black uppercase text-rose-500 mb-6 italic">Тенге — Символ Свободы</h3>
+                    <p id="sec2D" class="text-sm font-light leading-relaxed opacity-80">
+                        15 ноября 1993 года. Казахстан вводит свою валюту. Это позволило выйти из «рублевой зоны», остановить вывоз капитала и начать независимую финансовую историю.
+                    </p>
+                    <div class="absolute -bottom-10 -right-10 text-[10rem] opacity-5">₸</div>
+                </div>
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-inner border border-rose-100 flex flex-col justify-center">
+                    <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-6 text-rose-600 tracking-widest">Индекс инфляции (1991-1994)</h4>
+                    <div class="h-44">
+                        <canvas id="econChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="p-10 rounded-[4rem] bg-rose-900 text-white relative overflow-hidden">
+                <h3 id="subTitle" class="text-3xl font-black uppercase mb-6 tracking-tighter">Приватизация</h3>
+                <p id="subD" class="text-lg font-light leading-relaxed opacity-90">
+                    Переход государственной собственности в частные руки стал самым болезненным этапом. Появление малого бизнеса и привлечение мировых инвесторов в нефтяной сектор спасли экономику от полного краха.
+                </p>
+                <div class="absolute top-0 right-0 p-8 text-8xl opacity-10 font-black">STRIKE</div>
+            </section>
+        </div>
+
+        <footer class="mt-20 pt-8 border-t border-rose-100 text-center text-[10px] font-black uppercase text-rose-400 tracking-[0.5em]">
+            Economic History • Kazakhstan • 1988-1995
+        </footer>
+    </div>
+
+    <script>
+        const content = {
+            ru: {
+                title: "Положение в экономике", desc: "Трансформация: От планового дефицита к рынку",
+                sec1T: "Системный кризис", sec1D: "Разрыв хозяйственных связей после распада СССР привел к остановке заводов. Инфляция в 1992-1993 годах измерялась тысячами процентов. Страна перешла к жестким рыночным реформам.",
+                sec2T: "Тенге — Символ Свободы", sec2D: "15 ноября 1993 г. — введение национальной валюты. Это позволило Казахстану проводить самостоятельную политику и обуздать гиперинфляцию.",
+                chartTitle: "Уровень инфляции (условно, %)", subTitle: "Приватизация",
+                subD: "Масштабная передача госсобственности в частный сектор и привлечение иностранных инвестиций стали фундаментом новой рыночной модели развития."
+            },
+            kz: {
+                title: "Экономикалық жағдай", desc: "Трансформация: Жоспарлы тапшылықтан нарыққа",
+                sec1T: "Жүйелі дағдарыс", sec1D: "КСРО ыдырағаннан кейін шаруашылық байланыстардың үзілуі зауыттардың тоқтауына әкелді. 1992-1993 жылдардағы инфляция мыңдаған пайызбен өлшенді.",
+                sec2T: "Теңге — Бостандық символы", sec2D: "1993 жылғы 15 қараша — ұлттық валютаның енгізілуі. Бұл Қазақстанға дербес саясат жүргізуге және гиперинфляцияны ауыздықтауға мүмкіндік берді.",
+                chartTitle: "Инфляция деңгейі (шартты, %)", subTitle: "Жекешелендіру",
+                subD: "Мемлекеттік меншікті жеке секторға ауқымды түрде беру және шетелдік инвестицияларды тарту жаңа нарықтық даму моделінің негізі болды."
+            },
+            en: {
+                title: "Economic Status", desc: "Transformation: From Planned Deficit to Market",
+                sec1T: "Systemic Crisis", sec1D: "Rupture of economic ties led to factory closures. Inflation in 1992-1993 reached thousands of percent. The country shifted to radical market reforms.",
+                sec2T: "Tenge — Symbol of Freedom", sec2D: "November 15, 1993 — introduction of the national currency. This allowed Kazakhstan to conduct an independent policy and stop hyperinflation.",
+                chartTitle: "Inflation Level (relative, %)", subTitle: "Privatization",
+                subD: "The large-scale transfer of state property to the private sector and attracting foreign investments became the foundation of the new market model."
+            }
+        };
+
+        let chart = null;
+
+        function setLang(lang) {
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('subTitle').innerText = t.subTitle;
+            document.getElementById('subD').innerText = t.subD;
+            renderChart();
+        }
+
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('econChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: ['1991', '1992', '1993', '1994'], datasets: [{ data: [150, 2500, 2100, 1100], backgroundColor: '#f43f5e', borderRadius: 5 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

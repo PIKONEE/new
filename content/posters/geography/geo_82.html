@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venezuela: Oil & Waterfalls</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body { background: radial-gradient(circle at center, #78350f, #000); color: white; min-height: 100vh; font-family: 'Inter'; }
+        .header-font { font-family: 'Oswald', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #f59e0b; color: #000; font-weight: bold; }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-8 flex justify-between items-center border-b border-yellow-500/30">
+        <div>
+            <h1 id="title" class="header-font text-4xl text-yellow-500 tracking-wider"></h1>
+            <p id="subtitle" class="text-xs text-white/50 uppercase tracking-[0.3em] mt-1"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setL('ru')" id="btn-ru" class="lang-btn px-4 py-1 rounded text-xs border border-white/20">RU</button>
+            <button onclick="setL('kz')" id="btn-kz" class="lang-btn px-4 py-1 rounded text-xs border border-white/20">KZ</button>
+            <button onclick="setL('en')" id="btn-en" class="lang-btn px-4 py-1 rounded text-xs border border-white/20">EN</button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Canvas: Angel Falls Simulation -->
+        <div class="glass rounded-custom p-0 relative h-[500px] overflow-hidden group">
+            <canvas id="venezuelaCanvas" class="w-full h-full"></canvas>
+            <div class="absolute bottom-6 left-6 p-4 glass rounded-xl border-l-4 border-cyan-400">
+                <h3 class="text-cyan-300 font-bold text-lg">Angel Falls</h3>
+                <p class="text-xs text-gray-300">Highest in the world (979 m)</p>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="flex flex-col gap-6 justify-center">
+            <div class="glass p-8 rounded-custom border-r-4 border-yellow-600">
+                <h2 id="info-h" class="text-2xl font-bold mb-4 text-yellow-200"></h2>
+                <p id="info-t" class="leading-relaxed text-gray-300 text-sm"></p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass p-6 rounded-2xl">
+                    <div class="text-3xl mb-2">🛢️</div>
+                    <div class="text-xs text-gray-400 uppercase">Oil Reserves</div>
+                    <div class="text-xl font-bold text-yellow-500">#1 in World</div>
+                </div>
+                <div class="glass p-6 rounded-2xl">
+                    <div class="text-3xl mb-2">🏞️</div>
+                    <div class="text-xs text-gray-400 uppercase">Orinoco</div>
+                    <div class="text-xl font-bold text-blue-400">Major River</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const db = {
+            ru: { t: "ВЕНЕСУЭЛА", s: "Земля благодати", h: "Экономика и Природа", d: "Страна на севере Южной Америки. Обладает крупнейшими доказанными запасами нефти в мире (пояс Ориноко). Знаменита своими тепуи (столовыми горами) и самым высоким водопадом в мире — Анхель." },
+            kz: { t: "ВЕНЕСУЭЛА", s: "Берекелі жер", h: "Экономика және Табиғат", d: "Оңтүстік Американың солтүстігіндегі ел. Әлемдегі ең үлкен мұнай қорына ие (Ориноко белдеуі). Тепуи (үстелді таулар) және әлемдегі ең биік Анхель сарқырамасымен танымал." },
+            en: { t: "VENEZUELA", s: "Land of Grace", h: "Economy & Nature", d: "A country in northern South America. Holds the world's largest proven oil reserves. Famous for its tepuis (table-top mountains) and the world's highest waterfall, Angel Falls." }
+        };
+
+        let lang = 'ru', cx, cvs, drops = [];
+
+        window.setL = (l) => {
+            lang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+            document.getElementById('title').textContent = db[l].t;
+            document.getElementById('subtitle').textContent = db[l].s;
+            document.getElementById('info-h').textContent = db[l].h;
+            document.getElementById('info-t').textContent = db[l].d;
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            cx.clearRect(0,0,w,h);
+
+            // Mountain (Tepui)
+            cx.fillStyle = '#292524';
+            cx.beginPath();
+            cx.moveTo(0, h); cx.lineTo(0, h*0.2); cx.lineTo(w*0.4, h*0.2); cx.lineTo(w*0.5, h*0.4); cx.lineTo(w, h*0.8); cx.lineTo(w, h);
+            cx.fill();
+
+            // Waterfall
+            if (Math.random() > 0.1) {
+                for(let i=0; i<5; i++) drops.push({x: w*0.4 + Math.random()*10, y: h*0.2, v: Math.random()*2+2});
+            }
+
+            cx.strokeStyle = 'rgba(165, 243, 252, 0.4)';
+            cx.lineWidth = 1;
+            
+            for (let i = drops.length - 1; i >= 0; i--) {
+                const p = drops[i];
+                p.y += p.v; p.v += 0.1;
+                // Wind effect
+                p.x += (Math.random()-0.3)*0.5;
+                
+                cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(p.x, p.y+4); cx.stroke();
+
+                if (p.y > h*0.8) { // Mist at bottom
+                    cx.fillStyle = 'rgba(255,255,255,0.05)';
+                    cx.beginPath(); cx.arc(p.x, p.y, 10, 0, Math.PI*2); cx.fill();
+                    drops.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('venezuelaCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            setL('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

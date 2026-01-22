@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Разнообразие растений</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; overflow-x: hidden; color: #1b4332; }
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #059669 0%, #064e3b 100%); border-radius: 1rem; box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4); color: white; padding: 40px; }
+        .section-heading { color: #1b4332; border-bottom: 3px solid #6ee7b7; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background-color: #ffffff; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border-top: 5px solid; }
+        .rule-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); }
+        .footer-card { text-align: center; margin-top: 40px; padding: 24px; background-color: #dcfce7; border-radius: 1rem; border-top: 4px solid #047857; }
+        .lang-switcher { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #059669; background-color: #ffffff; color: #059669; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background-color: #059669; color: #ffffff; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .lang-kk span.lang-content[lang="kk"], .lang-en span.lang-content[lang="en"], .lang-ru span.lang-content[lang="ru"] { display: inline; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-green-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">Өсімдіктердің Әр түрлілігі, Таралуы және Маңызы</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">Diversity, Distribution and Importance of Plants</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">Разнообразие, распространение и значение растений</h1>
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-green-100">Жер ғаламында миллион түрлі өсімдіктер өмір сүреді</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-green-100">Millions of plant species thrive on Earth</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-green-100">На Земле обитают миллионы видов растений</p>
+        </header>
+
+        <!-- 1. ӨСІМДІКТЕРДІҢ ТҮРЛЕРІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Өсімдіктердің Түрлері және Сипаттамасы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Types and Characteristics of Plants</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Типы и характеристики растений</h2>
+
+            <div class="rule-card border-t-green-500 mb-6">
+                <h3 lang="kk" class="lang-content font-bold text-lg text-green-900 mb-4">Водорослі (Algae)</h3>
+                <h3 lang="en" class="lang-content font-bold text-lg text-green-900 mb-4">Algae</h3>
+                <h3 lang="ru" class="lang-content font-bold text-lg text-green-900 mb-4">Водоросли</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li lang="kk" class="lang-content"><strong>Орналасуы:</strong> Өнімсіз және ұзақ су аймағында өседі. Теңіздің түбінде 200 метрге дейін тереңге жүргінеді</li>
+                    <li lang="en" class="lang-content"><strong>Habitat:</strong> Fresh and salt water environments. Can survive up to 200 meters deep in oceans</li>
+                    <li lang="ru" class="lang-content"><strong>Среда обитания:</strong> Пресные и соленые воды. Могут выживать на глубине до 200 метров</li>
+
+                    <li lang="kk" class="lang-content"><strong>Құрылысы:</strong> Бір жасушалы (хламидомонас) және көпжасушалы (улотрикс, спирогира) түрлері бар</li>
+                    <li lang="en" class="lang-content"><strong>Structure:</strong> Single-celled (Chlamydomonas) and multi-celled (Ulothrix, Spirogyra) types</li>
+                    <li lang="ru" class="lang-content"><strong>Строение:</strong> Одноклеточные (хламидомонас) и многоклеточные (улотрикс, спирогира) виды</li>
+
+                    <li lang="kk" class="lang-content"><strong>Өндіс әрекеті:</strong> Фотосинтез арқылы оттегі өндіреді. Өндіс процесінің 70%-і су өсімдіктерінің есебінен орындалады</li>
+                    <li lang="en" class="lang-content"><strong>Function:</strong> Produce oxygen through photosynthesis. Aquatic plants produce 70% of Earth's oxygen</li>
+                    <li lang="ru" class="lang-content"><strong>Функция:</strong> Производят кислород через фотосинтез. 70% кислорода Земли производят водные растения</li>
+
+                    <li lang="kk" class="lang-content"><strong>Маңызы:</strong> Балық пищасының негізі, фармацевтика және биотехнологияда қолданылады</li>
+                    <li lang="en" class="lang-content"><strong>Importance:</strong> Fish food base, used in pharmaceuticals and biotechnology</li>
+                    <li lang="ru" class="lang-content"><strong>Значение:</strong> Основа пищи рыб, используются в фармацевтике и биотехнологии</li>
+                </ul>
+            </div>
+
+            <div class="rule-card border-t-green-500 mb-6">
+                <h3 lang="kk" class="lang-content font-bold text-lg text-green-900 mb-4">Мүндеу (Moss)</h3>
+                <h3 lang="en" class="lang-content font-bold text-lg text-green-900 mb-4">Moss</h3>
+                <h3 lang="ru" class="lang-content font-bold text-lg text-green-900 mb-4">Мхи</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li lang="kk" class="lang-content"><strong>Өндіктілігі:</strong> Ағашсыз, түбіртегісіне ұқсас құрамдар сияқты ризоидтары бар. Өзі-өзі ден сатты суықтағы және ылғал аймақтарында өседі</li>
+                    <li lang="en" class="lang-content"><strong>Adaptation:</strong> Rootless, has rhizoids. Grow in cool and moist environments like forests and wetlands</li>
+                    <li lang="ru" class="lang-content"><strong>Адаптация:</strong> Без корней, имеют ризоиды. Растут во влажных и прохладных местах</li>
+
+                    <li lang="kk" class="lang-content"><strong>Өндіс циклі:</strong> Спора және гаметофит ағындарының ауысуы арқылы көбейеді (альтернация). Ысырауы 15-20 см</li>
+                    <li lang="en" class="lang-content"><strong>Life Cycle:</strong> Alternation of gametophyte and sporophyte generations. Height 15-20 cm</li>
+                    <li lang="ru" class="lang-content"><strong>Жизненный цикл:</strong> Чередование поколений гаметофита и спорофита. Высота 15-20 см</li>
+
+                    <li lang="kk" class="lang-content"><strong>Орталық құрамы:</strong> 3 сыныйы салт құрайды - ризоидтар, сабақ, жапырақтар</li>
+                    <li lang="en" class="lang-content"><strong>Body Structure:</strong> Three main parts - rhizoids, stems, leaves</li>
+                    <li lang="ru" class="lang-content"><strong>Строение тела:</strong> Три основные части - ризоиды, стебель, листья</li>
+
+                    <li lang="kk" class="lang-content"><strong>Маңызы:</strong> Болотта дөңіс білік түзіп, топырақ пайда болуына көмектеседі. Су ішінде сақтайды</li>
+                    <li lang="en" class="lang-content"><strong>Importance:</strong> In wetlands forms peat, helps soil formation, stores water</li>
+                    <li lang="ru" class="lang-content"><strong>Значение:</strong> Образуют торф в болотах, помогают формированию почвы, сохраняют воду</li>
+                </ul>
+            </div>
+
+            <div class="rule-card border-t-green-500">
+                <h3 lang="kk" class="lang-content font-bold text-lg text-green-900 mb-4">Ағаштар және Шөптер (Trees & Herbs)</h3>
+                <h3 lang="en" class="lang-content font-bold text-lg text-green-900 mb-4">Trees and Herbs</h3>
+                <h3 lang="ru" class="lang-content font-bold text-lg text-green-900 mb-4">Деревья и травы</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li lang="kk" class="lang-content"><strong>Барлық орындарда:</strong> Құмалақтар мен ағаштар барлық құрақ аймақтарында (жылы, салқын, құрлық) өседі</li>
+                    <li lang="en" class="lang-content"><strong>Everywhere:</strong> Trees and herbs grow in all climate zones (tropical, temperate, polar)</li>
+                    <li lang="ru" class="lang-content"><strong>Везде:</strong> Деревья и травы растут во всех климатических зонах</li>
+
+                    <li lang="kk" class="lang-content"><strong>Ағас тоқтамасы:</strong> Өндіс органдарының булкыны салыстырғанда пайды құймасы 100-1000 есе артық</li>
+                    <li lang="en" class="lang-content"><strong>Wood Quality:</strong> Valuable timber with strength 100-1000x greater than herbs</li>
+                    <li lang="ru" class="lang-content"><strong>Качество древесины:</strong> Ценная древесина с прочностью в 100-1000 раз больше трав</li>
+
+                    <li lang="kk" class="lang-content"><strong>Әр түрлілігі:</strong> 300,000+ гүлді өсімдік түрлері, 1,000+ ағаш түрлері бар</li>
+                    <li lang="en" class="lang-content"><strong>Diversity:</strong> Over 300,000 flowering plant species, 1,000+ tree species</li>
+                    <li lang="ru" class="lang-content"><strong>Разнообразие:</strong> Более 300 000 видов цветковых растений, более 1000 видов деревьев</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. ТАРАЛУЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Өсімдіктердің Географиялық Таралуы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Geographic Distribution of Plants</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Географическое распространение растений</h2>
+
+            <div class="rule-card border-t-green-400">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-3">Тропикалық өсімдіктер</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-3">Tropical Plants</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-3">Тропические растения</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Орман: Балса, махагони, какао, кокосовая пальма</li>
+                            <li lang="en" class="lang-content">Forests: Balsa, mahogany, cacao, coconut palm</li>
+                            <li lang="ru" class="lang-content">Леса: Бальза, махагони, какао, кокосовая пальма</li>
+
+                            <li lang="kk" class="lang-content">Жылы: 20-25°C жыл бойы</li>
+                            <li lang="en" class="lang-content">Temperature: 20-25°C year-round</li>
+                            <li lang="ru" class="lang-content">Температура: 20-25°C круглый год</li>
+
+                            <li lang="kk" class="lang-content">Жауын: 2000 мм жылына</li>
+                            <li lang="en" class="lang-content">Rainfall: 2000mm annually</li>
+                            <li lang="ru" class="lang-content">Осадки: 2000 мм в год</li>
+
+                            <li lang="kk" class="lang-content">Биоүлесімілік: Барлық өсімдіктердің 40% тропикасында</li>
+                            <li lang="en" class="lang-content">Biodiversity: 40% of all plants in tropics</li>
+                            <li lang="ru" class="lang-content">Биоразнообразие: 40% всех растений в тропиках</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-3">Дақан өсімдіктері</h4>
+                        <h4 lang="en" class="lang-content font-bold text-blue-900 mb-3">Steppe Plants</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-blue-900 mb-3">Степные растения</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Өндіктілік: Құрмасы реуыл, шөпі аймақты төмендіктей сарып қалса</li>
+                            <li lang="en" class="lang-content">Adaptation: Deep roots, grasses dominate</li>
+                            <li lang="ru" class="lang-content">Адаптация: Глубокие корни, доминируют травы</li>
+
+                            <li lang="kk" class="lang-content">Жылы: 10-20°C летом, -10°C зимой</li>
+                            <li lang="en" class="lang-content">Temperature: 10-20°C summer, -10°C winter</li>
+                            <li lang="ru" class="lang-content">Температура: 10-20°C летом, -10°C зимой</li>
+
+                            <li lang="kk" class="lang-content">Жауын: 250-500 мм жылына</li>
+                            <li lang="en" class="lang-content">Rainfall: 250-500mm annually</li>
+                            <li lang="ru" class="lang-content">Осадки: 250-500 мм в год</li>
+
+                            <li lang="kk" class="lang-content">Мыс: Шөп, құлутек, алабас</li>
+                            <li lang="en" class="lang-content">Species: Grasses, feathery fescue, wormwood</li>
+                            <li lang="ru" class="lang-content">Виды: Травы, типчак, полынь</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-3">Құмалақ өсімдіктері</h4>
+                        <h4 lang="en" class="lang-content font-bold text-yellow-900 mb-3">Desert Plants</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-yellow-900 mb-3">Пустынные растения</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Ығы су сақтау: Балалар жапырақта суылыды сақтайды</li>
+                            <li lang="en" class="lang-content">Water Storage: Succulents store water in leaves</li>
+                            <li lang="ru" class="lang-content">Хранение воды: Суккуленты хранят воду в листьях</li>
+
+                            <li lang="kk" class="lang-content">Жауын: 100 мм немесе одан аз</li>
+                            <li lang="en" class="lang-content">Rainfall: 100mm or less</li>
+                            <li lang="ru" class="lang-content">Осадки: 100 мм или менее</li>
+
+                            <li lang="kk" class="lang-content">Мыс: Кактус, агаве, финик пальмасы</li>
+                            <li lang="en" class="lang-content">Species: Cacti, agave, date palm</li>
+                            <li lang="ru" class="lang-content">Виды: Кактусы, агава, финиковая пальма</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
+                        <h4 lang="kk" class="lang-content font-bold text-cyan-900 mb-3">Суды өсімдіктер</h4>
+                        <h4 lang="en" class="lang-content font-bold text-cyan-900 mb-3">Aquatic Plants</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-cyan-900 mb-3">Водные растения</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">Орналасуы: Өндіс аймақтарының төменінде өседі</li>
+                            <li lang="en" class="lang-content">Habitat: Freshwater lakes and rivers</li>
+                            <li lang="ru" class="lang-content">Среда: Пресные озера и реки</li>
+
+                            <li lang="kk" class="lang-content">Мыс: Су балдыры, құмар, құмас</li>
+                            <li lang="en" class="lang-content">Species: Water lily, reed, cattail</li>
+                            <li lang="ru" class="lang-content">Виды: Водяная лилия, камыш, рогоз</li>
+
+                            <li lang="kk" class="lang-content">Өндіктілік: Құмас жапырақтар, мүмкін түбіртегі</li>
+                            <li lang="en" class="lang-content">Adaptation: Reduced leaves, floating roots</li>
+                            <li lang="ru" class="lang-content">Адаптация: Редуцированные листья, плавающие корни</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ЭКОЛОГИЯЛЫҚ МАҢЫЗЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Өсімдіктердің Экологиялық Маңызы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Ecological Importance of Plants</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Экологическое значение растений</h2>
+
+            <div class="rule-card border-t-green-500">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">🌍 Оттегі өндіру</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-2">🌍 Oxygen Production</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-2">🌍 Производство кислорода</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Барлық өмір өндіс оттегіне тәуелді. Бір ағаш күндіс 120 кг оттегі өндіреді</span>
+                            <span lang="en" class="lang-content">All life depends on produced oxygen. One tree produces 120kg oxygen annually</span>
+                            <span lang="ru" class="lang-content">Вся жизнь зависит от кислорода. Одно дерево производит 120 кг кислорода в год</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">🌱 Топырақ түзілісі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-2">🌱 Soil Formation</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-2">🌱 Образование почвы</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Өсімдіктер ауырау топырақты органикалық пайда болуларына арқау өндіктіліктеді</span>
+                            <span lang="en" class="lang-content">Plants add organic matter to soil, making it fertile</span>
+                            <span lang="ru" class="lang-content">Растения обогащают почву органическим веществом</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">🌊 Су циклы</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-2">🌊 Water Cycle</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-2">🌊 Водный цикл</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Өсімдіктер суды салдырып атмосфераға шығарады. Бір ағаш күндіс 1000 литр су өндіктіліктеді</span>
+                            <span lang="en" class="lang-content">Plants release water to atmosphere via transpiration</span>
+                            <span lang="ru" class="lang-content">Растения выпускают воду в атмосферу через транспирацию</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-2">🏠 Өмір аймақы</h4>
+                        <h4 lang="en" class="lang-content font-bold text-blue-900 mb-2">🏠 Habitat</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-blue-900 mb-2">🏠 Среда обитания</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Барлық жануарлар өсімдіктеге тәуелді. 1 км² орман 2000+ түрлі ағзаның өмір орны</span>
+                            <span lang="en" class="lang-content">Provide habitat for 2000+ species in 1 km² forest</span>
+                            <span lang="ru" class="lang-content">Обеспечивают среду обитания для 2000+ видов</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">💨 Климат реттеу</h4>
+                        <h4 lang="en" class="lang-content font-bold text-yellow-900 mb-2">💨 Climate Regulation</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-yellow-900 mb-2">💨 Регулирование климата</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Орманды теңіздегі температураны 20°C төмендетеді. СО₂ абсорбциялау</span>
+                            <span lang="en" class="lang-content">Forests reduce temperature 20°C, absorb CO₂</span>
+                            <span lang="ru" class="lang-content">Леса снижают температуру, поглощают CO₂</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <h4 lang="kk" class="lang-content font-bold text-red-900 mb-2">⚠️ Түптеу</h4>
+                        <h4 lang="en" class="lang-content font-bold text-red-900 mb-2">⚠️ Erosion Control</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-red-900 mb-2">⚠️ Защита от эрозии</h4>
+                        <p class="text-xs text-gray-700">
+                            <span lang="kk" class="lang-content">Түбіртегі топырақты ұстап, су сыртқарыларының урағын әлсіртеді</span>
+                            <span lang="en" class="lang-content">Root systems prevent soil erosion</span>
+                            <span lang="ru" class="lang-content">Корневые системы предотвращают эрозию почвы</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ЭКОНОМИКАЛЫҚ МАҢЫЗЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">4. Өсімдіктердің Экономикалық Маңызы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">4. Economic Importance of Plants</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">4. Экономическое значение растений</h2>
+
+            <div class="rule-card border-t-green-400">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-3">🍎 Тағамдану</h4>
+                        <h4 lang="en" class="lang-content font-bold text-yellow-900 mb-3">🍎 Food & Nutrition</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-yellow-900 mb-3">🍎 Питание</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">• Байлық: Қарайұн, будай, арыс - әлемдің 60% таңдамасы</li>
+                            <li lang="en" class="lang-content">• Staples: Rice, wheat, corn - 60% of world food</li>
+                            <li lang="ru" class="lang-content">• Основные: Рис, пшеница, кукуруза - 60% мировой пищи</li>
+
+                            <li lang="kk" class="lang-content">• Құмар: Қанды, ябылқа, апельсин, банан</li>
+                            <li lang="en" class="lang-content">• Fruits: Apples, oranges, bananas</li>
+                            <li lang="ru" class="lang-content">• Фрукты: Яблоки, апельсины, бананы</li>
+
+                            <li lang="kk" class="lang-content">• Сүрелік: Бәлгі, сұлықтар, шорт</li>
+                            <li lang="en" class="lang-content">• Spices: Pepper, vanilla, cinnamon</li>
+                            <li lang="ru" class="lang-content">• Специи: Перец, ваниль, корица</li>
+
+                            <li lang="kk" class="lang-content">• Құйма: Өндіс ынамы барлық жануарлардың түршігі</li>
+                            <li lang="en" class="lang-content">• Livestock feed: Hay, grain, silage</li>
+                            <li lang="ru" class="lang-content">• Корм для животных: Сено, зерно, силос</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                        <h4 lang="kk" class="lang-content font-bold text-orange-900 mb-3">🏭 Өндіс аймағы</h4>
+                        <h4 lang="en" class="lang-content font-bold text-orange-900 mb-3">🏭 Industrial Uses</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-orange-900 mb-3">🏭 Промышленное применение</h4>
+                        <ul class="text-xs text-gray-700 space-y-1">
+                            <li lang="kk" class="lang-content">• Ағаш: Құлылық, цеклюлоза, қарын</li>
+                            <li lang="en" class="lang-content">• Wood: Furniture, cellulose, paper</li>
+                            <li lang="ru" class="lang-content">• Древесина: Мебель, целлюлоза, бумага</li>
+
+                            <li lang="kk" class="lang-content">• Материал: Хлопок, лен, конопля</li>
+                            <li lang="en" class="lang-content">• Fibers: Cotton, linen, hemp</li>
+                            <li lang="ru" class="lang-content">• Волокна: Хлопок, лен, конопля</li>
+
+                            <li lang="kk" class="lang-content">• Энергия: Мазут, үшіндіме, биотопливо</li>
+                            <li lang="en" class="lang-content">• Energy: Oil, coal, biofuels</li>
+                            <li lang="ru" class="lang-content">• Энергия: Нефть, уголь, биотопливо</li>
+
+                            <li lang="kk" class="lang-content">• Дәрі: 25% дәрі-дәрмектер өсімдіктерінен</li>
+                            <li lang="en" class="lang-content">• Medicine: 25% drugs from plants</li>
+                            <li lang="ru" class="lang-content">• Медицина: 25% лекарств из растений</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. ҚОЛДАУ ІСІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">5. Өсімдіктердің Қорғалуы және Тұрақтылы Пайдалану</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">5. Plant Protection and Sustainability</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">5. Охрана растений и устойчивое использование</h2>
+
+            <div class="rule-card border-t-green-600">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <h4 lang="kk" class="lang-content font-bold text-red-900 mb-3">⚠️ Қауіптер</h4>
+                        <h4 lang="en" class="lang-content font-bold text-red-900 mb-3">⚠️ Threats</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-red-900 mb-3">⚠️ Угрозы</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Ормандың қайтыс болуы:</strong> Жыл сайын 10 млн га орман жоғалады. Аймақтық климатқа мойындау</li>
+                            <li lang="en" class="lang-content"><strong>Deforestation:</strong> 10 million hectares lost annually. Impacts regional climate</li>
+                            <li lang="ru" class="lang-content"><strong>Вырубка лесов:</strong> Теряется 10 млн га ежегодно. Влияет на климат</li>
+
+                            <li lang="kk" class="lang-content"><strong>Биоүлесімілік:</strong> 68% өсімдік түрлері соттау жүргінінің ұрысын салдырады</li>
+                            <li lang="en" class="lang-content"><strong>Biodiversity Loss:</strong> 68% plant species threatened by extinction</li>
+                            <li lang="ru" class="lang-content"><strong>Потеря биоразнообразия:</strong> 68% растений под угрозой</li>
+
+                            <li lang="kk" class="lang-content"><strong>Құм ету:</strong> Аталаған площадьдар құмалақтарға айналды</li>
+                            <li lang="en" class="lang-content"><strong>Desertification:</strong> Agricultural lands becoming deserts</li>
+                            <li lang="ru" class="lang-content"><strong>Опустынивание:</strong> Земли становятся пустынями</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-3">✅ Шешімдер</h4>
+                        <h4 lang="en" class="lang-content font-bold text-green-900 mb-3">✅ Solutions</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-green-900 mb-3">✅ Решения</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Қорғалы облыстар:</strong> Ұлттық ұлғайғыстар, болған орманды қорғау</li>
+                            <li lang="en" class="lang-content"><strong>Protected areas:</strong> National parks, nature reserves</li>
+                            <li lang="ru" class="lang-content"><strong>Охраняемые территории:</strong> Национальные парки, заповедники</li>
+
+                            <li lang="kk" class="lang-content"><strong>Орман насасы:</strong> Жыл сайын 15 млрд ағаш ешту</li>
+                            <li lang="en" class="lang-content"><strong>Afforestation:</strong> Plant 15 billion trees annually</li>
+                            <li lang="ru" class="lang-content"><strong>Лесонасаждение:</strong> Посадить 15 млрд деревьев в год</li>
+
+                            <li lang="kk" class="lang-content"><strong>Тұрақтылы пайдалану:</strong> Ағасты ұнамды түрде ағындап, орман әрей болсын</li>
+                            <li lang="en" class="lang-content"><strong>Sustainable Use:</strong> Selective logging, reforestation</li>
+                            <li lang="ru" class="lang-content"><strong>Устойчивое использование:</strong> Выборочная рубка, облесение</li>
+
+                            <li lang="kk" class="lang-content"><strong>Білім құру:</strong> Өсімдіктер маңызы туралы балаларды оқыту</li>
+                            <li lang="en" class="lang-content"><strong>Education:</strong> Teach importance of plants</li>
+                            <li lang="ru" class="lang-content"><strong>Образование:</strong> Обучение значению растений</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-green-800">Өсімдіктер жердегі барлық өмірдің негізі. Оларды қорғау және тұрақтылы пайдалану екінші ұрпақ үшін ғалама.</p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-green-800">Plants are the foundation of all life on Earth. Their protection is essential for future generations.</p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-green-800">Растения - основа всей жизни на Земле. Их охрана необходима для будущих поколений.</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => switchLang('kk'));
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

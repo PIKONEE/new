@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сөйлем мүшелері және құрамы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdfa; color: #111827; }
+        .container { max-width: 900px; margin: auto; padding: 20px; }
+        .header-card {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-radius: 1rem; color: white; padding: 40px; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
+        }
+        .main-section {
+            background-color: white; border-radius: 1rem; padding: 25px; margin-bottom: 20px;
+            border-left: 6px solid #059669; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .comp-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .comp-table th, .comp-table td { border: 1px solid #d1fae5; padding: 10px; text-align: left; }
+        .comp-table th { background-color: #ecfdf5; color: #065f46; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div class="container">
+        <header class="header-card">
+            <h1 class="text-3xl font-extrabold mb-2 uppercase">СӨЙЛЕМ МҮШЕЛЕРІНІҢ ҚҰРАМЫ</h1>
+            <p class="text-green-100 text-lg">Дара, Күрделі және Үйірлі мүшелер</p>
+        </header>
+
+        <!-- Мүшелер -->
+        <div class="main-section">
+            <h2 class="text-2xl font-bold text-green-800 mb-2">1. СӨЙЛЕМ МҮШЕЛЕРІ (Жіктелуі)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div class="bg-green-50 p-4 rounded">
+                    <h3 class="font-bold text-green-900">Тұрлаулы (Басты)</h3>
+                    <p class="text-sm text-gray-700">Бастауыш, Баяндауыш.</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded">
+                    <h3 class="font-bold text-green-900">Тұрлаусыз (Көмекші)</h3>
+                    <p class="text-sm text-gray-700">Толықтауыш, Анықтауыш, Пысықтауыш.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Құрамы -->
+        <div class="main-section" style="border-left-color: #0d9488;">
+            <h2 class="text-2xl font-bold text-teal-800 mb-4">2. ҚҰРАМЫНА ҚАРАЙ ТҮРЛЕРІ</h2>
+            <table class="comp-table">
+                <thead>
+                    <tr>
+                        <th>Түрі</th>
+                        <th>Анықтамасы</th>
+                        <th>Мысал</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="font-bold text-teal-700">Дара мүше</td>
+                        <td>Бір ғана сөзден тұрады.</td>
+                        <td><b>Оқушы</b> келді.</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-teal-700">Күрделі мүше</td>
+                        <td>Екі немесе одан да көп сөзден, бірақ бір ұғымды білдіреді (тұрақты тіркес, күрделі етістік).</td>
+                        <td>Ол <b>жұмыс істеп жүр</b>.</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-teal-700">Үйірлі мүше</td>
+                        <td>Негізгі мүшеге бағынышты сөздер тобымен кеңейген мүше.</td>
+                        <td><b>Көптен көрмеген досым</b> келді. (Бастауыш)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volcanoes and Geysers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom, #7f1d1d, #1f2937, #000);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { cursor: pointer; border-radius: 2rem; }
+        .lang-btn.active { background: #ef4444; color: white; font-weight: 800; }
+        .mode-btn { border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s; }
+        .mode-btn.active { background: #ef4444; border-color: #ef4444; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-red-600">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-red-500"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center relative min-h-[500px]">
+            <div class="flex gap-4 mb-4 z-10">
+                <button onclick="window.setMode('volcano')" id="mode-volcano" class="mode-btn px-6 py-2 rounded-xl text-xs font-bold uppercase active">Volcano</button>
+                <button onclick="window.setMode('geyser')" id="mode-geyser" class="mode-btn px-6 py-2 rounded-xl text-xs font-bold uppercase">Geyser</button>
+            </div>
+            <canvas id="volcanoCanvas" class="w-full h-full absolute inset-0"></canvas>
+            <p id="canvas-hint" class="absolute bottom-6 text-[10px] text-white/30 uppercase tracking-[0.4em] z-10"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-red-600 relative">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-red-400"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-8"><h4 id="card1-title" class="heading-font text-xl mb-3 text-red-400"></h4><div id="card1-desc" class="text-white/60 text-sm"></div></div>
+        <div class="glass rounded-custom p-8"><h4 id="card2-title" class="heading-font text-xl mb-3 text-red-400"></h4><div id="card2-desc" class="text-white/60 text-sm"></div></div>
+        <div class="glass rounded-custom p-8"><h4 id="card3-title" class="heading-font text-xl mb-3 text-red-400"></h4><div id="card3-desc" class="text-white/60 text-sm"></div></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Огненное Дыхание", subtitle: "Вулканы, гейзеры и горячие источники",
+                hint: "Нажмите на экран для извержения",
+                btnVolcano: "Вулкан", btnGeyser: "Гейзер",
+                modes: {
+                    volcano: { title: "Строение вулкана", text: "Магма по жерлу поднимается к кратеру. При извержении выходят лава, газы и пепел. Конус вулкана сложен из застывшей лавы." },
+                    geyser: { title: "Гейзеры", text: "Источники, периодически выбрасывающие фонтаны горячей воды и пара. Вода нагревается магмой под землей, закипает и вырывается под давлением." }
+                },
+                cards: [
+                    { title: "Кратер", desc: "Чашеобразное углубление на вершине вулкана, через которое происходит извержение." },
+                    { title: "Жерло", desc: "Канал, по которому магма поднимается из очага на поверхность." },
+                    { title: "Горячие источники", desc: "Спокойный выход подземных вод, нагретых магмой. Часто обладают целебными свойствами." }
+                ]
+            },
+            kz: {
+                title: "Отты Тыныс", subtitle: "Жанартаулар, гейзерлер және ыстық бұлақтар",
+                hint: "Атқылау үшін экранды басыңыз",
+                btnVolcano: "Жанартау", btnGeyser: "Гейзер",
+                modes: {
+                    volcano: { title: "Жанартау құрылысы", text: "Магма көмей арқылы кратерге көтеріледі. Атқылау кезінде лава, газдар және күл шығады." },
+                    geyser: { title: "Гейзерлер", text: "Мезгіл-мезгіл ыстық су мен бу атқылайтын бұлақтар. Су жер астында магмамен қызып, қысыммен сыртқа шығады." }
+                },
+                cards: [
+                    { title: "Кратер", desc: "Жанартау төбесіндегі тостаған тәрізді ойыс, ол арқылы атқылау жүреді." },
+                    { title: "Көмей", desc: "Магма ошақтан жер бетіне көтерілетін канал." },
+                    { title: "Ыстық бұлақтар", desc: "Магмамен қыздырылған жер асты суларының тыныш шығуы. Жиі емдік қасиетке ие." }
+                ]
+            },
+            en: {
+                title: "Fiery Breath", subtitle: "Volcanoes, Geysers, and Hot Springs",
+                hint: "Click screen to erupt",
+                btnVolcano: "Volcano", btnGeyser: "Geyser",
+                modes: {
+                    volcano: { title: "Volcano Structure", text: "Magma rises through the vent to the crater. Eruptions release lava, gases, and ash. The cone is built of solidified lava." },
+                    geyser: { title: "Geysers", text: "Springs that periodically eject fountains of hot water and steam. Groundwater is heated by magma and erupts under pressure." }
+                },
+                cards: [
+                    { title: "Crater", desc: "Bowl-shaped depression at the top of the volcano through which the eruption occurs." },
+                    { title: "Vent", desc: "The channel through which magma rises from the chamber to the surface." },
+                    { title: "Hot Springs", desc: "Calm discharge of groundwater heated by magma. Often have therapeutic properties." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        let currentMode = 'volcano';
+        let canvas, ctx;
+        let particles = [];
+        let erupting = false;
+
+        window.setLang = function(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        window.setMode = function(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`mode-${mode}`).classList.add('active');
+            updateUI();
+            particles = [];
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-hint').textContent = t.hint;
+            document.getElementById('mode-volcano').textContent = t.btnVolcano;
+            document.getElementById('mode-geyser').textContent = t.btnGeyser;
+            
+            const modeData = t.modes[currentMode];
+            document.getElementById('info-title').textContent = modeData.title;
+            document.getElementById('info-text').textContent = modeData.text;
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').textContent = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').textContent = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+
+            if(currentMode === 'volcano') {
+                // Volcano shape
+                ctx.fillStyle = '#1c1917';
+                ctx.beginPath();
+                ctx.moveTo(w/2 - 150, h);
+                ctx.lineTo(w/2 - 40, h/2);
+                // Crater
+                ctx.lineTo(w/2 + 40, h/2);
+                ctx.lineTo(w/2 + 150, h);
+                ctx.fill();
+                
+                // Magma chamber
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath(); ctx.arc(w/2, h+50, 80, 0, Math.PI*2); ctx.fill();
+                // Vent
+                ctx.fillRect(w/2 - 10, h/2, 20, h/2);
+            } else {
+                // Geyser ground
+                ctx.fillStyle = '#374151';
+                ctx.fillRect(0, h*0.7, w, h*0.3);
+                // Pool
+                ctx.fillStyle = '#38bdf8';
+                ctx.beginPath(); ctx.ellipse(w/2, h*0.7, 60, 10, 0, 0, Math.PI*2); ctx.fill();
+            }
+
+            // Particles
+            if(erupting) {
+                for(let i=0; i<5; i++) {
+                    particles.push({
+                        x: w/2, 
+                        y: currentMode === 'volcano' ? h/2 : h*0.7,
+                        vx: (Math.random()-0.5) * (currentMode === 'volcano' ? 4 : 2),
+                        vy: -(Math.random()*5 + 5),
+                        r: Math.random()*5 + 2,
+                        c: currentMode === 'volcano' ? (Math.random()>0.5 ? '#ef4444' : '#7f1d1d') : '#bae6fd',
+                        life: 100
+                    });
+                }
+            }
+
+            particles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.life--;
+                if(p.life <= 0) particles.splice(i, 1);
+                
+                ctx.fillStyle = p.c;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('volcanoCanvas');
+            if(canvas) {
+                ctx = canvas.getContext('2d');
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+                
+                canvas.addEventListener('mousedown', () => erupting = true);
+                canvas.addEventListener('mouseup', () => erupting = false);
+                canvas.addEventListener('touchstart', () => erupting = true);
+                canvas.addEventListener('touchend', () => erupting = false);
+
+                setLang('ru');
+                draw();
+            }
+        };
+        window.onresize = function() {
+             if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+             }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Основы жизнеобеспечения кочевников</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fafaf9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .felt-bg {
+            background-color: #f5f5f4;
+            background-image: radial-gradient(circle at center, #fefce8 0%, #f5f5f4 100%);
+        }
+
+        .yurt-card {
+            background: white;
+            border-radius: 3.5rem;
+            border: 2px solid #e7e5e4;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .yurt-card:hover {
+            transform: scale(1.01);
+            border-color: #d97706;
+            box-shadow: 0 25px 50px -12px rgba(120, 53, 15, 0.1);
+        }
+
+        .lang-active {
+            background-color: #78350f;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(120, 53, 15, 0.3);
+        }
+
+        .wood-accent {
+            background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+        }
+
+        canvas {
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+        }
+    </style>
+</head>
+<body class="felt-bg text-stone-900 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-stone-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl">🛖</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tight text-stone-800">Быт Кочевников</h1>
+            </div>
+            <div class="flex bg-stone-100 p-1 rounded-2xl border border-stone-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Resource Map (Chart) -->
+        <div class="bg-white rounded-[4rem] p-8 md:p-16 shadow-xl border border-stone-100 relative overflow-hidden">
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-amber-100/50 rounded-full blur-3xl"></div>
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5">
+                    <div id="badge" class="inline-block bg-amber-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 tracking-widest">Life Support System</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-stone-900 mb-6 leading-tight">Экономика выживания</h2>
+                    <p id="viz-desc" class="text-lg text-stone-500 font-light leading-relaxed mb-8">
+                        Жизнь кочевника — это идеальный баланс между использованием природных ресурсов и их сохранением. Главный капитал степняка — его скот.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="border-l-4 border-amber-700 pl-4">
+                            <div class="text-2xl font-black text-stone-800">80%</div>
+                            <div id="stat1" class="text-xs uppercase font-bold text-stone-400 text-nowrap">Продуктов от скота</div>
+                        </div>
+                        <div class="border-l-4 border-amber-700 pl-4">
+                            <div class="text-2xl font-black text-stone-800">100%</div>
+                            <div id="stat2" class="text-xs uppercase font-bold text-stone-400 text-nowrap">Безотходное бытие</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 h-80 md:h-[450px]">
+                    <canvas id="resourceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: The Core Elements (Plan) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <!-- Large Focus: The Yurt -->
+            <div class="yurt-card p-10 md:p-14 flex flex-col justify-between">
+                <div>
+                    <div class="text-6xl mb-8">🏠</div>
+                    <h3 id="card1-t" class="text-3xl font-black mb-6 text-stone-800">Юрта: Мобильный шедевр</h3>
+                    <p id="card1-d" class="text-stone-500 text-lg leading-relaxed mb-8">
+                        Уникальное переносное жилище, идеально приспособленное к климату степи. Состоит из деревянного каркаса (кереге, уык, шанырак) и войлочного покрытия. Собирается за 2-3 часа.
+                    </p>
+                </div>
+                <div class="flex gap-4">
+                    <span class="px-4 py-2 bg-stone-100 rounded-full text-xs font-bold text-stone-600 uppercase">🛡️ Защита</span>
+                    <span class="px-4 py-2 bg-stone-100 rounded-full text-xs font-bold text-stone-600 uppercase">🔄 Мобильность</span>
+                </div>
+            </div>
+
+            <!-- Right Column: Food and Clothing -->
+            <div class="space-y-10">
+                <div class="wood-accent rounded-[3.5rem] p-10 text-white shadow-lg">
+                    <div class="flex items-center space-x-6">
+                        <span class="text-5xl">🍶</span>
+                        <div>
+                            <h3 id="card2-t" class="text-2xl font-bold mb-2">Рацион питания</h3>
+                            <p id="card2-d" class="text-amber-100/70 text-sm leading-relaxed">Основу составляли молочные продукты (кумыс, шубат, курт) и мясо. Хлеб и растительная пища были дополнением, получаемым через обмен.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-amber-50 rounded-[3.5rem] p-10 border border-amber-100">
+                    <div class="flex items-center space-x-6">
+                        <span class="text-5xl">🧵</span>
+                        <div>
+                            <h3 id="card3-t" class="text-2xl font-bold mb-2 text-stone-800">Одежда и материалы</h3>
+                            <p id="card3-d" class="text-stone-600 text-sm leading-relaxed">Шерсть, кожа и мех — три кита кочевой моды. Войлок использовался везде: от подстилок до верхней одежды (шекпен) и головных уборов.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[3.5rem] p-10 border border-stone-200 shadow-sm flex items-center space-x-6">
+                    <span class="text-5xl">🐫</span>
+                    <div>
+                        <h3 id="card4-t" class="text-2xl font-bold mb-2 text-stone-800">Транспортная триада</h3>
+                        <p id="card4-d" class="text-stone-500 text-sm leading-relaxed">Лошадь для верховой езды, верблюд для перевозки тяжелых грузов (кереуен) и быки для телег.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-stone-900 text-stone-400">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight mb-8">
+                «Жизнь кочевника — это не борьба с природой, а умение раствориться в её законах, используя каждый дар степи с мудростью.»
+            </p>
+            <div class="w-16 h-1 bg-amber-700 mx-auto"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Быт Кочевников",
+                vizTitle: "Экономика выживания",
+                vizDesc: "Жизнь кочевника — это идеальный баланс между использованием природных ресурсов и их сохранением. Скот — основа всего.",
+                badge: "Система жизнеобеспечения",
+                stat1: "Продукты от скота", stat2: "Безотходный быт",
+                card1T: "Юрта: Мобильный шедевр",
+                card1D: "Уникальное переносное жилище, идеально приспособленное к климату степи. Состоит из деревянного каркаса и войлока. Собирается за 2-3 часа.",
+                card2T: "Рацион питания",
+                card2D: "Основу составляли молочные продукты (кумыс, шубат, курт) и мясо. Продукты длительного хранения были жизненно важны.",
+                card3T: "Одежда и материалы",
+                card3D: "Шерсть, кожа и мех — главные материалы. Войлок (кииз) служил утеплителем, одеждой и ковром.",
+                card4T: "Транспортная триада",
+                card4D: "Лошадь для езды, верблюд для грузов, быки для тягловой силы. Каждый зверь имел свою роль в кочевке.",
+                footer: "«Жизнь кочевника — это не борьба с природой, а умение раствориться в её законах, используя каждый дар степи с мудростью.»",
+                chartLabels: ["Молочные продукты", "Мясные продукты", "Изделия из шерсти", "Кожа и кость", "Ремесла"],
+                chartTitle: "Распределение ресурсов скота (%)"
+            },
+            kz: {
+                title: "Көшпелілер тұрмысы",
+                vizTitle: "Өмір сүру экономикасы",
+                vizDesc: "Көшпелілер өмірі — табиғи ресурстарды пайдалану мен оларды сақтау арасындағы тамаша теңгерім. Мал — бәрінің негізі.",
+                badge: "Өмірді қамтамасыз ету жүйесі",
+                stat1: "Мал өнімдері", stat2: "Қалдықсыз тұрмыс",
+                card1T: "Киіз үй: Мобильді жауһар",
+                card1D: "Дала климатына өте жақсы бейімделген бірегей тасымалы баспана. Ағаш қаңқа мен киізден тұрады. 2-3 сағатта жиналады.",
+                card2T: "Тамақтану рационы",
+                card2D: "Негізгі тағамдар — сүт өнімдері (қымыз, шұбат, құрт) мен ет. Ұзақ сақтауға болатын өнімдер өте маңызды болды.",
+                card3T: "Киім және материалдар",
+                card3D: "Жүн, тері және аң терісі — негізгі материалдар. Киіз жылытқыш, киім және кілем ретінде қызмет етті.",
+                card4T: "Көлік триадасы",
+                card4D: "Мінуге арналған жылқы, жүкке арналған түйе, күшке арналған өгіздер. Әр жануардың көште өз орны болды.",
+                footer: "«Көшпелілер өмірі — табиғатпен күрес емес, оның заңдылықтарымен үйлесе білу және дала сыйын даналықпен пайдалану.»",
+                chartLabels: ["Сүт өнімдері", "Ет өнімдері", "Жүн бұйымдары", "Тері мен сүйек", "Қолөнер"],
+                chartTitle: "Мал ресурстарын бөлу (%)"
+            },
+            en: {
+                title: "Nomadic Life",
+                vizTitle: "Survival Economy",
+                vizDesc: "The life of a nomad is a perfect balance between using natural resources and preserving them. Livestock is the foundation.",
+                badge: "Life Support System",
+                stat1: "Livestock products", stat2: "Zero-waste lifestyle",
+                card1T: "Yurt: Mobile Masterpiece",
+                card1D: "A unique portable dwelling, perfectly adapted to the steppe climate. Consists of a wooden frame and felt. Assembled in 2-3 hours.",
+                card2T: "Dietary Habits",
+                card2D: "The basis was dairy products (kumis, shubat, kurt) and meat. Long-storage products were vital for survival.",
+                card3T: "Clothing & Materials",
+                card3D: "Wool, leather, and fur were the main materials. Felt (kiiz) served as insulation, clothing, and carpets.",
+                card4T: "Transport Triad",
+                card4D: "Horses for riding, camels for heavy loads, oxen for draft power. Each animal had its role in the migration.",
+                footer: "«A nomad's life is not a struggle with nature, but the ability to dissolve into its laws, using every gift of the steppe with wisdom.»",
+                chartLabels: ["Dairy products", "Meat products", "Wool items", "Leather & Bone", "Crafts"],
+                chartTitle: "Livestock Resource Distribution (%)"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('resourceChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        data: [40, 25, 20, 10, 5],
+                        backgroundColor: ['#78350f', '#b45309', '#d97706', '#f59e0b', '#fbbf24'],
+                        borderWidth: 0,
+                        hoverOffset: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    }
+                }
+            });
+        }
+
+        function setLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('stat1').innerText = t.stat1;
+            document.getElementById('stat2').innerText = t.stat2;
+            document.getElementById('card1-t').innerText = t.card1T; document.getElementById('card1-d').innerText = t.card1D;
+            document.getElementById('card2-t').innerText = t.card2T; document.getElementById('card2-d').innerText = t.card2D;
+            document.getElementById('card3-t').innerText = t.card3T; document.getElementById('card3-d').innerText = t.card3D;
+            document.getElementById('card4-t').innerText = t.card4T; document.getElementById('card4-d').innerText = t.card4D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-200 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

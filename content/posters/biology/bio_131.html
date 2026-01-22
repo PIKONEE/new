@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photosynthesis: The Engine of Life</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #064e3b; color: #dcfce7; font-family: 'Inter'; min-height: 100vh; }
+        .glass { background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #4ade80; color: #064e3b; font-weight: 800; }
+        canvas { cursor: pointer; border-radius: 1.5rem; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 h-full">
+        <div class="flex flex-col gap-8">
+            <header>
+                <div class="text-green-400 font-bold tracking-[0.3em] text-xs mb-2 uppercase">Autotrophic Nutrition</div>
+                <h1 class="text-5xl font-Montserrat text-white mb-4" id="title"></h1>
+            </header>
+
+            <div class="glass p-8 rounded-custom border-l-4 border-green-500">
+                <div class="font-mono text-xl text-green-300 mb-4 bg-black/20 p-4 rounded-xl text-center">
+                    6CO₂ + 6H₂O + ☀️ → C₆H₁₂O₆ + 6O₂
+                </div>
+                <p id="desc" class="text-lg leading-relaxed opacity-80"></p>
+            </div>
+
+            <div class="flex gap-4 mt-auto">
+                <button onclick="setL('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs">RU</button>
+                <button onclick="setL('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs">KZ</button>
+                <button onclick="setL('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-lg border border-white/20 text-xs">EN</button>
+            </div>
+        </div>
+
+        <div class="relative h-[600px] glass p-4 rounded-custom bg-black/20 overflow-hidden group">
+            <canvas id="photoCanvas" class="w-full h-full"></canvas>
+            <div class="absolute top-6 left-6 text-xs text-green-200 font-bold uppercase tracking-widest pointer-events-none">
+                Chloroplast Interior<br>Click to Toggle Day/Night
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const db = {
+            ru: { t: "Фотосинтез", d: "Процесс образования органических веществ (глюкозы) из углекислого газа и воды на свету. Происходит в хлоропластах благодаря пигменту хлорофиллу. Побочный продукт — кислород, необходимый для дыхания всего живого." },
+            kz: { t: "Фотосинтез", d: "Жарықта көмірқышқыл газы мен судан органикалық заттардың (глюкоза) түзілу процесі. Хлоропласттарда хлорофилл пигментінің арқасында жүреді. Жанама өнім — оттегі." },
+            en: { t: "Photosynthesis", d: "The process of creating organic matter (glucose) from carbon dioxide and water using light. Occurs in chloroplasts thanks to chlorophyll. Oxygen is released as a byproduct." }
+        };
+
+        let lang='ru', isDay=true, cx, cvs;
+        let particles = [];
+
+        window.setL = (l) => {
+            lang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+            document.getElementById('title').textContent = db[l].t;
+            document.getElementById('desc').textContent = db[l].d;
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.002;
+            cx.clearRect(0,0,w,h);
+
+            // Chloroplast Background
+            const bg = isDay ? '#15803d' : '#022c22';
+            cx.fillStyle = bg; cx.fillRect(0,0,w,h);
+            
+            // Thylakoid Stacks (Grana)
+            cx.fillStyle = isDay ? '#4ade80' : '#064e3b';
+            for(let i=0; i<3; i++) {
+                const x = w*0.3 + i*100;
+                for(let j=0; j<5; j++) {
+                    cx.beginPath(); cx.ellipse(x, h*0.3 + j*20, 40, 10, 0, 0, Math.PI*2); cx.fill();
+                }
+            }
+
+            if(isDay) {
+                // Sun Rays
+                cx.strokeStyle = 'rgba(253, 224, 71, 0.3)'; cx.lineWidth = 4;
+                for(let i=0; i<10; i++) {
+                    cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(w, h*0.8 + Math.sin(t+i)*100); cx.stroke();
+                }
+                
+                // Reaction Particles
+                if(Math.random()>0.8) particles.push({x: Math.random()*w, y: 0, type: 'CO2'}); // In
+                if(Math.random()>0.8) particles.push({x: Math.random()*w, y: h, type: 'O2'}); // Out
+            }
+
+            particles.forEach((p, i) => {
+                if(p.type === 'CO2') {
+                    p.y += 2; cx.fillStyle = '#d1d5db'; // Grey
+                    if(p.y > h*0.4) { particles.splice(i, 1); } // Consumed
+                } else {
+                    p.y -= 2; cx.fillStyle = '#38bdf8'; // Blue (O2)
+                    if(p.y < 0) particles.splice(i, 1);
+                }
+                cx.beginPath(); cx.arc(p.x, p.y, 4, 0, Math.PI*2); cx.fill();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('photoCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            cvs.addEventListener('click', () => isDay = !isDay);
+            setL('ru'); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

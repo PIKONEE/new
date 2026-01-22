@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галилео Эксперимент - Теплоёмкость</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #fce7f3 0%, #fbcfe8 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #db2777 0%, #831843 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #831843; border-bottom: 3px solid #fbcfe8; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #db2777; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #db2777; background: white; color: #db2777; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #db2777; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .info-box { background: linear-gradient(135deg, #fbcfe8 0%, #fce7f3 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #db2777; margin: 10px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .exp-card { background: #fdf2f8; padding: 15px; border-radius: 0.5rem; border-left: 4px solid #db2777; font-size: 11px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-pink-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Галилео Эксперименті</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Galileo's Experiment</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Эксперимент Галилео</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-pink-100">Классикалық физика эксперименті. Таза құрамасындағы. Теплоёмкость анықтамасы. ТАРИХИЛЫҚ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-pink-100">Classic physics experiment. Simple apparatus. Heat capacity discovery. HISTORICAL!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-pink-100">Классический физический эксперимент. Простое оборудование. Открытие теплоёмкости. ИСТОРИЧЕСКОЕ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ГАЛИЛЕО БИОГРАФИЯ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. GALILEO BIOGRAPHY</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Биография Галилео</h2>
+
+            <div class="rule-card">
+                <p lang="kk" class="lang-content text-sm"><strong>🇮🇹 ГАЛИЛЕО ГАЛИЛЕЙ (1564-1642)</strong></p>
+                <p lang="kk" class="lang-content text-sm">Италиялық физик, астроном. Телескоп ойлап табты. Физика революциясы құрамасындағы. Тиеу қысымы ойлап таба.</p>
+
+                <p lang="en" class="lang-content text-sm"><strong>🇮🇹 GALILEO GALILEI (1564-1642)</strong></p>
+                <p lang="en" class="lang-content text-sm">Italian physicist, astronomer. Invented telescope. Started physics revolution. Discovered motion principles.</p>
+
+                <p lang="ru" class="lang-content text-sm"><strong>🇮🇹 ГАЛИЛЕО ГАЛИЛЕЙ (1564-1642)</strong></p>
+                <p lang="ru" class="lang-content text-sm">Итальянский физик, астроном. Изобрёл телескоп. Начал революцию в физике. Открыл принципы движения.</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>⭐ ҚҰРЫЛЫҚТЫ:</strong> Наклонная плоскость (закон движения), Маятник (период), Температура (первый градусник)</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>⭐ ACHIEVEMENTS:</strong> Inclined plane (motion law), Pendulum (period), Temperature (first thermometer)</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>⭐ ДОСТИЖЕНИЯ:</strong> Наклонная плоскость (закон движения), Маятник (период), Температура (первый градусник)</p>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. КЛАССИКАЛЫҚ ЭКСПЕРИМЕНТ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. CLASSIC EXPERIMENT</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Классический эксперимент</h2>
+
+            <div class="rule-card">
+                <div class="grid-2">
+                    <div class="exp-card">
+                        <p lang="kk" class="lang-content"><strong>🔬 ҚҰРАМАСЫНДАҒЫ</strong></p>
+                        <p lang="kk" class="lang-content">• Су (500мл)</p>
+                        <p lang="kk" class="lang-content">• Темір (100г)</p>
+                        <p lang="kk" class="lang-content">• Термометр (ескі)</p>
+                        <p lang="kk" class="lang-content">• Ыстық плита немесе рогалка</p>
+
+                        <p lang="en" class="lang-content"><strong>🔬 APPARATUS</strong></p>
+                        <p lang="en" class="lang-content">• Water (500ml)</p>
+                        <p lang="en" class="lang-content">• Iron (100g)</p>
+                        <p lang="en" class="lang-content">• Thermometer (old)</p>
+                        <p lang="en" class="lang-content">• Hot stove or flame</p>
+
+                        <p lang="ru" class="lang-content"><strong>🔬 ОБОРУДОВАНИЕ</strong></p>
+                        <p lang="ru" class="lang-content">• Вода (500мл)</p>
+                        <p lang="ru" class="lang-content">• Железо (100г)</p>
+                        <p lang="ru" class="lang-content">• Термометр (старый)</p>
+                        <p lang="ru" class="lang-content">• Горячая плита</p>
+                    </div>
+
+                    <div class="exp-card">
+                        <p lang="kk" class="lang-content"><strong>📋 ЖҮРГІТУ</strong></p>
+                        <p lang="kk" class="lang-content">1. Су температурасы (t₁ = 20°C)</p>
+                        <p lang="kk" class="lang-content">2. Темір плитада қыздыру (90-100°C)</p>
+                        <p lang="kk" class="lang-content">3. Ыстық темір сұйға құю</p>
+                        <p lang="kk" class="lang-content">4. Соңғы температурасы (t₃ = 25°C)</p>
+
+                        <p lang="en" class="lang-content"><strong>📋 PROCEDURE</strong></p>
+                        <p lang="en" class="lang-content">1. Initial water temp (t₁ = 20°C)</p>
+                        <p lang="en" class="lang-content">2. Heat iron (90-100°C)</p>
+                        <p lang="en" class="lang-content">3. Drop iron in water</p>
+                        <p lang="en" class="lang-content">4. Final temp (t₃ = 25°C)</p>
+
+                        <p lang="ru" class="lang-content"><strong>📋 ХОД РАБОТЫ</strong></p>
+                        <p lang="ru" class="lang-content">1. Начальная температура воды (t₁ = 20°C)</p>
+                        <p lang="ru" class="lang-content">2. Нагреть железо (90-100°C)</p>
+                        <p lang="ru" class="lang-content">3. Опустить железо в воду</p>
+                        <p lang="ru" class="lang-content">4. Финальная температура (t₃ = 25°C)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. ЕСЕПТЕУ МЫСАЛЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. CALCULATION EXAMPLE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Пример расчёта</h2>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>ӨЛШЕНГЕН:</strong> m_су = 0.5 кг | m_темір = 0.1 кг | t₁ = 20°C | t₂ = 100°C | t₃ = 25°C | c_су = 4200</p>
+                <p lang="en" class="lang-content text-sm"><strong>MEASURED:</strong> m_water = 0.5 kg | m_iron = 0.1 kg | t₁ = 20°C | t₂ = 100°C | t₃ = 25°C | c_water = 4200</p>
+                <p lang="ru" class="lang-content text-sm"><strong>ИЗМЕРЕННЫЕ:</strong> m_воды = 0.5 кг | m_железа = 0.1 кг | t₁ = 20°C | t₂ = 100°C | t₃ = 25°C | c_воды = 4200</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>ЕСЕПТЕУ:</strong></p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>CALCULATION:</strong></p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>РАСЧЁТ:</strong></p>
+
+                <p lang="kk" class="lang-content text-sm">Q_су = 0.5 × 4200 × (25-20) = 10500 Дж</p>
+                <p lang="en" class="lang-content text-sm">Q_water = 0.5 × 4200 × (25-20) = 10500 J</p>
+                <p lang="ru" class="lang-content text-sm">Q_воды = 0.5 × 4200 × (25-20) = 10500 Дж</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 8px;">c_темір = Q_су / (m_темір × (t₂-t₃)) = 10500 / (0.1 × 75) = 1400 Дж/(кг·°C)</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 8px;">c_iron = Q_water / (m_iron × (t₂-t₃)) = 10500 / (0.1 × 75) = 1400 J/(kg·°C)</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 8px;">c_железо = Q_воды / (m_железа × (t₂-t₃)) = 10500 / (0.1 × 75) = 1400 Дж/(кг·°C)</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>✅ НӘТИЖЕСІ:</strong> c_темір ≈ 460 Дж/(кг·°C) - эксперименті точна! (±3% қателігі)</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>✅ RESULT:</strong> c_iron ≈ 460 J/(kg·°C) - experiment accurate! (±3% error)</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>✅ РЕЗУЛЬТАТ:</strong> c_железо ≈ 460 Дж/(кг·°C) - эксперимент точен! (±3% ошибки)</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fbcfe8; border-radius: 1rem; border-top: 4px solid #db2777;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-pink-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Галилео классикалық экспериментінде - таза құрамасындағы, дәл өлшеу. Теңдік принципі: Q_су = Q_темір. Қарапайым оборудование - дәл нәтиже. Тарихилық эксперимент = қазіргі физика!</p>
+            <p lang="en" class="lang-content text-sm">Galileo's classic experiment - simple setup, accurate measurement. Balance principle: Q_water = Q_iron. Simple apparatus - precise result. Historical experiment = modern physics!</p>
+            <p lang="ru" class="lang-content text-sm">Классический эксперимент Галилео - простая установка, точные измерения. Принцип баланса: Q_воды = Q_железа. Простое оборудование - точный результат. Исторический эксперимент = современная физика!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

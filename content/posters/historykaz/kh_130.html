@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Государство Огузов (IX–XI вв.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .oguz-gradient {
+            background: radial-gradient(circle at top right, #083344, #020617 80%);
+        }
+
+        .panel-copper {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .panel-copper:hover {
+            border-color: #06b6d4;
+            box-shadow: 0 0 50px rgba(6, 182, 212, 0.1);
+        }
+
+        .lang-active {
+            background-color: #06b6d4;
+            color: #020617;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2rem;
+            background: rgba(2, 6, 23, 0.4);
+        }
+
+        .fact-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-bottom: 4px solid #0891b2;
+            padding: 2rem;
+            border-radius: 2rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .fact-card:hover {
+            transform: translateY(-5px);
+            background: rgba(30, 41, 59, 0.8);
+            border-color: #22d3ee;
+        }
+
+        .term-tag {
+            background: #164e63;
+            color: #22d3ee;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body class="oguz-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header (Strict text, no emoji) -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-cyan-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.3em] text-cyan-400">Государство Огузов (конец IX – начало XI вв.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-cyan-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Hierarchy Table (Custom Canvas) -->
+        <div class="panel-copper p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-cyan-500/50 text-cyan-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Political Structure Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Совет Джабгу: Иерархия Власти</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Огузское общество имело жесткую военно-административную систему. Нажмите на чины в иерархической схеме справа, чтобы узнать об их функциях и роли в государстве.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-cyan-950/20 border-l-8 border-cyan-500 shadow-2xl transition-all duration-500">
+                        <h3 id="role-title" class="text-xl font-bold text-cyan-300 mb-3 uppercase tracking-tighter">Исследуйте структуру</h3>
+                        <p id="role-desc" class="text-slate-300 text-sm leading-relaxed italic">Нажмите на корону правителя, меч полководца или чашу совета.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="hierarchyCanvas"></canvas>
+                    <div class="absolute bottom-8 right-10 text-[10px] text-cyan-900 font-mono uppercase tracking-[0.3em]">Bureaucracy Simulation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Historical Insights -->
+        <div class="space-y-12">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-cyan-500">Летопись Великой Степи</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Origins & Tribes -->
+                <div class="fact-card">
+                    <div class="mb-4"><span class="term-tag" id="tag-1">Этнос</span></div>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Союз 24 племен</h3>
+                    <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Огузы делились на две крупные ветви: **Бузоков** (внешние племена) и **Учуков** (внутренние). Махмуд Кашгари писал о 24 племенах, каждое из которых имело свою тамгу и место в строю. Костяк государства составили племена, мигрировавшие из Жетысу в Приаралье в VII–VIII веках.
+                    </p>
+                    <div class="text-[11px] font-bold text-cyan-500 uppercase tracking-widest">Тамга — печать рода</div>
+                </div>
+
+                <!-- Capital & Economy -->
+                <div class="fact-card">
+                    <div class="mb-4"><span class="term-tag" id="tag-2">География</span></div>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Столица Янгикент</h3>
+                    <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Политическим центром был город **Янгикент** (Новый город) в низовьях Сырдарьи. Город стоял на стыке караванных путей из Китая, Ирана и Руси. Огузы контролировали добычу соли и транзит пушнины, активно взимая налоги с купцов в пользу казны джабгу.
+                    </p>
+                    <div class="text-[11px] font-bold text-cyan-500 uppercase tracking-widest">Узел Шелкового пути</div>
+                </div>
+
+                <!-- Foreign Policy -->
+                <div class="fact-card">
+                    <div class="mb-4"><span class="term-tag" id="tag-3">Дипломатия</span></div>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Стальные союзы</h3>
+                    <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                        В **965 году** огузы заключили союз с Киевской Русью (князь Святослав) против Хазарского каганата. Позже, в **985 году**, совместно с князем Владимиром они нанесли поражение Волжской Булгарии. Огузская конница считалась одной из самых эффективных в Евразии того времени.
+                    </p>
+                    <div class="text-[11px] font-bold text-cyan-500 uppercase tracking-widest">965 г. — Разгром Хазарии</div>
+                </div>
+
+            </div>
+
+            <!-- Full Width Focus: The Great Crisis -->
+            <div class="bg-cyan-950/40 rounded-[4rem] p-10 md:p-16 border border-cyan-500/20 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h3 id="crisis-t" class="text-3xl font-black text-white mb-8 uppercase italic tracking-widest">Закат и Великий раскол</h3>
+                        <p id="crisis-d" class="text-slate-300 text-xl font-light leading-relaxed mb-8">
+                            К началу XI века государство ослабло из-за затяжных войн с сельджуками на юге и кипчаками на севере. Резкое повышение налогов привело к народным восстаниям. В итоге часть огузов ушла на запад (став предками турок-сельджуков), а основная территория Приаралья перешла под власть Кипчакского ханства.
+                        </p>
+                        <div class="flex gap-4">
+                            <div class="px-6 py-2 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 text-xs font-black text-cyan-400 uppercase">Сельджукский след</div>
+                            <div class="px-6 py-2 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 text-xs font-black text-cyan-400 uppercase">Кипчакское давление</div>
+                        </div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <div class="w-64 h-64 border-4 border-dashed border-cyan-900/50 rounded-full animate-spin-slow flex items-center justify-center">
+                            <span class="text-6xl text-cyan-800 opacity-30 font-black">XI c.</span>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-8xl">⚔️</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 font-black rotate-12 pointer-events-none uppercase">Empire</div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-black border-t border-cyan-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-500">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-400">
+                «Огузы создали стальной каркас государственности, на обломках которого выросли величайшие империи Востока и Запада.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-cyan-900 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Государство Огузов (конец IX – начало XI вв.)",
+                vizTitle: "Совет Джабгу: Иерархия Власти",
+                vizDesc: "Огузское общество имело жесткую военно-административную систему. Нажмите на чины в иерархической схеме, чтобы узнать об их функциях.",
+                badge: "Анализ политической структуры",
+                roleTitleDefault: "Исследуйте структуру",
+                roleDescDefault: "Нажмите на чины правителей или совета на схеме.",
+                planTitle: "Летопись Великой Степи",
+                c1T: "Союз 24 племен", c1D: "Деление на Бузоков и Учуков. Основа нации — 24 рода, зафиксированных в трудах Кашгари. Каждое племя имело свои пастбища и тамгу.",
+                c2T: "Столица Янгикент", c2D: "Крепость в низовьях Сырдарьи. Центр оседлости и ремесла, ключевая точка Шелкового пути под контролем джабгу.",
+                c3T: "Стальные союзы", c3D: "Активная внешняя политика: союзы с Киевской Русью против Хазарского каганата и Волжской Булгарии в X веке.",
+                crisisT: "Закат и Великий раскол", crisisD: "В XI веке под давлением кипчаков и внутренних распрей государство пало. Часть огузов основала Сельджукскую империю.",
+                footer: "«Огузы создали стальной каркас государственности, на обломках которого выросли величайшие империи Востока и Запада.»",
+                roles: {
+                    khagan: { name: "Джабгу (Верховный правитель)", text: "Высший титул главы государства. Власть передавалась по наследству. Джабгу считался собственником всей огузской земли." },
+                    inal: { name: "Инал (Наследник)", text: "Официальный преемник джабгу. Его воспитанием занимались специальные наставники — атабеки." },
+                    syubashi: { name: "Сюбаши (Главнокомандующий)", text: "Глава армии, игравший огромную роль. Часто сюбаши фактически управляли государством при слабых правителях." },
+                    khatun: { name: "Хатун (Жена правителя)", text: "Женщины в огузском обществе имели высокий статус и могли влиять на принятие политических решений при дворе." },
+                    kenges: { name: "Кенес (Совет старейшин)", text: "Совещательный орган при джабгу, состоявший из вождей крупнейших племен. Собирался раз в год для решения важных вопросов." }
+                }
+            },
+            kz: {
+                title: "Оғыз мемлекеті (ІХ ғ. соңы – ХІ ғ. басы)",
+                vizTitle: "Жабғы кеңесі: Билік иерархиясы",
+                vizDesc: "Оғыз қоғамында қатал әскери-әкімшілік жүйе болды. Қызметтер мен олардың рөлін білу үшін сызбаны басыңыз.",
+                badge: "Саяси құрылымды талдау",
+                roleTitleDefault: "Құрылымды зерттеңіз",
+                roleDescDefault: "Сызбадағы билеушілер немесе кеңес мүшелерін басыңыз.",
+                planTitle: "Ұлы Дала шежіресі",
+                c1T: "24 тайпа одағы", c1D: "Бұзоқтар мен ұшоқтарға бөліну. Ұлт негізі — Қашқари еңбектерінде жазылған 24 ру. Әр тайпаның өз жайылымы мен таңбасы болды.",
+                c2T: "Янгикент астанасы", c2D: "Сырдарияның төменгі ағысындағы бекініс. Отырықшылық пен қолөнер орталығы, Жібек жолының маңызды нүктесі.",
+                c3T: "Болат одақтар", c3D: "Белсенді сыртқы саясат: Х ғасырда Хазар қағанаты мен Еділ Бұлғариясына қарсы Киев Русімен одақ құру.",
+                crisisT: "Құлдырау мен Ұлы бөлініс", crisisD: "ХІ ғасырда қыпшақтардың қысымымен және ішкі тартыстармен мемлекет құлады. Оғыздардың бір бөлігі Селжұқ империясын құрды.",
+                footer: "«Оғыздар мемлекеттіліктің болат қаңқасын жасады, оның қирандыларында Шығыс пен Батыстың ұлы империялары бой көтерді.»",
+                roles: {
+                    khagan: { name: "Жабғы (Жоғарғы билеуші)", text: "Мемлекет басшысының жоғарғы лауазымы. Билік мұрагерлікпен берілді. Жабғы барлық оғыз жерінің иесі саналды." },
+                    inal: { name: "Инал (Мұрагер)", text: "Жабғының ресми мұрагері. Оны тәрбиелеумен арнайы тәлімгерлер — атабектер айналысқан." },
+                    syubashi: { name: "Сюбашы (Бас қолбасшы)", text: "Әскербасы, мемлекетте үлкен рөл атқарды. Көбіне сюбашылар әлсіз билеушілер тұсында іс жүзінде елді басқарды." },
+                    khatun: { name: "Қатын (Билеушінің әйелі)", text: "Оғыз қоғамында әйелдер жоғары мәртебеге ие болды және сарайдағы саяси шешімдерге ықпал ете алды." },
+                    kenges: { name: "Кеңес (Ақсақалдар кеңесі)", text: "Ірі тайпа көсемдерінен тұратын жабғы жанындағы кеңесші орган. Маңызды мәселелерді шешу үшін жылына бір рет жиналатын." }
+                }
+            },
+            en: {
+                title: "Oguz State (late 9th – early 11th centuries)",
+                vizTitle: "Jabgu's Court: Hierarchy of Power",
+                vizDesc: "The Oguz society had a strict military-administrative system. Click on the ranks in the hierarchy to study their roles.",
+                badge: "Political Structure Analysis",
+                roleTitleDefault: "Explore the Structure",
+                roleDescDefault: "Click on the titles or council members in the diagram.",
+                planTitle: "Chronicle of the Great Steppe",
+                c1T: "Union of 24 Tribes", f1D: "Divided into Boz-oks and Uch-oks. The core of the nation was 24 clans, as recorded by Kashgari. Each tribe had its pastures and tamga.",
+                c2T: "Yangikent Capital", c2D: "A fortress in the lower Syr Darya. A center of settled life and crafts, a key node of the Silk Road under Jabgu's control.",
+                c3T: "Steel Alliances", c3D: "Active foreign policy: alliances with Kiev Rus against the Khazar Khaganate and Volga Bulgaria in the 10th century.",
+                crisisT: "Decline & The Great Split", crisisD: "In the 11th century, under Kipchak pressure and internal strife, the state collapsed. Part of the Oguzes founded the Seljuk Empire.",
+                footer: "«The Oguz created the steel framework of statehood, on the ruins of which the greatest empires of East and West emerged.»",
+                roles: {
+                    khagan: { name: "Jabgu (Supreme Ruler)", text: "The highest title of the head of state. Power was hereditary. The Jabgu was considered the owner of all Oguz lands." },
+                    inal: { name: "Inal (Heir)", text: "The official successor of the Jabgu. Special mentors, atabegs, were responsible for his upbringing." },
+                    syubashi: { name: "Syubashi (Commander-in-Chief)", text: "The head of the army who played a massive role. Often, syubashis actually ruled the state during weak leadership." },
+                    khatun: { name: "Khatun (Ruler's Wife)", text: "Women held high status in Oguz society and could influence political decisions at the court." },
+                    kenges: { name: "Kenges (Council of Elders)", text: "An advisory body under the Jabgu, consisting of tribal chiefs. Met once a year to solve vital issues." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('hierarchyCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+            drawHierarchy();
+        }
+
+        function drawHierarchy() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 700;
+
+            // 1. Central Throne (Jabgu)
+            drawNode(cx, 100 * scale, 50 * scale, '#22d3ee', "JABGU", true);
+            
+            // 2. Advisors (Inal & Khatun)
+            drawNode(cx - 150 * scale, 150 * scale, 35 * scale, '#0891b2', "INAL", false);
+            drawNode(cx + 150 * scale, 150 * scale, 35 * scale, '#0891b2', "KHATUN", false);
+
+            // 3. Military (Syubashi)
+            drawNode(cx, 280 * scale, 45 * scale, '#06b6d4', "SYUBASHI", false);
+
+            // 4. People's Rep (Kenges)
+            drawNode(cx, 420 * scale, 60 * scale, '#164e63', "KENGES", false);
+
+            // Lines
+            ctx.strokeStyle = 'rgba(34, 211, 238, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, 150 * scale); ctx.lineTo(cx, 235 * scale);
+            ctx.moveTo(cx, 325 * scale); ctx.lineTo(cx, 360 * scale);
+            ctx.moveTo(cx, 120 * scale); ctx.lineTo(cx - 115 * scale, 150 * scale);
+            ctx.moveTo(cx, 120 * scale); ctx.lineTo(cx + 115 * scale, 150 * scale);
+            ctx.stroke();
+        }
+
+        function drawNode(x, y, r, color, label, isMain) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = color + '33';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = isMain ? 4 : 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = isMain ? '#fff' : color;
+            ctx.font = `black ${10 * (r/30)}px Montserrat`;
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const scale = canvas.width / 700;
+            const cx = canvas.width / 2;
+
+            let roleKey = null;
+            if (Math.sqrt((x-cx)**2 + (y-100*scale)**2) < 50*scale) roleKey = 'khagan';
+            else if (Math.sqrt((x-(cx-150*scale))**2 + (y-150*scale)**2) < 35*scale) roleKey = 'inal';
+            else if (Math.sqrt((x-(cx+150*scale))**2 + (y-150*scale)**2) < 35*scale) roleKey = 'khatun';
+            else if (Math.sqrt((x-cx)**2 + (y-280*scale)**2) < 45*scale) roleKey = 'syubashi';
+            else if (Math.sqrt((x-cx)**2 + (y-420*scale)**2) < 60*scale) roleKey = 'kenges';
+
+            if (roleKey) {
+                const info = translations[currentLang].roles[roleKey];
+                document.getElementById('role-title').innerText = info.name;
+                document.getElementById('role-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#22d3ee';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('role-title').innerText = t.roleTitleDefault;
+            document.getElementById('role-desc').innerText = t.roleDescDefault;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('tag-1').innerText = t.tag1 || "Этнос";
+            document.getElementById('tag-2').innerText = t.tag2 || "Гео";
+            document.getElementById('tag-3').innerText = t.tag3 || "Дипло";
+
+            document.getElementById('crisis-t').innerText = t.crisisT;
+            document.getElementById('crisis-d').innerText = t.crisisD;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

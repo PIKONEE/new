@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Предпосылки образования казахского государства</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .blueprint-bg {
+            background-color: #f1f5f9;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+
+        .premium-panel {
+            background: white;
+            border-radius: 3.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .lang-active {
+            background-color: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2rem;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 2rem;
+            border-left: 8px solid #334155;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .info-card:hover {
+            border-color: #0f172a;
+            transform: translateY(-8px);
+        }
+
+        .term-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body class="blueprint-bg min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-slate-900">Предпосылки образования казахского государства</h1>
+            <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <div class="premium-panel p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-slate-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Ethno-Political Convergence</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-slate-900 leading-tight uppercase italic">Схема консолидации</h2>
+                    <p id="viz-desc" class="text-lg text-slate-500 font-light leading-relaxed">
+                        Образование государства было результатом многовековых процессов. Нажмите на узлы схемы, чтобы изучить три фундаментальные предпосылки.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-slate-50 border-l-8 border-slate-900 shadow-lg transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-slate-900 mb-3 uppercase">Выберите фактор</h3>
+                        <p id="element-desc" class="text-slate-600 text-sm leading-relaxed italic">Кликните на элементы центральной диаграммы.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="factorCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-slate-400 font-mono uppercase tracking-[0.3em]">State Formation Blueprint</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="info-card">
+                <div class="mb-4"><span class="term-badge" id="t-eco">Экономика</span></div>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Хозяйственное единство</h3>
+                <p id="c1-d" class="text-slate-600 text-sm leading-relaxed mb-6">
+                    К XV веку сложились устойчивые маршруты кочевок, связывающие летние пастбища (жайлау) Сарыарки с зимними стоянками (кыстау) в долинах Сырдарьи. Необходимость защиты этих путей требовала единой политической власти.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="mb-4"><span class="term-badge" id="t-eth">Этнос</span></div>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Завершение этногенеза</h3>
+                <p id="c2-d" class="text-slate-600 text-sm leading-relaxed mb-6">
+                    Племена Ак Орды, Могулистана и ханства Абулхаира имели общий язык, общие обычаи и схожую материальную культуру. Разделение народа по разным улусам воспринималось как искусственное препятствие.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="mb-4"><span class="term-badge" id="t-pol">Политика</span></div>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Кризис Чингизидов</h3>
+                <p id="c3-d" class="text-slate-600 text-sm leading-relaxed mb-6">
+                    Междоусобные войны в Золотой Орде и «государстве кочевых узбеков» ослабили центральную власть. Племенные вожди (бии) искали новых лидеров, способных обеспечить мир и законность.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-white border-t border-slate-200 text-center text-slate-400">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl font-light italic leading-tight">
+                «Казахское ханство не было случайным явлением, оно стало закономерным итогом интеграции степных племен в единый политический организм.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-slate-300 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Предпосылки образования казахского государства",
+                vizTitle: "Схема консолидации",
+                vizDesc: "Нажмите на узлы схемы, чтобы изучить факторы, которые привели к созданию единого Казахского ханства в XV веке.",
+                badge: "Анализ этнополитической конвергенции",
+                elementTitleDefault: "Выберите фактор",
+                elementDescDefault: "Кликните на элементы центральной диаграммы на холсте.",
+                tEco: "Экономика", tEth: "Этнос", tPol: "Политика",
+                c1T: "Хозяйственное единство", c1D: "Связь между кочевыми районами и оседлыми городами Сырдарьи стала жизненно необходимой для выживания племен.",
+                c2T: "Завершение этногенеза", c2D: "Слияние автохтонных племен и пришлых родов в единую общность с общим языком и культурой.",
+                c3T: "Политический кризис", c3D: "Ослабление Ак Орды и Золотой Орды под ударами внешних врагов и внутренних усобиц.",
+                footer: "«Казахское ханство стало закономерным итогом интеграции степных племен в единый политический организм.»",
+                factors: {
+                    lang: { name: "Языковое единство", text: "К XV веку кыпчакский диалект стал господствующим, обеспечив коммуникационный фундамент для объединения родов." },
+                    land: { name: "Общая территория", text: "Исторически сложившийся ареал расселения казахов от Алтая до Жайыка требовал единого центра защиты." },
+                    trade: { name: "Торговые связи", text: "Города Отрар, Туркестан и Сыгнак стали экономическими узлами, притягивавшими все степные племена." }
+                }
+            },
+            kz: {
+                title: "Қазақ мемлекетінің құрылу алғышарттары",
+                vizTitle: "Консолидация сызбасы",
+                vizDesc: "ХV ғасырда біртұтас Қазақ хандығының құрылуына әкелген факторларды зерттеу үшін сызба түйіндерін басыңыз.",
+                badge: "Этносаяси тоғысуды талдау",
+                elementTitleDefault: "Факторды таңдаңыз",
+                elementDescDefault: "Кенептегі орталық диаграмма элементтерін басыңыз.",
+                tEco: "Экономика", tEth: "Этнос", tPol: "Саясат",
+                c1T: "Шаруашылық бірлігі", c1D: "Көшпелі аймақтар мен Сырдария бойындағы отырықшы қалалар арасындағы байланыс тайпалардың өмір сүруі үшін қажетті болды.",
+                c2T: "Этногенездің аяқталуы", c2D: "Автохтонды тайпалар мен келген рулардың ортақ тілі мен мәдениеті бар біртұтас қауымдастыққа бірігуі.",
+                c3T: "Саяси дағдарыс", c3D: "Ақ Орда мен Алтын Орданың сыртқы жаулар мен ішкі тартыстардан әлсіреуі.",
+                footer: "«Қазақ хандығы дала тайпаларының біртұтас саяси организмге бірігуінің заңды нәтижесі болды.»",
+                factors: {
+                    lang: { name: "Тілдік бірлік", text: "ХV ғасырға қарай қыпшақ диалектісі үстемдікке ие болып, рулардың бірігуіне коммуникациялық негіз болды." },
+                    land: { name: "Ортақ аумақ", text: "Алтайдан Жайыққа дейінгі қазақтардың тарихи қоныстану аймағы біртұтас қорғаныс орталығын талап етті." },
+                    trade: { name: "Сауда байланыстары", text: "Отырар, Түркістан және Сығанақ қалалары барлық дала тайпаларын тартқан экономикалық түйіндерге айналды." }
+                }
+            },
+            en: {
+                title: "Prerequisites for the Formation of the Kazakh State",
+                vizTitle: "Consolidation Schematic",
+                vizDesc: "Click on the diagram nodes to study the factors that led to the creation of the Kazakh Khanate in the 15th century.",
+                badge: "Ethno-Political Convergence Analysis",
+                elementTitleDefault: "Select a Factor",
+                elementDescDefault: "Click on the central diagram elements on the canvas.",
+                tEco: "Economy", tEth: "Ethnicity", tPol: "Politics",
+                c1T: "Economic Unity", c1D: "The link between nomadic regions and settled cities on the Syr Darya became vital for tribal survival.",
+                c2T: "End of Ethnogenesis", c2D: "Merging of indigenous and migrant clans into a single community with a shared language and culture.",
+                c3T: "Political Crisis", c3D: "Weakening of the Ak Orda and Golden Horde under external pressure and internal strife.",
+                footer: "«The Kazakh Khanate was a logical outcome of the integration of steppe tribes into a single political organism.»",
+                factors: {
+                    lang: { name: "Linguistic Unity", text: "By the 15th century, the Kipchak dialect became dominant, providing the communication basis for unification." },
+                    land: { name: "Common Territory", text: "The historical habitat of Kazakhs from Altai to Yaik required a unified defense center." },
+                    trade: { name: "Trade Links", text: "Cities like Otrar, Turkestan, and Sygnak acted as economic hubs attracting all steppe tribes." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('factorCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawFactors();
+        }
+
+        function drawFactors() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Connections
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 120 * scale); ctx.lineTo(cx, cy);
+            ctx.moveTo(cx - 130 * scale, cy + 80 * scale); ctx.lineTo(cx, cy);
+            ctx.moveTo(cx + 130 * scale, cy + 80 * scale); ctx.lineTo(cx, cy);
+            ctx.stroke();
+
+            // Center Node
+            drawNode(cx, cy, 60 * scale, '#0f172a', "KAZAKH STATE", true);
+            
+            // Peripheral Nodes
+            drawNode(cx, cy - 150 * scale, 50 * scale, '#334155', "LANGUAGE");
+            drawNode(cx - 160 * scale, cy + 100 * scale, 50 * scale, '#475569', "TERRITORY");
+            drawNode(cx + 160 * scale, cy + 100 * scale, 50 * scale, '#64748b', "TRADE");
+
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText("TAP ON PERIPHERAL NODES", cx, cy + 180 * scale);
+        }
+
+        function drawNode(x, y, r, color, label, isCenter) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = isCenter ? color : '#fff';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            ctx.fillStyle = isCenter ? '#fff' : color;
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.sqrt((x-cx)**2 + (y-(cy-150*scale))**2) < 50*scale) target = 'lang';
+            else if (Math.sqrt((x-(cx-160*scale))**2 + (y-(cy+100*scale))**2) < 50*scale) target = 'land';
+            else if (Math.sqrt((x-(cx+160*scale))**2 + (y-(cy+100*scale))**2) < 50*scale) target = 'trade';
+
+            if (target) {
+                const info = translations[currentLang].factors[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#0f172a';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            
+            document.getElementById('t-eco').innerText = t.tEco;
+            document.getElementById('t-eth').innerText = t.tEth;
+            document.getElementById('t-pol').innerText = t.tPol;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-slate-500 hover:bg-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обычаи казахского народа (XVI–XVII вв.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #332b26; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .tradition-gradient {
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #fde68a 100%);
+        }
+
+        .premium-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 3rem;
+            border: 2px solid #d97706;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            border-color: #92400e;
+            box-shadow: 0 40px 80px -20px rgba(146, 64, 14, 0.2);
+        }
+
+        .lang-active {
+            background-color: #78350f;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(120, 53, 15, 0.3);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 3rem;
+            background: #fff;
+            box-shadow: inset 0 0 50px rgba(217, 119, 6, 0.05);
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 2.5rem;
+            border-left: 12px solid #d97706;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .term-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="tradition-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-amber-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-amber-950 text-center">Обычаи казахского народа</h1>
+            <div class="flex bg-amber-50 p-1 rounded-2xl border border-amber-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Rites Compass (Canvas) -->
+        <div class="premium-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Ritual Culture Compass</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic tracking-tighter">Матрица Степной Этики</h2>
+                    <p id="viz-desc" class="text-lg text-amber-900/60 font-light leading-relaxed">
+                        Обычаи казахов — это неписаный закон, регулировавший жизнь от рождения до смерти. Нажмите на секторы компаса, чтобы изучить категории традиций.
+                    </p>
+                    
+                    <div id="info-panel" class="info-panel transition-all duration-500">
+                        <h3 id="element-title" class="text-2xl font-bold text-amber-900 mb-3 uppercase tracking-tighter">Выберите категорию</h3>
+                        <p id="element-desc" class="text-amber-800/80 text-base leading-relaxed font-light italic">Кликните на Рождение, Семью, Гостеприимство или Этноэтику на холсте.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="compassCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.4em]">Interactive Ethnography Model</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Textual Data -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- Guesting Customs -->
+            <div class="premium-card p-10 space-y-6">
+                <span class="term-badge" id="t-guest">Кодекс Гостя</span>
+                <h3 id="c1-t" class="text-2xl font-black text-amber-950 uppercase">Конакжайлылык</h3>
+                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed">
+                    Гостеприимство было священным долгом. Существовал закон **«Конакасы»** — хозяин обязан предоставить лучший угощение путнику. Нарушение этого правила влекло за собой общественное порицание и даже штраф. Обычай **«Ерулик»** подразумевал приглашение новых соседей на обед для их скорейшей адаптации в общине.
+                </p>
+                <ul class="text-[11px] font-bold text-amber-700 space-y-1 uppercase tracking-wider">
+                    <li>— Конакасы: Долг угощения</li>
+                    <li>— Конак-каде: Подарок гостю</li>
+                </ul>
+            </div>
+
+            <!-- Family and Upbringing -->
+            <div class="premium-card p-10 space-y-6">
+                <span class="term-badge" id="t-family">Семья</span>
+                <h3 id="c2-t" class="text-2xl font-black text-amber-950 uppercase">Жизненный цикл</h3>
+                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed">
+                    Воспитание начиналось с обрядов **Шилдехана** (праздник рождения) и **Бесикке салу** (укладывание в колыбель). Важнейшим этапом был **Тусау кесу** (разрезание пут), чтобы ребенок твердо стоял на ногах. Свадебный цикл включал **Куда тусу** (сватовство) и сложную систему взаимных подарков между родами.
+                </p>
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-[10px] font-bold text-amber-800 italic">
+                    Закон Аменгерства (Левират) защищал вдов и сирот, не оставляя их без покровительства рода.
+                </div>
+            </div>
+
+            <!-- Social Solidarity -->
+            <div class="premium-card p-10 space-y-6">
+                <span class="term-badge" id="t-social">Социум</span>
+                <h3 id="c3-t" class="text-2xl font-black text-amber-950 uppercase">Взаимопомощь</h3>
+                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed">
+                    Выживание в степи обеспечивалось обычаем **«Асар»** — коллективная безвозмездная помощь сородичу (при строительстве дома или стрижке шерсти). Обычай **«Жылу»** подразумевал материальную помощь семье, пострадавшей от стихийного бедствия или джута, что демонстрировало высочайший уровень социальной солидарности.
+                </p>
+                <ul class="text-[11px] font-bold text-amber-700 space-y-1 uppercase tracking-wider">
+                    <li>— Асар: Совместный труд</li>
+                    <li>— Жылу: Милосердие и поддержка</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-stone-950 text-stone-500 text-center border-t border-amber-900/20">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl font-light italic leading-tight text-stone-400">
+                «Обычаи казахского народа — это духовный панцирь нации, сохранивший её идентичность сквозь века испытаний.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-amber-700 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Обычаи казахского народа",
+                vizTitle: "Матрица Степной Этики",
+                vizDesc: "Традиции казахов — это система ценностей, объединяющая поколения. Нажмите на секторы компаса для анализа категорий обычаев.",
+                badge: "Анализ обрядовой культуры",
+                elementTitleDefault: "Выберите категорию",
+                elementDescDefault: "Кликните на Рождение, Семью, Гостеприимство или Этноэтику на холсте.",
+                tGuest: "Кодекс Гостя", tFamily: "Семья", tSocial: "Социум",
+                c1T: "Конакжайлылык", c1D: "Основа степной дипломатии. Гость делится на три типа: 'арнайы конак' (специальный), 'кудайы конак' (случайный путник) и 'кыдырма конак' (родственник). Каждому гарантирован почет и 'конакасы'.",
+                c2T: "Жизненный цикл", c2D: "Система воспитания через ритуалы. Знание 'Жеті ата' (семи предков) и соблюдение обрядов перехода (Сундет той, Мушел жас) формировали ответственного члена общины.",
+                c3T: "Взаимопомощь", c3D: "Институты солидарности: 'Асар' — совместное решение крупных задач, 'Суюнши' — плата за благую весть, 'Байгазы' — подарок за обновку. Эти мелочи укрепляли связи внутри рода.",
+                footer: "«Обычаи казахского народа — это духовный панцирь нации, сохранивший её идентичность.»",
+                rites: {
+                    birth: { name: "Обряды Рождения", text: "Шилдехана, Калжа (питание матери), Бесикке салу. Направлены на защиту младенца и укрепление здоровья матери." },
+                    marriage: { name: "Семейно-брачные", text: "Куда тусу (сватовство), Калын мал (выкуп), Беташар (открытие лица невесты). Основа межродовых союзов." },
+                    guest: { name: "Гостеприимство", text: "Конакасы, Бата беру (благословение), Конаккаде (песня или стих гостя). Культура взаимного уважения и безопасности." },
+                    ethics: { name: "Этноэтика", text: "Улкенге курмет (уважение к старшим), Аманат (верность слову), Жылу (помощь пострадавшим). Моральный кодекс казаха." }
+                }
+            },
+            kz: {
+                title: "Қазақ халқының әдет-ғұрыптары",
+                vizTitle: "Дала этикасының матрицасы",
+                vizDesc: "Қазақ дәстүрлері — ұрпақтарды біріктіретін құндылықтар жүйесі. Санаттарды зерттеу үшін компас секторларын басыңыз.",
+                badge: "Салт-дәстүр мәдениетін талдау",
+                elementTitleDefault: "Санатты таңдаңыз",
+                elementDescDefault: "Кенептегі Дүниеге келу, Отбасы, Қонақжайлылық немесе Этноэтиканы басыңыз.",
+                tGuest: "Қонақ кодексі", tFamily: "Отбасы", tSocial: "Әлеумет",
+                c1T: "Қонақжайлылық", c1D: "Дала дипломатиясының негізі. Қонақ үш түрге бөлінеді: «арнайы қонақ», «құдайы қонақ» және «қыдырма қонақ». Әрқайсысына құрмет пен «қонақасы» тиесілі.",
+                c2T: "Өмірлік цикл", c2D: "Тәрбие жүйесі жоралғылар арқылы өткен. «Жеті атаны» білу және өту белестерін (Сүндет той, Мүшел жас) сақтау қауымның жауапты мүшесін қалыптастырды.",
+                c3T: "Өзара көмек", c3D: "Ынтымақтастық институттары: «Асар» — ірі істерді бірге бітіру, «Сүйінші» — жақсы хабар үшін сый, «Байғазы» — жаңа киім үшін сыйлық.",
+                footer: "«Қазақ халқының әдет-ғұрыптары — ұлттың болмысын ғасырлар бойы сақтап келген рухани сауыты.»",
+                rites: {
+                    birth: { name: "Дүниеге келу ғұрыптары", text: "Шілдехана, Қалжа, Бесікке салу. Сәбиді қорғауға және ананың денсаулығын нығайтуға бағытталған." },
+                    marriage: { name: "Отбасылық-некелік", text: "Құда түсу, Қалың мал, Беташар. Руаралық одақтардың негізі саналған." },
+                    guest: { name: "Қонақжайлылық", text: "Қонақасы, Бата беру, Қонақкәде. Өзара құрмет пен қауіпсіздік мәдениеті." },
+                    ethics: { name: "Этноэтика", text: "Үлкенге құрмет, Аманатқа адалдық, Жылу жинау. Қазақтың адамгершілік кодексі." }
+                }
+            },
+            en: {
+                title: "Customs of the Kazakh People",
+                vizTitle: "Steppe Ethics Matrix",
+                vizDesc: "Kazakh traditions are a values system linking generations. Click on the compass sectors to explore the categories of customs.",
+                badge: "Customary Culture Analysis",
+                elementTitleDefault: "Select a Category",
+                elementDescDefault: "Click on Birth, Family, Hospitality, or Ethno-ethics on the canvas.",
+                tGuest: "Guest Code", tFamily: "Family", tSocial: "Society",
+                c1T: "Konakzhailylyk", c1D: "The core of steppe diplomacy. Guests are specialized, accidental, or visiting relatives. Each is guaranteed honor and 'Konakasy' (host's meal).",
+                c2T: "Life Cycle", c2D: "An upbringing system via rituals. Knowing 'Zheti Ata' and observing transition rites (Sundet Toy, Mushel Zhas) shaped responsible community members.",
+                c3T: "Mutual Aid", c3D: "Solidarity institutions: 'Asar' (joint labor), 'Suyunshi' (gift for good news), and 'Bayghazy' (gift for something new). These ties bonded the clan.",
+                footer: "«Kazakh customs served as a spiritual armor, preserving the nation's identity through centuries of trials.»",
+                rites: {
+                    birth: { name: "Birth Rites", text: "Shildekhana, Kalzha, Besikke Salu. Aimed at protecting the newborn and supporting the mother's health." },
+                    marriage: { name: "Family & Marriage", text: "Kuda Tusu, Kalyn Mal (dowry), Betashar. The foundation of inter-tribal alliances." },
+                    guest: { name: "Hospitality", text: "Konakasy, Bata Beru (blessing), Konakkade (guest's performance). A culture of mutual respect." },
+                    ethics: { name: "Ethno-ethics", text: "Respect for elders (Ulkenge Kurmet), Amanat (trust), Zhylu (charity for the affected). The Kazakh moral code." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('compassCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 550;
+            drawCompass();
+        }
+
+        function drawCompass() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+            const r = 200 * scale;
+
+            const sectors = [
+                { id: 'birth', color: '#10b981', label: "BIRTH" },
+                { id: 'marriage', color: '#f59e0b', label: "FAMILY" },
+                { id: 'guest', color: '#ef4444', label: "HOSPITALITY" },
+                { id: 'ethics', color: '#3b82f6', label: "ETHICS" }
+            ];
+
+            sectors.forEach((s, i) => {
+                const start = (i * Math.PI / 2) - Math.PI/2;
+                const end = start + Math.PI / 2;
+                
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, start, end);
+                ctx.fillStyle = s.color + '15';
+                ctx.fill();
+                ctx.strokeStyle = s.color;
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                const mid = start + Math.PI / 4;
+                const ix = cx + Math.cos(mid) * (r * 0.7);
+                const iy = cy + Math.sin(mid) * (r * 0.7);
+                ctx.fillStyle = s.color;
+                ctx.font = 'bold 12px Montserrat';
+                ctx.textAlign = 'center';
+                ctx.fillText(s.label, ix, iy);
+            });
+
+            // Center
+            ctx.beginPath();
+            ctx.arc(cx, cy, 60 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#78350f';
+            ctx.stroke();
+            ctx.fillStyle = '#451a03';
+            ctx.font = '900 14px Montserrat';
+            ctx.fillText("ADAT", cx, cy + 5);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            const angle = Math.atan2(y - cy, x - cx) + Math.PI/2;
+            const normAngle = angle < 0 ? angle + 2*Math.PI : angle;
+            const index = Math.floor(normAngle / (Math.PI / 2)) % 4;
+            
+            const ids = ['birth', 'marriage', 'guest', 'ethics'];
+            const info = translations[currentLang].rites[ids[index]];
+            
+            document.getElementById('element-title').innerText = info.name;
+            document.getElementById('element-desc').innerText = info.text;
+            document.getElementById('info-panel').style.borderColor = (index === 0 ? '#10b981' : (index === 1 ? '#f59e0b' : (index === 2 ? '#ef4444' : '#3b82f6')));
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            
+            document.getElementById('t-guest').innerText = t.tGuest;
+            document.getElementById('t-family').innerText = t.tFamily;
+            document.getElementById('t-social').innerText = t.tSocial;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-amber-700 hover:bg-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

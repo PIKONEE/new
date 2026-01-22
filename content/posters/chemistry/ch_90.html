@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sulfuric Acid: The King of Chemicals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #1e293b, #0f172a, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-sky-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="id-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="acidCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-sky-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-sky-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+            <div class="mt-10 p-6 bg-sky-500/10 rounded-2xl border border-sky-500/20 text-center">
+                <span class="text-3xl heading-font text-white">H<sub>2</sub>SO<sub>4</sub></span>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-sky-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4"></p>
+        <cite id="author" class="text-sky-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Король Химии",
+                subtitle: "Оксиды серы, серная кислота и её соли",
+                canvasHeading: "Синтез серного ангидрида SO₃",
+                canvasHint: "Нажмите на холст для активации катализатора",
+                defaultTitle: "Серная кислота",
+                defaultText: "Серная кислота — важнейший продукт химической промышленности. Безводная H<sub>2</sub>SO<sub>4</sub> — тяжелая маслянистая жидкость, неограниченно растворимая в воде.",
+                cards: [
+                    { title: "Оксиды серы", desc: "SO<sub>2</sub> (сернистый газ) — продукт горения серы. SO<sub>3</sub> (серный ангидрид) — образуется при окислении SO<sub>2</sub> на катализаторе." },
+                    { title: "Гигроскопичность", desc: "Концентрированная кислота жадно поглощает воду, обугливая органические вещества (сахар, бумагу, ткань)." },
+                    { title: "Сульфаты", desc: "Соли серной кислоты. Примеры: гипс (CaSO<sub>4</sub>·2H<sub>2</sub>O), медный купорос (CuSO<sub>4</sub>·5H<sub>2</sub>O)." }
+                ],
+                quote: "«Уровень развития страны можно измерить количеством потребляемой ею серной кислоты»",
+                author: "Юстус фон Либих"
+            },
+            kz: {
+                title: "Химия Королі",
+                subtitle: "Күкірт оксидтері, күкірт қышқылы және оның тұздары",
+                canvasHeading: "Күкірт ангидридінің SO₃ синтезі",
+                canvasHint: "Катализаторды белсендіру үшін басыңыз",
+                defaultTitle: "Күкірт қышқылы",
+                defaultText: "Күкірт қышқылы — химия өнеркәсібінің ең маңызды өнімі. Сусыз H<sub>2</sub>SO<sub>4</sub> — ауыр майлы сұйықтық.",
+                cards: [
+                    { title: "Күкірт оксидтері", desc: "SO<sub>2</sub> (күкіртті газ) — күкірттің жану өнімі. SO<sub>3</sub> (күкірт ангидриді) — катализаторда тотығу арқылы түзіледі." },
+                    { title: "Гигроскопикалық", desc: "Концентрлі қышқыл суды қарқынды жұтады, органикалық заттарды (қант, қағаз) көмірге айналдырады." },
+                    { title: "Сульфаттар", desc: "Күкірт қышқылының тұздары. Мысалдар: гипс (CaSO<sub>4</sub>·2H<sub>2</sub>O), мыс купоросы (CuSO<sub>4</sub>·5H<sub>2</sub>O)." }
+                ],
+                quote: "«Елдің даму деңгейін оның тұтынатын күкірт қышқылының мөлшерімен өлшеуге болады»",
+                author: "Юстус фон Либих"
+            },
+            en: {
+                title: "King of Chemicals",
+                subtitle: "Sulfur oxides, sulfuric acid, and its salts",
+                canvasHeading: "Synthesis of Sulfur Trioxide SO₃",
+                canvasHint: "Click to activate the catalyst",
+                defaultTitle: "Sulfuric Acid",
+                defaultText: "Sulfuric acid is the most vital product of the chemical industry. Anhydrous H<sub>2</sub>SO<sub>4</sub> is a heavy oily liquid.",
+                cards: [
+                    { title: "Sulfur Oxides", desc: "SO<sub>2</sub> is formed by sulfur combustion. SO<sub>3</sub> (anhydride) is produced via catalytic oxidation of SO<sub>2</sub>." },
+                    { title: "Hygroscopicity", desc: "Concentrated acid absorbs water so aggressively it chars organic matter (sugar, paper, cloth)." },
+                    { title: "Sulfates", desc: "Salts of sulfuric acid. Examples: gypsum (CaSO<sub>4</sub>·2H<sub>2</sub>O) and blue vitriol (CuSO<sub>4</sub>·5H<sub>2</sub>O)." }
+                ],
+                quote: "«The level of a nation's development can be measured by its sulfuric acid consumption»",
+                author: "Justus von Liebig"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('acidCanvas');
+        const ctx = canvas.getContext('2d');
+        let atoms = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function init() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            atoms = [];
+            for(let i=0; i<40; i++) atoms.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx:(Math.random()-0.5)*3, vy:(Math.random()-0.5)*3, type: i%4===0 ? 'S' : 'O'});
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            atoms.forEach(a => {
+                a.x += a.vx; a.y += a.vy;
+                if(a.x < 0 || a.x > canvas.width) a.vx *= -1;
+                if(a.y < 0 || a.y > canvas.height) a.vy *= -1;
+                ctx.fillStyle = a.type === 'S' ? '#fbbf24' : '#ef4444';
+                ctx.beginPath(); ctx.arc(a.x, a.y, a.type === 'S' ? 10 : 7, 0, Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => { init(); setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

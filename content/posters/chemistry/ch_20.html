@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химиялық теңдеулер</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0f9ff; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #0369a1; border-bottom: 3px solid #bae6fd; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #0284c7; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #0284c7; background: white; color: #0284c7; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #0284c7; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: center; font-size: 11px; }
+        th { background-color: #0284c7; color: white; }
+        .equation-box { background: linear-gradient(135deg, #bae6fd 0%, #f0f9ff 100%); padding: 20px; border-radius: 0.75rem; border-left: 5px solid #0284c7; margin: 15px 0; text-align: center; }
+        .example-box { background: #e0f2fe; padding: 15px; border-radius: 0.75rem; border-left: 4px solid #0284c7; margin: 10px 0; font-family: 'Courier New', monospace; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-blue-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Химиялық Теңдеулер - РЕАКЦИЯНЫҢ КОДЕКСІ!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Chemical Equations - CODE OF REACTIONS!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Химические уравнения - КОД РЕАКЦИЙ!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-blue-100">Теңдеу = реакцияны жазу. Коэффициенттер - атом балансыны орындау. 2H₂ + O₂ → 2H₂O. БАЛАНСТАЛУЫ ҚАЖЕТ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-blue-100">Equation = write reaction. Coefficients balance atoms. 2H₂ + O₂ → 2H₂O. MUST BE BALANCED!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-blue-100">Уравнение = запись реакции. Коэффициенты балансируют атомы. 2H₂ + O₂ → 2H₂O. ДОЛЖНЫ БЫТЬ СБАЛАНСИРОВАНЫ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ХИМИЯЛЫҚ ТЕҢДЕУЛЕР БАЛАНСЛАУ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. BALANCING CHEMICAL EQUATIONS</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Балансировка химических уравнений</h2>
+
+            <div class="rule-card">
+                <div class="space-y-4">
+                    <div class="example-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ 1: H₂ + O₂ → H₂O</strong></p>
+                        <p lang="kk" class="lang-content">Қадам 1: Атомдарды санау (балансталмаған):</p>
+                        <p lang="kk" class="lang-content">Сол жақ: 2H + 2O | Оң жақ: 2H + 1O (БАЛАНСТАЛМАҒАН!)</p>
+                        <p lang="kk" class="lang-content">Қадам 2: Балансталу үшін коэффициент қосу:</p>
+                        <p lang="kk" class="lang-content"><strong>2H₂ + O₂ → 2H₂O</strong></p>
+                        <p lang="kk" class="lang-content">Сол жақ: 4H + 2O | Оң жақ: 4H + 2O (БАЛАНСТАЛДЫ!) ✓</p>
+
+                        <p lang="en" class="lang-content" style="margin-top: 10px;"><strong>📝 EXAMPLE 1: H₂ + O₂ → H₂O</strong></p>
+                        <p lang="en" class="lang-content">Step 1: Count atoms (unbalanced):</p>
+                        <p lang="en" class="lang-content">Left: 2H + 2O | Right: 2H + 1O (UNBALANCED!)</p>
+                        <p lang="en" class="lang-content">Step 2: Add coefficients:</p>
+                        <p lang="en" class="lang-content"><strong>2H₂ + O₂ → 2H₂O</strong></p>
+                        <p lang="en" class="lang-content">Left: 4H + 2O | Right: 4H + 2O (BALANCED!) ✓</p>
+
+                        <p lang="ru" class="lang-content" style="margin-top: 10px;"><strong>📝 ПРИМЕР 1: H₂ + O₂ → H₂O</strong></p>
+                        <p lang="ru" class="lang-content">Шаг 1: Подсчитать атомы (не сбалансировано):</p>
+                        <p lang="ru" class="lang-content">Слева: 2H + 2O | Справа: 2H + 1O (НЕ СБАЛАНСИРОВАНО!)</p>
+                        <p lang="ru" class="lang-content">Шаг 2: Добавить коэффициенты:</p>
+                        <p lang="ru" class="lang-content"><strong>2H₂ + O₂ → 2H₂O</strong></p>
+                        <p lang="ru" class="lang-content">Слева: 4H + 2O | Справа: 4H + 2O (СБАЛАНСИРОВАНО!) ✓</p>
+                    </div>
+
+                    <div class="example-box">
+                        <p lang="kk" class="lang-content"><strong>📝 МЫСАЛ 2: C + O₂ → CO₂</strong></p>
+                        <p lang="kk" class="lang-content">Балансталу: 1C + 1O₂ = 1CO₂</p>
+                        <p lang="kk" class="lang-content">Сол жақ: 1C + 2O | Оң жақ: 1C + 2O (БАЛАНСТАЛДЫ!) ✓</p>
+
+                        <p lang="en" class="lang-content" style="margin-top: 10px;"><strong>📝 EXAMPLE 2: C + O₂ → CO₂</strong></p>
+                        <p lang="en" class="lang-content">Balance: 1C + 1O₂ = 1CO₂</p>
+                        <p lang="en" class="lang-content">Left: 1C + 2O | Right: 1C + 2O (BALANCED!) ✓</p>
+
+                        <p lang="ru" class="lang-content" style="margin-top: 10px;"><strong>📝 ПРИМЕР 2: C + O₂ → CO₂</strong></p>
+                        <p lang="ru" class="lang-content">Баланс: 1C + 1O₂ = 1CO₂</p>
+                        <p lang="ru" class="lang-content">Слева: 1C + 2O | Справа: 1C + 2O (СБАЛАНСИРОВАНО!) ✓</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ТЕҢДЕУ ЭЛЕМЕНТТЕРІ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. EQUATION ELEMENTS</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Элементы уравнения</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ЭЛЕМЕНТ</th>
+                            <th lang="kk" class="lang-content">БЕЛГІ</th>
+                            <th lang="kk" class="lang-content">МЫСАЛЫ</th>
+                            <th lang="kk" class="lang-content">МӘНІ</th>
+
+                            <th lang="en" class="lang-content">ELEMENT</th>
+                            <th lang="en" class="lang-content">SYMBOL</th>
+                            <th lang="en" class="lang-content">EXAMPLE</th>
+                            <th lang="en" class="lang-content">MEANING</th>
+
+                            <th lang="ru" class="lang-content">ЭЛЕМЕНТ</th>
+                            <th lang="ru" class="lang-content">СИМВОЛ</th>
+                            <th lang="ru" class="lang-content">ПРИМЕР</th>
+                            <th lang="ru" class="lang-content">ЗНАЧЕНИЕ</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Коэффициент</td>
+                            <td lang="kk" class="lang-content">2, 3, 4...</td>
+                            <td lang="kk" class="lang-content"><strong>2</strong>H₂O</td>
+                            <td lang="kk" class="lang-content">2 молекула су</td>
+
+                            <td lang="en" class="lang-content">Coefficient</td>
+                            <td lang="en" class="lang-content">2, 3, 4...</td>
+                            <td lang="en" class="lang-content"><strong>2</strong>H₂O</td>
+                            <td lang="en" class="lang-content">2 molecules of water</td>
+
+                            <td lang="ru" class="lang-content">Коэффициент</td>
+                            <td lang="ru" class="lang-content">2, 3, 4...</td>
+                            <td lang="ru" class="lang-content"><strong>2</strong>H₂O</td>
+                            <td lang="ru" class="lang-content">2 молекулы воды</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Индекс</td>
+                            <td lang="kk" class="lang-content">индекс төмен</td>
+                            <td lang="kk" class="lang-content">H<strong>₂</strong>O</td>
+                            <td lang="kk" class="lang-content">2 атом сутегі</td>
+
+                            <td lang="en" class="lang-content">Subscript</td>
+                            <td lang="en" class="lang-content">lower number</td>
+                            <td lang="en" class="lang-content">H<strong>₂</strong>O</td>
+                            <td lang="en" class="lang-content">2 atoms of hydrogen</td>
+
+                            <td lang="ru" class="lang-content">Индекс</td>
+                            <td lang="ru" class="lang-content">нижнее число</td>
+                            <td lang="ru" class="lang-content">H<strong>₂</strong>O</td>
+                            <td lang="ru" class="lang-content">2 атома водорода</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Strelka</td>
+                            <td lang="kk" class="lang-content">→</td>
+                            <td lang="kk" class="lang-content">H₂ + O₂ <strong>→</strong> H₂O</td>
+                            <td lang="kk" class="lang-content">реакцияның өндіктігі</td>
+
+                            <td lang="en" class="lang-content">Arrow</td>
+                            <td lang="en" class="lang-content">→</td>
+                            <td lang="en" class="lang-content">H₂ + O₂ <strong>→</strong> H₂O</td>
+                            <td lang="en" class="lang-content">direction of reaction</td>
+
+                            <td lang="ru" class="lang-content">Стрелка</td>
+                            <td lang="ru" class="lang-content">→</td>
+                            <td lang="ru" class="lang-content">H₂ + O₂ <strong>→</strong> H₂O</td>
+                            <td lang="ru" class="lang-content">направление реакции</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #bae6fd; border-radius: 1rem; border-top: 4px solid #0284c7;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-blue-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-blue-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-blue-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Химиялық теңдеу - реакцияның символды жазылуы. Коэффициенттер атомдарды балансындырады. Индекстер молекуладағы атомдар сандарын көрсетеді. 2H₂ + O₂ → 2H₂O - толық балансталған теңдеу! КОЭФФИЦИЕНТТЕР ҚАЖЕТ!</p>
+            <p lang="en" class="lang-content text-sm">Chemical equation - symbolic representation of reaction. Coefficients balance atoms. Subscripts show number of atoms in molecules. 2H₂ + O₂ → 2H₂O - fully balanced equation! COEFFICIENTS ARE IMPORTANT!</p>
+            <p lang="ru" class="lang-content text-sm">Химическое уравнение - символическая запись реакции. Коэффициенты балансируют атомы. Индексы показывают количество атомов в молекулах. 2H₂ + O₂ → 2H₂O - полностью сбалансированное уравнение! КОЭФФИЦИЕНТЫ ВАЖНЫ!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

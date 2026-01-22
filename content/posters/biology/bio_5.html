@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Разнообразие живой природы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ecfdf5; /* emerald-50 */
+            overflow-x: hidden;
+            color: #064e3b; /* emerald-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Nature Theme */
+        .header-card {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%); /* emerald-600 to 700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #065f46; /* emerald-800 */
+            border-bottom: 3px solid #6ee7b7; /* emerald-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #d1fae5; /* emerald-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #059669; /* emerald-600 */
+        }
+         .term {
+            font-weight: bold;
+            color: #059669; /* emerald-600 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #059669;
+            background-color: #ffffff;
+            color: #059669;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #ecfdf5;
+        }
+        .lang-btn.active {
+            background-color: #059669;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 250px;
+            margin: 15px 0;
+            border: 1px solid #6ee7b7;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #064e3b;
+            text-anchor: middle;
+        }
+        .svg-icon-animal { fill: #fca5a5; stroke: #b91c1c; }
+        .svg-icon-plant { fill: #86efac; stroke: #15803d; }
+        .svg-icon-fungi { fill: #fcd34d; stroke: #b45309; }
+        .svg-icon-bacteria { fill: #cbd5e1; stroke: #475569; }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-emerald-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(52, 211, 153, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(52, 211, 153, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ТІРІ ТАБИҒАТТЫҢ ӘРТҮРЛІЛІГІ</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">BIODIVERSITY</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">РАЗНООБРАЗИЕ ЖИВОЙ ПРИРОДЫ</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-emerald-100">Тірі ағзалардың негізгі топтары және орталары.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-emerald-100">Main groups of living organisms and their habitats.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-emerald-100">Основные группы живых организмов и среды их обитания.</p>
+        </header>
+
+        <!-- 1. ТІРІ ТАБИҒАТ ПАТШАЛЫҚТАРЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Тірі табиғат патшалықтары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Kingdoms of Life</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Царства живой природы</h2>
+
+            <div class="rule-card border-t-emerald-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Ғалымдар барлық тірі ағзаларды негізгі төрт үлкен топқа (патшалыққа) бөледі.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Scientists divide all living organisms into four main groups (kingdoms).
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Ученые делят все живые организмы на четыре основные большие группы (царства).
+                </p>
+
+                <!-- Illustration 1: The 4 Kingdoms -->
+                <svg class="illustration-svg" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 1. Plants -->
+                    <g transform="translate(40, 20)">
+                        <circle cx="40" cy="40" r="35" class="svg-icon-plant" stroke-width="2" fill-opacity="0.3"/>
+                        <path d="M 40 70 Q 40 40, 30 20 Q 50 10, 60 25 Q 50 40, 40 40" fill="#22c55e" stroke="#14532d"/>
+                        <path d="M 40 70 Q 30 50, 15 45 Q 10 30, 25 30 Q 35 40, 40 50" fill="#4ade80" stroke="#14532d"/>
+                        <text x="40" y="90" font-size="10" font-weight="bold" text-anchor="middle" fill="#14532d">PLANTS</text>
+                        <text x="40" y="102" font-size="8" text-anchor="middle" fill="#14532d">Өсімдіктер</text>
+                    </g>
+
+                    <!-- 2. Animals -->
+                    <g transform="translate(140, 20)">
+                        <circle cx="40" cy="40" r="35" class="svg-icon-animal" stroke-width="2" fill-opacity="0.3"/>
+                        <circle cx="30" cy="40" r="4" fill="#b91c1c"/>
+                        <circle cx="50" cy="40" r="4" fill="#b91c1c"/>
+                        <circle cx="40" cy="25" r="4" fill="#b91c1c"/>
+                        <path d="M 25 55 Q 40 70, 55 55 Q 65 65, 40 75 Q 15 65, 25 55" fill="#ef4444" stroke="#b91c1c"/>
+                        <text x="40" y="90" font-size="10" font-weight="bold" text-anchor="middle" fill="#991b1b">ANIMALS</text>
+                        <text x="40" y="102" font-size="8" text-anchor="middle" fill="#991b1b">Жануарлар</text>
+                    </g>
+
+                    <!-- 3. Fungi -->
+                    <g transform="translate(240, 20)">
+                        <circle cx="40" cy="40" r="35" class="svg-icon-fungi" stroke-width="2" fill-opacity="0.3"/>
+                        <path d="M 25 60 L 25 40 Q 40 10, 55 40 L 55 60 Z" fill="#fde047" stroke="#b45309"/>
+                        <path d="M 15 40 Q 40 0, 65 40 Z" fill="#f97316" stroke="#b45309"/>
+                        <circle cx="30" cy="30" r="2" fill="#fff" opacity="0.6"/>
+                        <circle cx="50" cy="25" r="3" fill="#fff" opacity="0.6"/>
+                        <text x="40" y="90" font-size="10" font-weight="bold" text-anchor="middle" fill="#b45309">FUNGI</text>
+                        <text x="40" y="102" font-size="8" text-anchor="middle" fill="#b45309">Саңырауқұлақтар</text>
+                    </g>
+
+                    <!-- 4. Bacteria -->
+                    <g transform="translate(340, 50)"> <!-- Shifted down for layout -->
+                        <g transform="translate(-50, 70)"> <!-- Positioning relative to grid -->
+                            <circle cx="90" cy="-30" r="35" class="svg-icon-bacteria" stroke-width="2" fill-opacity="0.3"/>
+                            <rect x="70" y="-40" width="20" height="8" rx="4" fill="#94a3b8" stroke="#475569" transform="rotate(30 80 -36)"/>
+                            <rect x="85" y="-25" width="20" height="8" rx="4" fill="#94a3b8" stroke="#475569" transform="rotate(-15 95 -21)"/>
+                            <rect x="95" y="-50" width="15" height="8" rx="4" fill="#94a3b8" stroke="#475569" transform="rotate(60 102 -46)"/>
+                            <text x="90" y="20" font-size="10" font-weight="bold" text-anchor="middle" fill="#475569">BACTERIA</text>
+                            <text x="90" y="32" font-size="8" text-anchor="middle" fill="#475569">Бактериялар</text>
+                        </g>
+                    </g>
+
+                    <!-- Center Life Symbol -->
+                    <circle cx="200" cy="160" r="30" fill="#ecfdf5" stroke="#059669" stroke-width="3"/>
+                    <text x="200" y="165" font-size="12" font-weight="bold" fill="#059669" text-anchor="middle">LIFE</text>
+
+                    <!-- Connecting Lines -->
+                    <line x1="80" y1="60" x2="175" y2="145" stroke="#10b981" stroke-width="2" opacity="0.3"/>
+                    <line x1="180" y1="60" x2="195" y2="135" stroke="#10b981" stroke-width="2" opacity="0.3"/>
+                    <line x1="280" y1="60" x2="210" y2="135" stroke="#10b981" stroke-width="2" opacity="0.3"/>
+                    <line x1="380" y1="90" x2="225" y2="145" stroke="#10b981" stroke-width="2" opacity="0.3"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 2. ТІРШІЛІК ОРТАЛАРЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Тіршілік орталары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Habitats</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Среды обитания</h2>
+
+            <div class="rule-card border-t-teal-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Жер бетінде ағзалар төрт түрлі ортада тіршілік етеді:
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Organisms on Earth live in four different environments:
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Организмы на Земле обитают в четырех различных средах:
+                </p>
+
+                <!-- Illustration 2: Habitats -->
+                <svg class="illustration-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 1. Water (Hydro) -->
+                    <rect x="0" y="100" width="200" height="100" fill="#e0f2fe"/>
+                    <path d="M 0 100 Q 50 90, 100 100 T 200 100 L 200 200 L 0 200 Z" fill="#bae6fd"/>
+                    <text x="50" y="150" font-size="12" font-weight="bold" fill="#0369a1">Су (Water)</text>
+                    <path d="M 30 160 L 50 170 L 30 180 Z" fill="#3b82f6"/> <!-- Fish -->
+
+                    <!-- 2. Soil (Geo) -->
+                    <rect x="200" y="100" width="200" height="100" fill="#fef3c7"/>
+                    <path d="M 200 100 L 400 100 L 400 200 L 200 200 Z" fill="#d97706" opacity="0.3"/>
+                    <text x="300" y="150" font-size="12" font-weight="bold" fill="#78350f">Топырақ (Soil)</text>
+                    <path d="M 280 170 Q 300 160, 320 170" fill="none" stroke="#be123c" stroke-width="3"/> <!-- Worm -->
+
+                    <!-- 3. Air-Ground -->
+                    <rect x="0" y="0" width="400" height="100" fill="#f0f9ff"/>
+                    <circle cx="350" cy="30" r="20" fill="#facc15"/> <!-- Sun -->
+                    <path d="M 180 100 L 180 50 L 220 50 L 220 100" fill="#86efac"/> <!-- Tree Trunk area -->
+                    <circle cx="200" cy="50" r="30" fill="#22c55e"/> <!-- Tree Top -->
+                    <text x="100" y="50" font-size="12" font-weight="bold" fill="#059669">Құрлық-ауа (Air-Land)</text>
+                    <path d="M 50 30 L 60 40 L 50 40" fill="none" stroke="#000"/> <!-- Bird -->
+
+                    <!-- 4. Organismic -->
+                    <circle cx="200" cy="100" r="25" fill="#fca5a5" stroke="#be123c" stroke-width="2"/>
+                    <text x="200" y="105" font-size="10" font-weight="bold" fill="#991b1b" text-anchor="middle">Organism</text>
+                    <text x="200" y="130" font-size="8" fill="#991b1b" text-anchor="middle">(Паразиттер)</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-emerald-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-emerald-800">
+                Биологиялық әртүрлілік – Жер бетіндегі тіршіліктің тұрақтылығының негізі. Әрбір түр (өсімдік, жануар, саңырауқұлақ) табиғатта маңызды рөл атқарады.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-emerald-800">
+                Biodiversity is the basis of life stability on Earth. Every species (plant, animal, fungus) plays an important role in nature.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-emerald-800">
+                Биоразнообразие – основа устойчивости жизни на Земле. Каждый вид (растение, животное, гриб) играет важную роль в природе.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

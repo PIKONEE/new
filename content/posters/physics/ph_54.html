@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Энергияны сақтау заңына қоса есептеу</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #ede9fe 0%, #f3e8ff 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #6b21a8; border-bottom: 3px solid #e9d5ff; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #9333ea; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #9333ea; background: white; color: #9333ea; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #9333ea; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #9333ea; color: white; text-align: center; }
+        .illustration { background: linear-gradient(135deg, #e9d5ff 0%, #f3e8ff 100%); padding: 25px; border-radius: 1rem; margin: 15px 0; text-align: center; }
+        svg { max-width: 100%; height: auto; }
+        .info-box { background: linear-gradient(135deg, #e9d5ff 0%, #f3e8ff 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #9333ea; margin: 10px 0; }
+        .example-card { background: #faf5ff; padding: 12px; border-radius: 0.5rem; border-left: 3px solid #9333ea; font-size: 11px; margin-bottom: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-purple-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Энергияны Сақтау Заңына Есептеу</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Energy Conservation Problems</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Задачи на закон сохранения энергии</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-purple-100">Толық пошаговалы шешімі. Бағыттау (ДАНО), іздеу (НАЙТИ), шешімі (РЕШЕНИЕ). Энергияны сақтау заңын қолданып толық жауап! ТОЛЫҚ ЕСЕПТЕЛУ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-purple-100">Complete step-by-step solutions. Given (ДАНО), find (НАЙТИ), solution (РЕШЕНИЕ). Using energy conservation law for complete answer! FULL CALCULATION!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-purple-100">Полные пошаговые решения. Дано (ДАНО), найти (НАЙТИ), решение (РЕШЕНИЕ). Используя закон сохранения энергии для полного ответа! ПОЛНЫЙ РАСЧЁТ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ТОЛЫҚ ЕСЕПТЕЛУ МЫСАЛДАРЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. COMPLETE SOLUTION EXAMPLES</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Полные примеры решений</h2>
+
+            <div class="rule-card">
+                <div class="example-card">
+                    <p lang="kk" class="lang-content"><strong>📌 ЕСЕПТЕУ 1: Төбеден құлатын дене</strong></p>
+                    <p lang="kk" class="lang-content"><strong>ДАНО:</strong> h = 20 м, m = 2 кг, g = 10 м/с²</p>
+                    <p lang="kk" class="lang-content"><strong>НАЙТИ:</strong> v - дененің жер жанасуындағы жылдамдығы</p>
+                    <p lang="kk" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="kk" class="lang-content">1) Бастапқы энергия (төбеде): E₁ = E_пот = m·g·h = 2·10·20 = 400 Дж</p>
+                    <p lang="kk" class="lang-content">2) Соңғы энергия (жер): E₂ = E_кин = (m·v²)/2</p>
+                    <p lang="kk" class="lang-content">3) Энергияны сақтау: E₁ = E₂</p>
+                    <p lang="kk" class="lang-content">4) m·g·h = (m·v²)/2</p>
+                    <p lang="kk" class="lang-content">5) g·h = v²/2</p>
+                    <p lang="kk" class="lang-content">6) v² = 2·g·h = 2·10·20 = 400</p>
+                    <p lang="kk" class="lang-content"><strong>✅ ЖАУАП: v = 20 м/с</strong></p>
+
+                    <p lang="en" class="lang-content"><strong>📌 PROBLEM 1: Body falling from height</strong></p>
+                    <p lang="en" class="lang-content"><strong>GIVEN:</strong> h = 20 m, m = 2 kg, g = 10 m/s²</p>
+                    <p lang="en" class="lang-content"><strong>FIND:</strong> v - velocity when body reaches ground</p>
+                    <p lang="en" class="lang-content"><strong>SOLUTION:</strong></p>
+                    <p lang="en" class="lang-content">1) Initial energy (at top): E₁ = E_pot = m·g·h = 2·10·20 = 400 J</p>
+                    <p lang="en" class="lang-content">2) Final energy (ground): E₂ = E_kin = (m·v²)/2</p>
+                    <p lang="en" class="lang-content">3) Energy conservation: E₁ = E₂</p>
+                    <p lang="en" class="lang-content">4) m·g·h = (m·v²)/2</p>
+                    <p lang="en" class="lang-content">5) g·h = v²/2</p>
+                    <p lang="en" class="lang-content">6) v² = 2·g·h = 2·10·20 = 400</p>
+                    <p lang="en" class="lang-content"><strong>✅ ANSWER: v = 20 m/s</strong></p>
+
+                    <p lang="ru" class="lang-content"><strong>📌 ЗАДАЧА 1: Тело падает с высоты</strong></p>
+                    <p lang="ru" class="lang-content"><strong>ДАНО:</strong> h = 20 м, m = 2 кг, g = 10 м/с²</p>
+                    <p lang="ru" class="lang-content"><strong>НАЙТИ:</strong> v - скорость при падении на землю</p>
+                    <p lang="ru" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="ru" class="lang-content">1) Начальная энергия (на высоте): E₁ = E_пот = m·g·h = 2·10·20 = 400 Дж</p>
+                    <p lang="ru" class="lang-content">2) Конечная энергия (земля): E₂ = E_кин = (m·v²)/2</p>
+                    <p lang="ru" class="lang-content">3) Сохранение энергии: E₁ = E₂</p>
+                    <p lang="ru" class="lang-content">4) m·g·h = (m·v²)/2</p>
+                    <p lang="ru" class="lang-content">5) g·h = v²/2</p>
+                    <p lang="ru" class="lang-content">6) v² = 2·g·h = 2·10·20 = 400</p>
+                    <p lang="ru" class="lang-content"><strong>✅ ОТВЕТ: v = 20 м/с</strong></p>
+                </div>
+
+                <div class="example-card">
+                    <p lang="kk" class="lang-content"><strong>📌 ЕСЕПТЕУ 2: Жанама орны қозғалтқышы</strong></p>
+                    <p lang="kk" class="lang-content"><strong>ДАНО:</strong> v₁ = 10 м/с (бастапқы), v₂ = ? (соңғы), h = 5 м (жынсақ), m = 1 кг</p>
+                    <p lang="kk" class="lang-content"><strong>НАЙТИ:</strong> v₂ - жынсақтан шығысындағы жылдамдығы</p>
+                    <p lang="kk" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="kk" class="lang-content">1) Бастапқы энергия: E₁ = (m·v₁²)/2 + m·g·h = (1·10²)/2 + 1·10·5 = 50 + 50 = 100 Дж</p>
+                    <p lang="kk" class="lang-content">2) Соңғы энергия: E₂ = (m·v₂²)/2 + 0 (жер деңгейінде)</p>
+                    <p lang="kk" class="lang-content">3) E₁ = E₂: 100 = (1·v₂²)/2</p>
+                    <p lang="kk" class="lang-content">4) v₂² = 200</p>
+                    <p lang="kk" class="lang-content"><strong>✅ ЖАУАП: v₂ = 14.1 м/с</strong></p>
+
+                    <p lang="en" class="lang-content"><strong>📌 PROBLEM 2: Ball rolling down hill</strong></p>
+                    <p lang="en" class="lang-content"><strong>GIVEN:</strong> v₁ = 10 m/s (initial), v₂ = ? (final), h = 5 m (height), m = 1 kg</p>
+                    <p lang="en" class="lang-content"><strong>FIND:</strong> v₂ - velocity at bottom of hill</p>
+                    <p lang="en" class="lang-content"><strong>SOLUTION:</strong></p>
+                    <p lang="en" class="lang-content">1) Initial energy: E₁ = (m·v₁²)/2 + m·g·h = (1·10²)/2 + 1·10·5 = 50 + 50 = 100 J</p>
+                    <p lang="en" class="lang-content">2) Final energy: E₂ = (m·v₂²)/2 + 0 (ground level)</p>
+                    <p lang="en" class="lang-content">3) E₁ = E₂: 100 = (1·v₂²)/2</p>
+                    <p lang="en" class="lang-content">4) v₂² = 200</p>
+                    <p lang="en" class="lang-content"><strong>✅ ANSWER: v₂ = 14.1 m/s</strong></p>
+
+                    <p lang="ru" class="lang-content"><strong>📌 ЗАДАЧА 2: Мяч скатывается с горы</strong></p>
+                    <p lang="ru" class="lang-content"><strong>ДАНО:</strong> v₁ = 10 м/с (начальная), v₂ = ? (конечная), h = 5 м (высота), m = 1 кг</p>
+                    <p lang="ru" class="lang-content"><strong>НАЙТИ:</strong> v₂ - скорость у подножия горы</p>
+                    <p lang="ru" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="ru" class="lang-content">1) Начальная энергия: E₁ = (m·v₁²)/2 + m·g·h = (1·10²)/2 + 1·10·5 = 50 + 50 = 100 Дж</p>
+                    <p lang="ru" class="lang-content">2) Конечная энергия: E₂ = (m·v₂²)/2 + 0 (уровень земли)</p>
+                    <p lang="ru" class="lang-content">3) E₁ = E₂: 100 = (1·v₂²)/2</p>
+                    <p lang="ru" class="lang-content">4) v₂² = 200</p>
+                    <p lang="ru" class="lang-content"><strong>✅ ОТВЕТ: v₂ = 14.1 м/с</strong></p>
+                </div>
+
+                <div class="example-card">
+                    <p lang="kk" class="lang-content"><strong>📌 ЕСЕПТЕУ 3: Жүргіндіктің энергиясы</strong></p>
+                    <p lang="kk" class="lang-content"><strong>ДАНО:</strong> m = 50 кг, v = 5 м/с</p>
+                    <p lang="kk" class="lang-content"><strong>НАЙТИ:</strong> E_кин - адамдың кинетикалық энергиясы</p>
+                    <p lang="kk" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="kk" class="lang-content">1) E_кин = (m·v²)/2</p>
+                    <p lang="kk" class="lang-content">2) E_кин = (50·5²)/2 = (50·25)/2 = 1250/2 = 625 Дж</p>
+                    <p lang="kk" class="lang-content"><strong>✅ ЖАУАП: E = 625 Дж</strong></p>
+
+                    <p lang="en" class="lang-content"><strong>📌 PROBLEM 3: Person's kinetic energy</strong></p>
+                    <p lang="en" class="lang-content"><strong>GIVEN:</strong> m = 50 kg, v = 5 m/s</p>
+                    <p lang="en" class="lang-content"><strong>FIND:</strong> E_kin - kinetic energy of person</strong></p>
+                    <p lang="en" class="lang-content"><strong>SOLUTION:</strong></p>
+                    <p lang="en" class="lang-content">1) E_kin = (m·v²)/2</p>
+                    <p lang="en" class="lang-content">2) E_kin = (50·5²)/2 = (50·25)/2 = 1250/2 = 625 J</p>
+                    <p lang="en" class="lang-content"><strong>✅ ANSWER: E = 625 J</strong></p>
+
+                    <p lang="ru" class="lang-content"><strong>📌 ЗАДАЧА 3: Кинетическая энергия человека</strong></p>
+                    <p lang="ru" class="lang-content"><strong>ДАНО:</strong> m = 50 кг, v = 5 м/с</p>
+                    <p lang="ru" class="lang-content"><strong>НАЙТИ:</strong> E_кин - кинетическая энергия человека</p>
+                    <p lang="ru" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="ru" class="lang-content">1) E_кин = (m·v²)/2</p>
+                    <p lang="ru" class="lang-content">2) E_кин = (50·5²)/2 = (50·25)/2 = 1250/2 = 625 Дж</p>
+                    <p lang="ru" class="lang-content"><strong>✅ ОТВЕТ: E = 625 Дж</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ШЕШІМІНІҢ ҚАДАМЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. STEPS FOR SOLVING</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Этапы решения</h2>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>1️⃣ ДАНО:</strong> Барлық берілген мәндерді жазу (масса, биіктігі, жылдамдығы, g)</p>
+                <p lang="kk" class="lang-content text-sm"><strong>2️⃣ НАЙТИ:</strong> Іздейтін мәнді (қандай энергия? қандай жылдамдығы?)</p>
+                <p lang="kk" class="lang-content text-sm"><strong>3️⃣ ФОРМУЛАЛАР:</strong> E_кин = (m·v²)/2 | E_пот = m·g·h | E_сағ = E_кин + E_пот</p>
+                <p lang="kk" class="lang-content text-sm"><strong>4️⃣ ЕСЕПТЕУ:</strong> Қадам-қадам есептеуін жасау (сандарын ауыстыру)</p>
+                <p lang="kk" class="lang-content text-sm"><strong>5️⃣ ЖАУАП:</strong> Соңғы мәнді және өлшем бірлігін жазу</p>
+
+                <p lang="en" class="lang-content text-sm"><strong>1️⃣ GIVEN:</strong> Write all given values (mass, height, velocity, g)</p>
+                <p lang="en" class="lang-content text-sm"><strong>2️⃣ FIND:</strong> Write what to find (what energy? what velocity?)</p>
+                <p lang="en" class="lang-content text-sm"><strong>3️⃣ FORMULAS:</strong> E_kin = (m·v²)/2 | E_pot = m·g·h | E_total = E_kin + E_pot</p>
+                <p lang="en" class="lang-content text-sm"><strong>4️⃣ CALCULATION:</strong> Do step-by-step calculation (substitute numbers)</p>
+                <p lang="en" class="lang-content text-sm"><strong>5️⃣ ANSWER:</strong> Write final value and unit of measurement</p>
+
+                <p lang="ru" class="lang-content text-sm"><strong>1️⃣ ДАНО:</strong> Написать все данные значения (масса, высота, скорость, g)</p>
+                <p lang="ru" class="lang-content text-sm"><strong>2️⃣ НАЙТИ:</strong> Написать что найти (какая энергия? какая скорость?)</p>
+                <p lang="ru" class="lang-content text-sm"><strong>3️⃣ ФОРМУЛЫ:</strong> E_кин = (m·v²)/2 | E_пот = m·g·h | E_общ = E_кин + E_пот</p>
+                <p lang="ru" class="lang-content text-sm"><strong>4️⃣ РАСЧЁТ:</strong> Делать пошаговый расчёт (подставлять числа)</p>
+                <p lang="ru" class="lang-content text-sm"><strong>5️⃣ ОТВЕТ:</strong> Написать конечное значение и единицу измерения</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #e9d5ff; border-radius: 1rem; border-top: 4px solid #9333ea;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-purple-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Энергияны сақтау заңын қолданып есептеуді орындау. Дайым бастапқы және соңғы энергияны салыстыру (E₁ = E₂). Толық шешімін жаза беріңіз! Физика - логикалық ойлау!</p>
+            <p lang="en" class="lang-content text-sm">Solve problems using energy conservation law. Always compare initial and final energy (E₁ = E₂). Write complete solution! Physics is logical thinking!</p>
+            <p lang="ru" class="lang-content text-sm">Решайте задачи используя закон сохранения энергии. Всегда сравнивайте начальную и конечную энергию (E₁ = E₂). Пишите полное решение! Физика - логическое мышление!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Русский -->
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster: Introduction to Scratch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы */
+        .header-card {
+            background-color: #f97316; /* Orange-600 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #ea580c; /* Orange-700 */
+            border-bottom: 3px solid #fdba74; /* Orange-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #fff7ed; /* Өте ашық orange */
+            border-left: 4px solid #fb923c; /* Orange-400 */
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f1f5f9; /* Ашық сұр */
+            border-radius: 1rem;
+            border-top: 4px solid #64748b; /* Сұр */
+        }
+         .term {
+            font-weight: bold;
+            color: #ea580c; /* orange-700 */
+        }
+
+        .scratch-block {
+            font-family: 'Kalam', cursive;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 700;
+            display: inline-block;
+            margin: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+        }
+        .block-motion { background-color: #4a90e2; } /* Blue */
+        .block-looks { background-color: #9013fe; } /* Purple */
+        .block-events { background-color: #f5a623; } /* Gold */
+        .block-control { background-color: #f8e71c; color: #4a4a4a; } /* Yellow */
+
+        .illustration-svg {
+            width: 100%;
+            height: 120px;
+            margin-top: 10px;
+            border: 1px solid #fed7aa;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #f97316;
+            background-color: #ffffff;
+            color: #f97316;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #fff7ed;
+        }
+        .lang-btn.active {
+            background-color: #f97316;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-ru">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn active" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">SCRATCH-ҚА КІРІСПЕ</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">INTRODUCTION TO SCRATCH</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ВВЕДЕНИЕ В SCRATCH</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-gray-100">Блоктар арқылы бағдарламалау.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-gray-100">Programming with blocks.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-gray-100">Программирование с помощью блоков.</p>
+        </header>
+
+        <!-- 1. SCRATCH ДЕГЕНІМІЗ НЕ? -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Scratch дегеніміз не?</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Scratch?</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое Scratch?</h2>
+
+            <div class="rule-card border-t-orange-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Scratch</span> – бұл <span class="term" lang="kk">визуалды</span>, блокқа негізделген бағдарламалау тілі. Ол балаларға (және ересектерге) кодты <span class="term" lang="kk">жазбай</span>, оны Lego сияқты <span class="term" lang="kk">құрастыру</span> арқылы интерактивті оқиғалар, ойындар және анимациялар жасауға мүмкіндік береді.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="en">Scratch</span> is a <span class="term" lang="en">visual</span>, block-based programming language. It allows kids (and adults) to create interactive stories, games, and animations by <span class="term" lang="en">snapping blocks together</span> like Lego, instead of <span class="term" lang="en">writing</span> code.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Scratch</span> — это <span class="term" lang="ru">визуальный</span>, блочный язык программирования. Он позволяет детям (и взрослым) создавать интерактивные истории, игры и анимации, <span class="term" lang="ru">соединяя блоки</span> вместе, как Lego, вместо того, чтобы <span class="term" lang="ru">писать</span> код.
+                </p>
+            </div>
+        </section>
+
+        <!-- 2. НЕГІЗГІ ҰҒЫМДАР -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Негізгі ұғымдар</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Key Concepts</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Ключевые понятия</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <!-- 1. Спрайт -->
+                <div class="rule-card border-t-blue-500">
+                    <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-3">Спрайт (Sprite)</h3>
+                    <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-3">Sprite</h3>
+                    <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-3">Спрайт (Sprite)</h3>
+                    <p lang="kk" class="lang-content text-base text-gray-700">Сіздің жобаңыздағы <strong>кейіпкер</strong> немесе <strong>объект</strong> (мысалы, мысық, доп, ғарыш кемесі).</p>
+                    <p lang="en" class="lang-content text-base text-gray-700">The <strong>character</strong> or <strong>object</strong> in your project (e.g., the cat, a ball, a spaceship).</p>
+                    <p lang="ru" class="lang-content text-base text-gray-700"><strong>Персонаж</strong> или <strong>объект</strong> в вашем проекте (например, кот, мяч, космический корабль).</p>
+                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Head -->
+                        <circle cx="50" cy="30" r="15" fill="#f97316"/>
+                        <!-- Ears -->
+                        <path d="M 40 15 L 40 25 L 48 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="1"/>
+                        <path d="M 60 15 L 60 25 L 52 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="1"/>
+                        <!-- Eyes -->
+                        <circle cx="45" cy="30" r="3" fill="white"/>
+                        <circle cx="55" cy="30" r="3" fill="white"/>
+                        <circle cx="45" cy="30" r="1" fill="black"/>
+                        <circle cx="55" cy="30" r="1" fill="black"/>
+                        <!-- Nose -->
+                        <path d="M 48 35 Q 50 38, 52 35 Z" fill="black"/>
+                        <!-- Whiskers -->
+                        <line x1="30" y1="33" x2="40" y2="33" stroke="black" stroke-width="1"/>
+                        <line x1="30" y1="36" x2="40" y2="36" stroke="black" stroke-width="1"/>
+                        <line x1="60" y1="33" x2="70" y2="33" stroke="black" stroke-width="1"/>
+                        <line x1="60" y1="36" x2="70" y2="36" stroke="black" stroke-width="1"/>
+                        <!-- Body -->
+                        <rect x="40" y="45" width="20" height="30" fill="#f97316" rx="5"/>
+                        <!-- Legs -->
+                        <rect x="40" y="75" width="8" height="15" fill="#f97316" rx="3"/>
+                        <rect x="52" y="75" width="8" height="15" fill="#f97316" rx="3"/>
+                        <!-- Tail -->
+                        <path d="M 60 50 Q 75 55, 75 70 T 60 85" fill="none" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+
+                <!-- 2. Сцена -->
+                <div class="rule-card border-t-green-500">
+                    <h3 lang="kk" class="lang-content text-xl font-bold text-green-700 mb-3">Сахна (Stage)</h3>
+                    <h3 lang="en" class="lang-content text-xl font-bold text-green-700 mb-3">Stage</h3>
+                    <h3 lang="ru" class="lang-content text-xl font-bold text-green-700 mb-3">Сцена (Stage)</h3>
+                    <p lang="kk" class="lang-content text-base text-gray-700">Бұл – іс-әрекет болатын <strong>артқы фон</strong> (мысалы, орман, бөлме, ғарыш).</p>
+                    <p lang="en" class="lang-content text-base text-gray-700">The <strong>background</strong> where the action happens (e.g., a forest, a room, space).</p>
+                    <p lang="ru" class="lang-content text-base text-gray-700"><strong>Задний фон</strong>, на котором происходит действие (например, лес, комната, космос).</p>
+                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Main UI background -->
+                        <rect x="0" y="0" width="100" height="100" fill="#f0f2f5"/>
+                        <!-- Stage Area -->
+                        <rect x="25" y="10" width="70" height="80" fill="white" stroke="#d1d5db"/>
+                        <!-- Green Flag Icon -->
+                        <rect x="28" y="13" width="10" height="10" fill="#22c55e" rx="2"/>
+                        <polygon points="30,15 30,21 36,18" fill="white"/>
+                        <!-- Stop Icon -->
+                        <rect x="40" y="13" width="10" height="10" fill="#ef4444" rx="2"/>
+                        <rect x="43" y="16" width="4" height="4" fill="white"/>
+                        <!-- Sprite on Stage -->
+                        <g transform="scale(0.3) translate(100, 70)">
+                            <circle cx="50" cy="30" r="15" fill="#f97316"/>
+                            <path d="M 40 15 L 40 25 L 48 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="1"/>
+                            <path d="M 60 15 L 60 25 L 52 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="1"/>
+                            <circle cx="45" cy="30" r="3" fill="white"/><circle cx="55" cy="30" r="3" fill="white"/>
+                            <circle cx="45" cy="30" r="1" fill="black"/><circle cx="55" cy="30" r="1" fill="black"/>
+                            <path d="M 48 35 Q 50 38, 52 35 Z" fill="black"/>
+                            <rect x="40" y="45" width="20" height="30" fill="#f97316" rx="5"/>
+                            <rect x="40" y="75" width="8" height="15" fill="#f97316" rx="3"/>
+                            <rect x="52" y="75" width="8" height="15" fill="#f97316" rx="3"/>
+                        </g>
+                        <!-- Code Area (placeholder) -->
+                        <rect x="5" y="10" width="18" height="80" fill="#eef2ff" stroke="#d1d5db"/>
+                    </svg>
+                </div>
+
+                <!-- 3. Блоктар -->
+                <div class="rule-card border-t-yellow-500">
+                    <h3 lang="kk" class="lang-content text-xl font-bold text-yellow-700 mb-3">Блоктар (Blocks)</h3>
+                    <h3 lang="en" class="lang-content text-xl font-bold text-yellow-700 mb-3">Blocks</h3>
+                    <h3 lang="ru" class="lang-content text-xl font-bold text-yellow-700 mb-3">Блоки (Blocks)</h3>
+                    <p lang="kk" class="lang-content text-base text-gray-700">Скрипт жасау үшін біріктіретін <strong>командалар</strong> (мысалы, "10 қадам жылжыту", "дыбысты ойнату").</p>
+                    <p lang="en" class="lang-content text-base text-gray-700">The <strong>commands</strong> you snap together to make a script (e.g., "move 10 steps", "play sound").</p>
+                    <p lang="ru" class="lang-content text-base text-gray-700"><strong>Команды</strong>, которые вы соединяете для создания скрипта (напр., "идти 10 шагов", "играть звук").</p>
+                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="height: 140px;">
+                        <!-- Event Block -->
+                        <path d="M 20 10
+                                 C 25 10, 30 5, 35 5
+                                 C 40 5, 45 10, 50 10
+                                 L 80 10 L 80 30 L 20 30 Z"
+                              fill="#f5a623" stroke="#e69500"/>
+                        <text x="50" y="23" font-size="8" fill="white" text-anchor="middle" font-family="Kalam, cursive">When 💚 Clicked</text>
+
+                        <!-- Notch for block below -->
+                        <path d="M 35 30 L 40 35 L 50 35 L 55 30 Z" fill="#f5a623" stroke="#e69500" stroke-linejoin="round" stroke-width="1"/>
+
+                        <!-- Motion Block -->
+                        <path d="M 20 35
+                                 L 35 35 L 40 40
+                                 L 50 40 L 55 35
+                                 L 80 35 L 80 55
+                                 L 55 55 L 50 60
+                                 L 40 60 L 35 55
+                                 L 20 55 Z"
+                              fill="#4a90e2" stroke="#3c7bc2"/>
+                        <text x="50" y="48" font-size="8" fill="white" text-anchor="middle" font-family="Kalam, cursive">move (10) steps</text>
+
+                        <!-- Control Block (C-shape) -->
+                        <path d="M 20 60
+                                 L 35 60 L 40 65
+                                 L 50 65 L 55 60
+                                 L 80 60 L 80 80
+                                 L 30 80 L 35 85
+                                 L 45 85 L 50 80
+                                 L 25 80 L 25 110
+                                 L 80 110 L 80 130
+                                 L 55 130 L 50 135
+                                 L 40 135 L 35 130
+                                 L 20 130 Z"
+                              fill="#f8e71c" stroke="#e9d700"/>
+                        <text x="50" y="73" font-size="8" fill="#4a4a4a" text-anchor="middle" font-family="Kalam, cursive">forever</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. НЕГІЗГІ БЛОКТАР КАТЕГОРИЯЛАРЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Негізгі блоктар категориялары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Key Block Categories</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Основные категории блоков</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <div class="example-block border-l-yellow-500">
+                    <p class="scratch-block block-events" lang="kk">Жасыл жалауша басылғанда</p>
+                    <p class="scratch-block block-events" lang="en">When Green Flag Clicked</p>
+                    <p class="scratch-block block-events" lang="ru">Когда 💚 нажат</p>
+                    <p lang="kk" class="lang-content mt-2"><strong>Оқиғалар (Events):</strong> Скриптіңізді <span class="term" lang="kk">бастайды</span>.</p>
+                    <p lang="en" class="lang-content mt-2"><strong>Events:</strong> <span class="term" lang="en">Starts</span> your script (e.g., clicking the green flag).</p>
+                    <p lang="ru" class="lang-content mt-2"><strong>События (Events):</strong> <span class="term" lang="ru">Запускают</span> ваш скрипт (например, нажатие на флаг).</p>
+                </div>
+
+                <div class="example-block border-l-blue-500">
+                    <p class="scratch-block block-motion" lang="kk">10 қадам жылжыту</p>
+                    <p class="scratch-block block-motion" lang="en">move 10 steps</p>
+                    <p class="scratch-block block-motion" lang="ru">идти 10 шагов</p>
+                    <p lang="kk" class="lang-content mt-2"><strong>Қозғалыс (Motion):</strong> Спрайтты <span class="term" lang="kk">жылжытады</span>.</p>
+                    <p lang="en" class="lang-content mt-2"><strong>Motion:</strong> <span class="term" lang="en">Moves</span> your sprite.</p>
+                    <p lang="ru" class="lang-content mt-2"><strong>Движение (Motion):</strong> <span class="term" lang="ru">Двигает</span> ваш спрайт.</p>
+                </div>
+
+                <div class="example-block border-l-purple-500">
+                    <p class="scratch-block block-looks" lang="kk">"Сәлем!" деп 2 сек айту</p>
+                    <p class="scratch-block block-looks" lang="en">say "Hello!" for 2 secs</p>
+                    <p class="scratch-block block-looks" lang="ru">говорить "Привет!" 2 сек</p>
+                    <p lang="kk" class="lang-content mt-2"><strong>Түр (Looks):</strong> Спрайттың <span class="term" lang="kk">сыртқы түрін</span> немесе сөзін өзгертеді.</p>
+                    <p lang="en" class="lang-content mt-2"><strong>Looks:</strong> Changes your sprite's <span class="term" lang="en">appearance</span> or makes it "talk".</p>
+                    <p lang="ru" class="lang-content mt-2"><strong>Внешность (Looks):</strong> Меняет <span class="term" lang="ru">внешний вид</span> спрайта или заставляет его "говорить".</p>
+                </div>
+
+                <div class="example-block border-l-orange-500">
+                    <p class="scratch-block block-control" lang="kk">әрқашан</p>
+                    <p class="scratch-block block-control" lang="en">forever</p>
+                    <p class="scratch-block block-control" lang="ru">повторять всегда</p>
+                    <p lang="kk" class="lang-content mt-2"><strong>Басқару (Control):</strong> Іс-әрекеттерді <span class="term" lang="kk">қайталайды</span> немесе күтеді.</p>
+                    <p lang="en" class="lang-content mt-2"><strong>Control:</strong> <span class="term" lang="en">Repeats</span> actions (loops) or waits.</p>
+                    <p lang="ru" class="lang-content mt-2"><strong>Управление (Control):</strong> <span class="term" lang="ru">Повторяет</span> действия (циклы) или ждет.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-gray-800">БАСТЫ ОЙ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-gray-800">SUMMARY</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-gray-800">ГЛАВНАЯ МЫСЛЬ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                <span class="term" lang="kk">Scratch</span> – бұл бағдарламалауды үйренудің оңай жолы. Сіз <span class="term" lang="kk">Спрайтты</span> (кейіпкерді) алып, оған не істеу керектігін айту үшін <span class="term" lang="kk">Блоктарды</span> біріктіресіз.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                <span class="term" lang="en">Scratch</span> is an easy way to learn programming. You take a <span class="term" lang="en">Sprite</span> (character) and snap <span class="term" lang="en">Blocks</span> together to tell it what to do.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                <span class="term" lang="ru">Scratch</span> – это легкий способ научиться программировать. Вы берете <span class="term" lang="ru">Спрайт</span> (персонажа) и соединяете <span class="term" lang="ru">Блоки</span>, чтобы сказать ему, что делать.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            // 1. Негізгі контейнерге класс орнату
+            const container = document.getElementById('poster-container');
+            if (container) {
+                // Алдымен барлық тіл кластарын алып тастау
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                // Жаңа тіл класын қосу
+                container.classList.add('lang-' + lang);
+            }
+
+            // 2. Батырмалардың 'active' класын жаңарту
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // 3. Бет жүктелгенде бастапқы тілді орнату
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('ru'); // Set default language to Russian
+        });
+    </script>
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

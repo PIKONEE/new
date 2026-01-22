@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster: Introduction to Arduino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Bebas+Neue&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        h1, h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            color: #c2410c; /* Orange-700 */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 3.5rem;
+            letter-spacing: 2px;
+            border-bottom: 4px solid #fdba74; /* Orange-300 */
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 2.5rem;
+            color: #ea580c; /* Orange-600 */
+            border-bottom: 2px solid #fed7aa; /* Orange-200 */
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .section-card {
+            background-color: #fff7ed; /* Orange-50 */
+            border-left: 6px solid #fb923c; /* Orange-400 */
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .section-card h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.75rem;
+            color: #ea580c; /* Orange-600 */
+            margin-bottom: 10px;
+        }
+        .section-card p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #c2410c; /* Orange-700 */
+        }
+        .code {
+            font-family: 'Menlo', 'Monaco', monospace;
+            background-color: #e2e8f0; /* Slate-200 */
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            color: #1e293b; /* Slate-800 */
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .grid-item {
+            background-color: #fff;
+            border: 2px solid #fed7aa; /* Orange-200 */
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .grid-item:hover {
+            transform: translateY(-3px);
+        }
+        .grid-item strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.25rem;
+            color: #c2410c; /* Orange-700 */
+        }
+        .grid-item svg { /* ИЗМЕНЕНО: img на svg */
+            width: 100%;
+            height: 120px; /* Фиксированная высота для SVG */
+            margin: 0 auto 10px auto;
+            display: block;
+            border-radius: 4px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #fed7aa;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #c2410c;
+            background-color: #ffffff;
+            color: #c2410c;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #fff7ed;
+        }
+        .lang-btn.active {
+            background-color: #c2410c;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div id="poster-container" class="container lang-ru">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER --><div class="lang-switcher">
+            <button class="lang-btn" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn active" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <h1>
+            <span lang="kk" class="lang-content">ARDUINO-ҒА КІРІСПЕ</span>
+            <span lang="en" class="lang-content">INTRODUCTION TO ARDUINO</span>
+            <span lang="ru" class="lang-content">ВВЕДЕНИЕ В ARDUINO</span>
+        </h1>
+        <p class="text-center text-lg mb-8">
+            <span lang="kk" class="lang-content">Электроника және робототехника әлеміне қадам жаса!</span>
+            <span lang="en" class="lang-content">Step into the world of electronics and robotics!</span>
+            <span lang="ru" class="lang-content">Шагните в мир электроники и робототехники!</span>
+        </p>
+
+        <div class="grid-container">
+            <div class="grid-item">
+                <!-- ИЗМЕНЕНО: img на inline svg -->
+                <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="10" width="160" height="100" fill="#00979C" rx="5"/>
+                    <rect x="50" y="30" width="100" height="60" fill="#2A2A2A" rx="2"/>
+                    <rect x="15" y="15" width="10" height="10" fill="#E6E6E6"/>
+                    <rect x="70" y="15" width="60" height="10" fill="#707070" rx="2"/>
+                    <rect x="135" y="15" width="20" height="10" fill="#707070" rx="2"/>
+                    <rect x="70" y="100" width="60" height="10" fill="#707070" rx="2"/>
+                    <rect x="135" y="100" width="20" height="10" fill="#707070" rx="2"/>
+                    <rect x="175" y="40" width="10" height="40" fill="#707070" rx="2"/>
+                </svg>
+                <strong><span lang="kk" class="lang-content">ARDUINO ДЕГЕНІМІЗ НЕ?</span><span lang="en" class="lang-content">WHAT IS ARDUINO?</span><span lang="ru" class="lang-content">ЧТО ТАКОЕ ARDUINO?</span></strong>
+                <p>
+                    <span lang="kk" class="lang-content">Arduino – бұл электронды жобаларды жасауға арналған ашық бастапқы кодты электроника платформасы. Ол аппараттық (басқарма платасы) және бағдарламалық (IDE) бөліктерден тұрады.</span>
+                    <span lang="en" class="lang-content">Arduino is an <span class="highlight">open-source electronics platform</span> for building electronic projects. It consists of a physical programmable circuit board (microcontroller) and a piece of software (IDE).</span>
+                    <span lang="ru" class="lang-content">Arduino — это <span class="highlight">открытая платформа для электроники</span>, используемая для создания электронных проектов. Она состоит из физической программируемой платы (микроконтроллера) и программного обеспечения (IDE).</span>
+                </p>
+            </div>
+            <div class="grid-item">
+                <!-- ИЗМЕНЕНО: img на inline svg -->
+                <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="10" width="180" height="100" fill="#FFFFFF" rx="5" stroke="#D1D5DB"/>
+                    <rect x="10" y="10" width="180" height="20" fill="#F3F4F6" stroke="#D1D5DB"/>
+                    <circle cx="20" cy="20" r="4" fill="#FECACA"/>
+                    <circle cx="30" cy="20" r="4" fill="#FDE68A"/>
+                    <circle cx="40" cy="20" r="4" fill="#A7F3D0"/>
+                    <rect x="20" y="40" width="160" height="60" fill="#F9FAFB"/>
+                    <line x1="30" y1="50" x2="100" y2="50" stroke="#93C5FD" stroke-width="2"/>
+                    <line x1="30" y1="60" x2="130" y2="60" stroke="#C4B5FD" stroke-width="2"/>
+                    <line x1="30" y1="70" x2="80" y2="70" stroke="#93C5FD" stroke-width="2"/>
+                    <line x1="30" y1="80" x2="150" y2="80" stroke="#C4B5FD" stroke-width="2"/>
+                </svg>
+                <strong><span lang="kk" class="lang-content">ҚАЛАЙ ЖҰМЫС ІСТЕЙДІ?</span><span lang="en" class="lang-content">HOW DOES IT WORK?</span><span lang="ru" class="lang-content">КАК ЭТО РАБОТАЕТ?</span></strong>
+                <p>
+                    <span lang="kk" class="lang-content">Сіз Arduino IDE бағдарламасында <span class="highlight">код жазасыз</span> (скетч деп аталады). Бұл код Arduino платасына жүктеледі. Плата осы нұсқауларды орындап, датчиктерден сигналдарды қабылдап, моторларды немесе жарықдиодтарды басқарады.</span>
+                    <span lang="en" class="lang-content">You write <span class="highlight">code (called a "sketch")</span> in the Arduino IDE. This code is uploaded to the Arduino board. The board then executes these instructions, taking input from sensors and controlling outputs like motors or LEDs.</span>
+                    <span lang="ru" class="lang-content">Вы пишете <span class="highlight">код (называемый "скетчем")</span> в Arduino IDE. Этот код загружается на плату Arduino. Затем плата выполняет эти инструкции, принимая ввод от датчиков и управляя такими выходами, как двигатели или светодиоды.</span>
+                </p>
+            </div>
+        </div>
+
+        <h2>
+            <span lang="kk" class="lang-content">НЕГІЗГІ КОМПОНЕНТТЕР</span>
+            <span lang="en" class="lang-content">KEY COMPONENTS</span>
+            <span lang="ru" class="lang-content">ОСНОВНЫЕ КОМПОНЕНТЫ</span>
+        </h2>
+        <div class="grid-container">
+            <div class="grid-item">
+                <!-- ИЗМЕНЕНО: img на inline svg (Символ LED) -->
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="10" y1="50" x2="40" y2="50" stroke="#333" stroke-width="3"/>
+                    <polygon points="40,30 40,70 60,50" fill="#333"/>
+                    <line x1="60" y1="50" x2="90" y2="50" stroke="#333" stroke-width="3"/>
+                    <line x1="60" y1="30" x2="60" y2="70" stroke="#333" stroke-width="3"/>
+                    <g transform="rotate(45 75 25)">
+                        <line x1="75" y1="15" x2="75" y2="35" stroke="#c2410c" stroke-width="3"/>
+                        <polyline points="75 15, 70 25, 80 25, 75 15" fill="#c2410c"/>
+                    </g>
+                    <g transform="rotate(45 85 35)">
+                        <line x1="85" y1="25" x2="85" y2="45" stroke="#c2410c" stroke-width="3"/>
+                        <polyline points="85 25, 80 35, 90 35, 85 25" fill="#c2410c"/>
+                    </g>
+                </svg>
+                <strong><span lang="kk" class="lang-content">Жарықдиодтар (LEDs)</span><span lang="en" class="lang-content">LEDs (Light Emitting Diodes)</span><span lang="ru" class="lang-content">Светодиоды (LED)</span></strong>
+                <p><span lang="kk" class="lang-content">Электр тогы өткен кезде жарық шығаратын шағын шамдар.</span><span lang="en" class="lang-content">Small lights that emit light when current passes through them.</span><span lang="ru" class="lang-content">Маленькие лампочки, которые излучают свет при прохождении тока.</span></p>
+            </div>
+            <div class="grid-item">
+                <!-- ИЗМЕНЕНО: img на inline svg (Символ Кнопки) -->
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="10" y1="50" x2="30" y2="50" stroke="#333" stroke-width="3"/>
+                    <line x1="70" y1="50" x2="90" y2="50" stroke="#333" stroke-width="3"/>
+                    <circle cx="30" cy="50" r="4" fill="#333"/>
+                    <circle cx="70" cy="50" r="4" fill="#333"/>
+                    <line x1="30" y1="30" x2="70" y2="30" stroke="#333" stroke-width="3"/>
+                </svg>
+                <strong><span lang="kk" class="lang-content">Түймелер (Buttons)</span><span lang="en" class="lang-content">Buttons</span><span lang="ru" class="lang-content">Кнопки</span></strong>
+                <p><span lang="kk" class="lang-content">Ардуиноға сигнал жіберу үшін қолданылады (мысалы, "басылды" немесе "босатылды").</span><span lang="en" class="lang-content">Used to send a signal to Arduino (e.g., "pressed" or "released").</span><span lang="ru" class="lang-content">Используются для отправки сигнала Arduino (например, "нажато" или "отпущено").</span></p>
+            </div>
+            <div class="grid-item">
+                <!-- ИЗМЕНЕНО: img на inline svg (Символ Потенциометра) -->
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="10" y1="50" x2="25" y2="50" stroke="#333" stroke-width="3"/>
+                    <rect x="25" y="40" width="50" height="20" fill="none" stroke="#333" stroke-width="3"/>
+                    <line x1="75" y1="50" x2="90" y2="50" stroke="#333" stroke-width="3"/>
+                    <line x1="50" y1="60" x2="50" y2="80" stroke="#333" stroke-width="3"/>
+                    <line x1="40" y1="20" x2="60" y2="80" stroke="#333" stroke-width="3"/>
+                    <polyline points="60 80, 55 75, 65 75, 60 80" fill="#333"/>
+                </svg>
+                <strong><span lang="kk" class="lang-content">Потенциометрлер</span><span lang="en" class="lang-content">Potentiometers</span><span lang="ru" class="lang-content">Потенциометры</span></strong>
+                <p><span lang="kk" class="lang-content">Айналдыру арқылы электр кедергісін өзгертетін компоненттер. Көлемді немесе жарықты реттеу үшін қолданылады.</span><span lang="en" class="lang-content">Components that change electrical resistance by rotating. Used to control volume, brightness, etc.</span><span lang="ru" class="lang-content">Компоненты, изменяющие электрическое сопротивление при вращении. Используются для регулировки громкости, яркости и т.д.</span></p>
+            </div>
+            <div class="grid-item">
+                <!-- ИЗМЕНЕНО: img на inline svg (Символ Резистора) -->
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="10" y1="50" x2="25" y2="50" stroke="#333" stroke-width="3"/>
+                    <polyline points="25,50 30,30 40,70 50,30 60,70 70,30 75,50" fill="none" stroke="#333" stroke-width="3"/>
+                    <line x1="75" y1="50" x2="90" y2="50" stroke="#333" stroke-width="3"/>
+                </svg>
+                <strong><span lang="kk" class="lang-content">Резисторлар</span><span lang="en" class="lang-content">Resistors</span><span lang="ru" class="lang-content">Резисторы</span></strong>
+                <p><span lang="kk" class="lang-content">Электр тізбегіндегі ток ағынын шектейтін компоненттер.</span><span lang="en" class="lang-content">Components that limit the flow of current in an electrical circuit.</span><span lang="ru" class="lang-content">Компоненты, которые ограничивают ток в электрической цепи.</span></p>
+            </div>
+        </div>
+
+        <h2>
+            <span lang="kk" class="lang-content">Қарапайым Мысал: Жарықдиодты жыпылықтату</span>
+            <span lang="en" class="lang-content">Simple Example: Blinking an LED</span>
+            <span lang="ru" class="lang-content">Простой Пример: Мигающий Светодиод</span>
+        </h2>
+        <div class="section-card">
+            <h3><span lang="kk" class="lang-content">Бұл қалай жұмыс істейді?</span><span lang="en" class="lang-content">How it works:</span><span lang="ru" class="lang-content">Как это работает:</span></h3>
+            <p>
+                <span lang="kk" class="lang-content">Arduino-ның 13-ші пиніне жарықдиодты (резистор арқылы) қосыңыз. Код жарықдиодты бір секундқа қосып, бір секундқа өшіріп, циклде қайталайды.</span>
+                <span lang="en" class="lang-content">Connect an LED (with a resistor) to pin 13 of your Arduino. The code tells the LED to turn on for one second, then off for one second, repeating in a loop.</span>
+                <span lang="ru" class="lang-content">Подключите светодиод (через резистор) к 13-му пину Arduino. Код заставит светодиод включаться на одну секунду, затем выключаться на одну секунду, повторяя это в цикле.</span>
+            </p>
+            <pre class="code p-4 bg-gray-100 rounded-md mt-4 overflow-x-auto"><code>
+void setup() {
+  pinMode(13, OUTPUT); // <span lang="kk" class="lang-content">13-ші пинді шығыс ретінде орнату</span><span lang="en" class="lang-content">Set pin 13 as an output</span><span lang="ru" class="lang-content">Настроить пин 13 как выход</span>
+}
+
+void loop() {
+  digitalWrite(13, HIGH); // <span lang="kk" class="lang-content">Жарықдиодты қосу (HIGH - 5V)</span><span lang="en" class="lang-content">Turn the LED on (HIGH is 5V)</span><span lang="ru" class="lang-content">Включить светодиод (HIGH - 5В)</span>
+  delay(1000);            // <span lang="kk" class="lang-content">Бір секунд күту</span><span lang="en" class="lang-content">Wait for a second</span><span lang="ru" class="lang-content">Ждать одну секунду</span>
+  digitalWrite(13, LOW);  // <span lang="kk" class="lang-content">Жарықдиодты өшіру (LOW - 0V)</span><span lang="en" class="lang-content">Turn the LED off (LOW is 0V)</span><span lang="ru" class="lang-content">Выключить светодиод (LOW - 0В)</span>
+  delay(1000);            // <span lang="kk" class="lang-content">Бір секунд күту</span><span lang="en" class="lang-content">Wait for a second</span><span lang="ru" class="lang-content">Ждать одну секунду</span>
+}
+            </code></pre>
+        </div>
+
+        <div class="footer">
+            <span lang="kk" class="lang-content">Arduino көмегімен сіз көптеген қызықты және пайдалы құрылғыларды жасай аласыз! Бастаңыз және зерттеңіз!</span>
+            <span lang="en" class="lang-content">With Arduino, you can build many exciting and useful devices! Start exploring!</span>
+            <span lang="ru" class="lang-content">С Arduino вы можете создавать множество увлекательных и полезных устройств! Начните исследовать!</span>
+        </div>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('ru'); // Set default language to Russian
+        });
+    </script>
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

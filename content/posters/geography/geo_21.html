@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mountains of the Land</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #1e293b, #475569);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #94a3b8; color: #0f172a; font-weight: 800; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b border-slate-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-slate-300"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center justify-center relative min-h-[500px]">
+            <canvas id="mountCanvas" class="w-full h-full"></canvas>
+            <div id="labels-overlay" class="absolute inset-0 pointer-events-none p-8">
+                <!-- Labels injected via JS -->
+            </div>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-slate-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-slate-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-8 border-t border-white/10"><h4 id="c1-t" class="heading-font text-lg mb-2 text-slate-400"></h4><p id="c1-d" class="text-xs text-white/60"></p></div>
+        <div class="glass rounded-custom p-8 border-t border-white/10"><h4 id="c2-t" class="heading-font text-lg mb-2 text-slate-400"></h4><p id="c2-d" class="text-xs text-white/60"></p></div>
+        <div class="glass rounded-custom p-8 border-t border-white/10"><h4 id="c3-t" class="heading-font text-lg mb-2 text-slate-400"></h4><p id="c3-d" class="text-xs text-white/60"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Горы Суши", subtitle: "Вершины, хребты и классификация",
+                defaultTitle: "Строение гор",
+                defaultText: "Горы — это участки земной поверхности, высоко приподнятые над равнинами. Части горы: Подошва (подножие), Склон и Вершина (пик).",
+                labels: { peak: "Вершина", slope: "Склон", foot: "Подошва" },
+                cards: [
+                    {t: "Низкие", d: "До 1000 м. Пологие склоны, округлые вершины (Урал, Аппалачи)."},
+                    {t: "Средние", d: "1000-2000 м. Смешанный рельеф (Карпаты, Скандинавские)."},
+                    {t: "Высокие", d: "Выше 2000 м. Острые пики, ледники (Гималаи, Анды, Кавказ)."}
+                ]
+            },
+            kz: {
+                title: "Құрлық Таулары", subtitle: "Шыңдар, жоталар және жіктелуі",
+                defaultTitle: "Тау құрылысы",
+                defaultText: "Таулар — жазықтардан едәуір биік орналасқан жер бетінің бөліктері. Тау бөліктері: Табаны, Бөктері және Шыңы.",
+                labels: { peak: "Шыңы", slope: "Бөктері", foot: "Табаны" },
+                cards: [
+                    {t: "Аласа", d: "1000 м-ге дейін. Беткейлері жайпақ, шыңдары жұмыр (Орал)."},
+                    {t: "Орташа", d: "1000-2000 м. Аралас жер бедері (Карпат)."},
+                    {t: "Биік", d: "2000 м-ден жоғары. Үшкір шыңдар, мұздықтар (Гималай, Тянь-Шань)."}
+                ]
+            },
+            en: {
+                title: "Mountains", subtitle: "Peaks, Ranges and Classification",
+                defaultTitle: "Mountain Structure",
+                defaultText: "Mountains are landforms that rise high above the surrounding terrain. Parts: Foot, Slope, and Peak (Summit).",
+                labels: { peak: "Peak", slope: "Slope", foot: "Foot" },
+                cards: [
+                    {t: "Low", d: "Up to 1000m. Gentle slopes, rounded peaks (Urals)."},
+                    {t: "Medium", d: "1000-2000m. Mixed relief (Carpathians)."},
+                    {t: "High", d: "Over 2000m. Sharp peaks, glaciers (Himalayas, Andes)."}
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        let canvas, ctx;
+
+        window.setLang = function(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            
+            document.getElementById('c1-t').textContent = t.cards[0].t; document.getElementById('c1-d').textContent = t.cards[0].d;
+            document.getElementById('c2-t').textContent = t.cards[1].t; document.getElementById('c2-d').textContent = t.cards[1].d;
+            document.getElementById('c3-t').textContent = t.cards[2].t; document.getElementById('c3-d').textContent = t.cards[2].d;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+
+            // Sky
+            const g = ctx.createLinearGradient(0,0,0,h);
+            g.addColorStop(0, '#0f172a'); g.addColorStop(1, '#334155');
+            ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+
+            // Mountain Range
+            ctx.fillStyle = '#64748b';
+            ctx.beginPath();
+            ctx.moveTo(0, h);
+            ctx.lineTo(w*0.2, h*0.6); // Foothill
+            ctx.lineTo(w*0.5, h*0.1); // Peak
+            ctx.lineTo(w*0.8, h*0.7); 
+            ctx.lineTo(w, h);
+            ctx.fill();
+
+            // Snow cap
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.moveTo(w*0.5, h*0.1);
+            ctx.lineTo(w*0.4, h*0.25);
+            ctx.lineTo(w*0.45, h*0.22);
+            ctx.lineTo(w*0.5, h*0.28);
+            ctx.lineTo(w*0.55, h*0.22);
+            ctx.lineTo(w*0.6, h*0.25);
+            ctx.closePath();
+            ctx.fill();
+
+            // Text Labels directly on canvas for simplicity or overlay
+            const t = translations[currentLang].labels;
+            ctx.fillStyle = '#facc15'; ctx.font = 'bold 14px Inter';
+            ctx.fillText(t.peak, w*0.52, h*0.1);
+            ctx.fillText(t.slope, w*0.65, h*0.5);
+            ctx.fillText(t.foot, w*0.2, h*0.9);
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('mountCanvas');
+            if(canvas) {
+                ctx = canvas.getContext('2d');
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+                setLang('ru');
+                draw();
+            }
+        };
+        window.onresize = function() {
+             if(canvas) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 500;
+             }
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

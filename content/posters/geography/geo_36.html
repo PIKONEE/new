@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Temperature Dynamics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #451a03, #1c1917);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; }
+        .lang-btn.active { background: #f97316; color: white; font-weight: 800; }
+        .temp-curve { filter: drop-shadow(0 0 8px #f97316); }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-orange-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-orange-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase italic"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <!-- Interactive Temperature Graph -->
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col relative min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-orange-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="tempCanvas" class="w-full h-full"></canvas>
+            <div class="absolute top-8 right-8 p-4 glass rounded-2xl text-right">
+                <div class="text-[10px] uppercase text-orange-400 mb-1" id="label-cycle">Cycle</div>
+                <select onchange="window.setCycle(this.value)" class="bg-transparent border-none outline-none text-white font-bold cursor-pointer">
+                    <option value="daily" class="text-black">Daily / Суточный</option>
+                    <option value="annual" class="text-black">Annual / Годовой</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-orange-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-orange-400"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass rounded-custom p-10">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-orange-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-orange-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-orange-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Температура", subtitle: "Суточные и годовые ритмы",
+                canvasHeading: "График изменения температуры", labelCycle: "Цикл",
+                defaultTitle: "Нагрев атмосферы",
+                defaultText: "Воздух нагревается не напрямую от Солнца, а от поверхности Земли. Поэтому температура падает с высотой и меняется в зависимости от угла падения солнечных лучей.",
+                cards: [
+                    { title: "Суточный ход", desc: "Минимум наблюдается перед восходом солнца, максимум — в 14:00-15:00. Амплитуда — разница между макс. и мин." },
+                    { title: "Годовой ход", desc: "Зависит от широты. В северном полушарии пик в июле, минимум в январе. Чем дальше от океана, тем выше амплитуда." },
+                    { title: "Средняя темп.", desc: "Среднесуточная и среднегодовая температура — важные показатели климата территории." }
+                ]
+            },
+            kz: {
+                title: "Температура", subtitle: "Тәуліктік және жылдық ырғақтар",
+                canvasHeading: "Температура өзгерісінің графигі", labelCycle: "Цикл",
+                defaultTitle: "Атмосфераның жылынуы",
+                defaultText: "Ауа Күннен тікелей емес, Жер бетінен жылынады. Сондықтан температура биіктікке және күн сәулесінің түсу бұрышына байланысты өзгереді.",
+                cards: [
+                    { title: "Тәуліктік барыс", desc: "Минимум күн шығар алдында, максимум 14:00-15:00-де байқалады. Амплитуда — макс пен мин айырмашылығы." },
+                    { title: "Жылдық барыс", desc: "Ендікке байланысты. Солтүстік жарты шарда шілдеде ең жоғары, қаңтарда ең төмен болады." },
+                    { title: "Орташа темп.", desc: "Орташа тәуліктік және жылдық температура — аумақ климатының маңызды көрсеткіштері." }
+                ]
+            },
+            en: {
+                title: "Temperature", subtitle: "Daily and Annual Rhythms",
+                canvasHeading: "Temperature Change Graph", labelCycle: "Cycle",
+                defaultTitle: "Atmosphere Heating",
+                defaultText: "The air is not heated directly by the Sun, but by the Earth's surface. Thus, temperature drops with altitude and changes with the angle of sunlight.",
+                cards: [
+                    { title: "Daily Cycle", desc: "The minimum occurs just before sunrise, the maximum at 2:00-3:00 PM. Amplitude is the range between max and min." },
+                    { title: "Annual Cycle", desc: "Depends on latitude. In the Northern Hemisphere, peak is in July, minimum in January. Continentality increases amplitude." },
+                    { title: "Average Temp.", desc: "Daily and annual mean temperatures are crucial indicators of a region's climate." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', currentCycle = 'daily', canvas, ctx;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        window.setCycle = function(c) {
+            currentCycle = c;
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('label-cycle').textContent = t.labelCycle;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').textContent = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').textContent = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const time = Date.now() * 0.001;
+
+            // Axis
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(50, 50); ctx.lineTo(50, h-50); ctx.lineTo(w-50, h-50); ctx.stroke();
+
+            // Curve
+            ctx.strokeStyle = '#f97316'; ctx.lineWidth = 4; ctx.beginPath();
+            const points = currentCycle === 'daily' ? 24 : 12;
+            for(let i=0; i<points; i++) {
+                const x = 50 + (i / (points-1)) * (w-100);
+                const val = Math.sin((i / (points-1)) * Math.PI * 2 - Math.PI/2);
+                const y = (h/2) - val * (h/4);
+                if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                
+                // Draw nodes
+                ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+            }
+            ctx.stroke();
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('tempCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight || 500;
+            setLang('ru');
+            draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Англия и Норманны: Рождение Королевства</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #064e3b, #020617);
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #10b981;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-blue-400 uppercase">
+                Англия и Норманны
+            </h1>
+            <p id="sub-title" class="text-emerald-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">1066: Год, изменивший историю Альбиона</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-emerald-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-emerald-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-emerald-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-emerald-600 inline-block"></span>
+                Карта Завоевания
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-emerald-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="normanCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-emerald-500/50 italic text-center uppercase tracking-widest">Нажмите на вехи пути для изучения истории похода</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-emerald-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Скрещение мечей</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        В середине XI века Англия стала ареной борьбы между англосаксами, норвежцами и норманнами. Победитель этой схватки создал одну из самых могущественных монархий Европы. Выберите событие на карте.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚔️</span>
+                            <span id="hint-1" class="text-emerald-200/60 font-bold uppercase text-xs tracking-widest">Битва при Гастингсе</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">📜</span>
+                            <span id="hint-2" class="text-emerald-200/60 font-bold uppercase text-xs tracking-widest">Книга Страшного Суда</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-emerald-950/40 text-emerald-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-emerald-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-emerald-950/40 rounded-[2.5rem] border border-emerald-900/30 shadow-xl">
+                        <strong class="text-emerald-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-result">Итог события:</strong>
+                        <p id="info-fact" class="text-emerald-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-emerald-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👑</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-emerald-500 uppercase">Альфред Великий</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">В IX веке король Уэссекса Альфред первым смог остановить нашествие викингов (датчан). Он построил флот, укрепил города и способствовал развитию образования на английском языке.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-blue-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Вильгельм Завоеватель</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Герцог Нормандии, заявивший свои права на английский трон. После победы в 1066 году он конфисковал земли англосаксонской знати и раздал их своим нормандским баронам.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📖</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Книга Страшного Суда</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Первая в средневековой Европе всеобщая поземельная перепись (1086 г.). Вильгельм хотел знать всё о своих владениях и доходах. Название отражало неотвратимость проверки.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-emerald-950 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-emerald-100/70 leading-tight max-w-5xl mx-auto">
+            «Здесь, под Гастингсом, закончилась эпоха древних королей и началась история новой, нормандской Англии».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Англия и Норманны",
+                subtitle: "1066: Год, изменивший историю Альбиона",
+                visualTitle: "Карта Завоевания",
+                hint: "Нажмите на вехи пути для изучения истории похода",
+                placeholderTitle: "Скрещение мечей",
+                placeholderText: "В середине XI века Англия стала ареной борьбы между англосаксами, норвежцами и норманнами. Изучите этапы нормандского завоевания.",
+                labelResult: "Итог события:",
+                hint1: "Битва при Гастингсе", hint2: "Книга Страшного Суда",
+                card1Title: "Альфред Великий",
+                card1Text: "Король-просветитель, создатель первого английского флота и победитель 'великого войска язычников' (викингов).",
+                card2Title: "Вильгельм Завоеватель",
+                card2Text: "Правитель, железной рукой объединивший Англию и Нормандию, внедрив строгую феодальную иерархию.",
+                card3Title: "Книга Страшного Суда",
+                card3Text: "Domesday Book — уникальный документ, зафиксировавший состояние хозяйства Англии спустя 20 лет после завоевания.",
+                footerQuote: "«Здесь, под Гастингсом, закончилась эпоха древних королей и началась история новой, нормандской Англии».",
+                nodes: [
+                    { id: 1, tag: "IX век", title: "Альфред и Викинги", desc: "Король Альфред Великий спас Англию от полного захвата викингами. Он разделил страну на две части, оставив восточную (Денло) датчанам, но сохранив независимость Уэссекса.", fact: "Альфред был единственным королем Англии, получившим прозвище 'Великий'." },
+                    { id: 2, tag: "1066 год", title: "Высадка в Певенси", desc: "Нормандский флот Вильгельма пересек Ла-Манш. По легенде, ступив на берег, Вильгельм споткнулся и упал, но тут же крикнул: 'Я схватил Англию обеими руками!', чтобы воины не увидели в этом дурного знака.", fact: "Флот Вильгельма состоял из сотен транспортных судов, перевозивших тяжелую конницу." },
+                    { id: 3, tag: "Октябрь 1066", title: "Битва при Гастингсе", desc: "Решающая битва. Англосаксы короля Гарольда занимали холм, создав непроницаемую 'стену щитов'. Норманны использовали хитрость — притворное отступление, заманив пехоту врага в ловушку.", fact: "Король Гарольд погиб, сраженный стрелой в глаз, и англосаксонское сопротивление было сломлено." },
+                    { id: 4, tag: "Декабрь 1066", title: "Коронация", desc: "Вильгельм вошел в Лондон и короновался в Вестминстерском аббатстве. Он объявил себя законным наследником престола, но в стране начались годы восстаний против 'нормандского ига'.", fact: "Вильгельм не знал английского языка и до конца жизни говорил на старофранцузском." },
+                    { id: 5, tag: "1086 год", title: "Domesday Book", desc: "Всеобщая перепись земель. По всей Англии были разосланы королевские судьи. Они опрашивали старост и священников: сколько в деревне пашни, скота, мельниц и рабов.", fact: "Никто не мог уклониться от переписи; записи Книги считались окончательными и не подлежали обжалованию." }
+                ]
+            },
+            kz: {
+                title: "Англия және Норманндар",
+                subtitle: "1066: Альбион тарихын өзгерткен жыл",
+                visualTitle: "Жаулап алу картасы",
+                hint: "Жорық кезеңдерін зерттеу үшін белгілерді басыңыз",
+                placeholderTitle: "Семсерлер тоғысы",
+                placeholderText: "XI ғасырдың ортасында Англия англосакстар, норвегтер және норманндар арасындағы талас алаңына айналды. Норман жаулап алу кезеңдерін зерттеңіз.",
+                labelResult: "Оқиға қорытындысы:",
+                hint1: "Гастингс шайқасы", hint2: "Ақырзаман кітабы",
+                card1Title: "Ұлы Альфред",
+                card1Text: "Англияны викингтерден құтқарған ағартушы патша, алғашқы ағылшын флотын құрушы.",
+                card2Title: "Вильгельм Жаулап алушы",
+                card2Text: "Англия мен Нормандияны біріктіріп, қатал феодалдық иерархияны енгізген билеуші.",
+                card3Title: "Ақырзаман кітабы",
+                card3Text: "Domesday Book — жаулап алудан 20 жыл өткен соң Англия шаруашылығын тіркеген бірегей құжат.",
+                footerQuote: "«Гастингс түбінде көне патшалар дәуірі аяқталып, жаңа нормандтық Англия тарихы басталды».",
+                nodes: [
+                    { id: 1, tag: "IX ғасыр", title: "Альфред және Викингтер", desc: "Альфред патша Англияны викингтердің толық басып алуынан құтқарды. Ол елді екіге бөліп, Уэссекс тәуелсіздігін сақтап қалды.", fact: "Альфред 'Ұлы' атағын алған Англияның жалғыз патшасы." },
+                    { id: 2, tag: "1066 жыл", title: "Певенсиге түсу", desc: "Вильгельмнің норманд флоты Ла-Маншты кесіп өтті. Жағаға шыққанда ол сүрініп кетті, бірақ 'Англияны екі қолыммен ұстадым' деп айқайлады.", fact: "Вильгельм флоты ауыр атты әскерді тасымалдаған жүздеген кемелерден тұрды." },
+                    { id: 3, tag: "1066 қазан", title: "Гастингс шайқасы", desc: "Шешуші шайқас. Норманндар айла қолданып, жаудың жаяу әскерін тұзаққа түсірді. Патша Гарольд қаза тапты.", fact: "Гарольд патшаның өлімінен кейін англосакстардың қарсылығы тоқтады." },
+                    { id: 4, tag: "1066 желтоқсан", title: "Тәж кию", desc: "Вильгельм Лондонға кіріп, Вестминстер аббаттығында тәж киді. Ол өзін заңды мұрагер деп жариялады.", fact: "Вильгельм өмірінің соңына дейін ағылшын тілін білмей, ескі француз тілінде сөйлеген." },
+                    { id: 5, tag: "1086 жыл", title: "Domesday Book", desc: "Жерді жалпыхалықтық тіркеу. Бүкіл Англия бойынша патша соттары жіберілді. Олар әр ауылдың мал-мүлкін жазып алды.", fact: "Тіркеуден ешкім қашып құтыла алмады; жазбалар түпкілікті деп саналды." }
+                ]
+            },
+            en: {
+                title: "England and Normans",
+                subtitle: "1066: The Year That Reshaped Albion",
+                visualTitle: "Invasion Map",
+                hint: "Click on milestones to study the conquest history",
+                placeholderTitle: "Clash of Swords",
+                placeholderText: "In the 11th century, England was the prize in a three-way struggle between Saxons, Norsemen, and Normans. Trace the milestones of William's victory.",
+                labelResult: "Event Result:",
+                hint1: "Battle of Hastings", hint2: "Domesday Book",
+                card1Title: "Alfred the Great",
+                card1Text: "The scholar-king who stopped the Viking 'Great Heathen Army' and fostered the English language and identity.",
+                card2Title: "William the Conqueror",
+                card2Text: "The Duke of Normandy who claimed the English throne and replaced the local nobility with loyal Norman barons.",
+                card3Title: "Domesday Book",
+                card3Text: "Completed in 1086, it was a comprehensive survey of English land and assets for tax purposes—the first of its kind.",
+                footerQuote: "«At Hastings, the era of ancient kings ended, and the story of a new, Norman England began.»",
+                nodes: [
+                    { id: 1, tag: "9th Century", title: "Alfred vs Vikings", desc: "King Alfred of Wessex halted the Viking conquest. He formalized the division of England with the Danelaw, buying time to build forts and a navy.", fact: "Alfred is the only English monarch ever to be called 'the Great'." },
+                    { id: 2, tag: "Sept 1066", title: "Landing at Pevensey", desc: "William crossed the English Channel with a large army. Upon landing, he famously grabbed the sand to show his knights he already possessed the land.", fact: "The Norman invasion was the last successful large-scale invasion of England." },
+                    { id: 3, tag: "Oct 1066", title: "Battle of Hastings", desc: "The defining moment. Harold's 'shield wall' held firm until the Normans used a feigned retreat to lure the Saxons into the open.", fact: "King Harold II, the last Anglo-Saxon king, was killed, and the English army scattered." },
+                    { id: 4, tag: "Dec 1066", title: "The Coronation", desc: "William was crowned in Westminster Abbey on Christmas Day. His reign integrated England into the feudal culture of continental Europe.", fact: "The coronation was so chaotic that guards outside thought the cheers inside were a riot." },
+                    { id: 5, tag: "1086 AD", title: "Domesday Book", desc: "A massive survey intended to record every hide of land and head of livestock in England. It served as a definitive legal and fiscal record.", fact: "The name 'Domesday' referred to the book's judgment being final, like the Last Judgment." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('normanCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-result').innerText = t.labelResult;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Britain Outline
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 100, 50);
+            ctx.lineTo(cx + 80, 80);
+            ctx.lineTo(cx + 100, 300);
+            ctx.lineTo(cx - 50, 400);
+            ctx.lineTo(cx - 150, 200);
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx + 20, y: 150, icon: "🛡️" }, // Alfred/Central
+                { id: 2, x: cx + 50, y: 380, icon: "⛵" }, // Pevensey (South)
+                { id: 3, x: cx + 80, y: 350, icon: "⚔️" }, // Hastings
+                { id: 4, x: cx + 20, y: 300, icon: "👑" }, // London
+                { id: 5, x: cx - 40, y: 220, icon: "📜" }  // Domesday
+            ];
+
+            // Arrows of invasion
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            // From Sea to Pevensey
+            ctx.beginPath();
+            ctx.moveTo(cx + 150, 430);
+            ctx.lineTo(nodesData[1].x, nodesData[1].y);
+            ctx.stroke();
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 2) ? '#ef4444' : '#10b981';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

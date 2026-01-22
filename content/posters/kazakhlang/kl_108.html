@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат 21: Хабарлама</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #ecfdf5; font-family: 'Open Sans', sans-serif; display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
+        .poster {
+            width: 210mm; min-height: 297mm; background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 40px;
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
+        }
+        h1, h3 { font-family: 'Montserrat', sans-serif; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 6px solid; }
+        .decor { position: absolute; border-radius: 50%; z-index: 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div class="poster">
+        <div class="decor bg-emerald-200 w-96 h-96 -bottom-20 -right-20 opacity-40"></div>
+
+        <div class="relative z-10 flex flex-col h-full">
+            <header class="text-center mb-10 border-b-4 border-emerald-600 pb-6">
+                <span class="bg-emerald-600 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest">Тақырып №21</span>
+                <h1 class="text-5xl font-black text-emerald-900 mt-4 uppercase">ХАБАРЛАМА</h1>
+                <p class="text-xl text-emerald-700 mt-2">Ақпаратты жеткізу құралы</p>
+            </header>
+
+            <div class="flex-grow space-y-6">
+
+                <div class="card border-emerald-500">
+                    <h3 class="text-2xl font-bold text-emerald-900 uppercase mb-3 flex items-center gap-2">
+                        <i class="fas fa-info-circle"></i> Анықтама
+                    </h3>
+                    <p class="text-gray-700 text-lg">
+                        Белгілі бір іс-шараның, жиналыстың немесе оқиғаның болатынын алдын ала хабарлайтын қысқа құжат.
+                    </p>
+                </div>
+
+                <div class="card border-green-500">
+                    <h3 class="text-xl font-bold text-green-900 uppercase mb-4 text-center">Негізгі Элементтері</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex items-center gap-4 bg-green-50 p-4 rounded-lg">
+                            <i class="far fa-calendar-alt text-3xl text-green-600"></i>
+                            <div>
+                                <span class="block font-bold text-green-800">ҚАШАН?</span>
+                                <span class="text-sm text-gray-600">Күні мен уақыты</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-green-50 p-4 rounded-lg">
+                            <i class="fas fa-map-marker-alt text-3xl text-green-600"></i>
+                            <div>
+                                <span class="block font-bold text-green-800">ҚАЙДА?</span>
+                                <span class="text-sm text-gray-600">Өтетін орны</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-green-50 p-4 rounded-lg">
+                            <i class="fas fa-tasks text-3xl text-green-600"></i>
+                            <div>
+                                <span class="block font-bold text-green-800">НЕ?</span>
+                                <span class="text-sm text-gray-600">Іс-шараның мазмұны мен мақсаты</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-auto text-center border-t border-gray-200 pt-4">
+                     <p class="text-gray-500 italic">Соңында ұйымдастырушының аты-жөні немесе мекеме атауы жазылады.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pure Substances and Mixtures</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #004d40, #00796b, #009688);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { cursor: pointer; border-radius: 2rem; }
+        .tab-active { background: #2dd4bf; color: #042f2e; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-teal-300"></h1>
+            <p id="sub-title" class="mt-2 text-white/60 font-light"></p>
+        </div>
+        <div class="flex gap-2 mt-6 md:mt-0">
+            <button onclick="setLang('ru')" id="btn-ru" class="px-5 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col">
+            <div class="flex gap-4 mb-6">
+                <button onclick="setMode('pure')" id="mode-pure" class="mode-btn px-6 py-2 rounded-2xl border border-white/20 transition-all"></button>
+                <button onclick="setMode('mixture')" id="mode-mixture" class="mode-btn px-6 py-2 rounded-2xl border border-white/20 transition-all"></button>
+            </div>
+            <canvas id="particleCanvas" class="w-full h-[400px] bg-black/20"></canvas>
+            <p id="canvas-hint" class="mt-4 text-center text-xs text-teal-200/50 uppercase tracking-[0.2em]"></p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-teal-400">
+            <div id="info-box" class="transition-all duration-500">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-teal-300"></h3>
+                <div id="info-text" class="text-lg leading-relaxed font-light text-white/80 space-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-8 hover:bg-teal-500/10 transition-colors">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-teal-400"></h4>
+            <p id="card1-desc" class="text-white/60 text-sm leading-relaxed"></p>
+        </div>
+        <div class="glass rounded-custom p-8 hover:bg-teal-500/10 transition-colors">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-teal-400"></h4>
+            <p id="card2-desc" class="text-white/60 text-sm leading-relaxed"></p>
+        </div>
+        <div class="glass rounded-custom p-8 hover:bg-teal-500/10 transition-colors">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-teal-400"></h4>
+            <p id="card3-desc" class="text-white/60 text-sm leading-relaxed"></p>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-10 text-center">
+        <p id="quote" class="text-2xl font-light italic mb-2"></p>
+        <p id="author" class="text-teal-400 font-bold uppercase tracking-widest text-sm"></p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Чистота и Смесь",
+                subtitle: "Классификация вещества на атомном уровне",
+                pure: "Чистое вещество",
+                mixture: "Смесь",
+                canvasHint: "Нажмите на частицы, чтобы увидеть взаимодействие",
+                nodes: {
+                    pure: { title: "Чистые вещества", text: "Состоят из частиц одного вида. Обладают постоянными физическими свойствами (Т плавления, Т кипения, плотность). Пример: дистиллированная вода, золото." },
+                    mixture: { title: "Смеси", text: "Состоят из двух или более веществ, сохраняющих свои свойства. Могут быть гомогенными (однородными) и гетерогенными (неоднородными)." }
+                },
+                cards: [
+                    { title: "Закон Пруста", desc: "Закон постоянства состава: любое определенное чистое химическое соединение имеет постоянный качественный и количественный состав." },
+                    { title: "Гомогенные смеси", desc: "Растворы, в которых нельзя увидеть границы раздела между компонентами даже под микроскопом (воздух, нефть)." },
+                    { title: "Гетерогенные смеси", desc: "Смеси, в которых визуально заметны частицы разных веществ (суспензии, эмульсии, дым)." }
+                ],
+                quote: "«Истинная сущность химии — в понимании того, как разные нити материи сплетаются в единое целое»",
+                author: "Жозеф Луи Пруст"
+            },
+            kz: {
+                title: "Тазалық пен Қоспа",
+                subtitle: "Заттың атомдық деңгейдегі классификациясы",
+                pure: "Таза зат",
+                mixture: "Қоспа",
+                canvasHint: "Өзара әрекетті көру үшін бөлшектерді басыңыз",
+                nodes: {
+                    pure: { title: "Таза заттар", text: "Бір түрдегі бөлшектерден тұрады. Тұрақты физикалық қасиеттерге ие (балқу, қайнау температуралары, тығыздық). Мысалы: дистилденген су, алтын." },
+                    mixture: { title: "Қоспалар", text: "Өз қасиеттерін сақтайтын екі немесе одан да көп заттардан тұрады. Гомогенді (біркелкі) және гетерогенді (әртүрлі) болуы мүмкін." }
+                },
+                cards: [
+                    { title: "Пруст заңы", desc: "Құрам тұрақтылық заңы: кез келген белгілі бір таза химиялық қосылыстың сапалық және сандық құрамы тұрақты болады." },
+                    { title: "Гомогенді қоспалар", desc: "Құрамдас бөліктерінің арасындағы шекараны микроскоппен де көруге болмайтын ерітінділер (ауа, мұнай)." },
+                    { title: "Гетерогенді қоспалар", desc: "Әртүрлі заттардың бөлшектері визуалды түрде байқалатын қоспалар (суспензиялар, эмульсиялар, түтін)." }
+                ],
+                quote: "«Химияның шынайы мәні — материяның әртүрлі жіптерінің бір бүтінге қалай тоқылғанын түсінуде»",
+                author: "Жозеф Луи Пруст"
+            },
+            en: {
+                title: "Purity & Mixture",
+                subtitle: "Matter classification at the atomic level",
+                pure: "Pure Substance",
+                mixture: "Mixture",
+                canvasHint: "Click particles to see interaction",
+                nodes: {
+                    pure: { title: "Pure Substances", text: "Consist of only one type of particle. They have constant physical properties (melting/boiling points, density). Example: distilled water, gold." },
+                    mixture: { title: "Mixtures", text: "Consist of two or more substances that retain their own properties. Can be homogeneous or heterogeneous." }
+                },
+                cards: [
+                    { title: "Proust's Law", desc: "Law of constant proportions: a chemical compound always contains exactly the same proportion of elements by mass." },
+                    { title: "Homogeneous", desc: "Solutions where component boundaries cannot be seen even under a microscope (air, petroleum)." },
+                    { title: "Heterogeneous", desc: "Mixtures where particles of different substances are visually noticeable (suspensions, emulsions, smoke)." }
+                ],
+                quote: "«The true essence of chemistry lies in understanding how the different threads of matter weave together»",
+                author: "Joseph Louis Proust"
+            }
+        };
+
+        let currentLang = 'ru';
+        let currentMode = 'pure';
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            updateUI();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            initParticles();
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('mode-pure').textContent = t.pure;
+            document.getElementById('mode-mixture').textContent = t.mixture;
+
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('tab-active'));
+            document.getElementById(`mode-${currentMode}`).classList.add('tab-active');
+
+            const info = t.nodes[currentMode];
+            document.getElementById('info-title').textContent = info.title;
+            document.getElementById('info-text').innerHTML = `<p>${info.text}</p>`;
+
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').textContent = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').textContent = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = 40;
+            for(let i=0; i<count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    type: currentMode === 'pure' ? 'A' : (Math.random() > 0.5 ? 'A' : 'B'),
+                    r: 8
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                ctx.fillStyle = p.type === 'A' ? '#2dd4bf' : '#fbbf24';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.fill();
+            });
+            requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            particles.push({
+                x: x, y: y,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                type: currentMode === 'pure' ? 'A' : 'B',
+                r: 8
+            });
+        });
+
+        window.onload = () => {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            initParticles();
+            setLang('ru');
+            draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

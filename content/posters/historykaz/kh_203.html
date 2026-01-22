@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Казахская культура начала ХХ века</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .culture-theme {
+            background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
+        }
+
+        .culture-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #0369a1;
+            box-shadow: 0 10px 30px -5px rgba(3, 105, 161, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .culture-card:hover {
+            transform: translateY(-5px);
+            border-color: #075985;
+        }
+
+        .intellectual-glow {
+            box-shadow: 0 0 25px rgba(3, 105, 161, 0.2);
+        }
+
+        .btn-active {
+            background-color: #075985;
+            color: white;
+            box-shadow: 0 4px 10px rgba(3, 105, 161, 0.3);
+        }
+
+        canvas {
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+        }
+    </style>
+</head>
+<body class="culture-theme text-sky-950 min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-sky-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">📚</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-sky-900">Культура ХХ века</h1>
+            </div>
+            <div class="flex bg-sky-100/50 p-1 rounded-full border border-sky-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
+        
+        <!-- Section 1: Education & Press -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-sky-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Enlightenment Era</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase">Взлет Просвещения</h2>
+                <p id="viz-desc" class="text-lg text-sky-800 leading-relaxed font-light">
+                    Начало ХХ века ознаменовалось бурным ростом казахской периодики и реформой образования. Духовная энергия народа нашла выход в издании сотен книг и газет.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="pressChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Baitursynov Reform -->
+        <div class="bg-sky-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl intellectual-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">✒️</div>
+                    <div id="reform-label" class="text-sky-300 font-black text-sm uppercase tracking-[0.3em]">Writing Reform</div>
+                </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="reform-title" class="text-3xl font-black tracking-tight uppercase text-sky-200">Ахмет Байтурсынов: «Төте жазу»</h3>
+                    <p id="reform-desc" class="text-xl text-sky-50 font-light leading-relaxed">
+                        «Учитель нации» реформировал арабскую графику, адаптировав её к фонетике казахского языка. Его букварь стал основой для ликвидации безграмотности в степи.
+                    </p>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none">📖</div>
+        </div>
+
+        <!-- Section 3: Key Cultural Elements -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="culture-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-sky-800">
+                <div class="text-5xl mb-4">📰</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Газета «Қазақ»</h4>
+                <p id="fact1-d" class="text-sm text-sky-700/70 leading-relaxed">Главное издание нации (1913–1918), ставшее политической и культурной трибуной для идей Алаш-Орды.</p>
+            </div>
+            <div class="culture-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-amber-500">
+                <div class="text-5xl mb-4">🕊️</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Литература</h4>
+                <p id="fact2-d" class="text-sm text-sky-700/70 leading-relaxed">Творчество Шакарима Кудайбердиева, Магжана Жумабаева и Султанмахмута Торайгырова — расцвет философской поэзии.</p>
+            </div>
+            <div class="culture-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-sky-600">
+                <div class="text-5xl mb-4">🎭</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Театр и Музыка</h4>
+                <p id="fact3-d" class="text-sm text-sky-700/70 leading-relaxed">Зарождение профессионального театрального искусства и запись первых образцов казахского фольклора.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-20 bg-sky-950 text-sky-200/50">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Чтобы быть самостоятельной нацией, нам нужны собственная культура, язык и литература».
+            </p>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-sky-700">Kazakh Renaissance: Early 20th Century</div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Культура ХХ века",
+                vizTitle: "Взлет Просвещения",
+                vizDesc: "Начало ХХ века — время формирования профессиональной казахской литературы, журналистики и реформы национального алфавита.",
+                statusBadge: "Эпоха Просвещения",
+                reformTitle: "Ахмет Байтурсынов: Реформа",
+                reformDesc: "Создание 'Төте жазу' (Ясного письма) позволило миллионам казахов быстро освоить грамоту и приобщиться к мировым знаниям.",
+                fact1T: "Газета «Қазақ»", fact1D: "Основанная А. Букейхановым, А. Байтурсыновым и М. Дулатовым, газета стала 'мозговым центром' казахского общества.",
+                fact2T: "Слово поэта", fact2D: "Темы свободы, знания и любви к родине стали главными в творчестве новой плеяды казахских писателей.",
+                fact3T: "Первые ростки", fact3D: "В 1910-х годах появились первые казахские романы (например, 'Бакытсыз Жамал' М. Дулатова) и театральные постановки.",
+                footer: "«Чтобы быть самостоятельной нацией, нам нужны собственная культура, язык и литература». — Ахмет Байтурсынов",
+                chartLabels: ["Газета 'Қазақ'", "Журнал 'Айқап'", "Издания на латинице", "Другая периодика"],
+                chartTitle: "Структура казахской прессы (1913-1917)"
+            },
+            kz: {
+                title: "XX ғ. мәдениеті",
+                vizTitle: "Ағартушылықтың өрлеуі",
+                vizDesc: "ХХ ғасырдың басы — кәсіби қазақ әдебиетінің, журналистикасының қалыптасуы және ұлттық әліпбидің реформалану кезеңі.",
+                statusBadge: "Ағартушылық дәуірі",
+                reformTitle: "Ахмет Байтұрсынов: Реформа",
+                reformDesc: "«Төте жазу» әліпбиінің жасалуы миллиондаған қазақтың сауатын ашып, әлемдік білімге ұмтылуына жол ашты.",
+                fact1T: "«Қазақ» газеті", fact1D: "Ә. Бөкейханов, А. Байтұрсынов және М. Дулатов негізін қалаған газет қазақ қоғамының 'ми орталығына' айналды.",
+                fact2T: "Ақын сөзі", fact2D: "Бостандық, білім және отансүйгіштік тақырыптары қазақ жазушыларының жаңа буынының шығармаларында басты орын алды.",
+                fact3T: "Алғашқы қадамдар", fact3D: "1910 жылдары алғашқы қазақ романдары (мысалы, М. Дулатовтың 'Бақытсыз Жамал') және театр қойылымдары пайда болды.",
+                footer: "«Өз алдына ұлт болу үшін бізге өз мәдениетіміз, тіліміз бен әдебиетіміз керек». — Ахмет Байтұрсынов",
+                chartLabels: ["'Қазақ' газеті", "'Айқап' журналы", "Латын басылымдары", "Басқа мерзімді басылымдар"],
+                chartTitle: "Қазақ баспасөзінің құрылымы (1913-1917)"
+            },
+            en: {
+                title: "20th C. Culture",
+                vizTitle: "Rise of Enlightenment",
+                vizDesc: "The early 20th century was a formative period for professional Kazakh literature, journalism, and the reform of the national alphabet.",
+                statusBadge: "Enlightenment Era",
+                reformTitle: "Akhmet Baitursynov: Reform",
+                reformDesc: "The creation of 'Tote Jazu' (Clear Writing) allowed millions of Kazakhs to quickly attain literacy and access global knowledge.",
+                fact1T: "The 'Kazakh' Newspaper", fact1D: "Founded by A. Bokeikhanov, A. Baitursynov, and M. Dulatov, it became the 'brain center' of the Kazakh nation.",
+                fact2T: "The Poet's Word", fact2D: "Themes of freedom, education, and patriotism dominated the works of a new generation of Kazakh intellectuals.",
+                fact3T: "First Seeds", fact3D: "The 1910s saw the emergence of the first Kazakh novels (e.g., 'Unhappy Jamal' by M. Dulatov) and professional theatrical plays.",
+                footer: "«To be an independent nation, we need our own culture, language, and literature.» — Akhmet Baitursynov",
+                chartLabels: ["'Kazakh' Newspaper", "'Aikap' Magazine", "Latinized editions", "Other Periodicals"],
+                chartTitle: "Kazakh Press Structure (1913-1917)"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('pressChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        data: [40, 20, 15, 25],
+                        backgroundColor: ['#075985', '#0369a1', '#0ea5e9', '#7dd3fc'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('reform-title').innerText = t.reformTitle;
+            document.getElementById('reform-desc').innerText = t.reformDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-sky-700 hover:bg-sky-100 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => changeLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

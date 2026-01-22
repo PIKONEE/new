@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Восстание Кенесары Касымулы (1837–1847 гг.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .rebel-gradient {
+            background: radial-gradient(circle at bottom left, #7f1d1d, #0f172a 90%);
+        }
+
+        .battle-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 3rem;
+            border: 2px solid #ef4444;
+            transition: all 0.5s ease;
+        }
+
+        .battle-card:hover {
+            border-color: #f87171;
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.2);
+        }
+
+        .lang-active {
+            background-color: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 2.5rem;
+            background: rgba(2, 6, 23, 0.4);
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.8);
+            border-left: 8px solid #ef4444;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge {
+            background: #450a0a;
+            color: #fca5a5;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="rebel-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-red-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-red-500">Восстание Кенесары Касымулы (1837–1847 гг.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-red-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Strategic Resistance Map (Canvas) -->
+        <div class="battle-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-red-500 text-red-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Chronicle of the Last War</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Карта Степного Огня</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Восстание охватило территорию трех жузов. Кенесары боролся за восстановление единого Казахского ханства. Нажмите на точки сражений и ставку хана.
+                    </p>
+                    
+                    <div id="info-panel" class="info-box shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-red-400 mb-3 uppercase">План сражений</h3>
+                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на Акмолу, Сарыарку или Туркестан на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="warCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-red-900 font-mono uppercase tracking-[0.4em]">Tactical Resistance Model 1837-1847</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Content Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Politics -->
+            <div class="battle-card p-10 flex flex-col justify-between border-t-8 border-red-600">
+                <div>
+                    <span class="status-badge mb-4 inline-block" id="tag-1">Власть</span>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Последний Хан</h3>
+                    <p id="c1-d" class="text-slate-400 text-sm leading-relaxed">
+                        В **1841 году** на съезде представителей трех жузов Кенесары был официально провозглашен ханом. Он стремился восстановить государственность времен Абылай-хана. Кенесары создал регулярную армию (7–20 тысяч воинов), ввел систему жесткой дисциплины и налогов, создав фактически суверенное государство внутри империи.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Strategy -->
+            <div class="battle-card p-10 flex flex-col justify-between border-t-8 border-slate-500">
+                <div>
+                    <span class="status-badge mb-4 inline-block" id="tag-2">Стратегия</span>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Война на два фронта</h3>
+                    <p id="c2-d" class="text-slate-400 text-sm leading-relaxed">
+                        Основной целью была остановка строительства российских крепостей (Амола, Кокчетав) в Сарыарке. Одновременно Кенесары вел войну против Кокандского ханства за освобождение южных казахских родов и городов Сырдарьи. Его дипломатия с Бухарой и Хивой была направлена на создание антиколониального блока.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tragedy -->
+            <div class="battle-card p-10 flex flex-col justify-between border-t-8 border-red-600">
+                <div>
+                    <span class="status-badge mb-4 inline-block" id="tag-3">Закат</span>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Уроки Май-Тобе</h3>
+                    <p id="c3-d" class="text-slate-400 text-sm leading-relaxed">
+                        В **1847 году** восстание переместилось в пределы Кыргызстана. Из-за отсутствия поддержки со стороны кыргызских манапов и предательства части знати, отряды Кенесары были окружены. В битве при **Май-Тобе** хан и его брат Наурызбай погибли. Это событие ознаменовало окончательный конец эпохи Казахского ханства.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-20 bg-black border-t border-red-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-zinc-600">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Восстание Кенесары — это величественная лебединая песня казахской независимости, вспыхнувшая ярким пламенем перед долгим периодом колониальной тьмы.»
+            </p>
+            <div class="mt-10 h-1 w-24 bg-red-800 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Восстание Кенесары Касымулы (1837–1847 гг.)",
+                vizTitle: "Карта Степного Огня",
+                vizDesc: "Восстание охватило три жуза. Кенесары боролся за восстановление ханства. Нажмите на точки на холсте для анализа сражений и дипломатии.",
+                badge: "Хроника последней войны за свободу",
+                elementTitleDefault: "План сражений",
+                elementDescDefault: "Кликните на Акмолу, Сарыарку или Туркестан на холсте справа.",
+                tag1: "Власть", tag2: "Стратегия", tag3: "Закат",
+                c1T: "Последний Хан", c1D: "В 1841 году Кенесары признали ханом всех казахов. Он восстановил административную вертикаль и создал регулярное войско с артиллерией.",
+                c2T: "Война на два фронта", c2D: "Кенесары уничтожал российские пикеты на севере и штурмовал кокандские крепости на юге (Сузак, Жанакурган) ради единства Степи.",
+                c3T: "Уроки Май-Тобе", c3D: "Гибель хана в 1847 году в Киргизии стала точкой невозврата. После этого имперская администрация окончательно закрепилась в Казахстане.",
+                footer: "«Восстание Кенесары — это величественная лебединая песня казахской независимости.»",
+                nodes: {
+                    akmola: { name: "Штурм Акмолы (1838)", text: "Первая крупная победа Кенесары. Повстанцы сожгли крепость, заставив имперские власти пересмотреть планы продвижения в Сарыарку." },
+                    turkestan: { name: "Южный фронт (Туркестан)", text: "1841-1845 гг. Походы против Коканда. Освобождение городов Сырдарьи и восстановление влияния казахских родов на юге." },
+                    maitobe: { name: "Трагедия Май-Тобе (1847)", text: "Последний бой Кенесары. Неравное сражение в предгорьях Алатау. Смерть хана и его батыров завершила 10-летнюю войну." }
+                }
+            },
+            kz: {
+                title: "Кенесары Қасымұлы бастаған көтеріліс (1837–1847 жж.)",
+                vizTitle: "Дала алауының картасы",
+                vizDesc: "Көтеріліс үш жүзді қамтыды. Кенесары хандықты қалпына келтіру үшін күресті. Шайқастарды талдау үшін кенептегі нүктелерді басыңыз.",
+                badge: "Бостандық үшін соңғы соғыс шежіресі",
+                elementTitleDefault: "Шайқас жоспары",
+                elementDescDefault: "Оң жақтағы кенептен Ақмоланы, Сарыарқаны немесе Түркістанды басыңыз.",
+                tag1: "Билік", tag2: "Стратегия", tag3: "Қорытынды",
+                c1T: "Соңғы Хан", c1D: "1841 жылы Кенесары барлық қазақтардың ханы болып сайланды. Ол әкімшілік жүйені қалпына келтіріп, артиллериясы бар тұрақты әскер құрды.",
+                c2T: "Екі майдандағы соғыс", c2D: "Кенесары солтүстікте Ресей бекеттерін жойып, оңтүстікте Дала бірлігі үшін Қоқан бекіністерін (Созақ, Жаңақорған) шабуылдады.",
+                c3T: "Майтөбе тағылымы", c3D: "1847 жылы Қырғызстанда ханның қаза болуы кері қайтпас нүкте болды. Осыдан кейін империялық әкімшілік Қазақстанда түпкілікті орнықты.",
+                footer: "«Кенесары көтерілісі — қазақ тәуелсіздігінің айбынды аққу әні.»",
+                nodes: {
+                    akmola: { name: "Ақмола шабуылы (1838)", text: "Кенесарының алғашқы ірі жеңісі. Көтерілісшілер бекіністі өртеп жіберіп, империяны Сарыарқаға жылжу жоспарын өзгертуге мәжбүр етті." },
+                    turkestan: { name: "Оңтүстік майдан (Түркістан)", text: "1841-1845 жж. Қоқанға қарсы жорықтар. Сырдария бойындағы қалаларды азат ету және қазақ руларының ықпалын қалпына келтіру." },
+                    maitobe: { name: "Майтөбе қасіреті (1847)", text: "Кенесарының соңғы шайқасы. Алатау бөктеріндегі тең емес айқас. Хан мен оның батырларының қазасы 10 жылдық соғысты аяқтады." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('warCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawWarMap();
+        }
+
+        function drawWarMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw Abstract Territory
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 150 * scale);
+            ctx.lineTo(600 * scale, 100 * scale);
+            ctx.lineTo(750 * scale, 350 * scale);
+            ctx.lineTo(350 * scale, 450 * scale);
+            ctx.closePath();
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([10, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 2. Battle Nodes
+            drawPoint(cx - 50 * scale, cy - 120 * scale, '#ef4444', "AKMOLA (1838)");
+            drawPoint(cx + 100 * scale, cy + 150 * scale, '#dc2626', "MAI-TOBE (1847)");
+            drawPoint(cx - 150 * scale, cy + 100 * scale, '#991b1b', "SOUTH FRONT");
+
+            // 3. Movement Arrows
+            drawArrow(cx - 50 * scale, cy - 100 * scale, cx - 130 * scale, cy + 70 * scale, '#ef4444');
+            drawArrow(cx - 130 * scale, cy + 80 * scale, cx + 80 * scale, cy + 140 * scale, '#ef4444');
+        }
+
+        function drawPoint(x, y, color, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, 12, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y - 25);
+        }
+
+        function drawArrow(fx, fy, tx, ty, color) {
+            ctx.beginPath();
+            ctx.moveTo(fx, fy);
+            ctx.lineTo(tx, ty);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.sqrt((x-(cx-50*scale))**2 + (y-(cy-120*scale))**2) < 30) target = 'akmola';
+            else if (Math.sqrt((x-(cx+100*scale))**2 + (y-(cy+150*scale))**2) < 30) target = 'maitobe';
+            else if (Math.sqrt((x-(cx-150*scale))**2 + (y-(cy+100*scale))**2) < 30) target = 'turkestan';
+
+            if (target) {
+                const info = translations[currentLang].nodes[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

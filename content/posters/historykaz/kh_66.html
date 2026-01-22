@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Борьба казахского народа против джунгарского нашествия</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .war-gradient {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a 90%);
+        }
+
+        .premium-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            border-color: #f97316;
+            box-shadow: 0 0 50px rgba(249, 115, 22, 0.1);
+        }
+
+        .lang-active {
+            background-color: #f97316;
+            color: #0f172a;
+            box-shadow: 0 0 25px rgba(249, 115, 22, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid rgba(249, 115, 22, 0.1);
+        }
+
+        .battle-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-left: 8px solid #f97316;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .battle-card:hover {
+            transform: translateX(10px);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .term-badge {
+            background: #431407;
+            color: #fdba74;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="war-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-orange-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-orange-500">Освободительная война против джунгар</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-orange-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Strategic Resistance Map (Canvas) -->
+        <div class="premium-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-orange-500/50 text-orange-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">National Defense Schematic</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Щит нации: Линия обороны</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Борьба с джунгарами стала отечественной войной за выживание. Нажмите на точки великих сражений, чтобы изучить тактику и вклад батыров.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[3rem] bg-orange-950/30 border-l-8 border-orange-500 shadow-2xl transition-all duration-500">
+                        <h3 id="battle-title" class="text-xl font-bold text-orange-300 mb-3 uppercase tracking-tighter">Хроника побед</h3>
+                        <p id="battle-desc" class="text-slate-300 text-sm leading-relaxed italic font-light">Кликните на маркеры Буланты, Анракай или Ордабасы на холсте.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="warCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-orange-900 font-mono uppercase tracking-[0.4em]">Tactical Military Reconstruction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Historical Content -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- 1723 Disaster -->
+            <div class="battle-card">
+                <span class="term-badge mb-4 inline-block" id="t-trag">Трагедия</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Ақтабан шұбырынды</h3>
+                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    В **1723 году** жунгарская армия под предводительством Цеван-Рабдана нанесла внезапный удар. Казахи, не успевшие объединиться, понесли колоссальные потери. Люди бежали на запад, бросая скот и имущество. Эти годы вошли в память народа как «Годы великого бедствия». Погибло около 40% населения.
+                </p>
+                <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest italic">1723–1727: Пик катастрофы</div>
+            </div>
+
+            <!-- Unification -->
+            <div class="battle-card">
+                <span class="term-badge mb-4 inline-block" id="t-unit">Единство</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Курултай в Ордабасы</h3>
+                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    В **1726 году** у подножия горы Ордабасы состоялся всеказахский съезд. Ханы Абулхаир, Абулмамбет и Жолбарыс поклялись действовать сообща. Главнокомандующим ополчения был избран хан **Абулхаир**. Началось формирование единых отрядов под руководством легендарных батыров.
+                </p>
+                <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest italic">Девиз: «Бірлік» (Единство)</div>
+            </div>
+
+            <!-- Major Victories -->
+            <div class="battle-card">
+                <span class="term-badge mb-4 inline-block" id="t-vict">Триумф</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Победный марш</h3>
+                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
+                    Первой крупной победой стало сражение на реке **Буланты (1726/28 г.)**, названное «Местом гибели калмыков». Финальным аккордом стала **Анракайская битва (1729/30 г.)** в предгорьях Хантау. Объединенные силы трех жузов нанесли жунгарам сокрушительное поражение, освободив Жетысу.
+                </p>
+                <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest italic">Анракай — место стонов врага</div>
+            </div>
+        </div>
+
+        <!-- Section 3: The Batyrs (Full Width) -->
+        <div class="bg-orange-900/10 p-10 md:p-20 rounded-[4rem] border border-orange-500/20 shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h3 id="batyr-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter text-white">Железный кулак: Батыры</h3>
+                    <p id="batyr-d" class="text-slate-300 text-xl font-light leading-relaxed">
+                        Победа была невозможна без военного гения народных предводителей. **Кабанбай**, **Богенбай**, **Наурызбай** и **Райымбек** стали символами несгибаемой воли. Они разработали тактику изматывания врага в степи и внезапных фланговых ударов, которые парализовали тяжелую жунгарскую конницу.
+                    </p>
+                    <div class="inline-flex items-center gap-4 bg-white/5 px-6 py-2 rounded-full border border-white/10">
+                        <span id="batyr-tag" class="text-sm font-bold uppercase tracking-widest text-orange-400">Народная армия</span>
+                    </div>
+                </div>
+                <div class="flex justify-center relative">
+                    <div class="w-80 h-80 border-4 border-dashed border-orange-700/50 rounded-full flex items-center justify-center animate-spin-slow">
+                        <div class="text-center">
+                            <div class="text-7xl mb-4 grayscale opacity-20">⚔️</div>
+                            <div id="found-label" class="text-[10px] font-black uppercase text-orange-300 tracking-[0.5em]">The Steel Will</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">VICTORY</div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-orange-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6 text-slate-600">
+            <p id="footer-text" class="text-2xl font-light italic leading-tight">
+                «Борьба с джунгарами — это не просто война за пастбища, это священный акт рождения единой казахской нации из пламени величайшей трагедии.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-orange-700 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Освободительная война против джунгар",
+                vizTitle: "Щит нации: Линия обороны",
+                vizDesc: "Борьба с джунгарами стала отечественной войной. Нажмите на точки сражений на холсте для анализа тактики и триумфа.",
+                badge: "Стратегическая карта обороны",
+                battleTitleDefault: "Хроника побед",
+                battleDescDefault: "Кликните на маркеры Буланты, Анракай или Ордабасы на чертеже.",
+                tTrag: "Трагедия", tUnit: "Единство", tVict: "Триумф",
+                c1T: "Ақтабан шұбырынды", c1D: "1723 г. — катастрофический удар жунгар. Потеря Туркестана и Ташкента. Массовая гибель людей и бегство племен в сторону Самарканда и Хивы.",
+                c2T: "Курултай в Ордабасы", c2D: "1726 г. — поворотный момент. Три жуза объединились под началом Абулхаира. Батыры поклялись биться до конца за каждую пядь земли.",
+                c3T: "Победный марш", c3D: "Разгром жунгар при Буланты (1728) и Анракае (1729). Эти битвы доказали, что единство — главный залог суверенитета казахов.",
+                batyrT: "Железный кулак: Батыры", batyrD: "Кабанбай и Богенбай создали мобильные корпуса, способные на молниеносные удары. Их авторитет в народе был выше ханского.",
+                batyrTag: "Народная армия",
+                footer: "«Борьба с джунгарами — это священный акт рождения единой казахской нации из пламени трагедии.»",
+                nodes: {
+                    bulanty: { name: "Битва при Буланты (1728)", text: "Место: Берега реки Буланты. Итог: Первая крупная победа ополчения. Жунгары потеряли более 10 тыс. воинов. Психологический перелом в войне." },
+                    anyrakai: { name: "Анракайская битва (1729)", text: "Место: Предгорья Хантау у озера Балхаш. Итог: Генеральное сражение. Объединенные силы казахов полностью уничтожили гвардию жунгарского хунтайши." },
+                    ordabasy: { name: "Курултай в Ордабасы (1726)", text: "Место: Южный Казахстан. Итог: Формирование единого штаба обороны. Прекращение междоусобиц и выбор Абулхаира главнокомандующим." }
+                }
+            },
+            kz: {
+                title: "Жоңғар шапқыншылығына қарсы азаттық соғысы",
+                vizTitle: "Ұлт қалқаны: Қорғаныс шебі",
+                vizDesc: "Жоңғарларға қарсы күрес отан соғысына айналды. Тактика мен жеңістерді талдау үшін кенептегі шайқас нүктелерін басыңыз.",
+                badge: "Стратегиялық қорғаныс картасы",
+                battleTitleDefault: "Жеңістер шежіресі",
+                battleDescDefault: "Сызбадағы Бұланты, Аңырақай немесе Ордабасы маркерлерін басыңыз.",
+                tTrag: "Қасірет", tUnit: "Бірлік", tVict: "Жеңіс",
+                c1T: "Ақтабан шұбырынды", c1D: "1723 ж. — жоңғарлардың жойқын соққысы. Түркістан мен Ташкенттің құлауы. Халықтың Самарқанд пен Хиуаға жаппай қашуы.",
+                c2T: "Ордабасыдағы құрылтай", c2D: "1726 ж. — бетбұрыс кезең. Үш жүз Әбілқайырдың астына бірікті. Батырлар жердің әр қарысы үшін соңғы демге дейін соғысуға ант берді.",
+                c3T: "Жеңіс жорығы", c3D: "Бұланты (1728) және Аңырақай (1729) шайқастарында жоңғарларды талқандау. Бұл шайқастар бірліктің маңызын дәлелдеді.",
+                batyrT: "Темір жұдырық: Батырлар", batyrD: "Қабанбай мен Бөгенбай найзағайдай жылдам соққы бере алатын мобильді корпустар құрды. Олардың халық арасындағы беделі ханнан жоғары болды.",
+                batyrTag: "Халық әскері",
+                footer: "«Жоңғар соғысы — қасірет отынан біртұтас қазақ ұлтының тууының қасиетті актісі.»",
+                nodes: {
+                    bulanty: { name: "Бұланты шайқасы (1728)", text: "Орны: Бұланты өзенінің жағасы. Нәтиже: Жасақтың алғашқы ірі жеңісі. Жоңғарлар 10 мыңнан астам сарбазынан айырылды." },
+                    anyrakai: { name: "Аңырақай шайқасы (1729)", text: "Орны: Балқаш көлінің маңындағы Хантау бөктері. Нәтиже: Бас шайқас. Қазақтар жоңғар қонтайшысының гвардиясын толық талқандады." },
+                    ordabasy: { name: "Ордабасы құрылтайы (1726)", text: "Орны: Оңтүстік Қазақстан. Нәтиже: Біртұтас қорғаныс штабының құрылуы. Әбілқайыр хан бас қолбасшы болып сайланды." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('warCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 550;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw Abstract Map Outline
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 100 * scale);
+            ctx.lineTo(600 * scale, 50 * scale);
+            ctx.lineTo(750 * scale, 450 * scale);
+            ctx.lineTo(150 * scale, 500 * scale);
+            ctx.closePath();
+            ctx.strokeStyle = 'rgba(249, 115, 22, 0.1)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 2. Victory Nodes
+            drawNode(cx - 200 * scale, cy - 50 * scale, '#f97316', "BULANTY (1728)", 18 * scale);
+            drawNode(cx + 100 * scale, cy + 150 * scale, '#ea580c', "ANYRAKAI (1729)", 22 * scale);
+            drawNode(cx, cy + 50 * scale, '#fbbf24', "ORDABASY (1726)", 15 * scale);
+
+            // 3. Attack Lines (Abstract red arrows)
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.2)';
+            ctx.setLineDash([5, 10]);
+            ctx.beginPath();
+            ctx.moveTo(700 * scale, 100 * scale); ctx.lineTo(cx + 100 * scale, cy + 150 * scale);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawNode(x, y, color, label, size) {
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fillStyle = color + '22';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + size + 20);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let target = null;
+            if (Math.sqrt((x - (cx - 200*scale))**2 + (y - (cy - 50*scale))**2) < 40) target = 'bulanty';
+            else if (Math.sqrt((x - (cx + 100*scale))**2 + (y - (cy + 150*scale))**2) < 40) target = 'anyrakai';
+            else if (Math.sqrt((x - cx)**2 + (y - (cy + 50*scale))**2) < 40) target = 'ordabasy';
+
+            if (target) {
+                const info = translations[currentLang].nodes[target];
+                document.getElementById('battle-title').innerText = info.name;
+                document.getElementById('battle-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#f97316';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('battle-title').innerText = t.battleTitleDefault;
+            document.getElementById('battle-desc').innerText = t.battleDescDefault;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('batyr-t').innerText = t.batyrT; document.getElementById('batyr-d').innerText = t.batyrD;
+            document.getElementById('batyr-tag').innerText = t.batyrTag;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

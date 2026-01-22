@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Боги Олимпа: Религия Древней Греции</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #38bdf8, #0ea5e9, #020617);
+            color: #f0f9ff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #ffffff;
+            color: #0ea5e9;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #fbbf24;
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #fbbf24; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-white uppercase drop-shadow-lg">
+                Религия Греции
+            </h1>
+            <p id="sub-title" class="text-sky-100/60 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Бессмертные владыки Олимпа</p>
+        </div>
+        <div class="flex gap-3 glass p-2">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-white uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-white inline-block"></span>
+                Священный Олимп
+            </h2>
+            <div class="relative flex-grow bg-sky-400/20 rounded-[2.5rem] border border-white/20 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="olympusCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-sky-100/70 italic text-center uppercase tracking-widest">Нажмите на атрибуты богов для изучения их власти</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-white mb-8 font-black uppercase leading-tight" id="placeholder-title">Мир богов и людей</h3>
+                    <p class="text-sky-50 leading-relaxed text-lg" id="placeholder-text">
+                        Греки верили, что боги похожи на людей: они любят, ссорятся и радуются, но обладают бессмертием и великой силой. Главные боги жили на вершине горы Олимп. Выберите символ на схеме.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/10 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚡</span>
+                            <span id="hint-1" class="text-white font-bold uppercase text-xs tracking-widest">Власть над стихиями</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/10 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-2" class="text-white font-bold uppercase text-xs tracking-widest">Храмы и жертвы</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-white/30"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-sky-50 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-amber-400/20 rounded-[2.5rem] border border-amber-400/30 shadow-xl">
+                        <strong class="text-amber-300 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-attribute">Священный атрибут:</strong>
+                        <p id="info-fact" class="text-white text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-white hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🌩️</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-white uppercase">Три брата</h3>
+            <p id="card1-text" class="text-sky-100/70 text-sm leading-relaxed">После победы над титанами братья разделили мир жребием: <strong>Зевс</strong> взял небо, <strong>Посейдон</strong> — море, а <strong>Аид</strong> — подземное царство мертвых.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-amber-400 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🌿</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-white uppercase">Подвиги Героев</h3>
+            <p id="card2-text" class="text-sky-100/70 text-sm leading-relaxed">Дети богов и людей назывались героями. Обладая огромной силой, они совершали подвиги (как <strong>Геракл</strong> или <strong>Персей</strong>), очищая землю от чудовищ.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-sky-300 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏺</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-white uppercase">Культ и Оракулы</h3>
+            <p id="card3-text" class="text-sky-100/70 text-sm leading-relaxed">Греки строили богам великолепные храмы. Самым почитаемым местом был <strong>Дельфийский оракул</strong>, где жрица Пифия предсказывала волю богов.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-white/10 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-white leading-tight max-w-5xl mx-auto">
+            «Зевс — отец богов и людей, сотрясатель земли и владыка небесного грома».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Религия Греции",
+                subtitle: "Бессмертные владыки Олимпа",
+                visualTitle: "Священный Олимп",
+                hint: "Нажмите на атрибуты богов для изучения их власти",
+                placeholderTitle: "Мир богов и людей",
+                placeholderText: "Древние греки представляли богов в образе людей, но наделяли их сверхсилой. Изучите пантеон через символы божеств.",
+                labelAttribute: "Священный атрибут:",
+                hint1: "Власть над стихиями", hint2: "Храмы и жертвы",
+                card1Title: "Три брата",
+                card1Text: "Зевс, Посейдон и Аид — главные правители мироздания, разделившие сферы влияния после победы над отцом Кроносом.",
+                card2Title: "Подвиги Героев",
+                card2Text: "Геракл, Персей и Тесей — мост между богами и смертными, защитники порядка и истребители хаоса.",
+                card3Title: "Культ и Оракулы",
+                card3Text: "Вера пронизывала всю жизнь: от домашних жертв до великих Панафинейских празднеств и советов оракулов.",
+                footerQuote: "«Зевс — отец богов и людей, сотрясатель земли и владыка небесного грома».",
+                nodes: [
+                    { id: 1, tag: "Верховный бог", title: "Зевс", desc: "Царь богов, повелитель грома и молний. Он хранит порядок, наказывает клятвопреступников и защищает слабых.", fact: "Молния — оружие Зевса, выкованное для него циклопами." },
+                    { id: 2, tag: "Владыка морей", title: "Посейдон", desc: "Брат Зевса, управляющий океанами и вызывающий землетрясения. Его боятся все мореходы.", fact: "Трезубец позволяет Посейдону поднимать бури и разбивать скалы." },
+                    { id: 3, tag: "Богиня мудрости", title: "Афина", desc: "Дочь Зевса, рожденная из его головы. Покровительница справедливой войны, ремесел, наук и города Афины.", fact: "Сова и оливковая ветвь — священные символы мудрости Афины." },
+                    { id: 4, tag: "Бог света", title: "Аполлон", desc: "Предводитель муз, бог солнца, искусства и врачевания. Его стрелы могут нести как исцеление, так и мор.", fact: "Лира символизирует гармонию, которую Аполлон приносит в мир." },
+                    { id: 5, tag: "Богиня любви", title: "Афродита", desc: "Самая прекрасная из богинь, родившаяся из морской пены. Покровительница любви, красоты и вечной юности.", fact: "Голубь и роза — символы нежности и очарования Афродиты." },
+                    { id: 6, tag: "Бог войны", title: "Арес", desc: "Сын Зевса и Геры, бог неистовой, кровожадной войны. Его сопровождают ужас и страх.", fact: "Копье и горящий факел — неизменные спутники Ареса на поле битвы." }
+                ]
+            },
+            kz: {
+                title: "Грекия діні",
+                subtitle: "Олимптің мәңгілік билеушілері",
+                visualTitle: "Қасиетті Олимп",
+                hint: "Билігін зерттеу үшін құдайлардың нышандарын басыңыз",
+                placeholderTitle: "Құдайлар мен адамдар әлемі",
+                placeholderText: "Ежелгі гректер құдайларды адам кейпінде елестеткен, бірақ оларға зор күш берген. Нышандар арқылы пантеонды зерттеңіз.",
+                labelAttribute: "Қасиетті нышан:",
+                hint1: "Стихияларға билік", hint2: "Храмдар мен құрбандықтар",
+                card1Title: "Үш ағайынды",
+                card1Text: "Зевс, Посейдон және Аид — Кронос патшаны жеңгеннен кейін әлемді бөліп алған басты билеушілер.",
+                card2Title: "Батырлар ерлігі",
+                card2Text: "Геракл, Персей және Тесей — құдайлар мен адамдар арасындағы көпір, тәртіп сақшылары.",
+                card3Title: "Культ пен Оракулдар",
+                card3Text: "Сенім бүкіл өмірді қамтыды: үй құрбандықтарынан бастап Дельфий оракулдарының кеңестеріне дейін.",
+                footerQuote: "«Зевс — құдайлар мен адамдардың әкесі, жерді сілкіндіруші және аспан күркірінің иесі».",
+                nodes: [
+                    { id: 1, tag: "Жоғарғы құдай", title: "Зевс", desc: "Құдайлар патшасы, найзағай мен күн күркірінің иесі. Ол тәртіпті сақтайды және әлсіздерді қорғайды.", fact: "Найзағай — циклоптар соққан Зевстің басты қаруы." },
+                    { id: 2, tag: "Теңіз әміршісі", title: "Посейдон", desc: "Зевстің ағасы, мұхиттарды басқарады және жер сілкіністерін тудырады.", fact: "Үштіс Посейдонға дауыл тұрғызуға және жартастарды қиратуға мүмкіндік береді." },
+                    { id: 3, tag: "Даналық құдайы", title: "Афина", desc: "Зевстің қызы. Әділ соғыстың, қолөнердің, ғылымның және Афины қаласының жебеушісі.", fact: "Үкі мен зәйтүн бұтағы — Афина даналығының қасиетті нышандары." },
+                    { id: 4, tag: "Жарық құдайы", title: "Аполлон", desc: "Музалардың жетекшісі, күн, өнер және емшілік құдайы.", fact: "Лира Аполлонның әлемге әкелетін үйлесімділігін білдіреді." },
+                    { id: 5, tag: "Махаббат құдайы", title: "Афродита", desc: "Теңіз көбігінен жаралған ең сұлу құдай. Махаббат пен сұлулықтың жебеушісі.", fact: "Көгершін мен раушан — Афродитаның нәзіктігі мен тартымдылығының нышандары." },
+                    { id: 6, tag: "Соғыс құдайы", title: "Арес", desc: "Зевс пен Гераның ұлы, қатал соғыс құдайы. Оның қасында әрқашан қорқыныш жүреді.", fact: "Найза мен жанып тұрған алау — Арестің ұрыс даласындағы серіктері." }
+                ]
+            },
+            en: {
+                title: "Greek Religion",
+                subtitle: "Immortal Lords of Olympus",
+                visualTitle: "Sacred Olympus",
+                hint: "Click on divine symbols to study their power",
+                placeholderTitle: "World of Gods and Men",
+                placeholderText: "Ancient Greeks imagined gods in human form but endowed them with super strength. Explore the pantheon through divine symbols.",
+                labelAttribute: "Sacred Attribute:",
+                hint1: "Power over Elements", hint2: "Temples & Sacrifices",
+                card1Title: "Three Brothers",
+                card1Text: "Zeus, Poseidon, and Hades — the chief rulers of the universe who divided spheres of influence after defeating Cronus.",
+                card2Title: "Deeds of Heroes",
+                card2Text: "Heracles, Perseus, and Theseus — the bridge between gods and mortals, protectors of order and slayers of chaos.",
+                card3Title: "Cult and Oracles",
+                card3Text: "Faith permeated all life, from household offerings to grand festivals and the prophecies of the Delphic Oracle.",
+                footerQuote: "«Zeus is the father of gods and men, the shaker of the earth and the lord of heavenly thunder.»",
+                nodes: [
+                    { id: 1, tag: "Supreme God", title: "Zeus", desc: "King of the gods, ruler of thunder and lightning. He upholds order, punishes oath-breakers, and protects the weak.", fact: "The Thunderbolt is Zeus's weapon, forged for him by the Cyclopes." },
+                    { id: 2, tag: "Lord of the Sea", title: "Poseidon", desc: "Zeus's brother, governing the oceans and causing earthquakes. Feared by all mariners.", fact: "The Trident allows Poseidon to stir up storms and shatter rocks." },
+                    { id: 3, tag: "Goddess of Wisdom", title: "Athena", desc: "Daughter of Zeus, born from his head. Patroness of strategic war, crafts, wisdom, and the city of Athens.", fact: "The Owl and the olive branch are sacred symbols of Athena's wisdom." },
+                    { id: 4, tag: "God of Light", title: "Apollo", desc: "Leader of the Muses, god of the sun, prophecy, arts, and healing. His arrows can bring both cure and plague.", fact: "The Lyre symbolizes the harmony that Apollo brings to the world." },
+                    { id: 5, tag: "Goddess of Love", title: "Aphrodite", desc: "The most beautiful of goddesses, born from sea foam. Patroness of love, beauty, and eternal youth.", fact: "The Dove and the rose are symbols of Aphrodite's grace and charm." },
+                    { id: 6, tag: "God of War", title: "Ares", desc: "Son of Zeus and Hera, the god of violent, bloodthirsty war. He is accompanied by Panic and Fear.", fact: "The Spear and a burning torch are Ares's constant companions on the battlefield." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('olympusCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-attribute').innerText = t.labelAttribute;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Mountain (Olympus)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 200, 450);
+            ctx.lineTo(cx, 100);
+            ctx.lineTo(cx + 200, 450);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Snow peak
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.moveTo(cx - 50, 190);
+            ctx.lineTo(cx, 100);
+            ctx.lineTo(cx + 50, 190);
+            ctx.lineTo(cx + 25, 170);
+            ctx.lineTo(cx, 190);
+            ctx.lineTo(cx - 25, 170);
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx, y: 150, icon: "⚡" },      // Zeus
+                { id: 2, x: cx - 120, y: 350, icon: "🔱" }, // Poseidon
+                { id: 3, x: cx + 120, y: 350, icon: "🛡️" }, // Athena
+                { id: 4, x: cx - 60, y: 250, icon: "🎼" },  // Apollo
+                { id: 5, x: cx + 60, y: 250, icon: "🕊️" },  // Aphrodite
+                { id: 6, x: cx, y: 320, icon: "⚔️" }       // Ares
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(251, 191, 36, 0.4)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core Circle
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Icon text
+                ctx.fillStyle = '#0ea5e9';
+                ctx.font = 'bold 14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 10px Montserrat';
+                ctx.fillText(nodeInfo.title.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

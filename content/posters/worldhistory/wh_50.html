@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рабство в Риме: Говорящие орудия</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #292524, #0c0a09, #000000);
+            color: #e7e5e4;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(168, 162, 158, 0.15);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #78716c;
+            color: white;
+            box-shadow: 0 0 30px rgba(120, 113, 108, 0.3);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #78716c;
+            background: linear-gradient(90deg, rgba(120, 113, 108, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #78716c; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-stone-400 via-stone-200 to-stone-500 uppercase">
+                Рабство в Риме
+            </h1>
+            <p id="sub-title" class="text-stone-500 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Эпоха "говорящих орудий" и тяжелого труда</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-stone-800/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-stone-900 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-stone-300 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-stone-600 inline-block"></span>
+                Сферы рабского труда
+            </h2>
+            <div class="relative flex-grow bg-black/40 rounded-[2.5rem] border border-stone-800 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="slaveCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-stone-500 italic text-center uppercase tracking-widest">Нажмите на символы, чтобы изучить категории рабов</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-stone-200 mb-8 font-black uppercase leading-tight" id="placeholder-title">Instrumentum Vocale</h3>
+                    <p class="text-stone-400 leading-relaxed text-lg" id="placeholder-text">
+                        Римляне называли рабов «говорящими орудиями», приравнивая их к скоту или плугу. Победоносные войны привели к тому, что в Италии рабов стало почти столько же, сколько свободных людей. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⛓️</span>
+                            <span id="hint-1" class="text-stone-400 font-bold uppercase text-xs tracking-widest">Источники рабства</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏟️</span>
+                            <span id="hint-2" class="text-stone-400 font-bold uppercase text-xs tracking-widest">Игры со смертью</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-stone-900 text-stone-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-stone-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-stone-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-stone-950/40 rounded-[2.5rem] border border-stone-800 shadow-xl">
+                        <strong class="text-stone-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-fact">Суровая реальность:</strong>
+                        <p id="info-fact" class="text-stone-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-stone-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🚢</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-stone-200 uppercase">Источники рабства</h3>
+            <p id="card1-text" class="text-stone-400 text-sm leading-relaxed">Главным источником была <strong>война</strong>. После падения Карфагена 50 тысяч его жителей были проданы в рабство. Также рабов поставляли <strong>пираты</strong> и <strong>работорговцы</strong>, похищавшие людей в провинциях.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-red-500 uppercase">Гладиаторы</h3>
+            <p id="card2-text" class="text-stone-400 text-sm leading-relaxed">Сильных и отважных рабов обучали в специальных школах искусству убивать на потеху публике. <strong>Гладиаторские бои</strong> были самым популярным и кровавым зрелищем в Риме.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏚️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-orange-400 uppercase">Латифундии</h3>
+            <p id="card3-text" class="text-stone-400 text-sm leading-relaxed">Огромные поместья богачей, где трудились сотни рабов. Бесплатный труд невольников сделал производство хлеба и масла очень дешевым, что привело к разорению свободных крестьян.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-stone-900 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-stone-300 leading-tight max-w-5xl mx-auto">
+            «Раб — это вещь, лишенная воли, но обладающая голосом, чтобы служить господину».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Рабство в Риме",
+                subtitle: "Эпоха 'говорящих орудий' и тяжелого труда",
+                visualTitle: "Сферы рабского труда",
+                hint: "Нажмите на символы, чтобы изучить категории рабов",
+                placeholderTitle: "Instrumentum Vocale",
+                placeholderText: "Рабы были мотором римской экономики. От образованных учителей до изможденных пахарей — узнайте, как была устроена их жизнь.",
+                labelFact: "Суровая реальность:",
+                hint1: "Источники рабства", hint2: "Игры со смертью",
+                card1Title: "Источники рабства",
+                card1Text: "Войны, пиратство и долговая кабала в провинциях наполняли рынки Рима дешевой человеческой силой.",
+                card2Title: "Гладиаторы",
+                card2Text: "Рабы-бойцы, чья жизнь висела на волоске и зависела от жеста большого пальца императора или толпы.",
+                card3Title: "Латифундии",
+                card3Text: "Сельскохозяйственные фабрики, где труд рабов вытеснил свободных земледельцев, меняя облик Италии.",
+                footerQuote: "«Раб — это вещь, лишенная воли, но обладающая голосом, чтобы служить господину».",
+                nodes: [
+                    { id: 1, tag: "Город", title: "Домашние рабы", desc: "Считались элитой среди невольников. Среди них были повара, слуги, а также образованные греки — врачи, учителя и секретари. В богатых домах их жизнь была относительно сносной.", fact: "Часто господа давали домашним рабам свободу (вольноотпущенники) за верную службу." },
+                    { id: 2, tag: "Деревня", title: "Рабы на полях", desc: "Самая тяжелая и массовая категория. Они жили в казармах (эргастулах), часто работали в кандалах и подвергались жестоким истязаниям за любую провинность.", fact: "Римляне считали, что рабов на полях нужно менять чаще, чем волов, так как они быстро изнашивались." },
+                    { id: 3, tag: "Недра", title: "Рудники и Каменоломни", desc: "Место смертников. Работа в шахтах по 15-20 часов в сутки приводила к гибели человека в течение нескольких месяцев. Это было худшим наказанием для раба.", fact: "На рудниках работали преступники и самые строптивые рабы." },
+                    { id: 4, tag: "Арена", title: "Гладиаторы", desc: "Рабы, обученные сражаться друг с другом или дикими зверями. Победитель получал славу и деньги, но проигравший чаще всего погибал под ликование трибун.", fact: "Слово 'гладиатор' происходит от названия римского короткого меча — гладиуса." },
+                    { id: 5, tag: "Право", title: "Бесправие", desc: "Раб не имел семьи (его брак не признавался законом), не имел имущества и не мог подать в суд. Господин имел право убить своего раба в любой момент без объяснения причин.", fact: "По закону, если раб убивал хозяина, казни подлежали все рабы, находившиеся в доме в момент убийства." }
+                ]
+            },
+            kz: {
+                title: "Римдегі құлдық",
+                subtitle: "«Сөйлейтін еңбек құралдары» дәуірі",
+                visualTitle: "Құл еңбегінің салалары",
+                hint: "Құлдардың санаттарын зерттеу үшін белгілерді басыңыз",
+                placeholderTitle: "Instrumentum Vocale",
+                placeholderText: "Құлдар Рим экономикасының қозғалтқышы болды. Оқыған мұғалімдерден бастап қажыған егіншілерге дейін олардың өмірі қалай болғанын біліңіз.",
+                labelFact: "Қатал шындық:",
+                hint1: "Құлдық көздері", hint2: "Өлім ойындары",
+                card1Title: "Құлдық көздері",
+                card1Text: "Соғыстар, қарақшылық және провинциялардағы қарыз құлдығы Рим нарықтарын арзан адам күшімен толтырды.",
+                card2Title: "Гладиаторлар",
+                card2Text: "Өмірі қыл үстінде тұрған құл-жауынгерлер, олардың тағдыры халықтың немесе императордың ишарасына байланысты болды.",
+                card3Title: "Латифундиялар",
+                card3Text: "Құл еңбегі еркін егіншілерді ығыстырған алып иеліктер, бұл Италияның келбетін өзгертті.",
+                footerQuote: "«Құл — ерік-жігері жоқ, бірақ қожайынына қызмет ету үшін дауысы бар зат».",
+                nodes: [
+                    { id: 1, tag: "Қала", title: "Үй құлдары", desc: "Құлдар арасындағы элита саналды. Олардың арасында аспаздар, қызметшілер, сондай-ақ дәрігерлер мен мұғалімдер болды.", fact: "Көбіне қожайындар үй құлдарына адал қызметі үшін бостандық берген." },
+                    { id: 2, tag: "Ауыл", title: "Дала құлдары", desc: "Ең ауыр және жаппай санат. Олар казармаларда тұрып, кез келген қателік үшін қатал жазаланды.", fact: "Римдіктер дала құлдарын өгіздерден де жиі ауыстырып тұру керек деп есептеген." },
+                    { id: 3, tag: "Кен орны", title: "Кеніштер", desc: "Өлімге кесілгендер орны. Шахтада күніне 15-20 сағат жұмыс істеу адамды бірнеше айда өлімге әкелетін.", fact: "Кеніштерде қылмыскерлер мен ең қырсық құлдар жұмыс істеді." },
+                    { id: 4, tag: "Арена", title: "Гладиаторлар", desc: "Бір-бірімен немесе жабайы аңдармен соғысуға үйретілген құлдар.", fact: "'Гладиатор' сөзі римдік қысқа қылыш — гладиустың атауынан шыққан." },
+                    { id: 5, tag: "Құқық", title: "Құқықсыздық", desc: "Құлдың отбасы, мүлкі болмады. Қожайын өз құлын кез келген уақытта себепсіз өлтіре алатын.", fact: "Заң бойынша, егер құл қожайынын өлтірсе, үйдегі барлық құлдар өлім жазасына кесілетін." }
+                ]
+            },
+            en: {
+                title: "Slavery in Rome",
+                subtitle: "The Era of 'Speaking Tools' and Hard Labor",
+                visualTitle: "Spheres of Slave Labor",
+                hint: "Click on icons to study slave categories",
+                placeholderTitle: "Instrumentum Vocale",
+                placeholderText: "Slaves were the engine of the Roman economy. From educated tutors to exhausted plowmen—learn how their lives were structured.",
+                labelFact: "Harsh Reality:",
+                hint1: "Sources of Slavery", hint2: "Games with Death",
+                card1Title: "Sources of Slavery",
+                card1Text: "Wars, piracy, and debt bondage in the provinces filled Roman markets with cheap human labor.",
+                card2Title: "Gladiators",
+                card2Text: "Slave fighters whose lives hung by a thread, depending on the thumb gesture of the emperor or the mob.",
+                card3Title: "Latifundia",
+                card3Text: "Agro-factories where slave labor displaced free farmers, forever changing the face of Italy.",
+                footerQuote: "«A slave is a thing without will, but with a voice to serve his master.»",
+                nodes: [
+                    { id: 1, tag: "City", title: "Household Slaves", desc: "The elite among slaves. Included cooks, valets, and educated Greeks—doctors, tutors, and secretaries. Their lives were relatively bearable.", fact: "Masters often granted household slaves freedom (manumission) for loyal service." },
+                    { id: 2, tag: "Rural", title: "Field Slaves", desc: "The most massive and oppressed category. They lived in barracks (ergastula) and were often chained while working under brutal conditions.", fact: "Romans believed field slaves should be replaced more often than oxen because they wore out so quickly." },
+                    { id: 3, tag: "Mining", title: "Mines and Quarries", desc: "A place of certain death. Working 15-20 hours a day in dark, dangerous tunnels killed a person within months.", fact: "Mines were reserved for criminals and the most rebellious slaves." },
+                    { id: 4, tag: "Arena", title: "Gladiators", desc: "Slaves trained to kill each other or wild beasts. A winner gained fame, but a loser died to satisfy the bloodlust of the crowd.", fact: "The word 'gladiator' comes from the Roman short sword—the gladius." },
+                    { id: 5, tag: "The Law", title: "Total Deprivation", desc: "A slave had no legal family, no property, and no standing in court. A master held the power of life and death over them.", fact: "By law, if a slave murdered their master, every slave in the household was executed." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('slaveCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-fact').innerText = t.labelFact;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Connection Hierarchy
+            ctx.strokeStyle = 'rgba(120, 113, 108, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 120, 0, Math.PI * 2);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx, y: cy - 120, icon: "🏠" },      // Household
+                { id: 2, x: cx + 114, y: cy - 37, icon: "🌾" }, // Rural
+                { id: 3, x: cx + 70, y: cy + 97, icon: "⛏️" },  // Mines
+                { id: 4, x: cx - 70, y: cy + 97, icon: "🛡️" },  // Gladiators
+                { id: 5, x: cx - 114, y: cy - 37, icon: "⛓️" }  // Law
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(120, 113, 108, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = (i === 4) ? '#444' : '#78716c';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon text
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#a8a29e';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

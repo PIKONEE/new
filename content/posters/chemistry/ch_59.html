@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amphoteric Hydroxides: Dual Nature</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #581c87, #1e3a8a);
+            background-attachment: fixed;
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2.5rem; cursor: crosshair; }
+        .lang-btn.active { background: #a78bfa; color: #1e1b4b; font-weight: 800; }
+        .chemical-formula { font-family: 'Montserrat', sans-serif; letter-spacing: 0.1em; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-purple-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-purple-300"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-purple-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="dualCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-purple-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-purple-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+            <div class="mt-8 p-6 bg-purple-500/10 rounded-3xl border border-purple-500/20 text-center">
+                <div class="text-xs uppercase text-purple-400 mb-2">Dualism Reaction</div>
+                <div class="chemical-formula text-xl text-white">Al(OH)<sub>3</sub> + OH<sup>-</sup> / H<sup>+</sup></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 transition-all hover:bg-purple-500/10">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-purple-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 transition-all hover:bg-purple-500/10">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-purple-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 transition-all hover:bg-purple-500/10">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-purple-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-purple-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-snug"></p>
+        <cite id="author" class="text-purple-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Амфотерность",
+                subtitle: "Двойственная природа гидроксидов",
+                canvasHeading: "Визуализация хим. дуализма",
+                canvasHint: "Нажимайте на левую (кислота) или правую (щелочь) сторону",
+                defaultTitle: "Амфотерные гидроксиды",
+                defaultText: "Это соединения, проявляющие свойства как кислот, так и оснований в зависимости от условий реакции. Типичный пример: Al(OH)<sub>3</sub>, Zn(OH)<sub>2</sub>.",
+                cards: [
+                    { title: "Реакция с кислотой", desc: "Ведут себя как типичные основания, образуя соль и воду. <br>Zn(OH)<sub>2</sub> + 2HCl → ZnCl<sub>2</sub> + 2H<sub>2</sub>O." },
+                    { title: "Реакция с щелочью", desc: "Проявляют кислотные свойства, образуя комплексные соли. <br>Zn(OH)<sub>2</sub> + 2NaOH → Na<sub>2</sub>[Zn(OH)<sub>4</sub>]." },
+                    { title: "Основные элементы", desc: "Амфотерность характерна для переходных металлов и элементов главных подгрупп (Be, Al, Zn, Cr, Sn, Pb)." }
+                ],
+                quote: "«Природа не терпит односторонности; истина всегда лежит в способности меняться»",
+                author: "Иоганн Вольфганг фон Гёте"
+            },
+            kz: {
+                title: "Амфотерлілік",
+                subtitle: "Гидроксидтердің екідайлы табиғаты",
+                canvasHeading: "Хим. дуализм визуалдауы",
+                canvasHint: "Сол (қышқыл) немесе оң (сілті) жақты басыңыз",
+                defaultTitle: "Амфотерлі гидроксидтер",
+                defaultText: "Бұл реакция жағдайына байланысты әрі қышқылдық, әрі негіздік қасиет көрсететін қосылыстар. Мысалы: Al(OH)<sub>3</sub>, Zn(OH)<sub>2</sub>.",
+                cards: [
+                    { title: "Қышқылмен реакция", desc: "Негіз ретінде әрекет етіп, тұз бен су түзеді. <br>Zn(OH)<sub>2</sub> + 2HCl → ZnCl<sub>2</sub> + 2H<sub>2</sub>O." },
+                    { title: "Сілтімен реакция", desc: "Қышқылдық қасиет көрсетіп, кешенді тұздар түзеді. <br>Zn(OH)<sub>2</sub> + 2NaOH → Na<sub>2</sub>[Zn(OH)<sub>4</sub>]." },
+                    { title: "Негізгі элементтер", desc: "Амфотерлілік ауыспалы металдар мен негізгі топшалардың элементтеріне тән (Be, Al, Zn, Cr, Sn, Pb)." }
+                ],
+                quote: "«Табиғат біржақтылықты жек көреді; ақиқат әрқашан өзгеру қабілетінде жатады»",
+                author: "Иоганн Вольфганг фон Гёте"
+            },
+            en: {
+                title: "Amphoterism",
+                subtitle: "Dual Nature of Hydroxides",
+                canvasHeading: "Chemical Dualism Visual",
+                canvasHint: "Click left (acid) or right (alkali) side",
+                defaultTitle: "Amphoteric Hydroxides",
+                defaultText: "These are compounds that exhibit both acidic and basic properties depending on reaction conditions. e.g., Al(OH)<sub>3</sub>, Zn(OH)<sub>2</sub>.",
+                cards: [
+                    { title: "Acid Reaction", desc: "Acts as a base, forming salt and water. <br>Zn(OH)<sub>2</sub> + 2HCl → ZnCl<sub>2</sub> + 2H<sub>2</sub>O." },
+                    { title: "Alkali Reaction", desc: "Acts as an acid, forming complex salts. <br>Zn(OH)<sub>2</sub> + 2NaOH → Na<sub>2</sub>[Zn(OH)<sub>4</sub>]." },
+                    { title: "Core Elements", desc: "Amphoterism is common for transition metals and certain group elements (Be, Al, Zn, Cr, Sn, Pb)." }
+                ],
+                quote: "«Nature abhors one-sidedness; truth always lies in the capacity to transform»",
+                author: "Johann Wolfgang von Goethe"
+            }
+        };
+
+        let currentLang = 'ru';
+        let mode = 'neutral';
+        const canvas = document.getElementById('dualCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').innerHTML = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.001;
+
+            // Gradient sides
+            const g1 = ctx.createLinearGradient(0,0,cx,0);
+            g1.addColorStop(0, 'rgba(239, 68, 68, 0.1)'); g1.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g1; ctx.fillRect(0,0,cx,canvas.height);
+            
+            const g2 = ctx.createLinearGradient(cx,0,canvas.width,0);
+            g2.addColorStop(0, 'rgba(0,0,0,0)'); g2.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+            ctx.fillStyle = g2; ctx.fillRect(cx,0,cx,canvas.height);
+
+            // Molecule
+            const r = 80 + Math.sin(time)*5;
+            const color = mode === 'acid' ? '#ef4444' : (mode === 'base' ? '#3b82f6' : '#a78bfa');
+            ctx.shadowBlur = 30; ctx.shadowColor = color;
+            ctx.fillStyle = color; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'white'; ctx.font = 'bold 20px Inter'; ctx.textAlign = 'center';
+            ctx.fillText(mode === 'neutral' ? 'Al(OH)₃' : (mode === 'acid' ? 'Al³⁺' : '[Al(OH)₄]⁻'), cx, cy + 8);
+
+            requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            mode = x < canvas.width / 2 ? 'acid' : 'base';
+        });
+        canvas.addEventListener('mouseup', () => mode = 'neutral');
+
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

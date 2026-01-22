@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Экологические факторы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4; /* green-50 */
+            overflow-x: hidden;
+            color: #14532d; /* green-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Nature Theme */
+        .header-card {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); /* green-600 to 700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(22, 163, 74, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #166534; /* green-800 */
+            border-bottom: 3px solid #86efac; /* green-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #dcfce7; /* green-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #16a34a; /* green-600 */
+        }
+         .term {
+            font-weight: bold;
+            color: #16a34a; /* green-600 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #16a34a;
+            background-color: #ffffff;
+            color: #16a34a;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #f0fdf4;
+        }
+        .lang-btn.active {
+            background-color: #16a34a;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 250px;
+            margin: 15px 0;
+            border: 1px solid #bbf7d0;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #14532d;
+            text-anchor: middle;
+        }
+        .svg-abiotic { fill: #bae6fd; stroke: #3b82f6; }
+        .svg-biotic { fill: #86efac; stroke: #22c55e; }
+        .svg-anthro { fill: #fca5a5; stroke: #ef4444; }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-green-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(22, 163, 74, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(22, 163, 74, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ЭКОЛОГИЯЛЫҚ ФАКТОРЛАР</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ECOLOGICAL FACTORS</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ЭКОЛОГИЧЕСКИЕ ФАКТОРЫ</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-green-100">Ортаның ағзаға тигізетін әсері.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-green-100">Environmental influence on organisms.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-green-100">Влияние среды на организм.</p>
+        </header>
+
+        <!-- 1. ФАКТОРЛАРДЫҢ ТҮРЛЕРІ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Факторлардың жіктелуі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Classification of Factors</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Классификация факторов</h2>
+
+            <div class="rule-card border-t-green-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Экологиялық факторлар үш топқа бөлінеді:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <!-- Abiotic -->
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
+                        <h3 class="font-bold text-blue-900 mb-2" lang="kk">1. Абиотикалық</h3>
+                        <h3 class="font-bold text-blue-900 mb-2" lang="ru">1. Абиотические</h3>
+                        <p class="text-xs text-gray-600 mb-3">Өлі табиғат факторлары (Non-living).</p>
+                        <svg viewBox="0 0 60 60" class="w-16 h-16 mx-auto">
+                            <circle cx="15" cy="15" r="8" fill="#facc15"/> <!-- Sun -->
+                            <path d="M 35 15 L 45 15 M 40 10 L 40 20" stroke="#3b82f6" stroke-width="2"/> <!-- Cold/Snow -->
+                            <path d="M 10 40 Q 20 50, 30 40 T 50 40" fill="none" stroke="#60a5fa" stroke-width="2"/> <!-- Water -->
+                            <path d="M 35 45 L 45 55 L 55 45" fill="none" stroke="#9ca3af" stroke-width="2"/> <!-- Rock -->
+                        </svg>
+                        <p class="text-xs mt-2 font-semibold text-blue-800">Жарық, Су, Температура, Топырақ</p>
+                    </div>
+
+                    <!-- Biotic -->
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200 text-center">
+                        <h3 class="font-bold text-green-900 mb-2" lang="kk">2. Биотикалық</h3>
+                        <h3 class="font-bold text-green-900 mb-2" lang="ru">2. Биотические</h3>
+                        <p class="text-xs text-gray-600 mb-3">Тірі ағзалардың әсері (Living).</p>
+                        <svg viewBox="0 0 60 60" class="w-16 h-16 mx-auto">
+                            <circle cx="20" cy="30" r="10" fill="#a3e635"/> <!-- Plant -->
+                            <circle cx="45" cy="30" r="10" fill="#fca5a5"/> <!-- Animal -->
+                            <line x1="30" y1="30" x2="35" y2="30" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-biot)"/>
+                        </svg>
+                        <p class="text-xs mt-2 font-semibold text-green-800">Жыртқыштық, Бәсекелестік, Паразитизм</p>
+                    </div>
+
+                    <!-- Anthropogenic -->
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-200 text-center">
+                        <h3 class="font-bold text-red-900 mb-2" lang="kk">3. Антропогендік</h3>
+                        <h3 class="font-bold text-red-900 mb-2" lang="ru">3. Антропогенные</h3>
+                        <p class="text-xs text-gray-600 mb-3">Адамның әрекеті (Human).</p>
+                        <svg viewBox="0 0 60 60" class="w-16 h-16 mx-auto">
+                            <rect x="15" y="20" width="10" height="20" fill="#9ca3af"/> <!-- Factory -->
+                            <rect x="25" y="10" width="10" height="30" fill="#9ca3af"/>
+                            <rect x="35" y="25" width="10" height="15" fill="#9ca3af"/>
+                            <path d="M 30 10 Q 35 0, 45 5" fill="none" stroke="#4b5563" stroke-width="2"/> <!-- Smoke -->
+                            <circle cx="40" cy="50" r="5" fill="#ef4444"/> <!-- Trash -->
+                        </svg>
+                        <p class="text-xs mt-2 font-semibold text-red-800">Ластану, Аңшылық, Орман кесу</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. ФАКТОРЛАРДЫҢ ӘСЕРІ (ЗАҢДЫЛЫҚТАР) -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Төзімділік заңы (Оптимум)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Law of Tolerance (Optimum)</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Закон толерантности (Оптимум)</h2>
+
+            <div class="rule-card border-t-emerald-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Әр фактордың ағзаға әсер етуінің қолайлы шегі болады.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Each factor has a favorable range for the organism.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    У каждого фактора есть благоприятный предел воздействия на организм.
+                </p>
+
+                <!-- Illustration 2: Tolerance Curve -->
+                <svg class="illustration-svg" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Axis -->
+                    <line x1="40" y1="180" x2="360" y2="180" stroke="#4b5563" stroke-width="2"/>
+                    <text x="350" y="195" font-size="10" fill="#4b5563">Фактор мөлшері (Factor)</text>
+                    <line x1="40" y1="180" x2="40" y2="20" stroke="#4b5563" stroke-width="2"/>
+                    <text x="20" y="30" font-size="10" fill="#4b5563" writing-mode="vertical-rl" text-anchor="end">Life Activity</text>
+
+                    <!-- Curve -->
+                    <path d="M 50 180 Q 100 180, 120 100 Q 200 10, 280 100 Q 300 180, 350 180" fill="none" stroke="#16a34a" stroke-width="3"/>
+
+                    <!-- Zones -->
+                    <!-- Optimum -->
+                    <rect x="160" y="30" width="80" height="150" fill="#86efac" opacity="0.3"/>
+                    <text x="200" y="50" font-size="12" font-weight="bold" fill="#15803d" text-anchor="middle">OPTIMUM</text>
+                    <text x="200" y="65" font-size="10" fill="#15803d" text-anchor="middle">Ең қолайлы (Best)</text>
+
+                    <!-- Pessimum (Stress) Left -->
+                    <rect x="100" y="80" width="60" height="100" fill="#fef08a" opacity="0.3"/>
+                    <text x="130" y="120" font-size="10" fill="#ca8a04" text-anchor="middle">Stress</text>
+
+                    <!-- Pessimum (Stress) Right -->
+                    <rect x="240" y="80" width="60" height="100" fill="#fef08a" opacity="0.3"/>
+                    <text x="270" y="120" font-size="10" fill="#ca8a04" text-anchor="middle">Stress</text>
+
+                    <!-- Death Zones -->
+                    <text x="70" y="170" font-size="10" fill="#dc2626" font-weight="bold" text-anchor="middle">Death</text>
+                    <text x="330" y="170" font-size="10" fill="#dc2626" font-weight="bold" text-anchor="middle">Death</text>
+
+                    <!-- Example: Fish and Temp -->
+                    <circle cx="200" cy="150" r="10" fill="#3b82f6"/> <!-- Happy Fish -->
+                    <text x="200" y="140" font-size="12" text-anchor="middle">😊</text>
+
+                    <circle cx="130" cy="150" r="8" fill="#9ca3af"/> <!-- Sad Fish -->
+                    <text x="130" y="140" font-size="10" text-anchor="middle">😐</text>
+
+                    <circle cx="270" cy="150" r="8" fill="#9ca3af"/> <!-- Sad Fish -->
+                    <text x="270" y="140" font-size="10" text-anchor="middle">🥵</text>
+                </svg>
+
+                <p lang="kk" class="lang-content mt-2 text-sm text-gray-600 text-center">
+                    <strong>Лимиттік фактор:</strong> Ағзаның тіршілігін шектейтін, оптимумнан ауытқыған фактор (мысалы, шөлде судың аздығы).
+                </p>
+                <p lang="en" class="lang-content mt-2 text-sm text-gray-600 text-center">
+                    <strong>Limiting Factor:</strong> A factor that restricts the success of an organism (e.g., lack of water in a desert).
+                </p>
+                <p lang="ru" class="lang-content mt-2 text-sm text-gray-600 text-center">
+                    <strong>Лимитирующий фактор:</strong> Фактор, значение которого выходит за пределы выносливости и ограничивает развитие (например, нехватка воды в пустыне).
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. ӨСІМДІКТЕРДІҢ ЭКОЛОГИЯЛЫҚ ТОПТАРЫ (NEW SECTION) -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Өсімдіктердің экологиялық топтары (Ылғалдылық бойынша)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Ecological Groups of Plants (By Moisture)</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Экологические группы растений (По влажности)</h2>
+
+            <div class="rule-card border-t-lime-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Өсімдіктер судың жетіспеушілігіне немесе артықшылығына қарай әртүрлі топтарға бөлінеді.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Plants are divided into different groups depending on the excess or lack of water.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    Растения делятся на группы в зависимости от избытка или недостатка влаги.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+
+                    <!-- Hydrophytes -->
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
+                        <h4 class="font-bold text-blue-900 mb-2" lang="kk">Гидрофиттер</h4>
+                        <h4 class="font-bold text-blue-900 mb-2" lang="ru">Гидрофиты</h4>
+                        <p class="text-xs text-gray-600 mb-2">Суда өсетін өсімдіктер (Water plants).</p>
+                        <svg viewBox="0 0 80 80" class="w-20 h-20 mx-auto">
+                            <rect x="0" y="40" width="80" height="40" fill="#bae6fd" opacity="0.6"/>
+                            <!-- Water Lily -->
+                            <path d="M 20 40 Q 10 30, 30 30 Q 40 40, 50 30 Q 70 30, 60 40" fill="#4ade80" stroke="#15803d"/>
+                            <path d="M 30 30 L 30 20 Q 35 10, 45 20 L 45 30" fill="#fce7f3" stroke="#be185d"/>
+                            <line x1="40" y1="40" x2="40" y2="70" stroke="#15803d" stroke-width="2" stroke-dasharray="2"/>
+                        </svg>
+                        <p class="text-[10px] mt-2 text-blue-800 italic">Тұңғиық (Water Lily), Қамыс</p>
+                    </div>
+
+                    <!-- Mesophytes -->
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200 text-center">
+                        <h4 class="font-bold text-green-900 mb-2" lang="kk">Мезофиттер</h4>
+                        <h4 class="font-bold text-green-900 mb-2" lang="ru">Мезофиты</h4>
+                        <p class="text-xs text-gray-600 mb-2">Орташа ылғалдылық (Moderate moisture).</p>
+                        <svg viewBox="0 0 80 80" class="w-20 h-20 mx-auto">
+                            <rect x="0" y="60" width="80" height="20" fill="#dcfce7"/>
+                            <!-- Tree/Flower -->
+                            <line x1="40" y1="60" x2="40" y2="30" stroke="#15803d" stroke-width="3"/>
+                            <circle cx="40" cy="25" r="15" fill="#4ade80" stroke="#16a34a"/>
+                            <path d="M 40 40 L 55 30" stroke="#15803d" stroke-width="2"/>
+                            <path d="M 40 50 L 25 40" stroke="#15803d" stroke-width="2"/>
+                        </svg>
+                        <p class="text-[10px] mt-2 text-green-800 italic">Қайың, Беде (Birch, Clover)</p>
+                    </div>
+
+                    <!-- Xerophytes -->
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-center">
+                        <h4 class="font-bold text-yellow-900 mb-2" lang="kk">Ксерофиттер</h4>
+                        <h4 class="font-bold text-yellow-900 mb-2" lang="ru">Ксерофиты</h4>
+                        <p class="text-xs text-gray-600 mb-2">Құрғақшылыққа төзімді (Dry habitats).</p>
+                        <svg viewBox="0 0 80 80" class="w-20 h-20 mx-auto">
+                             <rect x="0" y="60" width="80" height="20" fill="#fef3c7"/>
+                             <!-- Cactus -->
+                             <path d="M 30 60 L 30 30 Q 30 10, 40 10 Q 50 10, 50 30 L 50 60" fill="#16a34a" stroke="#064e3b" stroke-width="2"/>
+                             <path d="M 30 40 L 20 30 Q 15 25, 20 20" fill="none" stroke="#16a34a" stroke-width="2"/>
+                             <path d="M 50 35 L 60 25 Q 65 20, 60 15" fill="none" stroke="#16a34a" stroke-width="2"/>
+                             <!-- Spines -->
+                             <line x1="35" y1="20" x2="33" y2="18" stroke="#000"/>
+                             <line x1="45" y1="25" x2="47" y2="23" stroke="#000"/>
+                             <line x1="40" y1="40" x2="40" y2="38" stroke="#000"/>
+                        </svg>
+                        <p class="text-[10px] mt-2 text-yellow-800 italic">Кактус, Сексеуіл (Cactus, Saxaul)</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-green-800">
+                Ағзалар тек белгілі бір жағдайларда (оптимум) ғана жақсы өмір сүре алады. Адам әрекеті (антропогендік фактор) табиғатқа қатты әсер етеді.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-green-800">
+                Organisms thrive only in specific conditions (optimum). Human activity (anthropogenic factor) greatly impacts nature.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-green-800">
+                Организмы процветают только в определенных условиях (оптимум). Деятельность человека (антропогенный фактор) сильно влияет на природу.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+    <defs>
+        <marker id="arrow-biot" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <polygon points="0 0, 6 3, 0 6" fill="#16a34a" />
+        </marker>
+    </defs>
+
+</body>
+</html>

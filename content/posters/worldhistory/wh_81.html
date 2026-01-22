@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крестовые походы: Путь за святынями</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #450a0a, #1e1b4b, #000000);
+            color: #fef3c7;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .serif { font-family: 'Playfair Display', serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #dc2626;
+            color: white;
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #dc2626;
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-white to-red-400 uppercase">
+                Крестовые походы
+            </h1>
+            <p id="sub-title" class="text-red-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase italic">Deus Vult: Война во имя веры</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-red-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-red-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-red-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-red-600 inline-block"></span>
+                Карта походов
+            </h2>
+            <div class="relative flex-grow bg-slate-950/60 rounded-[2.5rem] border border-red-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="crusadesCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-red-500/50 italic text-center uppercase tracking-widest">Нажмите на узлы пути для изучения истории крестоносцев</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-red-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Освобождение Гроба Господня</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        В 1095 году папа Урбан II призвал христиан освободить Иерусалим от мусульман. Это стало началом эпохи восьми великих походов, изменивших мир. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚔️</span>
+                            <span id="hint-1" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Рыцарские ордена</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⛪</span>
+                            <span id="hint-2" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Битва цивилизаций</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-red-950/40 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-red-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-red-950/20 rounded-[2.5rem] border border-red-900/30 shadow-xl">
+                        <strong class="text-red-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-outcome">Последствие:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Recap Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-red-500 uppercase">Духовно-рыцарские ордена</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Для защиты паломников и Святой земли были созданы ордена: <strong>Тамплиеры</strong> (храмовники), <strong>Госпитальеры</strong> и <strong>Тевтонцы</strong>. Это были монахи-воины, дававшие обет бедности и послушания.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-orange-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏰</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-amber-500 uppercase">Государства крестоносцев</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">На Востоке возникло Иерусалимское королевство, Эдесское графство и Антиохийское княжество. Там воцарились феодальные порядки, а для защиты строились мощные крепости (Крак-де-Шевалье).</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🌍</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Итоги походов</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Несмотря на конечную потерю Святой земли, походы расширили кругозор европейцев. В Европу пришли новые товары (сахар, рис, зеркала) и знания, расцвела торговля через Венецию и Геную.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-red-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl serif italic text-amber-100/70 leading-tight max-w-5xl mx-auto">
+            «Крест стал мечом, а восток — зеркалом, в котором Европа впервые увидела себя как единую силу».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Крестовые походы",
+                subtitle: "Deus Vult: Война во имя веры",
+                visualTitle: "Карта походов",
+                hint: "Нажмите на узлы пути для изучения истории",
+                placeholderTitle: "Освобождение Гроба Господня",
+                placeholderText: "В XI веке рыцари Европы отправились на Восток. Это было время фанатичной веры, жажды наживы и великих открытий. Выберите этап на карте.",
+                labelOutcome: "Последствие:",
+                hint1: "Рыцарские ордена", hint2: "Битва цивилизаций",
+                card1Title: "Рыцарские ордена",
+                card1Text: "Братства монахов-воинов стали мощнейшей финансовой и военной силой Европы, подчиняясь только папе.",
+                card2Title: "Государства на Востоке",
+                card2Text: "Европейцы основали королевства в Сирии и Палестине, привнеся туда западные феодальные обычаи.",
+                card3Title: "Итоги походов",
+                card3Text: "Обмен культурами принес в Европу не только богатства, но и медицину, архитектуру и бытовые привычки Востока.",
+                footerQuote: "«Крест стал мечом, а восток — зеркалом, в котором Европа впервые увидела себя как единую силу».",
+                nodes: [
+                    { id: 1, tag: "1095 год", title: "Призыв в Клермоне", desc: "Папа Урбан II призвал освободить Иерусалим, обещая участникам отпущение всех грехов. Толпа ответила криком 'Deus lo vult!' (Так хочет Бог!).", fact: "Первыми в поход отправились толпы бедных крестьян, почти все они погибли в Малой Азии." },
+                    { id: 2, tag: "1099 год", title: "Взятие Иерусалима", desc: "Рыцари Первого похода после тяжелой осады ворвались в город. Было основано Иерусалимское королевство, а Готфрид Бульонский стал 'Защитником Гроба Господня'.", fact: "Штурм Иерусалима сопровождался страшной резней местного населения." },
+                    { id: 3, tag: "1187 год", title: "Салах-ад-Дин", desc: "Великий султан Саладин разгромил крестоносцев при Хаттине и вернул Иерусалим мусульманам. Его благородство уважали даже враги.", fact: "Ричард Львиное Сердце пытался вернуть город в Третьем походе, но смог лишь заключить перемирие." },
+                    { id: 4, tag: "1204 год", title: "Разгром Византии", desc: "Четвертый поход вместо борьбы с сарацинами обернулся штурмом христианского Константинополя. Византия была разорена, что стало началом её конца.", fact: "Венецианцы направили рыцарей на Константинополь, чтобы устранить торгового конкурента." },
+                    { id: 5, tag: "XIII век", title: "Закат движения", desc: "Походы постепенно теряли популярность. В 1291 году пал последний оплот крестоносцев на Востоке — крепость Акра. Эпоха военных паломничеств завершилась.", fact: "Последние походы возглавлял король Франции Людовик IX Святой." }
+                ]
+            },
+            kz: {
+                title: "Крест жорықтары",
+                subtitle: "Deus Vult: Сенім жолындағы соғыс",
+                visualTitle: "Жорықтар картасы",
+                hint: "Тарихты зерттеу үшін түйіндерді басыңыз",
+                placeholderTitle: "Қасиетті қаланы азат ету",
+                placeholderText: "XI ғасырда Еуропа рыцарьлары Шығысқа аттанды. Бұл сенім мен жаулап алу дәуірі болды. Картадан кезеңді таңдаңыз.",
+                labelOutcome: "Салдары:",
+                hint1: "Рыцарьлық ордендер", hint2: "Өркениеттер шайқасы",
+                card1Title: "Рыцарьлық ордендер",
+                card1Text: "Монах-жауынгерлер бауырластығы Еуропаның ең қуатты әскери және қаржылық күшіне айналды.",
+                card2Title: "Шығыстағы мемлекеттер",
+                card2Text: "Еуропалықтар Сирия мен Палестинада өз патшалықтарын құрып, батыстық феодалдық дәстүрлерді әкелді.",
+                card3Title: "Жорықтар қорытындысы",
+                card3Text: "Мәдениеттер алмасуы Еуропаға тек байлық қана емес, сонымен бірге Шығыстың ғылымы мен өнерін де әкелді.",
+                footerQuote: "«Крест семсерге айналды, ал Шығыс — Еуропа өзін біртұтас күш ретінде алғаш көрген айна болды».",
+                nodes: [
+                    { id: 1, tag: "1095 жыл", title: "Клермон үндеуі", desc: "Рим папасы Урбан II Иерусалимді азат етуге шақырды. Халық 'Deus lo vult!' (Құдай солай қалайды!) деп ұрандатты.", fact: "Алғашқы болып шаруалар аттанды, бірақ олардың көбі жолда қаза тапты." },
+                    { id: 2, tag: "1099 жыл", title: "Иерусалимді алу", desc: "Бірінші жорық рыцарьлары қаланы басып алды. Иерусалим патшалығы құрылды.", fact: "Қаланы алған кезде жергілікті халық жаппай қырылды." },
+                    { id: 3, tag: "1187 жыл", title: "Салах-ад-Дин", desc: "Ұлы сұлтан Саладин крестшілерді Хаттин шайқасында жеңіп, Иерусалимді қайтарып алды.", fact: "Арыстан жүректі Ричард қаланы қайтаруға тырысқанымен, тек бітім жасаумен шектелді." },
+                    { id: 4, tag: "1204 жыл", title: "Византияның күйреуі", desc: "Төртінші жорық Константинопольді тонаумен аяқталды. Бұл Византияның құлдырауына әкелді.", fact: "Венециялықтар саудадағы бәсекелесін жою үшін рыцарьларды осында бағыттады." },
+                    { id: 5, tag: "XIII ғасыр", title: "Қозғалыстың тоқтауы", desc: "1291 жылы крестшілердің Шығыстағы соңғы бекінісі — Акра құлады. Жорықтар дәуірі аяқталды.", fact: "Соңғы жорықтарды Франция патшасы IX Людовик басқарды." }
+                ]
+            },
+            en: {
+                title: "The Crusades",
+                subtitle: "Deus Vult: War for the Holy Land",
+                visualTitle: "Campaign Map",
+                hint: "Click on nodes to study the crusader history",
+                placeholderTitle: "Liberation of the Holy Sepulchre",
+                placeholderText: "In the 11th century, European knights headed East. It was an era of fanatic faith, greed, and great discoveries. Select a stage on the map.",
+                labelOutcome: "Outcome:",
+                hint1: "Military Orders", hint2: "Clash of Civilizations",
+                card1Title: "Military Orders",
+                card1Text: "Brotherhoods of warrior-monks became the most powerful military and financial power in Europe, loyal only to the Pope.",
+                card2Title: "Crusader States",
+                card2Text: "Westerners established kingdoms in Syria and Palestine, introducing feudal customs to the Levant.",
+                card3Title: "The Results",
+                card3Text: "The exchange of cultures introduced Europe to Eastern medicine, architecture, and luxury goods like sugar and silk.",
+                footerQuote: "«The cross became a sword, and the East a mirror in which Europe first saw itself as a unified force.»",
+                nodes: [
+                    { id: 1, tag: "1095 AD", title: "The Call at Clermont", desc: "Pope Urban II urged Christians to reclaim Jerusalem, promising the remission of sins. The crowd cried 'Deus lo vult!' (God wills it!).", fact: "The first wave was a 'Peasant's Crusade' which was largely annihilated before reaching the goal." },
+                    { id: 2, tag: "1099 AD", title: "Capture of Jerusalem", desc: "The knights of the First Crusade captured the Holy City after a long siege. Godfrey of Bouillon refused the title of King, taking 'Defender of the Holy Sepulchre'.", fact: "The taking of the city resulted in a brutal massacre of its Muslim and Jewish inhabitants." },
+                    { id: 3, tag: "1187 AD", title: "Saladin's Triumph", desc: "The great Sultan Saladin crushed the Crusader army at Hattin and retook Jerusalem. His chivalry was legendary even among Europeans.", fact: "Richard the Lionheart fought Saladin in the Third Crusade but failed to recapture the city." },
+                    { id: 4, tag: "1204 AD", title: "The Sack of Constantinople", desc: "The Fourth Crusade was diverted by Venetian interests to sack the Christian capital of Byzantium instead of fighting in the Holy Land.", fact: "This event caused an irreparable rift between the Roman Catholic and Eastern Orthodox churches." },
+                    { id: 5, tag: "13th Century", title: "The Final Stand", desc: "Support for the movement faded over time. In 1291, Acre, the last crusader stronghold in the East, fell. The age of crusading in the Levant ended.", fact: "The spirit of the Crusades shifted towards the internal European 'enemies' and the Reconquista." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('crusadesCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-outcome').innerText = t.labelOutcome;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Mediterranean
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 200, cy - 100); // Europe North
+            ctx.lineTo(cx + 200, cy - 50);  // Near East North
+            ctx.lineTo(cx + 100, cy + 150); // Near East South
+            ctx.lineTo(cx - 150, cy + 180); // Africa
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx - 120, y: cy - 80, icon: "📢" }, // Clermont
+                { id: 2, x: cx + 120, y: cy + 80, icon: "⛪" }, // Jerusalem
+                { id: 3, x: cx + 60, y: cy + 40, icon: "⚔️" },  // Hattin
+                { id: 4, x: cx + 20, y: cy - 20, icon: "🏰" },  // Byzantium
+                { id: 5, x: cx + 150, y: cy + 120, icon: "⚓" }  // Acre
+            ];
+
+            // Campaign Paths
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#dc2626';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(nodesData[0].x, nodesData[0].y);
+            ctx.lineTo(nodesData[3].x, nodesData[3].y);
+            ctx.lineTo(nodesData[1].x, nodesData[1].y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(220, 38, 38, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 1) ? '#991b1b' : '#dc2626';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#fca5a5';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

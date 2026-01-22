@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arctic Ocean: Ice Kingdom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #38bdf8; color: #0f172a; font-weight: 800; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-6 flex flex-col md:flex-row justify-between items-center border-t border-sky-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-2xl md:text-3xl uppercase tracking-tighter text-sky-200"></h1>
+            <p id="sub-title" class="mt-1 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center justify-center relative min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-4 self-start tracking-widest opacity-70"></h2>
+            <canvas id="iceCanvas" class="w-full h-full bg-black/20"></canvas>
+            <p id="canvas-hint" class="absolute bottom-6 text-[10px] text-sky-100/50 uppercase tracking-[0.4em]"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-sky-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-sky-300"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass rounded-custom p-8"><h4 id="c1-t" class="text-sky-400 font-bold mb-2 uppercase text-sm"></h4><p id="c1-d" class="text-xs text-white/50"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="c2-t" class="text-sky-400 font-bold mb-2 uppercase text-sm"></h4><p id="c2-d" class="text-xs text-white/50"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="c3-t" class="text-sky-400 font-bold mb-2 uppercase text-sm"></h4><p id="c3-d" class="text-xs text-white/50"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Северный Ледовитый", subtitle: "Самый холодный и малый океан",
+                canvasHeading: "Дрейф паковых льдов", canvasHint: "Нажмите, чтобы разбить лед (ледокол)",
+                defaultTitle: "Ледяной купол",
+                defaultText: "Самый маленький (14.7 млн км²) и мелководный океан. Расположен полностью в полярных широтах. Центральная часть покрыта вечными льдами толщиной 3-5 метров.",
+                cards: [
+                    { t: "Шельф", d: "Океан имеет самый широкий шельф (до 1300 км у берегов Сибири), богатый нефтью и газом." },
+                    { t: "Климат", d: "Определяется арктическими воздушными массами. Зимой полярная ночь, летом солнце не заходит." },
+                    { t: "Севморпуть", d: "Кратчайший морской путь между Европейской частью России и Дальним Востоком." }
+                ]
+            },
+            kz: {
+                title: "Солтүстік Мұзды", subtitle: "Ең суық және кіші мұхит",
+                canvasHeading: "Пак мұздарының дрейфі", canvasHint: "Мұзды жару үшін басыңыз (мұзжарғыш)",
+                defaultTitle: "Мұз күмбезі",
+                defaultText: "Ең кіші (14.7 млн км²) және таяз мұхит. Толығымен полярлық ендіктерде орналасқан. Орталық бөлігі қалыңдығы 3-5 метр мәңгілік мұзбен жабылған.",
+                cards: [
+                    { t: "Қайраң", d: "Мұхиттың ең кең қайраңы бар (Сібір жағалауында 1300 км-ге дейін), мұнай мен газға бай." },
+                    { t: "Климат", d: "Арктикалық ауа массаларымен анықталады. Қыста поляр түні, жазда күн батпайды." },
+                    { t: "Солтүстік жолы", d: "Ресейдің Еуропалық бөлігі мен Қиыр Шығыс арасындағы ең қысқа теңіз жолы." }
+                ]
+            },
+            en: {
+                title: "Arctic Ocean", subtitle: "The Coldest and Smallest Ocean",
+                canvasHeading: "Pack Ice Drift", canvasHint: "Click to break the ice (icebreaker)",
+                defaultTitle: "Ice Dome",
+                defaultText: "The smallest (14.7M km²) and shallowest ocean. Located entirely in polar latitudes. Its center is covered by perennial ice 3-5 meters thick.",
+                cards: [
+                    { t: "Shelf", d: "Features the widest shelf (up to 1300 km off Siberia), rich in oil and gas." },
+                    { t: "Climate", d: "Dominated by arctic air masses. Polar night in winter, midnight sun in summer." },
+                    { t: "Northern Route", d: "The shortest sea route connecting the European part of Russia with the Far East." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx, cracks = [];
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('c1-t').textContent = t.cards[0].t; document.getElementById('c1-d').textContent = t.cards[0].d;
+            document.getElementById('c2-t').textContent = t.cards[1].t; document.getElementById('c2-d').textContent = t.cards[1].d;
+            document.getElementById('c3-t').textContent = t.cards[2].t; document.getElementById('c3-d').textContent = t.cards[2].d;
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const time = Date.now() * 0.0005;
+
+            // Water
+            const g = ctx.createLinearGradient(0,0,0,h);
+            g.addColorStop(0, '#0f172a'); g.addColorStop(1, '#1e3a8a');
+            ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+
+            // Ice Floes
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.shadowBlur = 20; ctx.shadowColor = 'white';
+            
+            for(let i=0; i<5; i++) {
+                const x = (w/2) + Math.cos(time + i*1.5) * (w*0.3);
+                const y = (h/2) + Math.sin(time + i*1.5) * (h*0.3);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x+60, y+10); ctx.lineTo(x+50, y+50); ctx.lineTo(x-10, y+40);
+                ctx.fill();
+            }
+            ctx.shadowBlur = 0;
+
+            // Icebreaker Path (Cracks)
+            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+            cracks.forEach(c => {
+                ctx.beginPath(); ctx.moveTo(c.x, c.y); 
+                ctx.lineTo(c.x + Math.cos(c.a)*c.l, c.y + Math.sin(c.a)*c.l);
+                ctx.stroke();
+                c.l += 2; if(c.l > 100) c.l = 100; // limit growth
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('iceCanvas'); ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500;
+            canvas.addEventListener('click', e => {
+                const rect = canvas.getBoundingClientRect();
+                cracks.push({x: e.clientX-rect.left, y: e.clientY-rect.top, a: Math.random()*Math.PI*2, l: 0});
+            });
+            setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

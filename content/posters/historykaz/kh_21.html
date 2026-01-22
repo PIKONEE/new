@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Великое переселение народов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .migration-gradient {
+            background: radial-gradient(circle at bottom left, #1e1b4b, #0f172a 80%);
+        }
+
+        .storm-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .storm-card:hover {
+            transform: scale(1.03);
+            border-color: #f97316;
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.15);
+        }
+
+        .lang-active {
+            background-color: #f97316;
+            color: #0f172a;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+        }
+
+        .fire-text {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #dc2626 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        canvas {
+            filter: drop-shadow(0 0 20px rgba(249, 115, 22, 0.1));
+        }
+
+        /* Анимация миграции */
+        @keyframes drift {
+            from { transform: translateX(-5px); }
+            to { transform: translateX(5px); }
+        }
+        .drift-anim { animation: drift 3s infinite alternate ease-in-out; }
+    </style>
+    <script src="../../libs/chart.umd.min.js"></script>
+</head>
+<body class="migration-gradient min-h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-orange-900/30 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl drift-anim">🌍</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest fire-text">Мировой пожар</h1>
+            </div>
+            <div class="flex bg-slate-900 p-1 rounded-2xl border border-slate-800">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-20">
+        
+        <!-- Section 1: Migration Intensity (Visual Map) -->
+        <div class="storm-card p-8 md:p-12 relative overflow-hidden">
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl"></div>
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-orange-500/50 text-orange-500 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Global Shift</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Движение Народов</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Начавшееся во II веке н.э. движение гуннов вызвало цепную реакцию. Десятки племен снялись с мест, сокрушая границы Римской империи и создавая новую Европу.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4 p-4 bg-orange-950/20 rounded-2xl border border-orange-900/30">
+                            <span class="text-3xl">⏳</span>
+                            <div>
+                                <div class="text-orange-500 font-black">II - VII вв.</div>
+                                <div id="period-label" class="text-[10px] uppercase font-bold text-slate-500">Хронология переселения</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 h-80 md:h-[450px]">
+                    <canvas id="migrationChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Stages and Figures (The Plan) -->
+        <div class="space-y-12">
+            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.4em]">Хроника событий</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+                
+                <!-- Causes: Small but Wide -->
+                <div class="lg:col-span-7 storm-card p-10 flex flex-col justify-center border-l-8 border-orange-600">
+                    <div class="text-5xl mb-6">🧊</div>
+                    <h3 id="c1-t" class="text-2xl font-black mb-4 uppercase text-orange-500">Причины сдвига</h3>
+                    <p id="c1-d" class="text-slate-300 text-lg leading-relaxed">
+                        Похолодание в степях Евразии и давление гуннов на соседей заставили миллионы людей искать спасения на Западе и Юге.
+                    </p>
+                </div>
+
+                <!-- Attila: Featured Block -->
+                <div class="lg:col-span-5 bg-orange-600 p-10 rounded-[3rem] shadow-2xl flex flex-col justify-center relative overflow-hidden text-orange-950">
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-6">⚔️</div>
+                        <h3 id="c2-t" class="text-2xl font-black mb-4 uppercase italic">Аттила: Бич Божий</h3>
+                        <p id="c2-d" class="text-orange-100 text-sm leading-relaxed font-bold">
+                            Под его предводительством гунны достигли пика могущества, угрожая Константинополю и Риму. Его империя простиралась от Рейна до Волги.
+                        </p>
+                    </div>
+                    <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-10">👑</div>
+                </div>
+
+                <!-- Consequences: Full Width -->
+                <div class="lg:col-span-12 storm-card p-10 md:p-16 flex flex-col md:flex-row items-center gap-12">
+                    <div class="shrink-0 text-center">
+                        <div class="text-8xl mb-4">🏛️🔥</div>
+                        <div id="conseq-tag" class="bg-red-600 text-white px-6 py-1 rounded-full text-xs font-black uppercase tracking-widest">Collapse of Rome</div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 id="c3-t" class="text-3xl font-black text-white mb-6 uppercase">Новый Мир</h3>
+                        <p id="c3-d" class="text-slate-400 text-xl font-light leading-relaxed">
+                            Переселение привело к падению Западной Римской империи в 476 году. На её руинах возникли варварские королевства, ставшие основой современных европейских государств.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Kazakhstan's Role -->
+                <div class="lg:col-span-12 bg-slate-950 rounded-[3rem] p-10 border border-slate-800 shadow-inner text-center relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h3 id="c4-t" class="text-2xl font-bold mb-6 text-orange-500 uppercase italic">Степной коридор</h3>
+                        <p id="c4-d" class="text-slate-400 text-lg font-light leading-relaxed max-w-3xl mx-auto">
+                            Территория Казахстана служила главными «воротами» переселения. Именно отсюда начинали свой путь на Запад гунны, авары и другие кочевые союзы.
+                        </p>
+                    </div>
+                    <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none flex items-center justify-center">
+                        <div class="text-[20rem]">🏹</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-orange-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
+                «Великое переселение народов — это шторм, который разрушил старую цивилизацию, чтобы на её обломках выстроить фундамент современного мира.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-orange-600 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Мировой пожар",
+                vizTitle: "Движение Народов",
+                vizDesc: "Начавшееся движение гуннов вызвало цепную реакцию, сокрушившую границы античного мира и создавшую новую карту Европы.",
+                badge: "Эпоха перемен",
+                periodLabel: "II - VII века нашей эры",
+                planTitle: "Хроника событий",
+                c1T: "Причины сдвига", c1D: "Резкое похолодание (аридизация) и давление кочевых союзов заставили племена искать новые земли для выживания.",
+                c2T: "Аттила: Бич Божий", c2D: "Лидер гуннов, объединивший племена от Европы до Азии. Его походы поставили великий Рим на край гибели.",
+                c3T: "Новый Мир", c3D: "Падение Западной Римской империи и формирование новых народов. Эпоха, завершившая историю Древнего мира.",
+                conseqTag: "Крах Империй",
+                c4T: "Степной коридор", c4D: "Казахстан стал эпицентром великих миграций. Степные просторы Жетысу и Сарыарки были отправной точкой для мировых перемен.",
+                footer: "«Великое переселение народов — это шторм, который разрушил старую цивилизацию, чтобы выстроить фундамент современного мира.»",
+                chartLabels: ["II в.", "III в.", "IV в. (Гунны)", "V в. (Пик)", "VI в.", "VII в."],
+                chartTitle: "Интенсивность миграционных волн"
+            },
+            kz: {
+                title: "Әлемдік дүрбелең",
+                vizTitle: "Халықтардың қозғалысы",
+                vizDesc: "Ғұндардың бастаған көші антикалық дүниенің шекараларын талқандап, Еуропаның жаңа картасын жасаған тізбекті реакцияны тудырды.",
+                badge: "Өзгерістер дәуірі",
+                periodLabel: "II - VII ғасырлар",
+                planTitle: "Оқиғалар хроникасы",
+                c1T: "Көшу себептері", c1D: "Күрт суыту және көшпелі одақтардың қысымы тайпаларды аман қалу үшін жаңа жерлер іздеуге мәжбүр етті.",
+                c2T: "Еділ: Тәңірдің қамшысы", c2D: "Еуропадан Азияға дейінгі тайпаларды біріктірген ғұн көсемі. Оның жорықтары ұлы Римді жойылу алдына қойды.",
+                c3T: "Жаңа Әлем", c3D: "Батыс Рим империясының құлауы және жаңа халықтардың қалыптасуы. Ежелгі дүние тарихын аяқтаған дәуір.",
+                conseqTag: "Империялардың күйреуі",
+                c4T: "Дала дәлізі", c4D: "Қазақстан ұлы миграциялардың эпицентрі болды. Жетісу мен Сарыарқаның кең даласы әлемдік өзгерістердің бастау нүктесі болды.",
+                footer: "«Халықтардың ұлы қоныс аударуы — бұл қазіргі әлемнің іргетасын қалау үшін ескі өркениетті қиратқан дауыл.»",
+                chartLabels: ["II ғ.", "III ғ.", "IV ғ. (Ғұндар)", "V ғ. (Шың)", "VI ғ.", "VII ғ."],
+                chartTitle: "Миграциялық толқындардың қарқындылығы"
+            },
+            en: {
+                title: "World Fire",
+                vizTitle: "Migration Flow",
+                vizDesc: "The movement of the Huns triggered a chain reaction that crushed the borders of the ancient world and created a new map of Europe.",
+                badge: "Era of Change",
+                periodLabel: "2nd - 7th Centuries AD",
+                planTitle: "Chronicle of Events",
+                c1T: "Causes of Shift", c1D: "Sudden cooling and pressure from nomadic unions forced tribes to seek new lands for survival.",
+                c2T: "Attila: Scourge of God", c2D: "The Hunnic leader who united tribes from Europe to Asia. His campaigns brought Rome to the brink of collapse.",
+                c3T: "New World", c3D: "The fall of the Western Roman Empire and the formation of new peoples. The era that ended Ancient history.",
+                conseqTag: "Imperial Collapse",
+                c4T: "Steppe Corridor", c4D: "Kazakhstan became the epicenter of great migrations. The vast steppes of Zhetysu were the starting point for global changes.",
+                footer: "«The Great Migration is a storm that destroyed the old civilization to build the foundation of the modern world.»",
+                chartLabels: ["2nd c.", "3rd c.", "4th c. (Huns)", "5th c. (Peak)", "6th c.", "7th c."],
+                chartTitle: "Intensity of Migration Waves"
+            }
+        };
+
+        let currentChart = null;
+
+        function initChart(lang) {
+            const ctx = document.getElementById('migrationChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        label: 'Intensity',
+                        data: [20, 35, 80, 100, 60, 40],
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        borderWidth: 4,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { display: false, min: 0 },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Montserrat', weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: translations[lang].chartTitle, color: '#f97316', font: { family: 'Montserrat', size: 16 } }
+                    }
+                }
+            });
+        }
+
+        function setLang(lang) {
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('period-label').innerText = t.periodLabel;
+            document.getElementById('plan-title').innerText = t.planTitle;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('conseq-tag').innerText = t.conseqTag;
+            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
+                    : "px-6 py-2 rounded-xl text-sm font-bold text-slate-500 hover:text-orange-500 transition-all";
+            });
+
+            initChart(lang);
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

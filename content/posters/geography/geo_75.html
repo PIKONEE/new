@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morocco: Kingdom of Light</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #7c2d12, #c2410c);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .header-font { font-family: 'Playfair Display', serif; }
+        .moroccan-pattern {
+            background-image: radial-gradient(#fff 10%, transparent 11%), radial-gradient(#fff 10%, transparent 11%);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            opacity: 0.05;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+        .lang-link { cursor: pointer; border-bottom: 2px solid transparent; }
+        .lang-link.active { border-color: #fff; font-weight: bold; }
+    </style>
+</head>
+<body class="p-6 md:p-12 relative overflow-hidden">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    
+    <div class="absolute inset-0 moroccan-pattern pointer-events-none"></div>
+
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 h-full">
+        <!-- Content Side -->
+        <div class="flex flex-col justify-center gap-8">
+            <div class="flex items-center gap-4 text-sm font-bold tracking-widest">
+                <span onclick="window.setLang('ru')" id="l-ru" class="lang-link active">RU</span>
+                <span onclick="window.setLang('kz')" id="l-kz" class="lang-link">KZ</span>
+                <span onclick="window.setLang('en')" id="l-en" class="lang-link">EN</span>
+            </div>
+
+            <h1 id="main-header" class="header-font text-6xl md:text-8xl leading-tight text-orange-100"></h1>
+            
+            <div class="glass-card p-8">
+                <h3 id="sub-header" class="text-xl font-bold mb-4 text-orange-200"></h3>
+                <p id="desc-text" class="text-lg leading-relaxed opacity-90"></p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div class="text-center">
+                    <div class="text-3xl mb-2">🏔️</div>
+                    <div class="text-xs uppercase tracking-widest opacity-60">High Atlas</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-2">🕌</div>
+                    <div class="text-xs uppercase tracking-widest opacity-60">Culture</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-2">🧪</div>
+                    <div class="text-xs uppercase tracking-widest opacity-60">Phosphates</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Side -->
+        <div class="glass-card p-4 relative min-h-[500px]">
+            <canvas id="moroccoCanvas" class="w-full h-full rounded-xl"></canvas>
+            <div class="absolute bottom-8 right-8 text-right">
+                <div class="text-6xl font-bold header-font">75%</div>
+                <div class="text-sm uppercase tracking-widest">of world's Phosphates</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const texts = {
+            ru: {
+                h: "Марокко",
+                sub: "Врата Африки",
+                desc: "Уникальное королевство на стыке Европы и Африки, омываемое водами Атлантики и Средиземного моря. Страна Атласских гор, древних медин и бескрайней Сахары. Марокко — мировой лидер по запасам фосфоритов, «хлеба» для мировой агрохимии."
+            },
+            kz: {
+                h: "Марокко",
+                sub: "Африка қақпасы",
+                desc: "Еуропа мен Африканың түйіскен жеріндегі, Атлант мұхиты мен Жерорта теңізі шайып жатқан бірегей патшалық. Атлас таулары, ежелгі мединдер және шексіз Сахара елі. Марокко — әлемдік агрохимияның «наны» саналатын фосфорит қоры бойынша әлемдік көшбасшы."
+            },
+            en: {
+                h: "Morocco",
+                sub: "Gateway to Africa",
+                desc: "A unique kingdom at the crossroads of Europe and Africa, washed by the Atlantic and Mediterranean. Land of the Atlas Mountains, ancient medinas, and the Sahara. Morocco holds 75% of the world's phosphate reserves."
+            }
+        };
+
+        let cl = 'ru';
+        let cvs, cx;
+
+        window.setLang = function(l) {
+            cl = l;
+            document.querySelectorAll('.lang-link').forEach(el => el.classList.remove('active'));
+            document.getElementById(`l-${l}`).classList.add('active');
+            
+            document.getElementById('main-header').textContent = texts[cl].h;
+            document.getElementById('sub-header').textContent = texts[cl].sub;
+            document.getElementById('desc-text').textContent = texts[cl].desc;
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.001;
+            cx.clearRect(0, 0, w, h);
+
+            // Sky
+            const sky = cx.createLinearGradient(0, 0, 0, h);
+            sky.addColorStop(0, '#0c4a6e'); sky.addColorStop(0.5, '#0ea5e9'); sky.addColorStop(1, '#f97316'); // Sunset
+            cx.fillStyle = sky; cx.fillRect(0, 0, w, h);
+
+            // Sun
+            cx.fillStyle = '#fde047';
+            cx.beginPath(); cx.arc(w*0.7, h*0.3, 40, 0, Math.PI*2); cx.fill();
+
+            // Atlas Mountains Silhouette
+            cx.fillStyle = '#451a03';
+            cx.beginPath();
+            cx.moveTo(0, h);
+            for(let i=0; i<=w; i+=10) {
+                const y = h*0.6 - Math.abs(Math.sin(i*0.01))*100 - Math.sin(i*0.03 + 1)*50;
+                cx.lineTo(i, y);
+            }
+            cx.lineTo(w, h);
+            cx.fill();
+
+            // Star (Flag symbol)
+            cx.strokeStyle = '#15803d'; // Green pentagram
+            cx.lineWidth = 3;
+            const starX = w*0.2, starY = h*0.2;
+            const r = 30;
+            cx.beginPath();
+            for(let i=0; i<5; i++) {
+                const ang = -Math.PI/2 + i * (Math.PI*2*2/5);
+                const x = starX + Math.cos(ang)*r;
+                const y = starY + Math.sin(ang)*r;
+                if(i==0) cx.moveTo(x,y); else cx.lineTo(x,y);
+            }
+            cx.closePath(); cx.stroke();
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('moroccoCanvas');
+            cx = cvs.getContext('2d');
+            const resize = () => {
+                cvs.width = cvs.parentElement.clientWidth;
+                cvs.height = cvs.parentElement.clientHeight;
+            };
+            window.addEventListener('resize', resize);
+            resize();
+            window.setLang('ru');
+            draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

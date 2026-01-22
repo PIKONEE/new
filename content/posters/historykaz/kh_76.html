@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Восстание в Букеевской Орде (1836–1838 гг.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #f5f5f4; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .rebel-gradient {
+            background: radial-gradient(circle at top right, #450a0a, #0c0a09 90%);
+        }
+
+        .premium-card {
+            background: rgba(28, 25, 23, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            border: 2px solid #ef4444;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            border-color: #f87171;
+            box-shadow: 0 0 60px rgba(220, 38, 38, 0.15);
+        }
+
+        .lang-active {
+            background-color: #dc2626;
+            color: white;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: #1c1917;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+        }
+
+        .info-panel {
+            background: rgba(30, 41, 59, 0.5);
+            border-left: 10px solid #dc2626;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+        }
+
+        .term-badge {
+            background: #450a0a;
+            color: #fca5a5;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="rebel-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-red-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-red-500 text-center">Восстание в Букеевской Орде (1836–1838 гг.)</h1>
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-red-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Strategic Map Explorer (Canvas) -->
+        <div class="premium-card p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-red-500 text-red-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Rebellion Conflict Map</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Междоречье в огне</h2>
+                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
+                        Восстание Исатая Тайманова и Махамбета Утемисова охватило территорию между Волгой и Уралом. Нажмите на ключевые точки сражений и ставку хана Джангира.
+                    </p>
+                    
+                    <div id="info-panel" class="info-panel shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-red-400 mb-3 uppercase tracking-tighter">Начните анализ</h3>
+                        <p id="element-desc" class="text-zinc-300 text-sm leading-relaxed italic font-light">Кликните на Тас-Тобе, Акбулак или Ханскую ставку на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="rebellionCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-red-900 font-mono uppercase tracking-[0.4em]">Tactical Conflict Schematic</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Context Blocks -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- Causes -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-red-600">
+                <div>
+                    <span class="term-badge mb-4 inline-block" id="tag-1">Причины</span>
+                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Земельный тупик</h3>
+                    <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed">
+                        Обострение земельного вопроса в Букеевской Орде достигло предела. Лучшие пастбища перешли в руки родственников хана **Джангира** и крупных баев. Налоги выросли в разы, а произвол чиновников лишил шаруа защиты. Люди требовали возврата земель в народное пользование и ограничения власти хана.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Leaders -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-slate-500">
+                <div>
+                    <span class="term-badge mb-4 inline-block" id="tag-2">Лидеры</span>
+                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Исатай и Махамбет</h3>
+                    <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed">
+                        **Исатай Тайманов** был военным руководителем, обладавшим огромным авторитетом. **Махамбет Утемисов** — пламенный поэт-духовидец, чьи стихи (толгау) стали гимном свободы. Вместе они создали ополчение, которое два года держало в страхе ставку Джангир-хана и имперские войска.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Conclusion -->
+            <div class="premium-card p-10 flex flex-col justify-between border-t-8 border-red-600">
+                <div>
+                    <span class="term-badge mb-4 inline-block" id="tag-3">Итог</span>
+                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Трагедия Акбулака</h3>
+                    <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed">
+                        Решающее сражение произошло в июле **1838 года** у реки Акбулак. Несмотря на мужество, повстанцы были разбиты регулярными войсками. Исатай Тайманов погиб в бою. Восстание показало кризис ханской власти, которая в итоге была ликвидирована в 1845 году, после смерти Джангира.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Восстание в Букеевской Орде (1836–1838 гг.)",
+                vizTitle: "Междоречье в огне",
+                vizDesc: "Восстание Исатая и Махамбета охватило бассейн Волги и Урала. Нажмите на точки для анализа сражений и политического кризиса.",
+                badge: "Анализ очагов восстания",
+                elementTitleDefault: "Начните анализ",
+                elementDescDefault: "Кликните на Тас-Тобе, Акбулак или Ханскую ставку на чертеже справа.",
+                tag1: "Причины", tag2: "Лидеры", tag3: "Итог",
+                c1T: "Земельный тупик", c1D: "Изъятие плодородных земель и высокие налоги. Султаны и баи захватили лучшие пастбища, вынуждая народ восстать против деспотии Джангир-хана.",
+                c2T: "Исатай и Махамбет", c2D: "Тандем военного гения и поэтического слова. Махамбет стал 'голосом' народа, а Исатай — его 'мечом' в борьбе за справедливость.",
+                c3T: "Трагедия Акбулака", c3D: "Разгром ополчения и гибель Исатая в 1838 г. Восстание ускорило процесс ликвидации ханской власти во Внутренней Орде (1845).",
+                nodes: {
+                    tastobe: { name: "Битва при Тас-Тобе (1837)", text: "Первое крупное столкновение. Повстанцы противостояли отряду подполковника Гекке. Несмотря на поражение, восстание не угасло." },
+                    akbulak: { name: "Сражение на Акбулаке (1838)", text: "Финальная битва. Исатай Тайманов героически погиб. Это событие ознаменовало военный конец восстания." },
+                    khan: { name: "Ханская ставка", text: "Место пребывания Джангир-хана. В 1837 году повстанцы блокировали ставку, требуя изгнания коррумпированных советников хана." }
+                }
+            },
+            kz: {
+                title: "Бөкей Ордасындағы көтеріліс (1836–1838 жж.)",
+                vizTitle: "Жалын шарпыған Еділ-Жайық",
+                vizDesc: "Исатай мен Махамбет бастаған көтеріліс Еділ мен Жайық аралығын қамтыды. Шайқастар мен саяси дағдарысты талдау үшін нүктелерді басыңыз.",
+                badge: "Көтеріліс ошақтарын талдау",
+                elementTitleDefault: "Талдауды бастаңыз",
+                elementDescDefault: "Оң жақтағы сызбадан Тастөбе, Ақбұлақ немесе Хан ордасын басыңыз.",
+                tag1: "Себептер", tag2: "Көсемдер", tag3: "Қорытынды",
+                c1T: "Жер мәселесі", c1D: "Құнарлы жерлерді тартып алу және жоғары салықтар. Сұлтандар мен байлар жайылымдарды иемденіп, халықты Жәңгір ханның озбырлығына қарсы тұруға итермеледі.",
+                c2T: "Исатай мен Махамбет", c2D: "Әскери данышпандық пен ақындық сөздің бірлігі. Махамбет халықтың «үні», ал Исатай әділдік үшін күресте «семсері» болды.",
+                c3T: "Ақбұлақ қасіреті", c3D: "Жасақтың талқандалуы және 1838 жылы Исатайдың қаза болуы. Көтеріліс Ішкі Ордадағы хандық биліктің жойылуын (1845) тездетті.",
+                nodes: {
+                    tastobe: { name: "Тастөбе шайқасы (1837)", text: "Алғашқы ірі қақтығыс. Көтерілісшілер подполковник Геккенің жасағына қарсы тұрды. Жеңіліске қарамастан, көтеріліс тоқтамады." },
+                    akbulak: { name: "Ақбұлақ шайқасы (1838)", text: "Шешуші шайқас. Исатай Тайманов ерлікпен қаза тапты. Бұл оқиға көтерілістің әскери соңын білдірді." },
+                    khan: { name: "Хан ордасы", text: "Жәңгір ханның тұрағы. 1837 жылы көтерілісшілер орданы қоршап, ханның жемқор кеңесшілерін қууды талап етті." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('rebellionCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 550;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw Rivers (Volga & Ural)
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 50);
+            ctx.lineTo(250 * scale, 450);
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.2)';
+            ctx.lineWidth = 15 * scale;
+            ctx.stroke(); // stylized Volga
+
+            ctx.beginPath();
+            ctx.moveTo(400 * scale, 50);
+            ctx.lineTo(550 * scale, 450);
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.4)';
+            ctx.lineWidth = 10 * scale;
+            ctx.stroke(); // stylized Ural
+
+            // 2. Battle Zones
+            drawPoint(cx - 50 * scale, cy - 80 * scale, '#dc2626', "TAS-TOBE (1837)");
+            drawPoint(cx + 120 * scale, cy + 120 * scale, '#ef4444', "AKBULAK (1838)");
+            drawPoint(cx - 150 * scale, cy + 40 * scale, '#f59e0b', "KHAN'S HQ");
+
+            // 3. Conflict Lines
+            ctx.setLineDash([5, 10]);
+            ctx.strokeStyle = 'rgba(220, 38, 38, 0.3)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 130 * scale, cy + 40 * scale);
+            ctx.lineTo(cx - 70 * scale, cy - 60 * scale);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawPoint(x, y, color, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, 15, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y - 25);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            let found = null;
+            if (Math.sqrt((x-(cx-50*scale))**2 + (y-(cy-80*scale))**2) < 40) found = 'tastobe';
+            else if (Math.sqrt((x-(cx+120*scale))**2 + (y-(cy+120*scale))**2) < 40) found = 'akbulak';
+            else if (Math.sqrt((x-(cx-150*scale))**2 + (y-(cy+40*scale))**2) < 40) found = 'khan';
+
+            if (found) {
+                const info = translations[currentLang].nodes[found];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (found === 'khan' ? '#f59e0b' : '#dc2626');
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

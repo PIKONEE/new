@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Валенттілік</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fce7f3; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #db2777; border-bottom: 3px solid #fbcfe8; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #ec4899; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #ec4899; background: white; color: #ec4899; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #ec4899; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; font-size: 11px; }
+        th { background-color: #ec4899; color: white; }
+        .valency-box { background: #fce7f3; padding: 15px; border-radius: 0.75rem; border-left: 4px solid #ec4899; margin: 10px 0; }
+        .example-box { background: linear-gradient(135deg, #fbcfe8 0%, #fce7f3 100%); padding: 15px; border-radius: 0.75rem; margin: 10px 0; border-left: 4px solid #ec4899; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-pink-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Валенттілік - Атомның Байланыс күбі!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Valency - Bonding Ability of Atoms!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Валентность - способность к связям!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-pink-100">Валентность = басқа атомдармен байланыс сандығы. H=1, O=2, N=3, C=4. Формула құру ереді! H₂O, NH₃, CH₄ - қарапайым ережелі!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-pink-100">Valency = number of bonds with other atoms. H=1, O=2, N=3, C=4. Simple rules for formulas! H₂O, NH₃, CH₄!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-pink-100">Валентность = число связей. H=1, O=2, N=3, C=4. Простые правила для формул! H₂O, NH₃, CH₄!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ВАЛЕНТНІСТЬ ТАБЛИЦАСЫ - ЕҢ ҚАЖЕТ!</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. VALENCY TABLE - MOST NEEDED!</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Таблица валентностей - САМАЯ ВАЖНАЯ!</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">Элемент</th>
+                            <th lang="kk" class="lang-content">I</th>
+                            <th lang="kk" class="lang-content">II</th>
+                            <th lang="kk" class="lang-content">III</th>
+                            <th lang="kk" class="lang-content">IV</th>
+                            <th lang="kk" class="lang-content">V</th>
+                            <th lang="kk" class="lang-content">VI</th>
+                            <th lang="kk" class="lang-content">VII</th>
+
+                            <th lang="en" class="lang-content">Element</th>
+                            <th lang="en" class="lang-content">I</th>
+                            <th lang="en" class="lang-content">II</th>
+                            <th lang="en" class="lang-content">III</th>
+                            <th lang="en" class="lang-content">IV</th>
+                            <th lang="en" class="lang-content">V</th>
+                            <th lang="en" class="lang-content">VI</th>
+                            <th lang="en" class="lang-content">VII</th>
+
+                            <th lang="ru" class="lang-content">Элемент</th>
+                            <th lang="ru" class="lang-content">I</th>
+                            <th lang="ru" class="lang-content">II</th>
+                            <th lang="ru" class="lang-content">III</th>
+                            <th lang="ru" class="lang-content">IV</th>
+                            <th lang="ru" class="lang-content">V</th>
+                            <th lang="ru" class="lang-content">VI</th>
+                            <th lang="ru" class="lang-content">VII</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>H (Водород)</strong></td>
+                            <td lang="kk" class="lang-content">✓ <strong>1</strong></td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+
+                            <td lang="en" class="lang-content"><strong>H (Hydrogen)</strong></td>
+                            <td lang="en" class="lang-content">✓ <strong>1</strong></td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+
+                            <td lang="ru" class="lang-content"><strong>H (водород)</strong></td>
+                            <td lang="ru" class="lang-content">✓ <strong>1</strong></td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>O (Оттегі)</strong></td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">✓ <strong>2</strong></td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+
+                            <td lang="en" class="lang-content"><strong>O (Oxygen)</strong></td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">✓ <strong>2</strong></td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+
+                            <td lang="ru" class="lang-content"><strong>O (кислород)</strong></td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">✓ <strong>2</strong></td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>N (Азот)</strong></td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">✓ <strong>3</strong></td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">✓ <strong>5</strong></td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+
+                            <td lang="en" class="lang-content"><strong>N (Nitrogen)</strong></td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">✓ <strong>3</strong></td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">✓ <strong>5</strong></td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+
+                            <td lang="ru" class="lang-content"><strong>N (азот)</strong></td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">✓ <strong>3</strong></td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">✓ <strong>5</strong></td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>C (Көміртегі)</strong></td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">✓ <strong>4</strong></td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">-</td>
+
+                            <td lang="en" class="lang-content"><strong>C (Carbon)</strong></td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">✓ <strong>4</strong></td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">-</td>
+
+                            <td lang="ru" class="lang-content"><strong>C (углерод)</strong></td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">✓ <strong>4</strong></td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">-</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ФОРМУЛА ҚҰРУ ЕРЕЖЕЛЕРІ - ШҚҚ МЫСАЛ!</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. FORMULA COMPOSITION RULES - STEP BY STEP!</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Правила составления формул - пошагово!</h2>
+
+            <div class="rule-card">
+                <div class="space-y-4">
+                    <div class="example-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>📝 МЫСАЛ 1: H₂O құру</strong></p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 1: H валентсі = 1, O валентсі = 2</p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 2: 1 және 2-нің ӘОК = 2</p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 3: 2 ÷ 1 = 2 (H саны), 2 ÷ 2 = 1 (O саны)</p>
+                        <p lang="kk" class="lang-content text-sm">РЕЗУЛЬТАТ: <strong>H₂O</strong> ✓</p>
+
+                        <p lang="en" class="lang-content text-sm"><strong>📝 EXAMPLE 1: Making H₂O</strong></p>
+                        <p lang="en" class="lang-content text-sm">Step 1: H valency = 1, O valency = 2</p>
+                        <p lang="en" class="lang-content text-sm">Step 2: LCM of 1 and 2 = 2</p>
+                        <p lang="en" class="lang-content text-sm">Step 3: 2 ÷ 1 = 2 (H), 2 ÷ 2 = 1 (O)</p>
+                        <p lang="en" class="lang-content text-sm">RESULT: <strong>H₂O</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content text-sm"><strong>📝 ПРИМЕР 1: Составление H₂O</strong></p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 1: валентность H = 1, O = 2</p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 2: НОК(1,2) = 2</p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 3: 2 ÷ 1 = 2 (H), 2 ÷ 2 = 1 (O)</p>
+                        <p lang="ru" class="lang-content text-sm">РЕЗУЛЬТАТ: <strong>H₂O</strong> ✓</p>
+                    </div>
+
+                    <div class="example-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>📝 МЫСАЛ 2: NH₃ құру (аммиак)</strong></p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 1: N валентсі = 3, H валентсі = 1</p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 2: 3 және 1-нің ӘОК = 3</p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 3: 3 ÷ 3 = 1 (N саны), 3 ÷ 1 = 3 (H саны)</p>
+                        <p lang="kk" class="lang-content text-sm">РЕЗУЛЬТАТ: <strong>NH₃</strong> ✓</p>
+
+                        <p lang="en" class="lang-content text-sm"><strong>📝 EXAMPLE 2: Making NH₃ (ammonia)</strong></p>
+                        <p lang="en" class="lang-content text-sm">Step 1: N valency = 3, H valency = 1</p>
+                        <p lang="en" class="lang-content text-sm">Step 2: LCM(3,1) = 3</p>
+                        <p lang="en" class="lang-content text-sm">Step 3: 3 ÷ 3 = 1 (N), 3 ÷ 1 = 3 (H)</p>
+                        <p lang="en" class="lang-content text-sm">RESULT: <strong>NH₃</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content text-sm"><strong>📝 ПРИМЕР 2: Составление NH₃ (аммиак)</strong></p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 1: валентность N = 3, H = 1</p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 2: НОК(3,1) = 3</p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 3: 3 ÷ 3 = 1 (N), 3 ÷ 1 = 3 (H)</p>
+                        <p lang="ru" class="lang-content text-sm">РЕЗУЛЬТАТ: <strong>NH₃</strong> ✓</p>
+                    </div>
+
+                    <div class="example-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>📝 МЫСАЛ 3: CaCl₂ құру (кальций хлорид)</strong></p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 1: Ca валентсі = 2, Cl валентсі = 1</p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 2: 2 және 1-нің ӘОК = 2</p>
+                        <p lang="kk" class="lang-content text-sm">Қадам 3: 2 ÷ 2 = 1 (Ca саны), 2 ÷ 1 = 2 (Cl саны)</p>
+                        <p lang="kk" class="lang-content text-sm">РЕЗУЛЬТАТ: <strong>CaCl₂</strong> ✓</p>
+
+                        <p lang="en" class="lang-content text-sm"><strong>📝 EXAMPLE 3: Making CaCl₂ (calcium chloride)</strong></p>
+                        <p lang="en" class="lang-content text-sm">Step 1: Ca valency = 2, Cl valency = 1</p>
+                        <p lang="en" class="lang-content text-sm">Step 2: LCM(2,1) = 2</p>
+                        <p lang="en" class="lang-content text-sm">Step 3: 2 ÷ 2 = 1 (Ca), 2 ÷ 1 = 2 (Cl)</p>
+                        <p lang="en" class="lang-content text-sm">RESULT: <strong>CaCl₂</strong> ✓</p>
+
+                        <p lang="ru" class="lang-content text-sm"><strong>📝 ПРИМЕР 3: Составление CaCl₂ (хлорид кальция)</strong></p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 1: валентность Ca = 2, Cl = 1</p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 2: НОК(2,1) = 2</p>
+                        <p lang="ru" class="lang-content text-sm">Шаг 3: 2 ÷ 2 = 1 (Ca), 2 ÷ 1 = 2 (Cl)</p>
+                        <p lang="ru" class="lang-content text-sm">РЕЗУЛЬТАТ: <strong>CaCl₂</strong> ✓</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. ЕРЕКШЕ ЕРЕЖЕЛЕР</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. SPECIAL RULES</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Специальные правила</h2>
+
+            <div class="rule-card">
+                <div class="space-y-3">
+                    <div class="valency-box">
+                        <p lang="kk" class="lang-content text-sm">🔴 <strong>Өндіс әр элемент валентсі:</strong> әйтшісі нөтандардың саны тең валентсіге. Мысалы, O валентсі = 2 өндіс әр жағдайда.</p>
+                        <p lang="en" class="lang-content text-sm">🔴 <strong>Valency of each element:</strong> usually equals the number of valence electrons. For example, O valency = 2 most of the time.</p>
+                        <p lang="ru" class="lang-content text-sm">🔴 <strong>Валентность элемента:</strong> обычно равна числу валентных электронов. Например, валентность O = 2 почти всегда.</p>
+                    </div>
+                    <div class="valency-box">
+                        <p lang="kk" class="lang-content text-sm">🟡 <strong>Басым валентсілері қайт:</strong> төрт элементтің екі валентсі болуы мүмкін. Мысалы, N = 3 немесе 5, C = 2 немесе 4</p>
+                        <p lang="en" class="lang-content text-sm">🟡 <strong>Variable valencies exist:</strong> some elements have multiple valencies. Example: N = 3 or 5, C = 2 or 4</p>
+                        <p lang="ru" class="lang-content text-sm">🟡 <strong>Переменные валентности:</strong> некоторые элементы имеют несколько валентностей. Пример: N = 3 или 5, C = 2 или 4</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fbcfe8; border-radius: 1rem; border-top: 4px solid #ec4899;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-pink-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Валентность = басқа атомдармен байланыс сандығы. Ереде валентсілер: H=1, O=2, N=3, C=4. Формула құру: 1) валентсілерді анықта, 2) ӘОК табу, 3) атом сандарын есептеу. H₂O, NH₃, CaCl₂ - барлық қарапайым ережелі!</p>
+            <p lang="en" class="lang-content text-sm">Valency = number of bonds with other atoms. Common valencies: H=1, O=2, N=3, C=4. Formula composition: 1) identify valencies, 2) find LCM, 3) calculate atom numbers. H₂O, NH₃, CaCl₂ - all simple rules!</p>
+            <p lang="ru" class="lang-content text-sm">Валентность = число связей. Обычные валентности: H=1, O=2, N=3, C=4. Составление формул: 1) определить валентности, 2) найти НОК, 3) рассчитать количество атомов. H₂O, NH₃, CaCl₂ - простые правила!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

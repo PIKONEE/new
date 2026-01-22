@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humanity on Planet Earth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #020617; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #ef4444; color: white; font-weight: 800; }
+        @keyframes drift { from { background-position: 0 0; } to { background-position: 100% 100%; } }
+        .impact-btn:hover { background: rgba(239, 68, 68, 0.1); }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-red-500">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-red-400"></h1>
+            <p id="sub-title" class="mt-1 text-white/30 font-bold uppercase tracking-widest text-[10px]"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-red-600">
+            <h3 id="info-title" class="heading-font text-4xl mb-6 text-white"></h3>
+            <div id="info-text" class="text-xl font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+             <div class="glass rounded-custom p-8 flex items-center gap-6 impact-btn transition-all">
+                <span class="text-5xl">🏭</span>
+                <div>
+                    <h4 id="i1-t" class="font-bold text-red-400 uppercase text-xs tracking-widest"></h4>
+                    <p id="i1-d" class="text-sm text-white/60"></p>
+                </div>
+             </div>
+             <div class="glass rounded-custom p-8 flex items-center gap-6 impact-btn transition-all">
+                <span class="text-5xl">🚜</span>
+                <div>
+                    <h4 id="i2-t" class="font-bold text-red-400 uppercase text-xs tracking-widest"></h4>
+                    <p id="i2-d" class="text-sm text-white/60"></p>
+                </div>
+             </div>
+             <div class="glass rounded-custom p-8 flex items-center gap-6 impact-btn transition-all">
+                <span class="text-5xl">🛡️</span>
+                <div>
+                    <h4 id="i3-t" class="font-bold text-red-400 uppercase text-xs tracking-widest"></h4>
+                    <p id="i3-d" class="text-sm text-white/60"></p>
+                </div>
+             </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Человек и Земля", subtitle: "Антропогенное влияние и ноосфера",
+                infoTitle: "Геологическая сила",
+                infoText: "Человек стал мощнейшим фактором изменения природы. Наша деятельность преобразует рельеф, состав атмосферы и биоразнообразие. Мы строим города, меняем русла рек и создаем новые материалы.",
+                i1: { t: "Промышленность", d: "Выбросы газов усиливают парниковый эффект, приводя к глобальному потеплению." },
+                i2: { t: "Сельское хозяйство", d: "Распашка земель и вырубка лесов ведут к эрозии почв и опустыниванию." },
+                i3: { t: "Охрана природы", d: "Создание заповедников и внедрение 'зеленых' технологий — путь к сохранению планеты." }
+            },
+            kz: {
+                title: "Адам және Жер", subtitle: "Антропогендік әсер және ноосфера",
+                infoTitle: "Геологиялық күш",
+                infoText: "Адам табиғатты өзгертудің ең қуатты факторына айналды. Біздің қызметіміз рельефті, атмосфера құрамын және биоалуантүрлілікті өзгертеді.",
+                i1: { t: "Өнеркәсіп", d: "Газдардың шығарылуы парниктік эффектіні күшейтіп, жаһандық жылынуға әкеледі." },
+                i2: { t: "Ауыл шаруашылығы", d: "Жерді жырту және ормандарды кесу топырақ эрозиясына әкеледі." },
+                i3: { t: "Табиғатты қорғау", d: "Қорықтар құру және 'жасыл' технологияларды енгізу — планетаны сақтау жолы." }
+            },
+            en: {
+                title: "Man and Earth", subtitle: "Anthropogenic Impact & Noosphere",
+                infoTitle: "A Geological Force",
+                infoText: "Humanity has become a dominant force in shaping the natural world. Our activities transform relief, atmospheric composition, and biodiversity on a global scale.",
+                i1: { t: "Industry", d: "Gas emissions enhance the greenhouse effect, leading to global climate change." },
+                i2: { t: "Agriculture", d: "Land cultivation and deforestation cause soil erosion and habitat loss." },
+                i3: { t: "Conservation", d: "Creating protected areas and adopting green technologies are key to Earth's future." }
+            }
+        };
+
+        window.setLang = function(l) {
+            const t = translations[l];
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('info-title').textContent = t.infoTitle;
+            document.getElementById('info-text').textContent = t.infoText;
+            document.getElementById('i1-t').textContent = t.i1.t; document.getElementById('i1-d').textContent = t.i1.d;
+            document.getElementById('i2-t').textContent = t.i2.t; document.getElementById('i2-d').textContent = t.i2.d;
+            document.getElementById('i3-t').textContent = t.i3.t; document.getElementById('i3-d').textContent = t.i3.d;
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Западнославянские государства: Великая Моравия, Чехия, Польша</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e3a8a, #0f172a, #000000);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #ffffff;
+            color: #1e3a8a;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #60a5fa;
+            background: linear-gradient(90deg, rgba(96, 165, 250, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #60a5fa; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-200 uppercase">
+                Западные Славяне
+            </h1>
+            <p id="sub-title" class="text-blue-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase italic">IX–XV века / Центр Европы</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-blue-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-blue-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-blue-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-blue-600 inline-block"></span>
+                Политическая карта
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-blue-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="slavicMapCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-blue-500/50 italic text-center uppercase tracking-widest">Нажмите на государства для изучения их истории</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-blue-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Славянская Заря</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Западные славяне (поляки, чехи, словаки) создали свои государства в тесном контакте с Византией и Империей германцев. Выберите страну на карте, чтобы узнать о её становлении.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⛪</span>
+                            <span id="hint-1" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Христианский выбор</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🛡️</span>
+                            <span id="hint-2" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Оборона границ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-blue-950/40 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-blue-950/20 rounded-[2.5rem] border border-blue-900/30 shadow-xl">
+                        <strong class="text-blue-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-historic">Факт истории:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Recap Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-blue-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⛪</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Великая Моравия</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Первое крупное западнославянское государство (IX в.). Именно по просьбе моравского князя Ростислава в 863 г. прибыли <strong>Кирилл и Мефодий</strong>, создавшие славянскую азбуку.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-slate-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-white uppercase">Чешское княжество</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Возникло в X веке под властью династии Пржемысловичей. Чехия стала частью Священной Римской империи, но сохранила автономию и в XIV веке достигла расцвета при Карле IV.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🦅</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-blue-300 uppercase">Польша (Пясты)</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Князь <strong>Мешко I</strong> объединил польские племена и в 966 г. принял христианство по латинскому обряду. Его сын Болеслав Храбрый стал первым королем Польши.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-blue-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-blue-100/70 leading-tight max-w-5xl mx-auto">
+            «Западные славяне выбрали путь интеграции в латинскую культуру Европы, сохранив при этом свою уникальную идентичность».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Западные Славяне",
+                subtitle: "IX–XV века / Центр Европы",
+                visualTitle: "Политическая карта",
+                hint: "Нажмите на государства для изучения их истории",
+                placeholderTitle: "Славянская Заря",
+                placeholderText: "История западных славян — это борьба за независимость и выбор пути развития. Изучите три ключевых центра силы.",
+                labelHistoric: "Факт истории:",
+                hint1: "Христианский выбор", hint2: "Оборона границ",
+                card1Title: "Великая Моравия",
+                card1Text: "Колыбель славянской письменности. Государство, которое первым бросило вызов германскому влиянию на востоке.",
+                card2Title: "Чехия",
+                card2Text: "Центр Европы в XIV веке. Прага при короле Карле IV стала одной из блестящих столиц христианского мира.",
+                card3Title: "Польша",
+                card3Text: "Мощное королевство, остановившее натиск Тевтонского ордена и объединившее славянские земли Вислы.",
+                footerQuote: "«Западные славяне выбрали путь интеграции в латинскую культуру Европы, сохранив при этом свою уникальную идентичность».",
+                nodes: [
+                    { id: 1, tag: "IX век", title: "Великая Моравия", desc: "Держава, объединившая земли нынешних Чехии, Словакии и части Польши. Центр борьбы против экспансии франков.", fact: "Великая Моравия пала в начале X века под ударами венгерских кочевников." },
+                    { id: 2, tag: "X век", title: "Польша Мешко I", desc: "Объединение племен полян вокруг города Гнезно. Принятие крещения из Рима (966 г.) спасло Польшу от насильственной христианизации немцами.", fact: "Белый орел стал символом польского государства именно при династии Пястов." },
+                    { id: 3, tag: "XIV век", title: "Золотой век Чехии", desc: "Карл IV Люксембург, король Чехии и император, основал Пражский университет (1348 г.) и построил Карлов мост, сделав Прагу культурным центром Европы.", fact: "Чехия в этот период была самым богатым регионом империи благодаря добыче серебра." },
+                    { id: 4, tag: "XV век", title: "Гуситские войны", desc: "Масштабное религиозное и национальное движение в Чехии под руководством Яна Гуса. Чехи боролись за реформу церкви и права своего народа.", fact: "Ян Жижка, полководец гуситов, никогда не проигрывал сражений, даже будучи полностью слепым." },
+                    { id: 5, tag: "1410 год", title: "Битва при Грюнвальде", desc: "Решающая победа объединенных польско-литовских войск над Тевтонским орденом. Это событие остановило продвижение крестоносцев на славянские земли.", fact: "В битве на стороне славян участвовали также смоленские полки и татарская конница." }
+                ]
+            },
+            kz: {
+                title: "Батыс Славяндар",
+                subtitle: "IX–XV ғасырлар / Еуропа орталығы",
+                visualTitle: "Саяси карта",
+                hint: "Мемлекеттерді зерттеу үшін картаны басыңыз",
+                placeholderTitle: "Славян Таңы",
+                placeholderText: "Батыс славяндар тарихы — тәуелсіздік үшін күрес және даму жолын таңдау тарихы. Үш негізгі орталықты зерттеңіз.",
+                labelHistoric: "Тарихи факт:",
+                hint1: "Христиандық таңдау", hint2: "Шекараны қорғау",
+                card1Title: "Ұлы Моравия",
+                card1Text: "Славян жазуының бесігі. Шығыстағы герман ықпалына алғашқы болып қарсы тұрған мемлекет.",
+                card2Title: "Чехия",
+                card2Text: "XIV ғасырдағы Еуропа орталығы. Прага Карл IV тұсында христиан әлемінің ең көрікті астанасына айналды.",
+                card3Title: "Польша",
+                card3Text: "Тевтон орденінің шабуылын тоқтатқан және Висла славян жерлерін біріктірген қуатты патшалық.",
+                footerQuote: "«Батыс славяндар Еуропаның латын мәдениетіне қосылу жолын таңдап, өздерінің бірегей болмысын сақтап қалды».",
+                nodes: [
+                    { id: 1, tag: "IX ғасыр", title: "Ұлы Моравия", desc: "Қазіргі Чехия, Словакия және Польшаның бір бөлігін біріктірген мемлекет. Франктерге қарсы күрес орталығы.", fact: "Ұлы Моравия X ғасырдың басында венгрлердің соққысынан құлады." },
+                    { id: 2, tag: "X ғасыр", title: "Мешко I Польшасы", desc: "Полян тайпаларының бірігуі. 966 жылы Римнен христиандықты қабылдау Польшаны немістердің басқыншылығынан сақтап қалды.", fact: "Ақ бүркіт Пяст әулеті тұсында поляк мемлекетінің нышанына айналды." },
+                    { id: 3, tag: "XIV ғасыр", title: "Чехияның алтын ғасыры", desc: "Карл IV Прага университетінің негізін қалады (1348 ж.) және Праганы Еуропаның мәдени орталығына айналдырды.", fact: "Чехия бұл кезеңде күміс өндірудің арқасында империяның ең бай аймағы болды." },
+                    { id: 4, tag: "XV ғасыр", title: "Гусит соғыстары", desc: "Ян Гус бастаған Чехиядағы діни және ұлттық қозғалыс. Чехтар шіркеу реформасы мен халық құқығы үшін күресті.", fact: "Ян Жижка ешқашан жеңіліп көрмеген қолбасшы болды." },
+                    { id: 5, tag: "1410 жыл", title: "Грюнвальд шайқасы", desc: "Поляк-литва әскерлерінің Тевтон орденін талқандауы. Бұл крестшілердің славян жеріне жылжуын тоқтатты.", fact: "Бұл шайқасқа славяндар жағында татар атты әскері де қатысты." }
+                ]
+            },
+            en: {
+                title: "Western Slavs",
+                subtitle: "9th–15th Centuries / Heart of Europe",
+                visualTitle: "Political Map",
+                hint: "Click on states to study their history",
+                placeholderTitle: "Slavic Dawn",
+                placeholderText: "The history of Western Slavs is a tale of survival and state-building between the East and West. Explore the key power centers.",
+                labelHistoric: "Historical Fact:",
+                hint1: "Christian Choice", hint2: "Defending Borders",
+                card1Title: "Great Moravia",
+                card1Text: "The cradle of Slavic literacy. The first state to challenge Frankish dominance in Central Europe.",
+                card2Title: "Bohemia",
+                card2Text: "The jewel of the 14th century. Under Charles IV, Prague became an imperial capital and center of learning.",
+                card3Title: "Poland",
+                card3Text: "A formidable kingdom that united the Vistula lands and checked the advance of the Teutonic Knights.",
+                footerQuote: "«Western Slavs chose the path of integration into Latin Europe while fiercely preserving their unique ethnic identity.»",
+                nodes: [
+                    { id: 1, tag: "9th Century", title: "Great Moravia", desc: "Unified the lands of modern Czechia, Slovakia, and parts of Poland. It invited Cyril and Methodius to counter German influence.", fact: "The empire collapsed under Hungarian nomadic raids in the early 10th century." },
+                    { id: 2, tag: "10th Century", title: "Poland of Mieszko I", desc: "Unification of the Polans around Gniezno. Mieszko's conversion to Latin Christianity in 966 secured Poland's place in the West.", fact: "The White Eagle emerged as the royal symbol during the Piast dynasty's reign." },
+                    { id: 3, tag: "14th Century", title: "Bohemia's Golden Age", desc: "King Charles IV of Bohemia was also the Holy Roman Emperor. He made Prague a cultural titan, building the University and the Charles Bridge.", fact: "Bohemia was the primary silver producer for the Empire, ensuring its economic dominance." },
+                    { id: 4, tag: "15th Century", title: "Hussite Wars", desc: "A religious and national movement led by Jan Hus. The Bohemians demanded church reform and the use of the vernacular in liturgy.", fact: "The blind general Jan Zizka never lost a battle, using innovative 'wagon fort' tactics." },
+                    { id: 5, tag: "1410 AD", title: "Battle of Grunwald", desc: "A decisive Polish-Lithuanian victory over the Teutonic Knights, halting the 'Drang nach Osten' (drive to the east) of military orders.", fact: "It was one of the largest battles of the Middle Ages, involving diverse ethnic contingents." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('slavicMapCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-historic').innerText = t.labelHistoric;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Central Europe
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 100, 50); // North
+            ctx.lineTo(cx + 150, 50);
+            ctx.lineTo(cx + 120, 350); // South East
+            ctx.lineTo(cx - 120, 350); // South West
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx, y: cy + 80, icon: "⛪" },      // Moravia (Central-South)
+                { id: 2, x: cx + 50, y: cy - 80, icon: "🦅" },  // Poland (North)
+                { id: 3, x: cx - 60, y: cy - 20, icon: "⚔️" },  // Bohemia (West)
+                { id: 4, x: cx - 120, y: cy + 40, icon: "🛡️" }, // Hussites
+                { id: 5, x: cx + 100, y: cy + 20, icon: "🚩" }   // Grunwald
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 1) ? '#ffffff' : '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = (i === 1) ? '#1e3a8a' : 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = (i === 1) ? '#1e3a8a' : 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#93c5fd';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

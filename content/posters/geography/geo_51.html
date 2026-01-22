@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Atmospheric Circulation - Cells and Winds</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #1e3a8a, #0f172a, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+        .legend-item { border-left: 3px solid transparent; padding-left: 10px; transition: all 0.3s; }
+        .legend-item:hover { background: rgba(255,255,255,0.05); border-color: #38bdf8; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-sky-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-300"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <!-- Visual Map -->
+        <div class="lg:col-span-7 glass rounded-custom p-8 flex flex-col items-center justify-center relative min-h-[550px] overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-8 self-start tracking-widest opacity-60"></h2>
+            <canvas id="circCanvas" class="w-full h-full"></canvas>
+            <div class="absolute bottom-6 flex gap-6 text-[9px] uppercase font-bold tracking-widest text-white/30">
+                <span class="text-red-400">Low Pressure (H)</span>
+                <span class="text-blue-400">High Pressure (B)</span>
+            </div>
+        </div>
+
+        <!-- Descriptive Info -->
+        <div class="lg:col-span-5 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-sky-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-sky-200"></h3>
+            <div id="info-text" class="text-sm font-light leading-relaxed text-white/80 space-y-6"></div>
+            
+            <div class="mt-8 space-y-3">
+                <div class="legend-item" id="cell-h">
+                    <span class="text-xs font-bold text-sky-400">Ячейка Хэдли:</span>
+                    <p class="text-[11px] text-white/60">Восходящие потоки на экваторе, нисходящие в тропиках.</p>
+                </div>
+                <div class="legend-item" id="cell-f">
+                    <span class="text-xs font-bold text-sky-400">Ячейка Ферреля:</span>
+                    <p class="text-[11px] text-white/60">Обеспечивает перенос воздуха в умеренных широтах.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Пульс Воздуха", subtitle: "Глобальная циркуляция и пояса давления",
+                canvasHeading: "Модель ячеек циркуляции",
+                defaultTitle: "Движение атмосферы",
+                defaultText: "Атмосферная циркуляция — это система планетарных ветров. Она вызвана неравномерным нагревом Земли и её вращением. Теплый воздух поднимается на экваторе (Низкое давление), охлаждается и опускается в тропиках (Высокое давление).",
+                cells: {
+                    hadley: "Ячейка Хэдли (Тропики)",
+                    ferrel: "Ячейка Ферреля (Умеренные)",
+                    polar: "Полярная ячейка"
+                },
+                winds: {
+                    trades: "Пассаты (к экватору)",
+                    westerlies: "Западные ветры"
+                }
+            },
+            kz: {
+                title: "Ауа Соғысы", subtitle: "Жалпы циркуляция және қысым белдеулері",
+                canvasHeading: "Циркуляция ұяшықтарының моделі",
+                defaultTitle: "Атмосфера қозғалысы",
+                defaultText: "Атмосфералық циркуляция — бұл планетарлық желдер жүйесі. Ол Жердің біркелкі жылынбауы мен айналуынан туындайды. Жылы ауа экваторда көтеріледі (Төмен қысым), тропиктерде суып төмен түседі (Жоғары қысым).",
+                cells: {
+                    hadley: "Хэдли ұяшығы",
+                    ferrel: "Феррель ұяшығы",
+                    polar: "Полярлық ұяшық"
+                }
+            },
+            en: {
+                title: "Air Pulse", subtitle: "Global Circulation and Pressure Belts",
+                canvasHeading: "Circulation Cell Model",
+                defaultTitle: "Atmospheric Motion",
+                defaultText: "Atmospheric circulation is the large-scale movement of air around the globe. It is driven by solar heating and the Earth's rotation (Coriolis effect). Rising air at the equator creates Low pressure, while sinking air in subtropics creates High pressure.",
+                cells: {
+                    hadley: "Hadley Cell",
+                    ferrel: "Ferrel Cell",
+                    polar: "Polar Cell"
+                }
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            draw();
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const time = Date.now() * 0.001;
+
+            const cx = w/2, cy = h/2, r = 180;
+
+            // --- Earth Sphere ---
+            const grad = ctx.createRadialGradient(cx, cy, 50, cx, cy, r);
+            grad.addColorStop(0, '#1e40af'); grad.addColorStop(1, '#020617');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+
+            // --- Pressure Belts (Horizontal lines) ---
+            ctx.setLineDash([5, 5]); ctx.lineWidth = 1;
+            const belts = [
+                {y: cy, label: 'L (Н)', color: '#ef4444'}, // Equator
+                {y: cy - r*0.4, label: 'H (В)', color: '#60a5fa'}, // N Tropics
+                {y: cy + r*0.4, label: 'H (В)', color: '#60a5fa'}, // S Tropics
+                {y: cy - r*0.8, label: 'L (Н)', color: '#ef4444'}, // N Subpolar
+                {y: cy + r*0.8, label: 'L (Н)', color: '#ef4444'}  // S Subpolar
+            ];
+
+            belts.forEach(b => {
+                ctx.strokeStyle = b.color;
+                ctx.beginPath();
+                const arcWidth = Math.sqrt(r*r - Math.pow(cy-b.y, 2));
+                ctx.moveTo(cx - arcWidth, b.y); ctx.lineTo(cx + arcWidth, b.y);
+                ctx.stroke();
+                ctx.fillStyle = b.color; ctx.font = 'bold 10px Inter';
+                ctx.fillText(b.label, cx + arcWidth + 10, b.y + 4);
+            });
+            ctx.setLineDash([]);
+
+            // --- Circulation Cells (Vertical loops outside) ---
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            
+            // Hadley (Equator-Tropics)
+            drawCellLoop(cx + r + 10, cy, 30, r*0.4, time, true);
+            // Ferrel (Tropics-Polar)
+            drawCellLoop(cx + r + 10, cy - r*0.6, 20, r*0.3, -time, false);
+
+            // --- Wind Arrows (Diagonal on sphere) ---
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            for(let i=0; i<3; i++) {
+                const off = i*50 - 50;
+                // Trades (towards equator)
+                drawArrow(cx + off, cy - 60, cx + off - 20, cy - 10);
+                // Westerlies
+                drawArrow(cx + off, cy - 110, cx + off + 30, cy - 150);
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function drawCellLoop(x, y, w, h, t, clockwise) {
+            ctx.beginPath();
+            ctx.ellipse(x, y, w, h, 0, 0, Math.PI*2);
+            ctx.stroke();
+            // Arrow on loop
+            const angle = t % (Math.PI*2);
+            const ax = x + Math.cos(angle) * w;
+            const ay = y + Math.sin(angle) * h;
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ax, ay, 3, 0, Math.PI*2); ctx.fill();
+        }
+
+        function drawArrow(x1, y1, x2, y2) {
+            ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+            const ang = Math.atan2(y2-y1, x2-x1);
+            ctx.beginPath(); ctx.moveTo(x2,y2);
+            ctx.lineTo(x2-8*Math.cos(ang-0.5), y2-8*Math.sin(ang-0.5));
+            ctx.lineTo(x2-8*Math.cos(ang+0.5), y2-8*Math.sin(ang+0.5));
+            ctx.fill();
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('circCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight || 500;
+            setLang('ru');
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

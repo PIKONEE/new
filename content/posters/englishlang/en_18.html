@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - English -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster 18: Food</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы */
+        .header-card {
+            background-color: #f97316; /* Orange-600 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #ea580c; /* Orange-700 */
+            border-bottom: 3px solid #fdba74; /* Orange-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #fff7ed; /* Өте ашық orange */
+            border-left: 4px solid #fb923c; /* Orange-400 */
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f1f5f9; /* Ашық сұр */
+            border-radius: 1rem;
+            border-top: 4px solid #64748b; /* Сұр */
+        }
+         .term {
+            font-weight: bold;
+            color: #ea580c; /* orange-700 */
+        }
+        .mono {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #334155; /* slate-700 */
+        }
+        .food-item {
+            font-family: 'Kalam', cursive;
+            font-size: 1.5rem; /* 2xl */
+            font-weight: 700;
+            line-height: 1.1;
+            text-align: center;
+            color: #c2410c; /* orange-800 */
+        }
+        .illustration-svg {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #f97316;
+            background-color: #ffffff;
+            color: #f97316;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #fff7ed;
+        }
+        .lang-btn.active {
+            background-color: #f97316;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-100">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-en">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn active" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ТАҒАМ (FOOD)</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">FOOD</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ЕДА (FOOD)</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-gray-100">Біз не жейміз?</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-gray-100">What do we eat?</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-gray-100">Что мы едим?</p>
+        </header>
+
+        <!-- 1. FOOD GROUPS -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Тағам топтары (Иллюстрация)</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Food Groups (Illustrated)</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Группы продуктов (Иллюстрация)</h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+
+                <!-- Apple -->
+                <div class="rule-card border-t-red-400 text-center">
+                    <div class="illustration-svg">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="60" r="30" fill="#ef4444"/>
+                            <path d="M50 30 Q 52 35, 55 33" stroke="#78350f" stroke-width="4"/>
+                            <path d="M65 25 Q 60 35, 60 45" fill="none" stroke="#22c55e" stroke-width="4"/>
+                        </svg>
+                    </div>
+                    <p class="food-item">APPLE</p>
+                </div>
+                <!-- Banana (NEW) -->
+                <div class="rule-card border-t-yellow-400 text-center">
+                    <div class="illustration-svg">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 30 70 C 40 20, 90 30, 80 60 C 70 90, 40 90, 30 70" fill="#facc15" stroke="#eab308" stroke-width="2"/>
+                            <path d="M 30 70 C 35 68, 35 68, 32 65" stroke="#a16207" stroke-width="3" fill="none"/>
+                            <path d="M 80 60 C 78 58, 78 58, 75 58" stroke="#a16207" stroke-width="3" fill="none"/>
+                        </svg>
+                    </div>
+                    <p class="food-item">BANANA</p>
+                </div>
+                <!-- Orange -->
+                <div class="rule-card border-t-orange-400 text-center">
+                    <div class="illustration-svg">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="30" fill="#f97316"/>
+                            <path d="M50 20 Q 52 25, 55 23" stroke="#166534" stroke-width="3"/>
+                        </svg>
+                    </div>
+                    <p class="food-item">POTATO</p>
+                </div>
+                <!-- Carrot -->
+                <div class="rule-card border-t-orange-400 text-center">
+                    <div class="illustration-svg">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="40,80 60,80 70,20" fill="#fb923c" stroke="#ea580c" stroke-width="2"/>
+                            <path d="M68 20 Q 70 15, 73 18" stroke="#22c55e" stroke-width="2"/>
+                            <path d="M70 20 Q 72 15, 75 18" stroke="#22c55e" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <p class="food-item">CARROT</p>
+                </div>
+                <!-- Milk -->
+                <div class="rule-card border-t-blue-400 text-center">
+                    <div class="illustration-svg">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="30" y="20" width="40" height="60" fill="#fff" stroke="#3b82f6" stroke-width="2" rx="5"/>
+                            <rect x="30" y="40" width="40" height="40" fill="#eff6ff"/>
+                            <text x="50" y="60" font-family="Kalam" font-size="12" fill="#1e3a8a" text-anchor="middle">MILK</text>
+                        </svg>
+                    </div>
+                    <p class="food-item">MILK</p>
+                </div>
+                <!-- Bread -->
+                <div class="rule-card border-t-yellow-600 text-center">
+                    <div class="illustration-svg">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 20 80 L 80 80 L 80 50 Q 80 20, 50 20 Q 20 20, 20 50 Z" fill="#fcd34d" stroke="#ca8a04" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <p class="food-item">BREAD</p>
+                </div>
+                <!-- Cheese -->
+                <div class="rule-card border-t-yellow-400 text-center">
+                    <div class="illustration-svg">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="10,70 60,70 80,40 30,40" fill="#facc15" stroke="#eab308" stroke-width="2"/>
+                            <circle cx="40" cy="55" r="5" fill="#fefce8" stroke="#fde047"/>
+                            <circle cx="60" cy="60" r="3" fill="#fefce8" stroke="#fde047"/>
+                        </svg>
+                    </div>
+                    <p class="food-item">CHEESE</p>
+                </div>
+                <!-- Chicken (NEW) -->
+                <div class="rule-card border-t-amber-700 text-center">
+                    <div class="illustration-svg">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="60" cy="40" rx="25" ry="20" fill="#f97316" stroke="#ea580c" stroke-width="2" transform="rotate(30 60 40)"/>
+                            <path d="M 40 60 L 30 80 L 45 85 L 55 65" fill="#fffbeb" stroke="#ea580c" stroke-width="2"/>
+                            <rect x="28" y="78" width="19" height="10" fill="#fff" rx="3" transform="rotate(-20 28 78)"/>
+                        </svg>
+                    </div>
+                    <p class="food-item">EGG</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 2. TALKING ABOUT FOOD -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Тағам туралы айту</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Talking about Food</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Говорим о еде</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- 1. I like... -->
+                <div class="rule-card border-t-green-500">
+                    <h3 lang="kk" class="lang-content text-xl font-bold text-green-700 mb-3">❤️ "I like..." (Маған ұнайды)</h3>
+                    <h3 lang="en" class="lang-content text-xl font-bold text-green-700 mb-3">❤️ "I like..."</h3>
+                    <h3 lang="ru" class="lang-content text-xl font-bold text-green-700 mb-3">❤️ "I like..." (Мне нравится)</h3>
+
+                    <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">Бір нәрсені ұнататыныңызды айту үшін қолданыңыз.</p>
+                    <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">Use this to say you enjoy something.</p>
+                    <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">Используйте, чтобы сказать, что вам что-то нравится.</p>
+
+                    <div class="example-block border-l-green-400">
+                        <p class="mono text-lg"><span class="term">I like</span> apples. (Зат есім / Noun)</p>
+                        <p class="mono text-lg mt-2"><span class="term">I like</span> <span class="mono">eat<span class="font-bold">ing</span></span> apples. (Іс-әрекет / Action)</p>
+                    </div>
+                </div>
+
+                <!-- 2. I don't like... -->
+                <div class="rule-card border-t-red-500">
+                    <h3 lang="kk" class="lang-content text-xl font-bold text-red-700 mb-3">❌ "I don't like..." (Маған ұнамайды)</h3>
+                    <h3 lang="en" class="lang-content text-xl font-bold text-red-700 mb-3">❌ "I don't like..."</h3>
+                    <h3 lang="ru" class="lang-content text-xl font-bold text-red-700 mb-3">❌ "I don't like..." (Мне не нравится)</h3>
+
+                    <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">Бір нәрсені ұнатпайтыныңызды айту үшін қолданыңыз.</p>
+                    <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">Use this to say you do not enjoy something.</p>
+                    <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">Используйте, чтобы сказать, что вам что-то не нравится.</p>
+
+                    <div class="example-block border-l-red-400">
+                        <p class="mono text-lg"><span class="term">I don't like</span> milk.</p>
+                        <p class="mono text-lg mt-2"><span class="term">He doesn't like</span> fish.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-gray-800">БАСТЫ ОЙ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-gray-800">SUMMARY</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-gray-800">ГЛАВНАЯ МЫСЛЬ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                Тағам туралы айту үшін <span class="term" lang="kk">"I like..."</span> (маған ұнайды) және <span class="term" lang="kk">"I don't like..."</span> (маған ұнамайды) тіркестерін қолданыңыз.<br>
+                Есіңізде болсын: <span class="mono">He/She/It</span> үшін <span class="mono">like<span style="color: #dc2626;">s</span></span> және <span class="mono">doesn't like</span> қолданылады.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                To talk about food, use the phrases <span class="term" lang="en">"I like..."</span> and <span class="term" lang="en">"I don't like..."</span>.<br>
+                Remember: for <span class="mono">He/She/It</span>, use <span class="mono">like<span style="color: #dc2626;">s</span></span> and <span class="mono">doesn't like</span>.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
+                Чтобы говорить о еде, используйте фразы <span class="term" lang="ru">"I like..."</span> (Мне нравится) и <span class="term" lang="ru">"I don't like..."</span> (Мне не нравится).<br>
+                Помните: для <span class="mono">He/She/It</span>, используйте <span class="mono">like<span style="color: #dc2626;">s</span></span> (нравится) и <span class="mono">doesn't like</span> (не нравится).
+            </p>
+        </footer>
+
+    </div>
+
+    
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structure of the Atomic Nucleus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #020617;
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: crosshair; }
+        .lang-btn.active { border-color: #f43f5e; color: #f43f5e; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-l-8 border-rose-500">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-rose-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn border-b-2 border-transparent transition-all uppercase text-xs font-bold">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn border-b-2 border-transparent transition-all uppercase text-xs font-bold">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn border-b-2 border-transparent transition-all uppercase text-xs font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div class="lg:col-span-7 glass rounded-custom p-8 flex flex-col items-center">
+            <h2 id="canvas-heading" class="heading-font text-xl text-rose-200 uppercase mb-8 self-start"></h2>
+            <canvas id="nucleusCanvas" class="w-full h-[400px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-6 text-[10px] text-white/20 uppercase tracking-[0.6em]"></p>
+        </div>
+
+        <div class="lg:col-span-5 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-rose-500">
+            <div id="info-content">
+                <h3 id="info-title" class="heading-font text-4xl mb-6 text-rose-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+                <div class="mt-10 p-6 bg-rose-500/10 rounded-2xl border border-rose-500/20 text-center">
+                    <span class="text-4xl heading-font text-white">A = Z + N</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-rose-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-rose-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-rose-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-rose-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-snug"></p>
+        <cite id="author" class="text-rose-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Сердце Материи",
+                subtitle: "Строение ядра атома и изотопы",
+                canvasHeading: "Модель нуклонного кластера",
+                canvasHint: "Нажмите, чтобы увидеть взаимодействие протонов и нейтронов",
+                defaultTitle: "Нуклонная теория",
+                defaultText: "Ядро атома — центральная часть атома, в которой сосредоточена почти вся его масса (>99.9%). Состоит из нуклонов: протонов и нейтронов.",
+                cards: [
+                    { title: "Протоны ($p^+$)", desc: "Положительно заряженные частицы. Их число равно порядковому номеру элемента ($Z$) и определяет его химическую суть." },
+                    { title: "Нейтроны ($n^0$)", desc: "Нейтральные частицы. Вместе с протонами определяют массовое число атома ($A$)." },
+                    { title: "Изотопы", desc: "Атомы одного элемента с одинаковым числом протонов, но разным числом нейтронов (например, Протий, Дейтерий, Тритий)." }
+                ],
+                quote: "«Ядро — это крепость, хранящая тайны энергии Вселенной»",
+                author: "Эрнест Резерфорд"
+            },
+            kz: {
+                title: "Материя Жүрегі",
+                subtitle: "Атом ядросының құрылысы және изотоптар",
+                canvasHeading: "Нуклондық кластер моделі",
+                canvasHint: "Протондар мен нейтрондардың әрекеттесуін көру үшін басыңыз",
+                defaultTitle: "Нуклондық теория",
+                defaultText: "Атом ядросы — атомның орталық бөлігі, онда оның бүкіл массасы шоғырланған (>99.9%). Нуклондардан: протондар мен нейтрондардан тұрады.",
+                cards: [
+                    { title: "Протондар ($p^+$)", desc: "Оң зарядталған бөлшектер. Олардың саны элементтің реттік нөміріне ($Z$) тең және химиялық мәнін анықтайды." },
+                    { title: "Нейтрондар ($n^0$)", desc: "Бейтарап бөлшектер. Протондармен бірге атомның массалық санын ($A$) анықтайды." },
+                    { title: "Изотоптар", desc: "Протондар саны бірдей, бірақ нейтрондар саны әртүрлі бір элементтің атомдары." }
+                ],
+                quote: "«Ядро — бұл Ғалам энергиясының құпияларын сақтайтын қамал»",
+                author: "Эрнест Резерфорд"
+            },
+            en: {
+                title: "Heart of Matter",
+                subtitle: "Structure of the atomic nucleus and isotopes",
+                canvasHeading: "Nucleon Cluster Model",
+                canvasHint: "Click to see interaction between protons and neutrons",
+                defaultTitle: "Nucleon Theory",
+                defaultText: "The atomic nucleus is the central part of an atom, containing almost all its mass (>99.9%). It consists of nucleons: protons and neutrons.",
+                cards: [
+                    { title: "Protons ($p^+$)", desc: "Positively charged particles. Their count equals the atomic number ($Z$) and defines the element's identity." },
+                    { title: "Neutrons ($n^0$)", desc: "Neutral particles. Together with protons, they define the atomic mass number ($A$)." },
+                    { title: "Isotopes", desc: "Atoms of the same element with the same number of protons but different numbers of neutrons." }
+                ],
+                quote: "«The nucleus is a fortress guarding the secrets of the Universe's energy»",
+                author: "Ernest Rutherford"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('nucleusCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            drawNucleus();
+        }
+
+        function drawNucleus() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.001;
+
+            for(let i=0; i<12; i++) {
+                const ang = (i * Math.PI * 2) / 12 + time * 0.2;
+                const r = 35 + Math.sin(time + i) * 5;
+                ctx.fillStyle = i % 2 === 0 ? '#f43f5e' : '#94a3b8';
+                ctx.beginPath(); ctx.arc(cx + Math.cos(ang)*r, cy + Math.sin(ang)*r, 15, 0, Math.PI*2); ctx.fill();
+            }
+            requestAnimationFrame(drawNucleus);
+        }
+
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

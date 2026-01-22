@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная работа - Удельная теплоёмкость</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #f3e8ff 0%, #ede9fe 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #5b21b6; border-bottom: 3px solid #ede9fe; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #7c3aed; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #7c3aed; background: white; color: #7c3aed; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #7c3aed; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #7c3aed; color: white; text-align: center; }
+        .info-box { background: linear-gradient(135deg, #ede9fe 0%, #f3e8ff 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #7c3aed; margin: 10px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .lab-card { background: #f5f3ff; padding: 15px; border-radius: 0.5rem; border-left: 4px solid #7c3aed; font-size: 11px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-purple-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Лабораторлық Жұмыс</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Laboratory Work</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Лабораторная работа</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-purple-100">Өндіктігінің құрамасындағы өндіктігінің есептеу. Қатты дене нақ жылусыйлығы өлшеу. ПРАКТИКАЛЫҚ ӨНДІКТІГІНІҢ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-purple-100">Measuring specific heat capacity of solid body. Using water calorimeter. PRACTICAL PHYSICS!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-purple-100">Измерение удельной теплоёмкости твёрдого тела. Использование водного калориметра. ПРАКТИЧЕСКАЯ ФИЗИКА!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ЯЩЫЛ ҚҰРАМАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. APPARATUS SETUP</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Оборудование</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ҚҰРАМАСЫ</th>
+                            <th lang="kk" class="lang-content">АНЫҚТАМАСЫ</th>
+                            <th lang="kk" class="lang-content">ҚОЛДАНУ</th>
+
+                            <th lang="en" class="lang-content">APPARATUS</th>
+                            <th lang="en" class="lang-content">DESCRIPTION</th>
+                            <th lang="en" class="lang-content">PURPOSE</th>
+
+                            <th lang="ru" class="lang-content">ОБОРУДОВАНИЕ</th>
+                            <th lang="ru" class="lang-content">ОПИСАНИЕ</th>
+                            <th lang="ru" class="lang-content">НАЗНАЧЕНИЕ</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Калориметр</td>
+                            <td lang="kk" class="lang-content">Су ағындарының ыстық құрамасындағы</td>
+                            <td lang="kk" class="lang-content">Су температурасы өлшеу</td>
+
+                            <td lang="en" class="lang-content">Calorimeter</td>
+                            <td lang="en" class="lang-content">Insulated container with water</td>
+                            <td lang="en" class="lang-content">Measure water temperature</td>
+
+                            <td lang="ru" class="lang-content">Калориметр</td>
+                            <td lang="ru" class="lang-content">Изолированный контейнер с водой</td>
+                            <td lang="ru" class="lang-content">Измерить температуру воды</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Қатты дене (мыс, төмен)</td>
+                            <td lang="kk" class="lang-content">Нақ жылусыйлығы өлшеу үшін</td>
+                            <td lang="kk" class="lang-content">Сынақтын объектісі</td>
+
+                            <td lang="en" class="lang-content">Solid body (copper, lead)</td>
+                            <td lang="en" class="lang-content">Unknown specific heat sample</td>
+                            <td lang="en" class="lang-content">Test object</td>
+
+                            <td lang="ru" class="lang-content">Твёрдое тело (медь, свинец)</td>
+                            <td lang="ru" class="lang-content">Образец для определения c</td>
+                            <td lang="ru" class="lang-content">Тестируемый объект</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Градусник (термометр)</td>
+                            <td lang="kk" class="lang-content">0°C дан 100°C ойындағы</td>
+                            <td lang="kk" class="lang-content">Температурасы өлшеу</td>
+
+                            <td lang="en" class="lang-content">Thermometer</td>
+                            <td lang="en" class="lang-content">Range 0°C to 100°C</td>
+                            <td lang="en" class="lang-content">Measure temperature</td>
+
+                            <td lang="ru" class="lang-content">Термометр</td>
+                            <td lang="ru" class="lang-content">Диапазон 0°C до 100°C</td>
+                            <td lang="ru" class="lang-content">Измеряет температуру</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content">Тығындағы қосындысы</td>
+                            <td lang="kk" class="lang-content">Дөңгелек сыймалығы болмайты</td>
+                            <td lang="kk" class="lang-content">Ағындарының массасы өлшеу</td>
+
+                            <td lang="en" class="lang-content">Balance (scale)</td>
+                            <td lang="en" class="lang-content">Measures mass in grams</td>
+                            <td lang="en" class="lang-content">Measure body mass</td>
+
+                            <td lang="ru" class="lang-content">Весы</td>
+                            <td lang="ru" class="lang-content">Измеряет массу в граммах</td>
+                            <td lang="ru" class="lang-content">Измерить массу тела</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. СЫНАҚ ЖҮРГІТУ ӘДІСІ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. PROCEDURE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Ход проведения работы</h2>
+
+            <div class="rule-card">
+                <div class="grid-2">
+                    <div class="lab-card">
+                        <p lang="kk" class="lang-content"><strong>1️⃣ ДАЙЫНДАУ</strong></p>
+                        <p lang="kk" class="lang-content">• Қатты денеңі және калориметрінің массасы өлшеу (мг, мс)</p>
+                        <p lang="kk" class="lang-content">• Калориметрге су құю (200-300 мл)</p>
+                        <p lang="kk" class="lang-content">• Су температурасы өлшеу (t₁)</p>
+
+                        <p lang="en" class="lang-content"><strong>1️⃣ PREPARATION</strong></p>
+                        <p lang="en" class="lang-content">• Measure mass of body and water (m_body, m_water)</p>
+                        <p lang="en" class="lang-content">• Pour water in calorimeter (200-300 ml)</p>
+                        <p lang="en" class="lang-content">• Measure water temperature (t₁)</p>
+
+                        <p lang="ru" class="lang-content"><strong>1️⃣ ПОДГОТОВКА</strong></p>
+                        <p lang="ru" class="lang-content">• Измерить массу тела и воды (m_тела, m_воды)</p>
+                        <p lang="ru" class="lang-content">• Налить воду в калориметр (200-300 мл)</p>
+                        <p lang="ru" class="lang-content">• Измерить температуру воды (t₁)</p>
+                    </div>
+
+                    <div class="lab-card">
+                        <p lang="kk" class="lang-content"><strong>2️⃣ НАГРЕВАНИЕ</strong></p>
+                        <p lang="kk" class="lang-content">• Қатты денеңі қазанының ыстық суында (90-100°C)</p>
+                        <p lang="kk" class="lang-content">• 10-15 минут ыстықтау</p>
+                        <p lang="kk" class="lang-content">• Ыстық денеңі термометр қарай өлшеу (t₂)</p>
+
+                        <p lang="en" class="lang-content"><strong>2️⃣ HEATING</strong></p>
+                        <p lang="en" class="lang-content">• Heat body in boiling water (90-100°C)</p>
+                        <p lang="en" class="lang-content">• Heat for 10-15 minutes</p>
+                        <p lang="en" class="lang-content">• Measure hot body temperature (t₂)</p>
+
+                        <p lang="ru" class="lang-content"><strong>2️⃣ НАГРЕВАНИЕ</strong></p>
+                        <p lang="ru" class="lang-content">• Нагреть тело в кипящей воде (90-100°C)</p>
+                        <p lang="ru" class="lang-content">• Нагревать 10-15 минут</p>
+                        <p lang="ru" class="lang-content">• Измерить температуру горячего тела (t₂)</p>
+                    </div>
+
+                    <div class="lab-card">
+                        <p lang="kk" class="lang-content"><strong>3️⃣ АРАЛУДЫҢ</strong></p>
+                        <p lang="kk" class="lang-content">• Ыстық денеңі калориметрге құю</p>
+                        <p lang="kk" class="lang-content">• Су аралуды (мамасын) түндіктігінің</p>
+                        <p lang="kk" class="lang-content">• Соңғы температурасы өлшеу (t₃)</p>
+
+                        <p lang="en" class="lang-content"><strong>3️⃣ MIXING</strong></p>
+                        <p lang="en" class="lang-content">• Place hot body in calorimeter</p>
+                        <p lang="en" class="lang-content">• Stir water gently</p>
+                        <p lang="en" class="lang-content">• Measure final temperature (t₃)</p>
+
+                        <p lang="ru" class="lang-content"><strong>3️⃣ СМЕШИВАНИЕ</strong></p>
+                        <p lang="ru" class="lang-content">• Поместить горячее тело в калориметр</p>
+                        <p lang="ru" class="lang-content">• Осторожно перемешать воду</p>
+                        <p lang="ru" class="lang-content">• Измерить финальную температуру (t₃)</p>
+                    </div>
+
+                    <div class="lab-card">
+                        <p lang="kk" class="lang-content"><strong>4️⃣ ЕСЕПТЕУ</strong></p>
+                        <p lang="kk" class="lang-content">• Су сіңіргенің жылу: Q_су = m_су × c_су × (t₃ - t₁)</p>
+                        <p lang="kk" class="lang-content">• Дене бөлінгенің жылу: Q_дене = m_дене × c_дене × (t₂ - t₃)</p>
+                        <p lang="kk" class="lang-content">• Теңдеу: Q_су = Q_дене</p>
+
+                        <p lang="en" class="lang-content"><strong>4️⃣ CALCULATION</strong></p>
+                        <p lang="en" class="lang-content">• Heat absorbed by water: Q_water = m_w × c_w × Δt</p>
+                        <p lang="en" class="lang-content">• Heat released by body: Q_body = m_b × c_b × Δt</p>
+                        <p lang="en" class="lang-content">• Equation: Q_water = Q_body</p>
+
+                        <p lang="ru" class="lang-content"><strong>4️⃣ РАСЧЁТ</strong></p>
+                        <p lang="ru" class="lang-content">• Тепло поглощено водой: Q_воды = m_в × c_в × Δt</p>
+                        <p lang="ru" class="lang-content">• Тепло выделено телом: Q_тела = m_т × c_т × Δt</p>
+                        <p lang="ru" class="lang-content">• Уравнение: Q_воды = Q_тела</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. ЕСЕПТЕУ МЫСАЛЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. CALCULATION EXAMPLE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Пример расчёта</h2>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>ӨЛШЕНГЕН МӘНДЕР:</strong> m_дене = 200 г = 0.2 кг | m_су = 250 г = 0.25 кг | t₁ = 20°C | t₂ = 95°C | t₃ = 25°C | c_су = 4200 Дж/(кг·°C)</p>
+                <p lang="en" class="lang-content text-sm"><strong>MEASURED VALUES:</strong> m_body = 200 g = 0.2 kg | m_water = 250 g = 0.25 kg | t₁ = 20°C | t₂ = 95°C | t₃ = 25°C | c_water = 4200 J/(kg·°C)</p>
+                <p lang="ru" class="lang-content text-sm"><strong>ИЗМЕРЕННЫЕ ЗНАЧЕНИЯ:</strong> m_тела = 200 г = 0.2 кг | m_воды = 250 г = 0.25 кг | t₁ = 20°C | t₂ = 95°C | t₃ = 25°C | c_воды = 4200 Дж/(кг·°C)</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>ЕСЕПТЕУ:</strong></p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>CALCULATION:</strong></p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>РАСЧЁТ:</strong></p>
+
+                <p lang="kk" class="lang-content text-sm">1) Q_су = 0.25 × 4200 × (25-20) = 0.25 × 4200 × 5 = 5250 Дж</p>
+                <p lang="en" class="lang-content text-sm">1) Q_water = 0.25 × 4200 × (25-20) = 0.25 × 4200 × 5 = 5250 J</p>
+                <p lang="ru" class="lang-content text-sm">1) Q_воды = 0.25 × 4200 × (25-20) = 0.25 × 4200 × 5 = 5250 Дж</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 8px;">2) Q_дене = Q_су = 5250 Дж</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 8px;">2) Q_body = Q_water = 5250 J</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 8px;">2) Q_тела = Q_воды = 5250 Дж</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 8px;">3) c_дене = Q_дене / (m_дене × Δt_дене) = 5250 / (0.2 × 70) = 5250 / 14 = 375 Дж/(кг·°C)</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 8px;">3) c_body = Q_body / (m_body × Δt_body) = 5250 / (0.2 × 70) = 5250 / 14 = 375 J/(kg·°C)</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 8px;">3) c_тела = Q_тела / (m_тела × Δt_тела) = 5250 / (0.2 × 70) = 5250 / 14 = 375 Дж/(кг·°C)</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>✅ НӘТИЖЕСІ:</strong> c = 375 Дж/(кг·°C) ≈ 400 (мыс) - өндіктігінің қателігі: (400-375)/400 × 100% = 6.25%</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>✅ RESULT:</strong> c = 375 J/(kg·°C) ≈ 400 (copper) - error: (400-375)/400 × 100% = 6.25%</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>✅ РЕЗУЛЬТАТ:</strong> c = 375 Дж/(кг·°C) ≈ 400 (медь) - ошибка: (400-375)/400 × 100% = 6.25%</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #ede9fe; border-radius: 1rem; border-top: 4px solid #7c3aed;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-purple-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Лабораторлық жұмыс - өндіктігінің құрамасындағы өндіктігінің өлшеу. Калориметр сысындағы су сіңіргенің жылу = дене бөлінгенің жылу. Есептеу арқылы нақ жылусыйлығы табу. Практикалық сағындық - теориялық мәндіне қарай 5-10% қателігі нормалды!</p>
+            <p lang="en" class="lang-content text-sm">Laboratory work measures specific heat capacity. Heat absorbed by water in calorimeter = heat released by body. Find c through calculation. Experimental accuracy - 5-10% error compared to theoretical value is normal!</p>
+            <p lang="ru" class="lang-content text-sm">Лабораторная работа измеряет удельную теплоёмкость. Тепло поглощено водой в калориметре = тепло выделено телом. Находим c через расчёты. Экспериментальная точность - 5-10% ошибки от теоретического значения норма!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

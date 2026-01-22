@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химиялық реакцияның тепловой эффекті. Топливо</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fef3c7; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #b45309; border-bottom: 3px solid #fed7aa; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #d97706; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #d97706; background: white; color: #d97706; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #d97706; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: center; font-size: 11px; }
+        th { background-color: #d97706; color: white; }
+        .heat-box { background: linear-gradient(135deg, #fed7aa 0%, #fef3c7 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #d97706; margin: 10px 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-amber-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Реакцияның Тепловой Әсері. Топливо!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Heat Effect of Reactions. Fuel!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Тепловой эффект реакций. Топливо!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-amber-100">Экзотермикалық (ыс бөлген) пен эндотермикалық (ыс сіңіген) реакциялары. Топливо: көміртегі, су, газ. Жану реакциялары шамалық! ЭНЕРГИЯНЫҢ КӨЗІ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-amber-100">Exothermic (heat release) and endothermic (heat absorb) reactions. Fuel: coal, oil, gas. Combustion reactions important! SOURCE OF ENERGY!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-amber-100">Экзотермические (выделение тепла) и эндотермические (поглощение тепла) реакции. Топливо: уголь, нефть, газ. Реакции горения важны! ИСТОЧНИК ЭНЕРГИИ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. РЕАКЦИЯЛАРДЫҢ ТҮРЛЕРІ - ТЕПЛОВОЙ ӘСЕРІ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. TYPES OF REACTIONS - HEAT EFFECT</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Типы реакций - тепловой эффект</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ТҮРІ</th>
+                            <th lang="kk" class="lang-content">АНЫҚТАМАСЫ</th>
+                            <th lang="kk" class="lang-content">БЕЛГІЛЕРІ</th>
+                            <th lang="kk" class="lang-content">МЫСАЛДАРЫ</th>
+
+                            <th lang="en" class="lang-content">TYPE</th>
+                            <th lang="en" class="lang-content">DEFINITION</th>
+                            <th lang="en" class="lang-content">SIGNS</th>
+                            <th lang="en" class="lang-content">EXAMPLES</th>
+
+                            <th lang="ru" class="lang-content">ТИП</th>
+                            <th lang="ru" class="lang-content">ОПРЕДЕЛЕНИЕ</th>
+                            <th lang="ru" class="lang-content">ПРИЗНАКИ</th>
+                            <th lang="ru" class="lang-content">ПРИМЕРЫ</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>ЭКЗОТЕРМИКАЛЫҚ</strong></td>
+                            <td lang="kk" class="lang-content">Ыс бөлген</td>
+                            <td lang="kk" class="lang-content">Q > 0, температура өседі</td>
+                            <td lang="kk" class="lang-content">C+O₂→CO₂, H₂+Cl₂→2HCl</td>
+
+                            <td lang="en" class="lang-content"><strong>EXOTHERMIC</strong></td>
+                            <td lang="en" class="lang-content">Heat release</td>
+                            <td lang="en" class="lang-content">Q > 0, temp increases</td>
+                            <td lang="en" class="lang-content">C+O₂→CO₂, H₂+Cl₂→2HCl</td>
+
+                            <td lang="ru" class="lang-content"><strong>ЭКЗОТЕРМИЧЕСКИЕ</strong></td>
+                            <td lang="ru" class="lang-content">Выделение тепла</td>
+                            <td lang="ru" class="lang-content">Q > 0, температура растёт</td>
+                            <td lang="ru" class="lang-content">C+O₂→CO₂, H₂+Cl₂→2HCl</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>ЭНДОТЕРМИКАЛЫҚ</strong></td>
+                            <td lang="kk" class="lang-content">Ыс сіңіген</td>
+                            <td lang="kk" class="lang-content">Q < 0, температура төмендеген</td>
+                            <td lang="kk" class="lang-content">2HgO→2Hg+O₂, N₂+O₂→2NO</td>
+
+                            <td lang="en" class="lang-content"><strong>ENDOTHERMIC</strong></td>
+                            <td lang="en" class="lang-content">Heat absorb</td>
+                            <td lang="en" class="lang-content">Q < 0, temp decreases</td>
+                            <td lang="en" class="lang-content">2HgO→2Hg+O₂, N₂+O₂→2NO</td>
+
+                            <td lang="ru" class="lang-content"><strong>ЭНДОТЕРМИЧЕСКИЕ</strong></td>
+                            <td lang="ru" class="lang-content">Поглощение тепла</td>
+                            <td lang="ru" class="lang-content">Q < 0, температура падает</td>
+                            <td lang="ru" class="lang-content">2HgO→2Hg+O₂, N₂+O₂→2NO</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ТОПЛИВО ВЕ ЖАНУ РЕАКЦИЯЛАРЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. FUEL AND COMBUSTION REACTIONS</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Топливо и реакции горения</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto mb-4">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ТОПЛИВО</th>
+                            <th lang="kk" class="lang-content">ҚҰРАМАСЫ</th>
+                            <th lang="kk" class="lang-content">ЖАНУ ТЕҢДЕУ</th>
+                            <th lang="kk" class="lang-content">ӨНДІКТІГІ</th>
+
+                            <th lang="en" class="lang-content">FUEL</th>
+                            <th lang="en" class="lang-content">COMPOSITION</th>
+                            <th lang="en" class="lang-content">COMBUSTION EQUATION</th>
+                            <th lang="en" class="lang-content">USE</th>
+
+                            <th lang="ru" class="lang-content">ТОПЛИВО</th>
+                            <th lang="ru" class="lang-content">СОСТАВ</th>
+                            <th lang="ru" class="lang-content">УРАВНЕНИЕ ГОРЕНИЯ</th>
+                            <th lang="ru" class="lang-content">ПРИМЕНЕНИЕ</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>КӨМІРТЕГІ (C)</strong></td>
+                            <td lang="kk" class="lang-content">Тұрақты өндіктіге</td>
+                            <td lang="kk" class="lang-content">C + O₂ → CO₂</td>
+                            <td lang="kk" class="lang-content">Бөл құрылыс</td>
+
+                            <td lang="en" class="lang-content"><strong>COAL (C)</strong></td>
+                            <td lang="en" class="lang-content">Pure element</td>
+                            <td lang="en" class="lang-content">C + O₂ → CO₂</td>
+                            <td lang="en" class="lang-content">Power plants</td>
+
+                            <td lang="ru" class="lang-content"><strong>УГОЛЬ (C)</strong></td>
+                            <td lang="ru" class="lang-content">Чистый элемент</td>
+                            <td lang="ru" class="lang-content">C + O₂ → CO₂</td>
+                            <td lang="ru" class="lang-content">Электростанции</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>СУ (H₂)</strong></td>
+                            <td lang="kk" class="lang-content">Сутегінің құрау</td>
+                            <td lang="kk" class="lang-content">2H₂ + O₂ → 2H₂O</td>
+                            <td lang="kk" class="lang-content">Ғарыш ракета</td>
+
+                            <td lang="en" class="lang-content"><strong>OIL (H, C)</strong></td>
+                            <td lang="en" class="lang-content">Hydrocarbon mix</td>
+                            <td lang="en" class="lang-content">CₓHᵧ + O₂ → CO₂ + H₂O</td>
+                            <td lang="en" class="lang-content">Cars, planes</td>
+
+                            <td lang="ru" class="lang-content"><strong>НЕФТЬ (H, C)</strong></td>
+                            <td lang="ru" class="lang-content">Смесь углеводородов</td>
+                            <td lang="ru" class="lang-content">CₓHᵧ + O₂ → CO₂ + H₂O</td>
+                            <td lang="ru" class="lang-content">Машины, самолеты</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>ГАЗ (CH₄)</strong></td>
+                            <td lang="kk" class="lang-content">Метан құрау</td>
+                            <td lang="kk" class="lang-content">CH₄ + 2O₂ → CO₂ + 2H₂O</td>
+                            <td lang="kk" class="lang-content">Үй қыздыру</td>
+
+                            <td lang="en" class="lang-content"><strong>GAS (CH₄)</strong></td>
+                            <td lang="en" class="lang-content">Methane comp.</td>
+                            <td lang="en" class="lang-content">CH₄ + 2O₂ → CO₂ + 2H₂O</td>
+                            <td lang="en" class="lang-content">Home heating</td>
+
+                            <td lang="ru" class="lang-content"><strong>ГАЗ (CH₄)</strong></td>
+                            <td lang="ru" class="lang-content">Состав метана</td>
+                            <td lang="ru" class="lang-content">CH₄ + 2O₂ → CO₂ + 2H₂O</td>
+                            <td lang="ru" class="lang-content">Отопление дома</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="heat-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>⚡ ЖАНУ РЕАКЦИЯСЫН АНЫҚТАМАСЫ:</strong></p>
+                        <p lang="kk" class="lang-content text-sm">Жану - оттегімен байланыстың экзотермикалық реакциясы (ыс бөлген, жарқын). Барлық топливодың жану экзотермикалық!</p>
+
+                        <p lang="en" class="lang-content text-sm"><strong>⚡ COMBUSTION DEFINITION:</strong></p>
+                        <p lang="en" class="lang-content text-sm">Combustion - exothermic reaction with oxygen (heat release, light). All fuels combust exothermically!</p>
+
+                        <p lang="ru" class="lang-content text-sm"><strong>⚡ ОПРЕДЕЛЕНИЕ ГОРЕНИЯ:</strong></p>
+                        <p lang="ru" class="lang-content text-sm">Горение - экзотермическая реакция с кислородом (выделение тепла, свет). Все топлива горят экзотермически!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fed7aa; border-radius: 1rem; border-top: 4px solid #d97706;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-amber-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-amber-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-amber-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Реакциялардың түрлері: экзотермикалық (Q > 0, ыс бөлген) пен эндотермикалық (Q < 0, ыс сіңіген). Топливо: көміртегі (C), су (H₂), газ (CH₄). Жану реакциялары экзотермикалық, ыс пен жарқын беріледі. Энергия іскерлігінің негіздері!</p>
+            <p lang="en" class="lang-content text-sm">Types of reactions: exothermic (Q > 0, heat release) and endothermic (Q < 0, heat absorb). Fuel: coal (C), oil (H₂), gas (CH₄). Combustion reactions are exothermic, produce heat and light. Foundation of energy!</p>
+            <p lang="ru" class="lang-content text-sm">Типы реакций: экзотермические (Q > 0, выделение) и эндотермические (Q < 0, поглощение). Топливо: уголь (C), нефть (H₂), газ (CH₄). Реакции горения экзотермические, дают тепло и свет. Основа энергии!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат 45: Корень слова. Однокоренные слова</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Очень светло-серый фон */
+            overflow-x: hidden;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Карточка-заголовок */
+        .header-card {
+            background-color: #ca8a04; /* Желтый-700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(202, 138, 4, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Заголовок секции */
+        .section-heading {
+            color: #a16207; /* Желтый-800 */
+            border-bottom: 3px solid #fde047; /* Желтый-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Карточка с правилом */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Блок с примером внутри карточки */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #fefce8; /* Очень светлый желтый */
+            border-left: 4px solid #facc15; /* Желтый-400 */
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Футер */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f1f5f9; /* Светло-серый */
+            border-radius: 1rem;
+            border-top: 4px solid #64748b; /* Серый */
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            list-style: none;
+            padding-left: 20px;
+            position: relative;
+        }
+        .feature-list li::before {
+            content: '🌱'; /* Эмодзи для пунктов */
+            position: absolute;
+            left: 0;
+            color: #ca8a04; /* Желтый */
+        }
+        .root { /* Стиль для корня */
+           /* background-color: #fef9c3; /* yellow-100 */
+            border-bottom: 2px dotted #ca8a04; /* yellow-600 */
+            font-weight: 600;
+            padding: 0 2px;
+        }
+        .term {
+            font-weight: bold;
+            color: #a16207; /* yellow-800 */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    " onmouseover="this.style.transform='translateX(-3px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="container">
+
+        <!-- ГЛАВНЫЙ ЗАГОЛОВОК -->
+        <header class="header-card text-center mb-10">
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                ПЛАКАТ 45: КОРЕНЬ СЛОВА. ОДНОКОРЕННЫЕ СЛОВА.
+            </h1>
+            <p class="mt-2 text-xl font-medium text-gray-100">
+                Главная часть слова и слова-"родственники".
+            </p>
+        </header>
+
+        <!-- 1. ЧТО ТАКОЕ КОРЕНЬ? -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                1. Что такое Корень слова?
+            </h2>
+
+            <div class="rule-card border-t-yellow-500">
+                <h3 class="text-xl font-bold text-yellow-700 mb-3">🌱 Главная часть слова</h3>
+                <p class="text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term">Корень</span> - это <strong>главная значимая часть</strong> слова, в которой заключено его основное лексическое значение.
+                </p>
+                <ul class="feature-list text-base text-gray-700">
+                    <li>🌱 Корень - <strong>общая часть</strong> для всех родственных (однокоренных) слов.</li>
+                    <li>🌱 Слова без корня не существуют.</li>
+                    <li>🌱 Чтобы найти корень, нужно подобрать однокоренные слова и выделить их общую часть.</li>
+                </ul>
+                 <div class="example-block border-l-yellow-400 mt-4">
+                    <p class="font-semibold text-gray-800">Пример:</p>
+                    <p class="text-gray-700 text-lg"><i><span class="root">лес</span>, <span class="root">лес</span>ной, <span class="root">лес</span>ник, пере<span class="root">лес</span>ок</i></p>
+                    <p class="text-gray-700">Общая часть <span class="root">лес</span> - это корень. В нём заключено значение "участок земли, заросший деревьями".</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. ЧТО ТАКОЕ ОДНОКОРЕННЫЕ СЛОВА? -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                2. Что такое Однокоренные (Родственные) слова?
+            </h2>
+
+            <div class="rule-card border-t-amber-600">
+                 <h3 class="text-xl font-bold text-amber-700 mb-3">🤝 Слова-"родственники"</h3>
+                <p class="text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term">Однокоренные (или Родственные) слова</span> - это слова, которые имеют <strong>один и тот же корень</strong> и <strong>близки по значению</strong>.
+                </p>
+                 <ul class="feature-list text-base text-gray-700">
+                    <li>🌱 Они могут относиться к разным частям речи.</li>
+                    <li>🌱 Образуются от одного корня с помощью приставок и суффиксов.</li>
+                </ul>
+                 <div class="example-block border-l-amber-400 mt-4">
+                    <p class="font-semibold text-gray-800">Примеры групп однокоренных слов:</p>
+                    <p class="text-gray-700 text-lg"><i><span class="root">вод</span>а, <span class="root">вод</span>ный, <span class="root">вод</span>ичка, <span class="root">вод</span>яной, под<span class="root">вод</span>ный</i></p>
+                    <p class="text-gray-700 text-lg"><i><span class="root">дом</span>, <span class="root">дом</span>ик, <span class="root">дом</span>ашний, без<span class="root">дом</span>ный, <span class="root">дом</span>овой</i></p>
+                     <p class="text-gray-700 text-lg"><i><span class="root">сад</span>, <span class="root">сад</span>ик, по<span class="root">сад</span>ить, <span class="root">сад</span>овый, <span class="root">сад</span>овник</i></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ОДНОКОРЕННЫЕ СЛОВА VS ФОРМЫ СЛОВА -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                3. Не путай: Однокоренные слова и Формы слова
+            </h2>
+
+            <div class="rule-card border-t-red-500">
+                <h3 class="text-xl font-bold text-red-700 mb-3">❗️ Важное различие</h3>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+
+                    <div class="example-block border-l-red-400">
+                        <p class="font-semibold text-gray-800">Формы слова:</p>
+                        <p class="text-gray-700 text-lg">Это <strong>то же самое слово</strong>, но с разными окончаниями. Лексическое значение <strong>одинаковое</strong>.</p>
+                        <p class="text-gray-700 text-lg mt-2"><i><span class="root">лес</span>, <span class="root">лес</span><span class="font-bold text-red-600">а</span>, <span class="root">лес</span><span class="font-bold text-red-600">у</span>, <span class="root">лес</span><span class="font-bold text-red-600">ом</span></i> (это всё слово "лес")</p>
+                    </div>
+
+                    <div class="example-block border-l-green-400">
+                        <p class="font-semibold text-gray-800">Однокоренные слова:</p>
+                        <p class="text-gray-700 text-lg">Это <strong>разные слова</strong> с общим корнем. Лексические значения <strong>разные</strong>, но близкие.</p>
+                         <p class="text-gray-700 text-lg mt-2"><i><span class="root">лес</span>, <span class="root">лес</span><span class="font-bold text-green-600">н</span>ой, <span class="root">лес</span><span class="font-bold text-green-600">ник</span></i> (три разных слова)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ЗАКЛЮЧЕНИЕ -->
+        <footer class="footer-card">
+            <h3 class="text-xl font-extrabold mb-2 text-gray-800">
+                ГЛАВНАЯ МЫСЛЬ
+            </h3>
+            <p class="text-md font-semibold leading-relaxed text-gray-700">
+                <strong>Корень</strong> - главная часть, несущая смысл (<span class="root">вод</span>а). <strong>Однокоренные слова</strong> - слова с этим же корнем (<span class="root">вод</span>ный, <span class="root">вод</span>ичка). Не путай их с <strong>формами</strong> одного слова (<span class="root">вод</span>а, <span class="root">вод</span>ы, <span class="root">вод</span>е).
+            </p>
+        </footer>
+
+    </div>
+
+
+
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

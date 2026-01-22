@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peoples, Languages, and Religions of the World</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #38bdf8; color: #0f172a; font-weight: 800; }
+        .category-btn { transition: all 0.3s; }
+        .category-btn.active { border-color: #38bdf8; background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-sky-400/20">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-sky-600 rounded-full flex items-center justify-center text-2xl">🤝</div>
+            <div>
+                <h1 id="main-title" class="heading-font text-2xl md:text-3xl uppercase tracking-tighter text-sky-400"></h1>
+                <p id="sub-title" class="mt-1 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-4 py-2 rounded-xl border border-white/20 text-xs font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        <div class="lg:col-span-3 flex flex-col gap-3">
+             <h3 id="nav-title" class="heading-font text-sm text-sky-300 uppercase mb-2 tracking-widest">Categories</h3>
+             <button onclick="showTab('peoples')" id="tab-peoples" class="category-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5 active"></button>
+             <button onclick="showTab('languages')" id="tab-languages" class="category-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+             <button onclick="showTab('religions')" id="tab-religions" class="category-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+        </div>
+
+        <div class="lg:col-span-9 glass rounded-custom p-10 flex flex-col justify-center border-l-4 border-sky-500 relative overflow-hidden min-h-[400px]">
+            <div id="content-view" class="transition-all duration-500">
+                <div id="view-icon" class="text-7xl mb-6">🌏</div>
+                <h3 id="view-title" class="heading-font text-4xl mb-6 text-white"></h3>
+                <div id="view-text" class="text-xl font-light leading-relaxed text-white/80 space-y-4"></div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-sky-500/10 blur-[120px] rounded-full"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass rounded-custom p-8"><h4 id="card1-t" class="font-bold text-sky-400 text-xs uppercase mb-2"></h4><p id="card1-d" class="text-xs text-white/50 leading-relaxed"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="card2-t" class="font-bold text-sky-400 text-xs uppercase mb-2"></h4><p id="card2-d" class="text-xs text-white/50 leading-relaxed"></p></div>
+        <div class="glass rounded-custom p-8"><h4 id="card3-t" class="font-bold text-sky-400 text-xs uppercase mb-2"></h4><p id="card3-d" class="text-xs text-white/50 leading-relaxed"></p></div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Народы и Культуры", subtitle: "Этнический и духовный облик мира",
+                navTitle: "Разделы",
+                tabs: {
+                    peoples: { btn: "Народы", icon: "👥", title: "Этносы мира", text: "На Земле проживает более 4000 народов. Самые многочисленные: китайцы (хань), хиндустанцы, американцы США, бенгальцы, бразильцы и русские." },
+                    languages: { btn: "Языки", icon: "🗣️", title: "Языковые семьи", text: "Языки объединяются в семьи. Самая крупная — Индоевропейская (45% населения). Наиболее распространенные языки: английский, китайский, испанский, хинди, арабский." },
+                    religions: { btn: "Религии", icon: "⛪", title: "Мировые религии", text: "Три мировые религии: Христианство (самая массовая), Ислам (самая динамичная) и Буддизм (древнейшая). Существуют также национальные религии (индуизм, иудаизм)." }
+                },
+                cards: [
+                    { t: "Этнос", d: "Исторически сложившаяся группа людей, обладающая общим языком, культурой и самосознанием." },
+                    { t: "Лингва франка", d: "Языки международного общения, такие как английский, позволяющие людям разных культур понимать друг друга." },
+                    { t: "Толерантность", d: "Уважение к культурному и религиозному многообразию — залог мира в многонациональном государстве." }
+                ]
+            },
+            kz: {
+                title: "Халықтар мен Мәдениеттер", subtitle: "Әлемнің этникалық және рухани бейнесі",
+                navTitle: "Бөлімдер",
+                tabs: {
+                    peoples: { btn: "Халықтар", icon: "👥", title: "Әлем этностары", text: "Жер бетінде 4000-нан астам халық тұрады. Ең көп сандылары: қытайлар (хань), хиндустандықтар, америкалықтар, бенгалдықтар, бразилиялықтар және орыстар." },
+                    languages: { btn: "Тілдер", icon: "🗣️", title: "Тілдік отбасылар", text: "Ең үлкені — Үндіеуропалық тілдік отбасы (халықтың 45%). Кең таралған тілдер: ағылшын, қытай, испан, хинди, араб." },
+                    religions: { btn: "Діндер", icon: "⛪", title: "Әлемдік діндер", text: "Үш әлемдік дін: Христиандық, Ислам және Буддизм. Сондай-ақ ұлттық діндер (индуизм, иудаизм) бар." }
+                },
+                cards: [
+                    { t: "Этнос", d: "Ортақ тілі, мәдениеті мен сана-сезімі бар адамдардың тарихи қалыптасқан тобы." },
+                    { t: "Лингва франка", d: "Ағылшын тілі сияқты халықаралық қарым-қатынас тілдері." },
+                    { t: "Төзімділік", d: "Мәдени және діни әртүрлілікті құрметтеу — көпұлтты мемлекеттегі бейбітшіліктің кепілі." }
+                ]
+            },
+            en: {
+                title: "Peoples & Cultures", subtitle: "Ethnic and Spiritual Face of the World",
+                navTitle: "Sections",
+                tabs: {
+                    peoples: { btn: "Peoples", icon: "👥", title: "World Ethnicities", text: "Over 4,000 ethnic groups live on Earth. The most numerous: Han Chinese, Hindustanis, Americans, Bengalis, Brazilians, and Russians." },
+                    languages: { btn: "Languages", icon: "🗣️", title: "Language Families", text: "Languages are grouped into families. The largest is Indo-European (45% of population). Global languages: English, Chinese, Spanish, Hindi, Arabic." },
+                    religions: { btn: "Religions", icon: "⛪", title: "World Religions", text: "Three major world religions: Christianity (largest), Islam (fastest-growing), and Buddhism (oldest). There are also national religions like Hinduism and Judaism." }
+                },
+                cards: [
+                    { t: "Ethnicity", d: "A historically established group of people sharing a common language, culture, and sense of identity." },
+                    { t: "Lingua Franca", d: "Global languages like English that enable communication across different cultures." },
+                    { t: "Tolerance", d: "Respect for cultural and religious diversity is fundamental for peace in multi-ethnic societies." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', activeTab = 'peoples';
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.showTab = function(t) { activeTab = t; updateUI(); }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('nav-title').textContent = t.navTitle;
+            
+            document.getElementById('tab-peoples').textContent = t.tabs.peoples.btn;
+            document.getElementById('tab-languages').textContent = t.tabs.languages.btn;
+            document.getElementById('tab-religions').textContent = t.tabs.religions.btn;
+
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${activeTab}`).classList.add('active');
+
+            const tabData = t.tabs[activeTab];
+            const view = document.getElementById('content-view');
+            view.style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('view-icon').textContent = tabData.icon;
+                document.getElementById('view-title').textContent = tabData.title;
+                document.getElementById('view-text').textContent = tabData.text;
+                view.style.opacity = '1';
+            }, 200);
+
+            document.getElementById('card1-t').textContent = t.cards[0].t; document.getElementById('card1-d').textContent = t.cards[0].d;
+            document.getElementById('card2-t').textContent = t.cards[1].t; document.getElementById('card2-d').textContent = t.cards[1].d;
+            document.getElementById('card3-t').textContent = t.cards[2].t; document.getElementById('card3-d').textContent = t.cards[2].d;
+        }
+
+        window.onload = () => setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

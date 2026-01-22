@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Властелины морей: Финикийские мореплаватели</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0c0a09);
+            color: #f0f9ff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(129, 140, 248, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #4f46e5;
+            color: white;
+            box-shadow: 0 0 30px rgba(79, 70, 229, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #4f46e5;
+            background: linear-gradient(90deg, rgba(79, 70, 229, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
+        .purple-glow {
+            color: #a855f7;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 uppercase">
+                Финикийцы
+            </h1>
+            <p id="sub-title" class="text-blue-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Первые властелины Средиземноморья</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-indigo-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-blue-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-blue-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-blue-600 inline-block"></span>
+                Морская Империя
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-blue-900/40 overflow-hidden shadow-inner">
+                <canvas id="seaCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-blue-500/50 italic text-center uppercase tracking-widest">Нажмите на порты и колонии для изучения достижений</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-indigo-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Народ мореходов</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Финикия располагалась на восточном побережье Средиземного моря. Не имея больших полей, финикийцы стали лучшими строителями кораблей, торговцами и пиратами древнего мира. Выберите точку на карте.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⛵</span>
+                            <span id="hint-1" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Ливанский кедр</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🐚</span>
+                            <span id="hint-2" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Драгоценный пурпур</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-indigo-900/40 text-indigo-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-indigo-950/40 rounded-[2.5rem] border border-indigo-500/20 shadow-xl">
+                        <strong class="text-indigo-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-discovery">Главное открытие:</strong>
+                        <p id="info-fact" class="text-indigo-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-indigo-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🔤</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-indigo-400 uppercase">Первый алфавит</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Для быстрой торговли финикийцам нужно было простое письмо. Они создали алфавит из <strong>22 букв</strong>, обозначавших только согласные звуки. Он стал основой для греческого, латинского и русского алфавитов.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-purple-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🔮</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-purple-400 uppercase">Секрет пурпура</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Из морских улиток-иглянок финикийцы добывали редкую краску — <strong>пурпур</strong>. Ткани такого цвета не выгорали на солнце и ценились на вес золота, становясь атрибутом царей.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-blue-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏺</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Прозрачное стекло</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Финикийские мастера научились варить <strong>прозрачное стекло</strong> из смеси песка и соды. Они изготавливали изящные сосуды, бусы и зеркала, которые пользовались огромным спросом во всем мире.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-indigo-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-indigo-100/70 leading-tight max-w-5xl mx-auto">
+            «Звезды были их компасом, а Ливанский кедр — их крыльями, на которых они облетели весь известный мир».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Финикийцы",
+                subtitle: "Первые властелины Средиземноморья",
+                visualTitle: "Морская Империя",
+                hint: "Нажмите на порты и колонии для изучения достижений",
+                placeholderTitle: "Народ мореходов",
+                placeholderText: "Финикия была узкой полосой между горами и морем. Здесь родились лучшие навигаторы древности. Выберите объект на карте.",
+                labelDiscovery: "Главное открытие:",
+                hint1: "Ливанский кедр", hint2: "Драгоценный пурпур",
+                card1Title: "Первый алфавит",
+                card1Text: "Всего 22 знака позволили записывать информацию быстро. Это была революция в грамотности, доступная не только жрецам.",
+                card2Title: "Секрет пурпура",
+                card2Text: "Ткани, окрашенные пурпуром, были символом роскоши. На изготовление 1 грамма краски требовались тысячи моллюсков.",
+                card3Title: "Прозрачное стекло",
+                card3Text: "Изобретение стеклоделия позволило создавать предметы искусства, которые финикийцы обменивали на серебро и золото.",
+                footerQuote: "«Звезды были их компасом, а Ливанский кедр — их крыльями, на которых они облетели весь известный мир».",
+                nodes: [
+                    { id: 1, tag: "Метрополия", title: "Тир и Сидон", desc: "Главные города Финикии. Тир располагался на неприступном острове. Отсюда уходили корабли, груженные кедром, вином и пурпурными тканями.", fact: "Финикийские корабли строились из прочного кедра и имели по два ряда гребцов." },
+                    { id: 2, tag: "Колония", title: "Карфаген", desc: "Основан в IX веке до н.э. выходцами из Тира в Северной Африке. Стал могущественным государством, главным соперником Рима в будущем.", fact: "Название 'Карт-Хадашт' переводится как 'Новый город'." },
+                    { id: 3, tag: "Первооткрыватели", title: "Вокруг Африки", desc: "Около 600 г. до н.э. финикийские моряки по приказу египетского фараона Нехо II совершили первое в истории плавание вокруг Африки за три года.", fact: "Моряки рассказывали, что в южной части пути солнце было у них справа (на севере), что доказывает реальность их плавания." },
+                    { id: 4, tag: "Путь на север", title: "Оловянные острова", desc: "Финикийцы первыми вышли в Атлантический океан через Гибралтар (Столбы Мелькарта) и достигли берегов Британии в поисках олова.", fact: "Олово было необходимо для производства бронзы, и финикийцы хранили этот путь в строжайшей тайне." },
+                    { id: 5, tag: "Культура", title: "Рождение письма", desc: "Финикийский алфавит стал величайшим вкладом в мировую культуру. В отличие от иероглифов, его мог выучить любой человек за короткое время.", fact: "Древние греки переняли этот алфавит, добавив в него гласные буквы." }
+                ]
+            },
+            kz: {
+                title: "Финикиялықтар",
+                subtitle: "Жерорта теңізінің алғашқы билеушілері",
+                visualTitle: "Теңіз Империясы",
+                hint: "Жетістіктерді зерттеу үшін порттар мен колонияларды басыңыз",
+                placeholderTitle: "Теңізшілер халқы",
+                placeholderText: "Финикия тау мен теңіз арасындағы тар алқап болды. Мұнда ежелгі дәуірдің үздік навигаторлары туды. Картадан нысанды таңдаңыз.",
+                labelDiscovery: "Басты жаңалық:",
+                hint1: "Ливан самырсыны", hint2: "Бағалы пурпур",
+                card1Title: "Алғашқы алфавит",
+                card1Text: "Барлығы 22 таңба ақпаратты тез жазуға мүмкіндік берді. Бұл сауаттылықтағы үлкен төңкеріс болды.",
+                card2Title: "Пурпур құпиясы",
+                card2Text: "Пурпурмен боялған маталар сән-салтанаттың нышаны болды. 1 грамм бояу үшін мыңдаған ұлу қажет еді.",
+                card3Title: "Мөлдір шыны",
+                card3Text: "Шыны жасау өнері финикиялықтарға алтын мен күміске айырбастайтын өнер туындыларын жасауға мүмкіндік берді.",
+                footerQuote: "«Жұлдыздар олардың компасы, ал Ливан самырсыны — бүкіл әлемді шарлаған қанаттары болды».",
+                nodes: [
+                    { id: 1, tag: "Метрополия", title: "Тир мен Сидон", desc: "Финикияның басты қалалары. Осы жерден самырсын, шарап және пурпур маталары тиелген кемелер аттанатын.", fact: "Финикия кемелері мықты самырсыннан жасалып, екі қатар ескекшілері болған." },
+                    { id: 2, tag: "Колония", title: "Карфаген", desc: "Б.з.б. IX ғасырда Солтүстік Африкада негізі қаланды. Болашақта Римнің басты бәсекелесіне айналған қуатты мемлекет болды.", fact: "'Карт-Хадашт' атауы 'Жаңа қала' дегенді білдіреді." },
+                    { id: 3, tag: "Жаңа жерлер", title: "Африканы айналып өту", desc: "Б.з.б. 600 жылы Нехо II перғауынның бұйрығымен тарихта алғаш рет Африканы үш жылда айналып шықты.", fact: "Теңізшілер жолдың оңтүстік бөлігінде күннің оң жақта (солтүстікте) болғанын айтқан." },
+                    { id: 4, tag: "Солтүстік жол", title: "Қалайы аралдары", desc: "Финикиялықтар Гибралтар арқылы Атлант мұхитына бірінші болып шығып, Британия жағалауына жетті.", fact: "Қалайы қола өндіру үшін қажет болды, сондықтан олар бұл жолды құпия сақтады." },
+                    { id: 5, tag: "Мәдениет", title: "Жазудың тууы", desc: "Финикия алфавиті әлемдік мәдениетке қосылған үлкен үлес. Оны кез келген адам қысқа уақытта үйрене алатын.", fact: "Ежелгі гректер осы алфавитті қабылдап, оған дауысты дыбыстарды қосты." }
+                ]
+            },
+            en: {
+                title: "The Phoenicians",
+                subtitle: "First Lords of the Mediterranean",
+                visualTitle: "Maritime Empire",
+                hint: "Click on ports and colonies to study achievements",
+                placeholderTitle: "People of the Sea",
+                placeholderText: "Phoenicia was a narrow strip between mountains and the sea. Here the greatest navigators were born. Select a point on the map.",
+                labelDiscovery: "Key Discovery:",
+                hint1: "Lebanese Cedar", hint2: "Royal Purple",
+                card1Title: "First Alphabet",
+                card1Text: "Only 22 signs allowed recording information quickly. It was a literacy revolution accessible to all, not just priests.",
+                card2Title: "Secret of Purple",
+                card2Text: "Purple fabrics were symbols of extreme luxury. Thousands of murex snails were needed for just 1 gram of dye.",
+                card3Title: "Transparent Glass",
+                card3Text: "The invention of glassmaking allowed for exquisite artifacts that Phoenicians traded for silver and gold.",
+                footerQuote: "«The stars were their compass, and the Lebanese cedar their wings, on which they circled the entire known world.»",
+                nodes: [
+                    { id: 1, tag: "Metropolis", title: "Tyre and Sidon", desc: "Main cities of Phoenicia. Tyre was a fortress on an island. From here, ships sailed carrying cedar, wine, and purple cloth.", fact: "Phoenician ships were built from durable cedar and often had two tiers of rowers." },
+                    { id: 2, tag: "Colony", title: "Carthage", desc: "Founded in the 9th century BC in North Africa. It became a powerful empire and Rome's greatest future rival.", fact: "The name 'Qart-Hadasht' means 'New City'." },
+                    { id: 3, tag: "Explorers", title: "Circumnavigating Africa", desc: "Around 600 BC, Phoenician sailors commissioned by Pharaoh Necho II sailed around Africa in three years.", fact: "They reported the sun was on their right (north) in the southern hemisphere, proving their journey's reality." },
+                    { id: 4, tag: "Northward Path", title: "Tin Islands", desc: "Phoenicians were the first to cross Gibraltar and reach the shores of Britain in search of tin.", fact: "Tin was vital for bronze production, and Phoenicians kept this route a strictly guarded secret." },
+                    { id: 5, tag: "Culture", title: "Birth of Writing", desc: "The Phoenician alphabet was a monumental contribution to human culture. Anyone could learn it quickly.", fact: "The Greeks adopted this alphabet and added vowels to create the modern script basis." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('seaCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-discovery').innerText = t.labelDiscovery;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Mediterranean
+            ctx.beginPath();
+            ctx.moveTo(10, cy - 20);
+            ctx.lineTo(canvas.width - 50, cy - 100);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.1)';
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=40) {
+                ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height);
+            }
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: canvas.width * 0.9, y: cy - 40, icon: "⚓" }, // Phoenicia
+                { id: 2, x: canvas.width * 0.5, y: cy + 40, icon: "🏰" }, // Carthage
+                { id: 3, x: canvas.width * 0.6, y: cy + 150, icon: "🌍" }, // Africa
+                { id: 4, x: canvas.width * 0.1, y: cy - 100, icon: "⛵" }, // Britain/Tin
+                { id: 5, x: canvas.width * 0.9, y: cy + 80, icon: "🔤" }  // Alphabet
+            ];
+
+            // Draw Route lines
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#4f46e5';
+            ctx.beginPath();
+            ctx.moveTo(nodesData[0].x, nodesData[0].y);
+            ctx.lineTo(nodesData[1].x, nodesData[1].y);
+            ctx.lineTo(nodesData[3].x, nodesData[3].y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                // Glow
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 40);
+                grad.addColorStop(0, 'rgba(79, 70, 229, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core Circle
+                ctx.fillStyle = (i === 1) ? '#a855f7' : '#4f46e5';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                // Label
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = 'bold 10px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

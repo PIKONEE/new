@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physical Quantities in Chemistry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #0f172a, #1e293b, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-sky-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="quantityCanvas" class="w-full h-[400px] bg-black/20"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-sky-500">
+            <div id="info-content">
+                <h3 id="info-title" class="heading-font text-4xl mb-6 text-sky-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+                <div class="mt-10 p-6 bg-sky-500/10 rounded-2xl border border-sky-500/20 text-center font-mono text-xl text-sky-300">
+                    n = m/M = V/V<sub>m</sub> = N/N<sub>A</sub>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-sky-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-sky-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-sky-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Метрика Материи",
+                subtitle: "Основные физические величины в химии",
+                canvasHeading: "Визуализатор молярных отношений",
+                canvasHint: "Нажмите на сферу, чтобы увидеть связь величин",
+                defaultTitle: "Язык чисел",
+                defaultText: "Химия оперирует макро- и микро-величинами. Для связи мира атомов с миром весов используется понятие 'количество вещества' (моль).",
+                cards: [
+                    { title: "Масса и Объём", desc: "m (г) — количество материи; V (л) — пространство, занимаемое веществом. Связаны через плотность: ρ = m/V." },
+                    { title: "Молярная масса (M)", desc: "Масса одного моля вещества. Численно равна относительной молекулярной массе M<sub>r</sub>, но имеет размерность г/моль." },
+                    { title: "Число Авогадро", desc: "N<sub>A</sub> = 6.022·10<sup>23</sup> моль⁻¹. Это количество структурных единиц в 1 моле любого вещества." }
+                ],
+                quote: "«Химия начинается там, где начинают взвешивать и измерять»",
+                author: "Дмитрий Менделеев"
+            },
+            kz: {
+                title: "Материя Метрикасы",
+                subtitle: "Химиядағы негізгі физикалық шамалар",
+                canvasHeading: "Молярлық қатынастар визуалдағышы",
+                canvasHint: "Шамалар байланысын көру үшін сфераны басыңыз",
+                defaultTitle: "Сандар тілі",
+                defaultText: "Химия макро және микро шамалармен жұмыс істейді. Атомдар әлемін таразы әлемімен байланыстыру үшін 'зат мөлшері' (моль) ұғымы қолданылады.",
+                cards: [
+                    { title: "Масса және Көлем", desc: "m (г) — материя мөлшері; V (л) — зат алатын кеңістік. Тығыздық арқылы байланысқан: ρ = m/V." },
+                    { title: "Молярлық масса (M)", desc: "Заттың бір молінің массасы. Сан жағынан M<sub>r</sub>-ге тең, өлшем бірлігі г/моль." },
+                    { title: "Авогадро саны", desc: "N<sub>A</sub> = 6.022·10<sup>23</sup> моль⁻¹. Бұл кез келген заттың 1 моліндегі құрылымдық бірліктер саны." }
+                ],
+                quote: "«Химия өлшеу мен таразылау басталған жерден басталады»",
+                author: "Дмитрий Менделеев"
+            },
+            en: {
+                title: "Matter Metrics",
+                subtitle: "Main physical quantities in chemistry",
+                canvasHeading: "Molar Relations Visualizer",
+                canvasHint: "Click a sphere to see quantity links",
+                defaultTitle: "Language of Numbers",
+                defaultText: "Chemistry operates with macro and micro quantities. The concept of 'amount of substance' (mole) bridges the atomic world with the laboratory world.",
+                cards: [
+                    { title: "Mass and Volume", desc: "m (g) is matter amount; V (L) is occupied space. Linked via density: ρ = m/V." },
+                    { title: "Molar Mass (M)", desc: "Mass of one mole of substance. Numerically equal to M<sub>r</sub>, measured in g/mol." },
+                    { title: "Avogadro Number", desc: "N<sub>A</sub> = 6.022·10<sup>23</sup> mol⁻¹. The number of entities in 1 mole of any substance." }
+                ],
+                quote: "«Chemistry begins where weighing and measuring begins»",
+                author: "Dmitri Mendeleev"
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('quantityCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.001;
+
+            const nodes = [
+                {l: 'm', c: '#38bdf8', r: 40, x: -120, y: -60},
+                {l: 'n', c: '#fbbf24', r: 55, x: 0, y: 0},
+                {l: 'V', c: '#10b981', r: 40, x: 120, y: -60},
+                {l: 'N', c: '#f43f5e', r: 40, x: 0, y: 120}
+            ];
+
+            nodes.forEach(n => {
+                const px = cx + n.x, py = cy + n.y + Math.sin(time + n.x)*10;
+                ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2;
+                if(n.l !== 'n') { ctx.beginPath(); ctx.moveTo(cx, cy + Math.sin(time)*10); ctx.lineTo(px, py); ctx.stroke(); }
+                ctx.fillStyle = n.c; ctx.shadowBlur = 20; ctx.shadowColor = n.c;
+                ctx.beginPath(); ctx.arc(px, py, n.r, 0, Math.PI*2); ctx.fill();
+                ctx.shadowBlur = 0; ctx.fillStyle = 'white'; ctx.font = 'bold 20px Montserrat'; ctx.textAlign = 'center';
+                ctx.fillText(n.l, px, py + 7);
+            });
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

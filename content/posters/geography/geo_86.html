@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Population of Australia & Oceania</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: white; font-family: 'Inter'; min-height: 100vh; }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .rounded-custom { border-radius: 2rem; }
+        canvas { border-radius: 1.5rem; }
+        .lang-btn.active { background: #f472b6; color: #000; font-weight: bold; }
+    </style>
+</head>
+<body class="p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="flex justify-between items-end mb-8 border-b border-pink-500/30 pb-6">
+        <div>
+            <h1 class="text-4xl font-montserrat text-pink-400">DEMOGRAPHICS</h1>
+            <p class="text-xs uppercase tracking-[0.3em] text-pink-200/50 mt-2">Australia & Oceania</p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setL('ru')" id="btn-ru" class="lang-btn px-4 py-1 rounded text-xs border border-white/20">RU</button>
+            <button onclick="setL('kz')" id="btn-kz" class="lang-btn px-4 py-1 rounded text-xs border border-white/20">KZ</button>
+            <button onclick="setL('en')" id="btn-en" class="lang-btn px-4 py-1 rounded text-xs border border-white/20">EN</button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Visual: Urban vs Rural Contrast -->
+        <div class="glass rounded-custom p-8 h-[500px] relative flex flex-col items-center justify-center">
+            <canvas id="popCanvas" class="w-full h-full"></canvas>
+            <div class="absolute bottom-6 flex gap-8 text-[10px] uppercase font-bold tracking-widest text-white/40">
+                <span class="cursor-pointer hover:text-white" onclick="setMode('urban')">Urban (Australia)</span>
+                <span class="cursor-pointer hover:text-white" onclick="setMode('island')">Island (Oceania)</span>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="flex flex-col gap-6">
+            <div class="glass p-8 rounded-custom border-l-4 border-pink-500">
+                <h2 id="h-info" class="text-2xl font-bold mb-4 text-pink-200"></h2>
+                <p id="t-info" class="text-sm leading-relaxed text-gray-300"></p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass p-6 rounded-2xl">
+                    <div class="text-3xl mb-2">🪃</div>
+                    <div class="font-bold text-pink-300">Aborigines</div>
+                    <div class="text-xs opacity-60">Native Australians</div>
+                </div>
+                <div class="glass p-6 rounded-2xl">
+                    <div class="text-3xl mb-2">🗿</div>
+                    <div class="font-bold text-purple-300">Maori & Polynesians</div>
+                    <div class="text-xs opacity-60">Islanders</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: { h: "Контрасты Расселения", t: "Население региона — около 43 млн. Австралия — одна из самых урбанизированных стран (86% в городах). В Океании же многие живут в традиционных деревнях. Коренные народы: аборигены, маори, папуасы." },
+            kz: { h: "Қоныстану Контрасттары", t: "Аймақ халқы — шамамен 43 млн. Австралия — ең урбанизацияланған елдердің бірі (86% қалада). Океанияда көбі дәстүрлі ауылдарда тұрады. Тұрғылықты халықтар: аборигендер, маорилер, папуастар." },
+            en: { h: "Settlement Contrasts", t: "Region population ~43M. Australia is highly urbanized (86% in cities). In Oceania, many live in traditional villages. Indigenous peoples: Aborigines, Maori, Papuans." }
+        };
+
+        let lang = 'ru', mode = 'urban', cx, cvs;
+        let particles = [];
+
+        window.setL = (l) => {
+            lang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+            document.getElementById('h-info').textContent = content[l].h;
+            document.getElementById('t-info').textContent = content[l].t;
+        }
+
+        window.setMode = (m) => { mode = m; initParticles(); }
+
+        function initParticles() {
+            particles = [];
+            const count = mode === 'urban' ? 200 : 50;
+            for(let i=0; i<count; i++) {
+                particles.push({
+                    x: Math.random() * cvs.width,
+                    y: Math.random() * cvs.height,
+                    size: Math.random() * (mode === 'urban' ? 20 : 5) + 2,
+                    speed: Math.random() * 2 + 1
+                });
+            }
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            cx.clearRect(0,0,w,h);
+
+            if (mode === 'urban') {
+                // Skyscrapers abstract
+                cx.fillStyle = '#db2777';
+                particles.forEach(p => {
+                    cx.globalAlpha = 0.6;
+                    cx.fillRect(p.x, h - p.y, p.size, p.y); // Bars rising
+                });
+                cx.globalAlpha = 1;
+                cx.fillStyle = 'white'; cx.font = 'bold 20px Montserrat'; cx.fillText("86% URBAN", 20, 40);
+            } else {
+                // Island dots
+                cx.fillStyle = '#a855f7';
+                particles.forEach(p => {
+                    p.y += Math.sin(Date.now()*0.005 + p.x)*0.5; // Float
+                    cx.beginPath(); cx.arc(p.x, p.y, p.size, 0, Math.PI*2); cx.fill();
+                });
+                cx.fillStyle = 'white'; cx.font = 'bold 20px Montserrat'; cx.fillText("ISLAND LIFE", 20, 40);
+            }
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('popCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; initParticles(); };
+            window.addEventListener('resize', rs); rs();
+            setL('ru'); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

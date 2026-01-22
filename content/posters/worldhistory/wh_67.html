@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Византия: Наследница Рима</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #3b0764, #000000);
+            color: #fdf4ff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #eab308;
+            color: #1e1b4b;
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #eab308;
+            background: linear-gradient(90deg, rgba(234, 179, 8, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #eab308; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-white to-purple-400 uppercase">
+                Византия VI–VIII вв.
+            </h1>
+            <p id="sub-title" class="text-purple-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Золотой век и испытания Второго Рима</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-yellow-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-yellow-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-yellow-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-yellow-600 inline-block"></span>
+                Карта Империи
+            </h2>
+            <div class="relative flex-grow bg-slate-950/60 rounded-[2.5rem] border border-yellow-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="byzantiumCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-yellow-500/50 italic text-center uppercase tracking-widest">Нажмите на узлы для изучения эпохи Юстиниана</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-yellow-600 mb-8 font-black uppercase leading-tight" id="placeholder-title">Священная держава</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Византия стала единственной хранительницей античных знаний в раннем Средневековье. При императоре Юстиниане она едва не восстановила границы Римской империи. Нажмите на схему слева.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-1" class="text-yellow-200/60 font-bold uppercase text-xs tracking-widest">Свод Юстиниана</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">✨</span>
+                            <span id="hint-2" class="text-yellow-200/60 font-bold uppercase text-xs tracking-widest">Святая София</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-yellow-950/40 text-yellow-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-indigo-950/40 rounded-[2.5rem] border border-yellow-500/20 shadow-xl">
+                        <strong class="text-yellow-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-note">Имперский факт:</strong>
+                        <p id="info-fact" class="text-yellow-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-yellow-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👑</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-yellow-500 uppercase">Юстиниан I</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Правил в 527–565 гг. Его девиз: «Единое государство, единый закон, единая вера». Он провел масштабные реформы и отвоевал Италию и Северную Африку у варваров.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-purple-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📖</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-purple-400 uppercase">Кодекс законов</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Юстиниан приказал собрать все римские законы в единый «Свод гражданского права». Этот труд стал основой законодательства всей будущей Европы.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⛪</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-indigo-400 uppercase">Святая София</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Собор в Константинополе — чудо архитектуры. Огромный купол словно парил в воздухе. Войдя в него, император воскликнул: «Соломон, я превзошел тебя!»</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-yellow-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-yellow-100/70 leading-tight max-w-5xl mx-auto">
+            «Византия — это золотая цепь, соединившая мудрость древних греков и величие Рима с миром Средневековья».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Византия VI–VIII вв.",
+                subtitle: "Золотой век и испытания Второго Рима",
+                visualTitle: "Карта Империи",
+                hint: "Нажмите на узлы для изучения эпохи Юстиниана",
+                placeholderTitle: "Священная держава",
+                placeholderText: "Империя ромеев была самым развитым государством Европы. Изучите её расцвет при Юстиниане и последующую борьбу за выживание.",
+                labelNote: "Имперский факт:",
+                hint1: "Свод Юстиниана", hint2: "Святая София",
+                card1Title: "Юстиниан I",
+                card1Text: "Великий реформатор и завоеватель, который стремился восстановить Римскую империю в её прежнем величии.",
+                card2Title: "Кодекс законов",
+                card2Text: "Систематизация римского права позволила Византии эффективно управлять государством на протяжении столетий.",
+                card3Title: "Святая София",
+                card3Text: "Главный храм христианского мира на протяжении почти тысячи лет, символ могущества империи и веры.",
+                footerQuote: "«Византия — это золотая цепь, соединившая мудрость древних греков и величие Рима с миром Средневековья».",
+                nodes: [
+                    { id: 1, tag: "Столица", title: "Константинополь", desc: "Самый богатый и защищенный город мира. Расположенный на стыке Европы и Азии, он контролировал всю торговлю между Востоком и Западом.", fact: "В VI веке население Константинополя составляло более 500 тысяч человек." },
+                    { id: 2, tag: "Реформа", title: "Свод законов", desc: "Юстиниан собрал комиссию из лучших юристов. Результатом стал Corpus Juris Civilis, который защищал частную собственность и власть императора.", fact: "Многие современные юридические термины взяты именно из Кодекса Юстиниана." },
+                    { id: 3, tag: "Война", title: "Реконкиста", desc: "Полководцы Велизарий и Нарсес разгромили вандалов в Африке и остготов в Италии. Средиземное море вновь стало 'римским озером'.", fact: "Войны Юстиниана истощили казну империи, что привело к трудностям в будущем." },
+                    { id: 4, tag: "Шедевр", title: "Храм Св. Софии", desc: "Построен архитекторами Анфимием и Исидором всего за 5 лет. Свет из 40 окон в основании купола создавал эффект божественного сияния.", fact: "Для украшения храма привозили золото, серебро и редкие сорта мрамора со всей империи." },
+                    { id: 5, tag: "Испытание", title: "Юстинианова чума", desc: "Первая в истории пандемия, унесшая жизни миллионов людей. Она ослабила империю, сделав её уязвимой для вторжений арабов и славян в VII веке.", fact: "Болезнь поразила даже самого императора, но он сумел выздороветь." }
+                ]
+            },
+            kz: {
+                title: "VI–VIII ғғ. Византия",
+                subtitle: "Екінші Римнің алтын ғасыры мен сынақтары",
+                visualTitle: "Империя картасы",
+                hint: "Юстиниан дәуірін зерттеу үшін түйіндерді басыңыз",
+                placeholderTitle: "Қасиетті мемлекет",
+                placeholderText: "Ромейлер империясы Еуропадағы ең дамыған мемлекет болды. Юстиниан тұсындағы гүлденуі мен кейінгі күресін зерттеңіз.",
+                labelNote: "Империялық факт:",
+                hint1: "Юстиниан жинағы", hint2: "Әулие София",
+                card1Title: "Юстиниан I",
+                card1Text: "Рим империясын бұрынғы қалпына келтіруге тырысқан ұлы реформатор және жаулап алушы.",
+                card2Title: "Заңдар кодексі",
+                card2Text: "Рим құқығын жүйелеу Византияға мемлекетті ғасырлар бойы тиімді басқаруға мүмкіндік берді.",
+                card3Title: "Әулие София",
+                card3Text: "Мың жыл бойы христиан әлемінің басты храмы болған, империя мен сенімнің қуаттылық нышаны.",
+                footerQuote: "«Византия — ежелгі грек даналығы мен Рим асқақтығын Орта ғасырлармен байланыстырған алтын шынжыр».",
+                nodes: [
+                    { id: 1, tag: "Астана", title: "Константинополь", desc: "Әлемдегі ең бай және қорғалған қала. Еуропа мен Азия түйіскен жерде орналасқан.", fact: "VI ғасырда қала халқы 500 мыңнан астам адамды құрады." },
+                    { id: 2, tag: "Реформа", title: "Заңдар жинағы", desc: "Юстиниан Рим заңдарын бір жүйеге келтірді. Бұл еңбек жеке меншікті қорғады.", fact: "Қазіргі заң терминдерінің көбі Юстиниан кодексінен алынған." },
+                    { id: 3, tag: "Соғыс", title: "Реконкиста", desc: "Велизарий мен Нарсес қолбасшылар Африка мен Италиядағы варварларды талқандады.", fact: "Юстиниан соғыстары империя қазынасын ортайтты." },
+                    { id: 4, tag: "Жауһар", title: "Әулие София храмы", desc: "Сәулетшілер Анфимий мен Исидор небәрі 5 жылда салған. Күмбез аспанда қалқып тұрғандай әсер беретін.", fact: "Храмды безендіруге бүкіл империядан алтын мен мәрмәр әкелінді." },
+                    { id: 5, tag: "Сынақ", title: "Юстиниан обасы", desc: "Тарихтағы алғашқы пандемия. Ол империяны әлсіретіп, VII ғасырдағы арабтар мен славяндардың шабуылына жол ашты.", fact: "Індеттен императордың өзі де ауырған, бірақ жазылып шықты." }
+                ]
+            },
+            en: {
+                title: "Byzantium in 6th–8th C.",
+                subtitle: "Golden Age and Trials of New Rome",
+                visualTitle: "Map of the Empire",
+                hint: "Click on nodes to study Justinian's era",
+                placeholderTitle: "The Sacred Power",
+                placeholderText: "The Empire of the Romans was the most advanced state in Europe. Explore its peak under Justinian and the subsequent struggle for survival.",
+                labelNote: "Imperial Fact:",
+                hint1: "Code of Justinian", hint2: "Hagia Sophia",
+                card1Title: "Justinian I",
+                card1Text: "A great reformer and conqueror who sought to restore the Roman Empire to its former glory.",
+                card2Title: "Legal Code",
+                card2Text: "The systematization of Roman law allowed Byzantium to govern effectively for centuries.",
+                card3Title: "Hagia Sophia",
+                card3Text: "The primary cathedral of the Christian world for nearly a thousand years, a symbol of faith and power.",
+                footerQuote: "«Byzantium is a golden chain connecting Greek wisdom and Roman majesty to the Middle Ages.»",
+                nodes: [
+                    { id: 1, tag: "The Capital", title: "Constantinople", desc: "The world's richest and most fortified city, controlling trade between Europe and Asia from its strategic location.", fact: "In the 6th century, its population exceeded 500,000, making it a true global metropolis." },
+                    { id: 2, tag: "Reform", title: "Civil Law Code", desc: "Justinian unified Roman law into the 'Corpus Juris Civilis', protecting private property and imperial authority.", fact: "It remains the foundation of many modern legal systems in Europe today." },
+                    { id: 3, tag: "War", title: "The Reconquest", desc: "Generals Belisarius and Narses crushed vandals in Africa and Goths in Italy, briefly making the Mediterranean a 'Roman lake' again.", fact: "The cost of these wars nearly bankrupted the empire, leading to later vulnerabilities." },
+                    { id: 4, tag: "Masterpiece", title: "Hagia Sophia", desc: "Built by Anthemius and Isidore in just 5 years. Its massive dome seemed to float on light from 40 arched windows.", fact: "Justinian famously exclaimed, 'Solomon, I have surpassed thee!' upon its dedication." },
+                    { id: 5, tag: "Trial", title: "Plague of Justinian", desc: "The first documented global pandemic, killing millions and weakening the empire's manpower for the coming Arab and Slavic expansions.", fact: "The plague infected the Emperor himself, though he survived to continue his long reign." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('byzantiumCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-note').innerText = t.labelNote;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Background glow for the Empire
+            ctx.fillStyle = 'rgba(234, 179, 8, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx - 200, cy - 80);
+            ctx.lineTo(cx + 200, cy - 80);
+            ctx.lineTo(cx + 100, cy + 100);
+            ctx.lineTo(cx - 150, cy + 100);
+            ctx.closePath();
+            ctx.fill();
+
+            const nodesData = [
+                { id: 1, x: cx + 20, y: cy - 20, icon: "🏰" }, // Constantinople
+                { id: 2, x: cx - 40, y: cy + 40, icon: "📜" }, // Law
+                { id: 3, x: cx - 140, y: cy + 80, icon: "⚔️" }, // Reconquest
+                { id: 4, x: cx + 60, y: cy - 80, icon: "✨" },  // Sophia
+                { id: 5, x: cx + 150, y: cy + 20, icon: "💀" }  // Plague
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(234, 179, 8, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 4) ? '#4c1d95' : '#eab308';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = (i === 4) ? 'white' : '#1e1b4b';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#fef3c7';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

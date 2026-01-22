@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат 36: Словарь терминов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Очень светло-серый фон */
+            overflow-x: hidden;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Карточка-заголовок */
+        .header-card {
+            background-color: #7c2d12; /* Коричневый-800 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(124, 45, 18, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Заголовок секции */
+        .section-heading {
+            color: #713f12; /* Коричневый-900 */
+            border-bottom: 3px solid #fdba74; /* Оранжевый-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Карточка с правилом */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Блок с примером внутри карточки */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #fffbeb; /* Очень светлый оранжевый */
+            border-left: 4px solid #f97316; /* Оранжевый-500 */
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Футер */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f1f5f9; /* Светло-серый */
+            border-radius: 1rem;
+            border-top: 4px solid #64748b; /* Серый */
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            list-style: none;
+            padding-left: 20px;
+            position: relative;
+        }
+        .feature-list li::before {
+            content: '📚'; /* Эмодзи для пунктов - КНИГА */
+            position: absolute;
+            left: 0;
+            color: #7c2d12; /* Коричневый */
+        }
+        .dict-entry {
+           font-weight: 600;
+           font-size: 1.1em;
+        }
+        .term {
+            font-weight: bold;
+            color: #92400e; /* amber-800 */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    " onmouseover="this.style.transform='translateX(-3px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="container">
+
+        <!-- ГЛАВНЫЙ ЗАГОЛОВОК -->
+        <header class="header-card text-center mb-10">
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                ПЛАКАТ 36: СЛОВАРЬ ТЕРМИНОВ
+            </h1>
+            <p class="mt-2 text-xl font-medium text-gray-100">
+                Словарь для специальных слов из науки, техники и искусства.
+            </p>
+        </header>
+
+        <!-- 1. ЧТО ТАКОЕ ТЕРМИНЫ И ИХ СЛОВАРЬ? -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                1. Термины и их словарь
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Что такое Термины? -->
+                <div class="rule-card border-t-amber-700">
+                    <h3 class="text-xl font-bold text-amber-800 mb-3">📚 Что такое Термины?</h3>
+                    <p class="text-base md:text-lg mb-3 text-gray-700">
+                        <strong>Термины</strong> - это специальные слова (или словосочетания), которые точно называют понятия из какой-либо области науки, техники, искусства.
+                    </p>
+                    <ul class="feature-list text-base text-gray-700">
+                        <li>Как правило, термины <strong>однозначны</strong> в пределах своей области.</li>
+                        <li>Они нужны для точности и ясности в профессиональном общении.</li>
+                    </ul>
+                    <div class="example-block border-l-amber-500">
+                        <p class="font-semibold text-gray-800">Примеры терминов:</p>
+                        <p class="text-gray-700 dict-entry"><i><strong>Суффикс</strong> (из русского языка)</i></p>
+                        <p class="text-gray-700 dict-entry"><i><strong>Фотосинтез</strong> (из биологии)</i></p>
+                        <p class="text-gray-700 dict-entry"><i><strong>Мольберт</strong> (из искусства)</i></p>
+                    </div>
+                </div>
+
+                <!-- Что такое Словарь терминов? -->
+                <div class="rule-card border-t-orange-700">
+                    <h3 class="text-xl font-bold text-orange-800 mb-3">📖 Что такое Словарь терминов?</h3>
+                    <p class="text-base md:text-lg mb-3 text-gray-700">
+                        <strong>Словарь терминов</strong> (или <strong>Терминологический словарь</strong>) - это словарь, который содержит термины определённой области знания и даёт их <strong>точные определения</strong> (толкования).
+                    </p>
+                    <ul class="feature-list text-base text-gray-700">
+                        <li>Такие словари бывают по разным наукам (медицинский, юридический, лингвистический).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. СТРУКТУРА СЛОВАРНОЙ СТАТЬИ -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                2. Как устроен Словарь терминов?
+            </h2>
+
+            <div class="rule-card border-t-yellow-700">
+                <p class="text-base md:text-lg mb-3 text-gray-700">
+                    Словарная статья в словаре терминов обычно включает:
+                </p>
+                <ul class="feature-list text-base text-gray-700">
+                    <li>📚 <strong>Термин:</strong> Слово или словосочетание.</li>
+                    <li>📚 <strong>Определение:</strong> Точное научное или техническое толкование понятия.</li>
+                    <li>📚 (Иногда) Происхождение термина (этимология).</li>
+                    <li>📚 (Иногда) Примеры использования в специальной литературе.</li>
+                    <li>📚 (Иногда) Синонимичные термины или связанные понятия.</li>
+                </ul>
+                 <div class="example-block border-l-yellow-500 mt-4">
+                    <p class="font-semibold text-gray-800">Пример словарной статьи (из лингвистики):</p>
+                    <p class="text-gray-700 dict-entry"><span class="term">ОРФОГРАММА</span></p>
+                    <p class="text-gray-700 ml-4"><i>Написание в слове, соответствующее какому-либо орфографическому правилу (например, безударная гласная в корне, проверяемая ударением).</i></p>
+                 </div>
+            </div>
+        </section>
+
+        <!-- 3. ЗАЧЕМ НУЖЕН СЛОВАРЬ ТЕРМИНОВ? -->
+        <section class="mb-12">
+            <h2 class="text-3xl section-heading">
+                3. Когда он нужен?
+            </h2>
+
+            <div class="rule-card border-t-gray-500">
+                <h3 class="text-xl font-bold text-gray-700 mb-3">🎯 Для понимания специальных текстов</h3>
+                <ul class="feature-list text-base text-gray-700">
+                    <li>📚 При <strong>изучении</strong> нового предмета (физики, химии, истории), чтобы понять значение специальных слов.</li>
+                    <li>📚 При <strong>чтении</strong> научной, технической или специальной литературы.</li>
+                    <li>📚 Для <strong>правильного использования</strong> терминов в своей речи или письменной работе.</li>
+                    <li>📚 Чтобы <strong>отличить</strong> термин от обычного слова (например, <i>"сила"</i> в физике и в быту).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ЗАКЛЮЧЕНИЕ -->
+        <footer class="footer-card">
+            <h3 class="text-xl font-extrabold mb-2 text-gray-800">
+                ГЛАВНАЯ МЫСЛЬ
+            </h3>
+            <p class="text-md font-semibold leading-relaxed text-gray-700">
+                <strong>Словарь терминов</strong> - это ключ к пониманию языка науки, техники и искусства. Он объясняет <strong>точные значения</strong> специальных слов (терминов), которые используются в определённой области знаний.
+            </p>
+        </footer>
+
+    </div>
+
+
+
+
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

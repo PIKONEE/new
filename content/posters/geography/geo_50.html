@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lithosphere Dynamics: Plate Boundaries</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #09090b; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #f97316; color: white; font-weight: 800; }
+        .mode-btn { transition: all 0.3s; }
+        .mode-btn.active { border-color: #f97316; color: #f97316; background: rgba(249, 115, 22, 0.1); }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-orange-500/20">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-orange-500"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+        <div class="lg:col-span-1 glass rounded-custom p-8 flex flex-col gap-4">
+            <h3 id="nav-title" class="heading-font text-lg text-orange-300 uppercase mb-4 tracking-widest"></h3>
+            <button onclick="setMode('divergent')" id="btn-div" class="mode-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+            <button onclick="setMode('convergent')" id="btn-conv" class="mode-btn p-4 glass rounded-2xl text-left text-xs font-bold uppercase border border-white/5"></button>
+        </div>
+
+        <div class="lg:col-span-3 glass rounded-custom p-8 flex flex-col relative min-h-[450px]">
+            <canvas id="dynCanvas" class="w-full h-full"></canvas>
+            <div id="info-overlay" class="absolute bottom-8 left-8 right-8 p-6 glass rounded-3xl border-l-4 border-orange-500">
+                <h4 id="info-title" class="heading-font text-2xl text-orange-400 mb-2"></h4>
+                <p id="info-text" class="text-white/70 text-sm leading-relaxed"></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Динамика плит", subtitle: "Процессы на границах литосферы",
+                navTitle: "Границы плит",
+                modes: {
+                    divergent: { btn: "Расхождение", title: "Дивергентные границы", text: "Плиты расходятся. Из недр поднимается магма, образуя новую земную кору. Так возникли срединно-океанические хребты." },
+                    convergent: { t: "Столкновение", title: "Конвергентные границы", text: "Плиты сталкиваются. Океаническая плита уходит под материковую (субдукция), образуя глубоководные желоба и цепи вулканов (Анды)." }
+                }
+            },
+            kz: {
+                title: "Плиталар динамикасы", subtitle: "Литосфера шекараларындағы процестер",
+                navTitle: "Плиталар шекарасы",
+                modes: {
+                    divergent: { btn: "Ажырау", title: "Дивергентті шекаралар", text: "Плиталар бір-бірінен ажырайды. Жер қойнауынан магма көтеріліп, жаңа жер қыртысын түзеді." },
+                    convergent: { t: "Соқтығысу", title: "Конвергентті шекаралар", text: "Плиталар соқтығысады. Мұхиттық плита материктік плитаның астына енеді (субдукция)." }
+                }
+            },
+            en: {
+                title: "Plate Dynamics", subtitle: "Processes at Lithosphere Boundaries",
+                navTitle: "Boundaries",
+                modes: {
+                    divergent: { btn: "Divergent", title: "Divergent Boundaries", text: "Plates move apart. Magma rises from the mantle to create new crust, forming mid-ocean ridges." },
+                    convergent: { t: "Convergent", title: "Convergent Boundaries", text: "Plates collide. Oceanic crust sinks beneath continental (subduction), creating trenches and volcanoes." }
+                }
+            }
+        };
+
+        let currentLang = 'ru', currentMode = 'divergent', canvas, ctx;
+
+        window.setLang = function(l) { currentLang = l; updateUI(); }
+        window.setMode = function(m) { 
+            currentMode = m; 
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(m === 'divergent' ? 'btn-div' : 'btn-conv').classList.add('active');
+            updateUI(); 
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('nav-title').textContent = t.navTitle;
+            document.getElementById('btn-div').textContent = t.modes.divergent.btn;
+            document.getElementById('btn-conv').textContent = t.modes.convergent.t || t.modes.convergent.btn;
+            
+            const data = t.modes[currentMode];
+            document.getElementById('info-title').textContent = data.title;
+            document.getElementById('info-text').textContent = data.text;
+            draw();
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const time = Date.now() * 0.001;
+
+            ctx.fillStyle = '#44403c';
+            if(currentMode === 'divergent') {
+                const gap = Math.sin(time)*20 + 20;
+                ctx.fillRect(w*0.5 - 150 - gap, h*0.4, 150, 40);
+                ctx.fillRect(w*0.5 + gap, h*0.4, 150, 40);
+                // Magma
+                ctx.fillStyle = '#ef4444'; ctx.fillRect(w*0.5-gap, h*0.4+20, gap*2, h*0.6);
+            } else {
+                ctx.fillRect(w*0.2, h*0.4, 200, 40); // Continental
+                ctx.fillStyle = '#27272a';
+                ctx.save(); ctx.translate(w*0.5, h*0.45); ctx.rotate(0.4); ctx.fillRect(0,0, 200, 20); ctx.restore(); // Oceanic
+            }
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('dynCanvas'); ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 450;
+            setLang('ru');
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

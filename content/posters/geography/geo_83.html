@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australia: The Red Continent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <style>
+        body { background: radial-gradient(circle at center, #7f1d1d, #451a03, #000); color: white; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(15px); }
+        .rounded-custom { border-radius: 2rem; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <header class="flex justify-between items-center mb-10 border-b border-red-500/40 pb-4">
+        <div>
+            <h1 class="text-4xl font-montserrat text-red-400">AUSTRALIA</h1>
+            <p class="text-xs uppercase tracking-widest text-red-200/50 mt-1">Terra Australis Incognita</p>
+        </div>
+        <div class="flex gap-4 font-bold text-sm text-red-400">
+            <button onclick="updL('ru')" class="hover:text-white">RU</button>
+            <button onclick="updL('kz')" class="hover:text-white">KZ</button>
+            <button onclick="updL('en')" class="hover:text-white">EN</button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div class="relative h-[500px] border border-red-900 rounded-custom overflow-hidden bg-black/20">
+            <canvas id="ausCanvas" class="w-full h-full"></canvas>
+            <div class="absolute bottom-6 right-6 text-right">
+                <div class="text-3xl font-bold text-red-500">7.7M km²</div>
+                <div class="text-[10px] uppercase text-gray-500">Smallest Continent</div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-6 justify-center">
+            <div class="glass p-8 rounded-custom border-l-4 border-red-600">
+                <h2 id="h-main" class="text-2xl font-bold mb-4 text-red-200"></h2>
+                <p id="t-main" class="text-lg leading-relaxed text-white/80"></p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass p-6 rounded-2xl text-center hover:bg-red-900/30 transition">
+                    <div class="text-3xl mb-2">🦘</div>
+                    <div class="text-xs font-bold text-red-300 uppercase">Endemics</div>
+                    <div class="text-sm">75% Unique</div>
+                </div>
+                <div class="glass p-6 rounded-2xl text-center hover:bg-red-900/30 transition">
+                    <div class="text-3xl mb-2">🏜️</div>
+                    <div class="text-xs font-bold text-red-300 uppercase">Desert</div>
+                    <div class="text-sm">44% of Land</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: { h: "Самый сухой материк", t: "Австралия — единственный материк, где нет действующих вулканов и оледенения. Большая часть территории занята пустынями (Виктория, Песчаная). Омывается Индийским и Тихим океанами." },
+            kz: { h: "Ең құрғақ материк", t: "Австралия — сөнген жанартаулары мен мұздықтары жоқ жалғыз материк. Аумағының көп бөлігін шөлдер алып жатыр. Үнді және Тынық мұхиттары шаяды." },
+            en: { h: "The Driest Continent", t: "Australia is the only continent without active volcanoes or glaciers. Deserts cover most of the land. It is bordered by the Indian and Pacific Oceans." }
+        };
+
+        let cx, cvs;
+        window.updL = (l) => {
+            document.getElementById('h-main').textContent = content[l].h;
+            document.getElementById('t-main').textContent = content[l].t;
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.001;
+            cx.clearRect(0,0,w,h);
+
+            // Shape
+            cx.fillStyle = '#7f1d1d';
+            cx.beginPath();
+            cx.moveTo(w*0.2, h*0.4); 
+            cx.lineTo(w*0.5, h*0.2); // North
+            cx.lineTo(w*0.8, h*0.4); // East
+            cx.lineTo(w*0.7, h*0.8); // SE
+            cx.lineTo(w*0.3, h*0.7); // SW
+            cx.fill();
+
+            // Desert Center (Pulse)
+            cx.fillStyle = 'rgba(245, 158, 11, 0.2)';
+            cx.beginPath(); cx.arc(w*0.45, h*0.5, 60 + Math.sin(t)*5, 0, Math.PI*2); cx.fill();
+
+            // Green Coast
+            cx.strokeStyle = '#22c55e'; cx.lineWidth = 3;
+            cx.beginPath(); cx.moveTo(w*0.75, h*0.3); cx.lineTo(w*0.75, h*0.7); cx.stroke(); // East Coast Greenery
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('ausCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            updL('ru'); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

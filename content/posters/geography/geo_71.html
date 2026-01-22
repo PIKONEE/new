@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Africa: Geographic Position</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #1e1b4b; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { cursor: pointer; }
+        .lang-btn.active { background: #a5b4fc; color: #1e1b4b; font-weight: 800; }
+        .toggle-btn.active { background: #fff; color: #1e1b4b; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b border-indigo-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-indigo-300"></h1>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden min-h-[500px]">
+            <canvas id="posCanvas" class="w-full h-full"></canvas>
+            <div class="absolute top-8 left-8 flex flex-col gap-2">
+                <button onclick="toggleLine('equator')" class="toggle-btn glass px-4 py-2 rounded-lg text-xs font-bold uppercase active">Equator</button>
+                <button onclick="toggleLine('meridian')" class="toggle-btn glass px-4 py-2 rounded-lg text-xs font-bold uppercase">Prime Meridian</button>
+            </div>
+        </div>
+
+        <div class="glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-indigo-500">
+            <h3 id="info-title" class="heading-font text-3xl mb-6 text-indigo-200"></h3>
+            <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-6"></div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Симметрия Африки", defaultTitle: "Уникальное положение",
+                defaultText: "Африка — единственный материк, который пересекается и экватором, и начальным меридианом. Она расположена во всех четырех полушариях."
+            },
+            kz: {
+                title: "Африка Симметриясы", defaultTitle: "Ерекше орны",
+                defaultText: "Африка — экватормен және бастапқы меридианмен қиылысатын жалғыз материк. Ол төрт жарты шарда да орналасқан."
+            },
+            en: {
+                title: "Africa's Symmetry", defaultTitle: "Unique Position",
+                defaultText: "Africa is the only continent crossed by both the Equator and the Prime Meridian. It is located in all four hemispheres."
+            }
+        };
+
+        let currentLang = 'ru', showEquator = true, showMeridian = false, canvas, ctx;
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            const t = translations[l];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+        }
+
+        window.toggleLine = function(line) {
+            if(line === 'equator') showEquator = !showEquator;
+            if(line === 'meridian') showMeridian = !showMeridian;
+            draw();
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const cx = w/2, cy = h/2;
+
+            // Africa Outline
+            ctx.fillStyle = '#4f46e5';
+            ctx.beginPath();
+            ctx.moveTo(cx-40, cy-100); ctx.lineTo(cx+40, cy-100); ctx.lineTo(cx+70, cy); ctx.lineTo(cx, cy+130); ctx.lineTo(cx-70, cy-20); ctx.fill();
+
+            // Lines
+            if(showEquator) {
+                ctx.strokeStyle = '#facc15'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
+                ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+                ctx.fillStyle = '#facc15'; ctx.fillText('0°', 10, cy-10);
+            }
+            if(showMeridian) {
+                ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
+                ctx.beginPath(); ctx.moveTo(cx-60, 0); ctx.lineTo(cx-60, h); ctx.stroke(); // Greenwich approx west
+                ctx.fillStyle = '#f472b6'; ctx.fillText('0°', cx-55, 20);
+            }
+            ctx.setLineDash([]);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('posCanvas'); ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight || 500;
+            window.setLang('ru'); draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Физикалық және химиялық құбылыстар</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fef3c7; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #b45309; border-bottom: 3px solid #fed7aa; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #d97706; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #d97706; background: white; color: #d97706; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #d97706; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; font-size: 11px; }
+        th { background-color: #d97706; color: white; }
+        .phenomenon-box { background: linear-gradient(135deg, #fed7aa 0%, #fef3c7 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #d97706; margin: 10px 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-amber-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Физикалық және Химиялық Құбылыстар!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Physical and Chemical Phenomena!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Физические и химические явления!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-amber-100">Физикалық құбылыс - құрамы өзгермейді. Химиялық құбылыс - жаңа зат құралады! Балқу, ыдырау, өндіктену - физикалық. Түс өзгеру, газ шығарылуы - химиялық!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-amber-100">Physical phenomena - composition unchanged. Chemical phenomena - new substances form! Melting, evaporation - physical. Color change, gas release - chemical!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-amber-100">Физическое явление - состав не меняется. Химическое явление - образуются новые вещества! Плавление, испарение - физические. Изменение цвета, выделение газа - химические!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ФИЗИКАЛЫҚ ҚҰБЫЛЫСТАР ТАБЛИЦАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. PHYSICAL PHENOMENA TABLE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Таблица физических явлений</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ҚҰБЫЛЫС</th>
+                            <th lang="kk" class="lang-content">МЫСАЛЫ</th>
+                            <th lang="kk" class="lang-content">ҚҰРАМЫ</th>
+                            <th lang="kk" class="lang-content">ӨНДІКТІГІ</th>
+
+                            <th lang="en" class="lang-content">PHENOMENON</th>
+                            <th lang="en" class="lang-content">EXAMPLE</th>
+                            <th lang="en" class="lang-content">COMPOSITION</th>
+                            <th lang="en" class="lang-content">REVERSIBILITY</th>
+
+                            <th lang="ru" class="lang-content">ЯВЛЕНИЕ</th>
+                            <th lang="ru" class="lang-content">ПРИМЕР</th>
+                            <th lang="ru" class="lang-content">СОСТАВ</th>
+                            <th lang="ru" class="lang-content">ОБРАТИМОСТЬ</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>Балқу</strong></td>
+                            <td lang="kk" class="lang-content">Мұз → Су</td>
+                            <td lang="kk" class="lang-content">Өзгермейді (H₂O)</td>
+                            <td lang="kk" class="lang-content">✓ Қайта орындалуы мүмкін</td>
+
+                            <td lang="en" class="lang-content"><strong>Melting</strong></td>
+                            <td lang="en" class="lang-content">Ice → Water</td>
+                            <td lang="en" class="lang-content">Unchanged (H₂O)</td>
+                            <td lang="en" class="lang-content">✓ Reversible</td>
+
+                            <td lang="ru" class="lang-content"><strong>Плавление</strong></td>
+                            <td lang="ru" class="lang-content">Лёд → вода</td>
+                            <td lang="ru" class="lang-content">не меняется (H₂O)</td>
+                            <td lang="ru" class="lang-content">✓ Обратимо</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>Ыдырау</strong></td>
+                            <td lang="kk" class="lang-content">Су → Бу</td>
+                            <td lang="kk" class="lang-content">Өзгермейді (H₂O)</td>
+                            <td lang="kk" class="lang-content">✓ Қайта орындалуы мүмкін</td>
+
+                            <td lang="en" class="lang-content"><strong>Evaporation</strong></td>
+                            <td lang="en" class="lang-content">Water → Steam</td>
+                            <td lang="en" class="lang-content">Unchanged (H₂O)</td>
+                            <td lang="en" class="lang-content">✓ Reversible</td>
+
+                            <td lang="ru" class="lang-content"><strong>Испарение</strong></td>
+                            <td lang="ru" class="lang-content">Вода → пар</td>
+                            <td lang="ru" class="lang-content">не меняется (H₂O)</td>
+                            <td lang="ru" class="lang-content">✓ Обратимо</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>Ерігіштік</strong></td>
+                            <td lang="kk" class="lang-content">Қанты су-та</td>
+                            <td lang="kk" class="lang-content">Өзгермейді</td>
+                            <td lang="kk" class="lang-content">✓ Қайта орындалуы мүмкін</td>
+
+                            <td lang="en" class="lang-content"><strong>Dissolution</strong></td>
+                            <td lang="en" class="lang-content">Sugar in water</td>
+                            <td lang="en" class="lang-content">Unchanged</td>
+                            <td lang="en" class="lang-content">✓ Reversible</td>
+
+                            <td lang="ru" class="lang-content"><strong>Растворение</strong></td>
+                            <td lang="ru" class="lang-content">Сахар в воде</td>
+                            <td lang="ru" class="lang-content">не меняется</td>
+                            <td lang="ru" class="lang-content">✓ Обратимо</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ХИМИЯЛЫҚ ҚҰБЫЛЫСТАР ТАБЛИЦАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. CHEMICAL PHENOMENA TABLE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Таблица химических явлений</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">ҚҰБЫЛЫС</th>
+                            <th lang="kk" class="lang-content">МЫСАЛЫ</th>
+                            <th lang="kk" class="lang-content">ҚҰРАМЫ</th>
+                            <th lang="kk" class="lang-content">БЕЛГІЛЕРІ</th>
+
+                            <th lang="en" class="lang-content">PHENOMENON</th>
+                            <th lang="en" class="lang-content">EXAMPLE</th>
+                            <th lang="en" class="lang-content">COMPOSITION</th>
+                            <th lang="en" class="lang-content">SIGNS</th>
+
+                            <th lang="ru" class="lang-content">ЯВЛЕНИЕ</th>
+                            <th lang="ru" class="lang-content">ПРИМЕР</th>
+                            <th lang="ru" class="lang-content">СОСТАВ</th>
+                            <th lang="ru" class="lang-content">ПРИЗНАКИ</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>Жану</strong></td>
+                            <td lang="kk" class="lang-content">C + O₂ → CO₂</td>
+                            <td lang="kk" class="lang-content">ӨЗГЕРЕДІ! ✗</td>
+                            <td lang="kk" class="lang-content">Ыс, түс өзгеруі</td>
+
+                            <td lang="en" class="lang-content"><strong>Burning</strong></td>
+                            <td lang="en" class="lang-content">C + O₂ → CO₂</td>
+                            <td lang="en" class="lang-content">CHANGES! ✗</td>
+                            <td lang="en" class="lang-content">Heat, light</td>
+
+                            <td lang="ru" class="lang-content"><strong>Горение</strong></td>
+                            <td lang="ru" class="lang-content">C + O₂ → CO₂</td>
+                            <td lang="ru" class="lang-content">МЕНЯЕТСЯ! ✗</td>
+                            <td lang="ru" class="lang-content">Тепло, свет</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>Пысықтану</strong></td>
+                            <td lang="kk" class="lang-content">Төлінген қағаз</td>
+                            <td lang="kk" class="lang-content">ӨЗГЕРЕДІ! ✗</td>
+                            <td lang="kk" class="lang-content">Түс өзгеруі, газ</td>
+
+                            <td lang="en" class="lang-content"><strong>Rusting</strong></td>
+                            <td lang="en" class="lang-content">Paper burning</td>
+                            <td lang="en" class="lang-content">CHANGES! ✗</td>
+                            <td lang="en" class="lang-content">Color, gas</td>
+
+                            <td lang="ru" class="lang-content"><strong>Гниение</strong></td>
+                            <td lang="ru" class="lang-content">Сгорание бумаги</td>
+                            <td lang="ru" class="lang-content">МЕНЯЕТСЯ! ✗</td>
+                            <td lang="ru" class="lang-content">Цвет, газ</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fed7aa; border-radius: 1rem; border-top: 4px solid #d97706;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-amber-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-amber-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extarbold mb-2 text-amber-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Физикалық құбылыс - құрамы өзгермейді, қайта орындалуы мүмкін. Мысалы: балқу, ыдырау, ерітіндіктену. Химиялық құбылыс - жаңа зат құралады, құрамы өзгереді, қайта орындалмайды. Мысалы: жану, пысықтану, ыдырау. АРАСЫНДАҒЫ АЙЫРМАШЫЛЫҚ - ОРАСЫ ҚАЖЕТ!</p>
+            <p lang="en" class="lang-content text-sm">Physical phenomenon - composition unchanged, reversible. Examples: melting, evaporation, dissolution. Chemical phenomenon - new substances form, composition changes, irreversible. Examples: burning, rusting, decomposition. DIFFERENCE IS IMPORTANT!</p>
+            <p lang="ru" class="lang-content text-sm">Физическое явление - состав не меняется, обратимо. Примеры: плавление, испарение, растворение. Химическое явление - образуются новые вещества, состав меняется, необратимо. Примеры: горение, ржавление, разложение. РАЗНИЦА ВАЖНА!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

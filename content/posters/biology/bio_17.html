@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Биология - Плака<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Деление клетки (Митоз)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf5ff; /* purple-50 */
+            overflow-x: hidden;
+            color: #3b0764; /* purple-950 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Chromosome Purple Theme */
+        .header-card {
+            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%); /* purple-600 to 700 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #6b21a8; /* purple-800 */
+            border-bottom: 3px solid #d8b4fe; /* purple-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #f3e8ff; /* purple-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #7e22ce; /* purple-700 */
+        }
+         .term {
+            font-weight: bold;
+            color: #9333ea; /* purple-600 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #9333ea;
+            background-color: #ffffff;
+            color: #9333ea;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #faf5ff;
+        }
+        .lang-btn.active {
+            background-color: #9333ea;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 250px;
+            margin: 15px 0;
+            border: 1px solid #e9d5ff;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #581c87;
+            text-anchor: middle;
+        }
+        .svg-cell-membrane {
+            fill: #f3e8ff;
+            stroke: #9333ea;
+            stroke-width: 2;
+        }
+        .svg-chromosome {
+            fill: #d946ef; /* fuchsia */
+            stroke: #a21caf;
+            stroke-width: 1.5;
+        }
+        .svg-spindle {
+            stroke: #d8b4fe;
+            stroke-width: 1;
+            stroke-dasharray: 2;
+        }
+        .svg-nucleus {
+            fill: #e9d5ff;
+            stroke: #7e22ce;
+            stroke-width: 1;
+            stroke-dasharray: 4;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-purple-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(168, 85, 247, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(168, 85, 247, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ЖАСУШАНЫҢ БӨЛІНУІ (МИТОЗ)</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">CELL DIVISION (MITOSIS)</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ДЕЛЕНИЕ КЛЕТКИ (МИТОЗ)</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-purple-100">Бір аналық жасушадан екі жас жасушаның пайда болуы.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-purple-100">Creation of two daughter cells from one mother cell.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-purple-100">Образование двух дочерних клеток из одной материнской.</p>
+        </header>
+
+        <!-- 1. МИТОЗ ДЕГЕНІМІЗ НЕ? -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Митоз дегеніміз не?</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Mitosis?</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое Митоз?</h2>
+
+            <div class="rule-card border-t-purple-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Митоз</span> – эукариоттық жасушалардың бөлінуінің негізгі түрі. Нәтижесінде хромосомалар саны бірдей екі жас жасуша түзіледі.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="en">Mitosis</span> is the main type of eukaryotic cell division. It results in two daughter cells with the same number of chromosomes.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Митоз</span> – это основной способ деления эукариотических клеток. В результате образуются две дочерние клетки с одинаковым набором хромосом.
+                </p>
+
+                <!-- Illustration 1: Overview -->
+                <svg class="illustration-svg" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#9333ea" />
+                        </marker>
+                    </defs>
+
+                    <!-- Mother Cell -->
+                    <g transform="translate(60, 75)">
+                        <circle cx="0" cy="0" r="35" class="svg-cell-membrane"/>
+                        <circle cx="0" cy="0" r="15" class="svg-nucleus"/>
+                        <text x="0" y="55" font-size="10" text-anchor="middle">Mother (2n)</text>
+                        <!-- Chromosomes inside -->
+                        <path d="M -5 -5 L 5 5 M 5 -5 L -5 5" class="svg-chromosome" stroke-width="3"/>
+                    </g>
+
+                    <!-- Arrow -->
+                    <line x1="110" y1="75" x2="160" y2="75" stroke="#9333ea" stroke-width="3" marker-end="url(#arrow-purple)"/>
+                    <text x="135" y="65" font-size="10" fill="#7e22ce" text-anchor="middle" font-weight="bold">DIVISION</text>
+
+                    <!-- Daughter Cells -->
+                    <g transform="translate(260, 75)">
+                        <circle cx="0" cy="-30" r="25" class="svg-cell-membrane"/>
+                        <circle cx="0" cy="-30" r="10" class="svg-nucleus"/>
+                        <path d="M -3 -33 L 3 -27 M 3 -33 L -3 -27" class="svg-chromosome" stroke-width="2"/>
+
+                        <circle cx="0" cy="30" r="25" class="svg-cell-membrane"/>
+                        <circle cx="0" cy="30" r="10" class="svg-nucleus"/>
+                         <path d="M -3 27 L 3 33 M 3 27 L -3 33" class="svg-chromosome" stroke-width="2"/>
+
+                        <text x="60" y="0" font-size="10" text-anchor="middle">Daughters (2n)</text>
+                        <text x="60" y="15" font-size="8" text-anchor="middle" fill="#6b21a8">Genetic Copy</text>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 2. МИТОЗ КЕЗЕҢДЕРІ (ФАЗАЛАРЫ) -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Митоз фазалары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Phases of Mitosis</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Фазы митоза</h2>
+
+            <div class="rule-card border-t-fuchsia-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-4 text-gray-700 text-center font-semibold">
+                    Интерфаза (Дайындық) → Профаза → Метафаза → Анафаза → Телофаза
+                </p>
+
+                <!-- Illustration 2: Phases Diagram -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                    <!-- Prophase -->
+                    <div class="bg-purple-50 p-2 rounded border border-purple-200 text-center">
+                        <svg viewBox="0 0 100 100" class="w-24 h-24 mx-auto">
+                            <circle cx="50" cy="50" r="40" class="svg-cell-membrane"/>
+                            <circle cx="50" cy="50" r="25" class="svg-nucleus" stroke-dasharray="2"/> <!-- Membrane dissolving -->
+                            <!-- Chromosomes forming -->
+                            <path d="M 40 40 L 50 50 M 50 40 L 40 50" class="svg-chromosome"/>
+                            <path d="M 50 50 L 60 60 M 60 50 L 50 60" class="svg-chromosome"/>
+                        </svg>
+                        <h4 class="font-bold text-purple-900 text-sm mt-2">1. Профаза</h4>
+                        <p class="text-[10px] text-gray-600">Хромосомалар ширатылады, ядро қабығы ериді.</p>
+                    </div>
+
+                    <!-- Metaphase -->
+                    <div class="bg-purple-50 p-2 rounded border border-purple-200 text-center">
+                         <svg viewBox="0 0 100 100" class="w-24 h-24 mx-auto">
+                            <circle cx="50" cy="50" r="40" class="svg-cell-membrane"/>
+                            <!-- Spindle fibers -->
+                            <line x1="50" y1="10" x2="50" y2="90" class="svg-spindle"/>
+                            <line x1="50" y1="10" x2="30" y2="50" class="svg-spindle"/>
+                            <line x1="50" y1="10" x2="70" y2="50" class="svg-spindle"/>
+                            <line x1="50" y1="90" x2="30" y2="50" class="svg-spindle"/>
+                            <line x1="50" y1="90" x2="70" y2="50" class="svg-spindle"/>
+
+                            <!-- Chromosomes aligned -->
+                            <path d="M 25 50 L 35 50 M 30 45 L 30 55" class="svg-chromosome" transform="rotate(90 30 50)"/>
+                            <path d="M 45 50 L 55 50 M 50 45 L 50 55" class="svg-chromosome" transform="rotate(90 50 50)"/>
+                            <path d="M 65 50 L 75 50 M 70 45 L 70 55" class="svg-chromosome" transform="rotate(90 70 50)"/>
+                        </svg>
+                        <h4 class="font-bold text-purple-900 text-sm mt-2">2. Метафаза</h4>
+                        <p class="text-[10px] text-gray-600">Хромосомалар ортаға тізіледі (экватор).</p>
+                    </div>
+
+                    <!-- Anaphase -->
+                    <div class="bg-purple-50 p-2 rounded border border-purple-200 text-center">
+                         <svg viewBox="0 0 100 100" class="w-24 h-24 mx-auto">
+                            <circle cx="50" cy="50" r="40" class="svg-cell-membrane" transform="scale(1.1 0.9) translate(-4 5)"/> <!-- Elongated -->
+                            <!-- Pulled Chromatids -->
+                            <path d="M 30 30 L 35 25 L 40 30" class="svg-chromosome" fill="none"/> <!-- Top V shape -->
+                            <path d="M 60 30 L 65 25 L 70 30" class="svg-chromosome" fill="none"/>
+
+                            <path d="M 30 70 L 35 75 L 40 70" class="svg-chromosome" fill="none"/> <!-- Bottom V shape -->
+                            <path d="M 60 70 L 65 75 L 70 70" class="svg-chromosome" fill="none"/>
+
+                            <!-- Spindle -->
+                            <line x1="50" y1="10" x2="35" y2="25" class="svg-spindle"/>
+                            <line x1="50" y1="10" x2="65" y2="25" class="svg-spindle"/>
+                            <line x1="50" y1="90" x2="35" y2="75" class="svg-spindle"/>
+                            <line x1="50" y1="90" x2="65" y2="75" class="svg-spindle"/>
+                        </svg>
+                        <h4 class="font-bold text-purple-900 text-sm mt-2">3. Анафаза</h4>
+                        <p class="text-[10px] text-gray-600">Хроматидтер екі полюске тартылады.</p>
+                    </div>
+
+                    <!-- Telophase -->
+                    <div class="bg-purple-50 p-2 rounded border border-purple-200 text-center">
+                         <svg viewBox="0 0 100 100" class="w-24 h-24 mx-auto">
+                            <!-- Pinching cell -->
+                            <path d="M 50 10 Q 90 10, 90 50 Q 60 50, 50 50 Q 40 50, 10 50 Q 10 10, 50 10 Z" class="svg-cell-membrane" transform="translate(0 -5)"/>
+                            <path d="M 50 90 Q 90 90, 90 50 Q 60 50, 50 50 Q 40 50, 10 50 Q 10 90, 50 90 Z" class="svg-cell-membrane" transform="translate(0 5)"/>
+
+                            <!-- New Nuclei -->
+                            <circle cx="50" cy="25" r="10" class="svg-nucleus"/>
+                            <circle cx="50" cy="75" r="10" class="svg-nucleus"/>
+                        </svg>
+                        <h4 class="font-bold text-purple-900 text-sm mt-2">4. Телофаза</h4>
+                        <p class="text-[10px] text-gray-600">Екі ядро түзіліп, жасуша екіге бөлінеді (Цитокинез).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. МАҢЫЗЫ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Биологиялық маңызы</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Biological Significance</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Биологическое значение</h2>
+
+            <div class="rule-card border-t-pink-500">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white p-4 rounded border border-purple-100 shadow-sm">
+                        <div class="text-3xl mb-2">🌱</div>
+                        <h4 class="font-bold text-purple-900">Өсу (Growth)</h4>
+                        <p class="text-sm text-gray-600">Ағза жасушалар санын арттыру арқылы өседі.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded border border-purple-100 shadow-sm">
+                        <div class="text-3xl mb-2">🩹</div>
+                        <h4 class="font-bold text-purple-900">Қалпына келу (Repair)</h4>
+                        <p class="text-sm text-gray-600">Жарақат алған жерлер жазылады, ескі жасушалар жаңарады.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded border border-purple-100 shadow-sm">
+                        <div class="text-3xl mb-2">🧬</div>
+                        <h4 class="font-bold text-purple-900">Тұқым қуалау (Heredity)</h4>
+                        <p class="text-sm text-gray-600">Генетикалық ақпарат өзгеріссіз беріледі.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-purple-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-purple-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-purple-800">
+                Митоз – жасушаның теңдей бөлінуі. Ол 4 фазадан тұрады (П-М-А-Т). Нәтижесі: генетикалық жағынан бірдей екі жасуша.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-purple-800">
+                Mitosis is equal cell division. It has 4 phases (P-M-A-T). Result: two genetically identical cells.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-purple-800">
+                Митоз – это равное деление клетки. Состоит из 4 фаз (П-М-А-Т). Результат: две генетически идентичные клетки.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>т 17</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <h1>Плакат 17</h1>
+</body>
+</html>

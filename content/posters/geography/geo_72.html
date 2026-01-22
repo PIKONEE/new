@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countries of Africa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0c0a09; color: white; min-height: 100vh; }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        .lang-btn.active { background: #d97706; color: white; font-weight: 800; }
+        .region-card { cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+        .region-card:hover { background: rgba(217, 119, 6, 0.1); border-color: #d97706; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-amber-600/30">
+        <div><h1 id="main-title" class="heading-font text-3xl uppercase tracking-tighter text-amber-500"></h1></div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold">RU</button>
+            <button onclick="window.setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold">KZ</button>
+            <button onclick="window.setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="region-card glass p-8 rounded-3xl" onclick="alert('North')">
+            <div class="text-4xl mb-4">🕌</div>
+            <h3 class="font-bold text-amber-400 mb-2" id="reg-north">North Africa</h3>
+            <p class="text-xs text-white/60" id="desc-north"></p>
+        </div>
+        <div class="region-card glass p-8 rounded-3xl" onclick="alert('West')">
+            <div class="text-4xl mb-4">🍫</div>
+            <h3 class="font-bold text-amber-400 mb-2" id="reg-west">West Africa</h3>
+            <p class="text-xs text-white/60" id="desc-west"></p>
+        </div>
+        <div class="region-card glass p-8 rounded-3xl" onclick="alert('East')">
+            <div class="text-4xl mb-4">🦁</div>
+            <h3 class="font-bold text-amber-400 mb-2" id="reg-east">East Africa</h3>
+            <p class="text-xs text-white/60" id="desc-east"></p>
+        </div>
+        <div class="region-card glass p-8 rounded-3xl" onclick="alert('South')">
+            <div class="text-4xl mb-4">💎</div>
+            <h3 class="font-bold text-amber-400 mb-2" id="reg-south">Southern Africa</h3>
+            <p class="text-xs text-white/60" id="desc-south"></p>
+        </div>
+    </main>
+
+    <div class="mt-8 glass rounded-custom p-10 border-l-4 border-amber-600">
+        <h3 id="info-title" class="heading-font text-2xl mb-4 text-amber-300"></h3>
+        <p id="info-text" class="text-sm font-light leading-relaxed text-white/80"></p>
+    </div>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Страны Африки",
+                regions: {
+                    north: { t: "Северная Африка", d: "Египет, Алжир, Марокко. Арабская культура, нефть, пустыни." },
+                    west: { t: "Западная Африка", d: "Нигерия, Гана. Густонаселенный регион, какао, нефть." },
+                    east: { t: "Восточная Африка", d: "Кения, Эфиопия. Саванны, нацпарки, древнейшие государства." },
+                    south: { t: "Южная Африка", d: "ЮАР. Самый развитый регион. Алмазы, золото, промышленность." }
+                },
+                defaultTitle: "54 Государства",
+                defaultText: "Африка — континент с наибольшим числом стран. Большинство из них получили независимость только во второй половине XX века. Экономика многих стран основана на добыче ресурсов и сельском хозяйстве."
+            },
+            kz: {
+                title: "Африка Елдері",
+                regions: {
+                    north: { t: "Солтүстік Африка", d: "Египет, Алжир. Араб мәдениеті, мұнай, шөлдер." },
+                    west: { t: "Батыс Африка", d: "Нигерия. Халық тығыз қоныстанған, какао, мұнай." },
+                    east: { t: "Шығыс Африка", d: "Кения, Эфиопия. Саванналар, ұлттық саябақтар." },
+                    south: { t: "Оңтүстік Африка", d: "ОАР. Ең дамыған аймақ. Алмаз, алтын." }
+                },
+                defaultTitle: "54 Мемлекет",
+                defaultText: "Африка — елдер саны ең көп құрлық. Олардың көбі тек XX ғасырдың екінші жартысында тәуелсіздік алды."
+            },
+            en: {
+                title: "Countries of Africa",
+                regions: {
+                    north: { t: "North Africa", d: "Egypt, Algeria. Arab culture, oil, deserts." },
+                    west: { t: "West Africa", d: "Nigeria. Densely populated, cocoa, oil." },
+                    east: { t: "East Africa", d: "Kenya, Ethiopia. Savannas, national parks." },
+                    south: { t: "Southern Africa", d: "RSA. Most developed region. Diamonds, gold." }
+                },
+                defaultTitle: "54 States",
+                defaultText: "Africa has the most countries of any continent. Most gained independence only in the late 20th century."
+            }
+        };
+
+        window.setLang = function(l) {
+            const t = translations[l];
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+
+            document.getElementById('reg-north').textContent = t.regions.north.t; document.getElementById('desc-north').textContent = t.regions.north.d;
+            document.getElementById('reg-west').textContent = t.regions.west.t; document.getElementById('desc-west').textContent = t.regions.west.d;
+            document.getElementById('reg-east').textContent = t.regions.east.t; document.getElementById('desc-east').textContent = t.regions.east.d;
+            document.getElementById('reg-south').textContent = t.regions.south.t; document.getElementById('desc-south').textContent = t.regions.south.d;
+        }
+
+        window.onload = () => window.setLang('ru');
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

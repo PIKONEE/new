@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рим на пике: Золотой век империи</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #312e81, #1e1b4b, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #f59e0b;
+            color: #1e1b4b;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #f59e0b;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f59e0b; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-white to-amber-200 uppercase">
+                Зенит Империи
+            </h1>
+            <p id="sub-title" class="text-amber-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">II век н.э. — Эпоха пяти хороших императоров</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-yellow-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-yellow-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-amber-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-amber-600 inline-block"></span>
+                Карта Могущества
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-amber-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="zenithCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-amber-500/50 italic text-center uppercase tracking-widest">Нажмите на символы, чтобы изучить наследие великих правителей</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-amber-500 mb-8 font-black uppercase leading-tight" id="placeholder-title">Счастье Века</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Во II веке Римская империя достигла своих максимальных границ и внутреннего мира. Это было время просвещенных монархов, считавших службу государству своим долгом. Нажмите на схему слева.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏛️</span>
+                            <span id="hint-1" class="text-amber-200/60 font-bold uppercase text-xs tracking-widest">Наивысший расцвет</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚔️</span>
+                            <span id="hint-2" class="text-amber-200/60 font-bold uppercase text-xs tracking-widest">Границы Траяна</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-amber-950/40 text-amber-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-amber-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-indigo-950/40 rounded-[2.5rem] border border-amber-500/20 shadow-xl">
+                        <strong class="text-yellow-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-note">Особенность правления:</strong>
+                        <p id="info-fact" class="text-yellow-50 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-purple-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-purple-400 uppercase">Траян "Лучший"</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Император Траян (98–117 гг.) был прозван «Оптимусом» (Лучшим). При нем империя достигла своего максимума, захватив Дакию, Месопотамию и Аравию.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-yellow-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏰</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-yellow-500 uppercase">Вал Адриана</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Адриан прекратил завоевания и перешел к обороне. Он объехал все провинции и приказал строить укрепления на границах, самое известное из которых — вал в Британии.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📖</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-indigo-400 uppercase">Марк Аврелий</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Последний из «хороших императоров». Философ-стоик, он был вынужден провести почти все правление в военных лагерях, защищая границы от варваров.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-yellow-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-red-100/70 leading-tight max-w-5xl mx-auto">
+            «Да будет тебе во всем сопутствовать удача Августа и доблесть Траяна».
+        </p>
+        <span class="block mt-4 text-yellow-500 uppercase tracking-widest text-sm">— Римское пожелание новым императорам</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Зенит Империи",
+                subtitle: "II век н.э. — Эпоха пяти хороших императоров",
+                visualTitle: "Карта Могущества",
+                hint: "Нажмите на символы, чтобы изучить наследие",
+                placeholderTitle: "Счастье Века",
+                placeholderText: "Рим на пике: благополучие граждан, расцвет провинций и мощь легионов. Изучите биографии тех, кто сделал этот век золотым.",
+                labelNote: "Особенность правления:",
+                hint1: "Наивысший расцвет", hint2: "Границы Траяна",
+                card1Title: "Траян 'Лучший'",
+                card1Text: "Полководец, завоевавший Дакию. Его форум и колонна в Риме до сих пор напоминают о великих победах.",
+                card2Title: "Строитель Адриан",
+                card2Text: "Император-путешественник. Построил Пантеон и укрепил границы лимесом от Шотландии до Евфрата.",
+                card3Title: "Философ на троне",
+                card3Text: "Марк Аврелий правил по заветам разума, оставив после себя дневник 'К самому себе'.",
+                footerQuote: "«Да будет тебе во всем сопутствовать удача Августа и доблесть Траяна».",
+                nodes: [
+                    { id: 1, tag: "117 г. н.э.", title: "Максимальные границы", desc: "При Траяне империя раскинулась от Атлантики до Персидского залива. Были присоединены Дакия (Румыния) и Месопотамия. Рим стал крупнейшим государством в истории Средиземноморья.", fact: "Траян ежегодно устраивал грандиозные игры, чтобы праздновать свои победы над даками." },
+                    { id: 2, tag: "Архитектура", title: "Пантеон Адриана", desc: "Храм всех богов с величайшим куполом древности. Адриан был влюблен в греческую культуру и стремился сделать Рим самым красивым городом мира.", fact: "Купол Пантеона оставался самым большим неармированным бетонным куполом в мире почти 2000 лет." },
+                    { id: 3, tag: "Оборона", title: "Римский Лимес", desc: "Адриан понимал, что бесконечно расширяться нельзя. Он укрепил границы рвами, валами и башнями, превратив империю в неприступную крепость.", fact: "В Британии до сих пор сохранились остатки 117-километрового вала Адриана." },
+                    { id: 4, tag: "Личность", title: "Марк Аврелий", desc: "Последний представитель 'золотого века'. Он считал, что император — это первый слуга закона. Несмотря на любовь к миру, он успешно отразил нашествие германцев — маркоманов.", fact: "Сын Марка Аврелия, Коммод, стал первым плохим императором, завершив эпоху процветания." },
+                    { id: 5, tag: "Символ", title: "Колонна Траяна", desc: "38-метровый триумфальный монумент, покрытый лентой рельефов, рассказывающих о войне с даками. Внутри находится лестница, а сверху стояла статуя императора.", fact: "Колонна служила также усыпальницей для праха Траяна и его жены." }
+                ]
+            },
+            kz: {
+                title: "Империяның шарықтау шегі",
+                subtitle: "б.з. II ғасыры — Бес ізгі император дәуірі",
+                visualTitle: "Қуаттылық картасы",
+                hint: "Мұраны зерттеу үшін белгілерді басыңыз",
+                placeholderTitle: "Ғасыр бақыты",
+                placeholderText: "Рим өз дамуының шыңында: азаматтардың әл-ауқаты, провинциялардың гүлденуі және легиондардың қуаты.",
+                labelNote: "Басқару ерекшелігі:",
+                hint1: "Ең жоғары даму", hint2: "Траян шекаралары",
+                card1Title: "Траян 'Үздік'",
+                card1Text: "Дакияны жаулап алған қолбасшы. Оның Римдегі форумы мен бағанасы ұлы жеңістерді еске салады.",
+                card2Title: "Құрылысшы Адриан",
+                card2Text: "Жиһанкез император. Пантеонды салып, шекараларды бекіністермен нығайтты.",
+                card3Title: "Тақтағы философ",
+                card3Text: "Марк Аврелий ақыл-ой қағидаларымен билік жүргізіп, 'Өзіме' атты күнделік қалдырды.",
+                footerQuote: "«Саған әрқашан Августтың сәттілігі мен Траянның ерлігі серік болсын».",
+                nodes: [
+                    { id: 1, tag: "117 ж.", title: "Максималды шекаралар", desc: "Траян тұсында империя Атлант мұхитынан Парсы шығанағына дейін созылды.", fact: "Траян дактарды жеңгенін тойлау үшін жыл сайын үлкен ойындар өткізетін." },
+                    { id: 2, tag: "Сәулет", title: "Адриан Пантеоны", desc: "Барлық құдайлар храмы. Адриан грек мәдениетіне ғашық болған.", fact: "Пантеон күмбезі 2000 жыл бойы әлемдегі ең үлкен күмбез болып қалды." },
+                    { id: 3, tag: "Қорғаныс", title: "Рим Лимесі", desc: "Адриан шекараларды орлармен, дуалдармен және мұнаралармен нығайтты.", fact: "Британияда Адриан дуалының қалдықтары әлі күнге дейін сақталған." },
+                    { id: 4, tag: "Тұлға", title: "Марк Аврелий", desc: "Алтын ғасырдың соңғы өкілі. Ол император — заңның бірінші қызметшісі деп есептеді.", fact: "Оның ұлы Коммод 'ізгі императорлар' дәуірін аяқтады." },
+                    { id: 5, tag: "Нышан", title: "Траян бағанасы", desc: "38 метрлік триумфалды монумент, дактармен соғыс туралы бейнелермен қапталған.", fact: "Бағананың ішінде Траян мен оның әйелінің күлі сақталған." }
+                ]
+            },
+            en: {
+                title: "Zenith of Empire",
+                subtitle: "2nd Century AD — The Age of Five Good Emperors",
+                visualTitle: "Map of Power",
+                hint: "Click icons to study the legacy",
+                placeholderTitle: "Fortune of the Century",
+                placeholderText: "Rome at its peak: prosperous citizens, flourishing provinces, and unstoppable legions. Explore the lives of those who made this age Golden.",
+                labelNote: "Ruling Trait:",
+                hint1: "Peak Prosperity", hint2: "Trajan's Borders",
+                card1Title: "Trajan 'Optimis'",
+                card1Text: "The general who conquered Dacia. His forum and column in Rome still stand as monuments to his triumphs.",
+                card2Title: "Hadrian the Builder",
+                card2Text: "The traveler emperor. He built the Pantheon and fortified borders from Britain to the Euphrates.",
+                card3Title: "Philosopher King",
+                card3Text: "Marcus Aurelius ruled by reason and duty, leaving behind his Stoic 'Meditations'.",
+                footerQuote: "«May you be luckier than Augustus and better than Trajan.»",
+                nodes: [
+                    { id: 1, tag: "117 AD", title: "Maximum Borders", desc: "Under Trajan, the Empire spanned from the Atlantic to the Persian Gulf, including Dacia and Mesopotamia.", fact: "Trajan hosted grand spectacles in the Colosseum lasting 123 days to celebrate the Dacian victory." },
+                    { id: 2, tag: "Architecture", title: "Hadrian's Pantheon", desc: "A temple for all gods with a massive concrete dome, a feat of ancient engineering. Hadrian sought to globalize Roman beauty.", fact: "The Pantheon's dome remained the largest in the world for over 1,300 years." },
+                    { id: 3, tag: "Defense", title: "The Roman Limes", desc: "Hadrian focused on consolidation rather than conquest, building walls and forts to protect Roman civilization from 'barbarians'.", fact: "Hadrian's Wall in Britain stretches 73 miles across the island's narrow neck." },
+                    { id: 4, tag: "Personality", title: "Marcus Aurelius", desc: "The scholar-emperor. He defended the Empire against Germanic tribes while writing philosophy in his army tent.", fact: "His death in 180 AD marked the end of the Pax Romana and the start of Rome's long decline." },
+                    { id: 5, tag: "Symbol", title: "Trajan's Column", desc: "A 125-foot spiral of reliefs depicting the Dacian Wars in cinematic detail, providing a visual history of the Roman legion.", fact: "The shaft is made of 20 colossal blocks of Carrara marble, each weighing 32 tons." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('zenithCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-note').innerText = t.labelNote;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Empire Bloom (Glow)
+            const bloom = ctx.createRadialGradient(cx, cy, 50, cx, cy, 200);
+            bloom.addColorStop(0, 'rgba(245, 158, 11, 0.1)');
+            bloom.addColorStop(1, 'transparent');
+            ctx.fillStyle = bloom;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const nodesData = [
+                { id: 1, x: cx + 120, y: cy - 40, icon: "🚩" }, // Borders
+                { id: 2, x: cx - 40, y: cy - 80, icon: "🏛️" },  // Pantheon
+                { id: 3, x: cx - 120, y: cy + 40, icon: "🧱" }, // Limes
+                { id: 4, x: cx + 40, y: cy + 100, icon: "📜" }, // Aurelius
+                { id: 5, x: cx, y: cy, icon: "🏆" }           // Column
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(245, 158, 11, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 4) ? '#f59e0b' : '#312e81';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#fef3c7';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

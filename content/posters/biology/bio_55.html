@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цветок</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fce7f3; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #ec4899 0%, #831843 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #831843; border-bottom: 3px solid #fbcfe8; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #ec4899; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #ec4899; background: white; color: #ec4899; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #ec4899; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .illustration { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 20px; border-radius: 1rem; margin: 15px 0; border: 2px dashed #ec4899; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-pink-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Гүл</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Flower</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Цветок</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-pink-100">Өндіс өндіс органы - құндыру, опыление, ынамдау</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-pink-100">Reproductive organ - pollination, attraction, seed formation</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-pink-100">Органы размножения - опыление, привлечение, образование семян</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Гүлінің Құрамдары</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. Flower Parts</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Части цветка</h2>
+
+            <div class="rule-card">
+                <div class="illustration">
+                    <svg viewBox="0 0 700 400" style="height: 360px; width: 100%;">
+                        <!-- Большой цветок -->
+                        <!-- Чашелистики -->
+                        <ellipse cx="120" cy="80" rx="12" ry="15" fill="#90EE90" stroke="#228B22" stroke-width="2" transform="rotate(-30 120 80)"/>
+                        <ellipse cx="150" cy="75" rx="12" ry="15" fill="#90EE90" stroke="#228B22" stroke-width="2" transform="rotate(30 150 75)"/>
+                        <ellipse cx="95" cy="95" rx="12" ry="15" fill="#90EE90" stroke="#228B22" stroke-width="2" transform="rotate(-60 95 95)"/>
+                        <ellipse cx="175" cy="95" rx="12" ry="15" fill="#90EE90" stroke="#228B22" stroke-width="2" transform="rotate(60 175 95)"/>
+
+                        <!-- Лепестки -->
+                        <circle cx="120" cy="60" r="15" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <circle cx="150" cy="60" r="15" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <circle cx="105" cy="110" r="15" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <circle cx="165" cy="110" r="15" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <circle cx="135" cy="130" r="15" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+
+                        <!-- Тычинки -->
+                        <line x1="120" y1="90" x2="120" y2="110" stroke="#FFD700" stroke-width="2"/>
+                        <line x1="140" y1="92" x2="145" y2="112" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="120" cy="110" r="4" fill="#DAA520"/>
+                        <circle cx="145" cy="112" r="4" fill="#DAA520"/>
+
+                        <!-- Пестик -->
+                        <line x1="135" y1="95" x2="135" y2="125" stroke="#8B4513" stroke-width="3"/>
+                        <circle cx="135" cy="125" r="6" fill="#D2691E"/>
+
+                        <!-- Цветоложе -->
+                        <ellipse cx="135" cy="140" rx="30" ry="12" fill="#E8D5C4" stroke="#8B6F47" stroke-width="2"/>
+
+                        <!-- Цветоножка -->
+                        <line x1="135" y1="152" x2="135" y2="220" stroke="#228B22" stroke-width="4"/>
+
+                        <!-- Диаграмма справа -->
+                        <text x="280" y="50" font-size="13" font-weight="bold" fill="#831843">Структура цветка:</text>
+
+                        <!-- Чашелистик (Sepal) -->
+                        <ellipse cx="300" cy="80" rx="8" ry="10" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+                        <text x="320" y="85" font-size="10" fill="#333">Чашелистик (Sepal)</text>
+
+                        <!-- Лепесток (Petal) -->
+                        <circle cx="300" cy="110" r="9" fill="#FFB6C1" stroke="#FF69B4" stroke-width="1"/>
+                        <text x="320" y="115" font-size="10" fill="#333">Лепесток (Petal)</text>
+
+                        <!-- Тычинка (Stamen) -->
+                        <line x1="293" y1="135" x2="293" y2="155" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="293" cy="155" r="4" fill="#DAA520"/>
+                        <text x="320" y="160" font-size="10" fill="#333">Тычинка (Stamen)</text>
+
+                        <!-- Пестик (Pistil) -->
+                        <line x1="293" y1="180" x2="293" y2="200" stroke="#8B4513" stroke-width="2"/>
+                        <circle cx="293" cy="200" r="5" fill="#D2691E"/>
+                        <text x="320" y="205" font-size="10" fill="#333">Пестик (Pistil)</text>
+
+                        <!-- Цветоложе (Receptacle) -->
+                        <ellipse cx="300" cy="230" rx="10" ry="6" fill="#E8D5C4" stroke="#8B6F47" stroke-width="1"/>
+                        <text x="320" y="235" font-size="10" fill="#333">Цветоложе (Receptacle)</text>
+
+                        <!-- Цветоножка (Pedicel) -->
+                        <line x1="300" y1="236" x2="300" y2="260" stroke="#228B22" stroke-width="2"/>
+                        <text x="320" y="270" font-size="10" fill="#333">Цветоножка (Pedicel)</text>
+
+                        <!-- Типы цветков внизу -->
+                        <!-- Обоеполый -->
+                        <circle cx="100" cy="300" r="25" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                        <circle cx="95" cy="290" r="5" fill="#FFB6C1"/>
+                        <circle cx="105" cy="290" r="5" fill="#FFB6C1"/>
+                        <circle cx="100" cy="305" r="5" fill="#FFD700"/>
+                        <text x="100" y="340" font-size="11" text-anchor="middle" fill="#333">Обоеполый</text>
+
+                        <!-- Однодомный -->
+                        <circle cx="250" cy="300" r="13" fill="#FFB6C1" stroke="#FF69B4" stroke-width="1"/>
+                        <circle cx="270" cy="300" r="13" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+                        <text x="260" y="340" font-size="11" text-anchor="middle" fill="#333">Однодомный</text>
+
+                        <!-- Двудомный -->
+                        <circle cx="400" cy="300" r="13" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <line x1="420" y1="280" x2="450" y2="310" stroke="#999" stroke-width="2"/>
+                        <circle cx="450" cy="310" r="13" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                        <text x="425" y="340" font-size="11" text-anchor="middle" fill="#333">Двудомный</text>
+
+                        <!-- Неправильный -->
+                        <path d="M 600 280 L 620 285 L 615 305 L 590 305 L 585 285 Z" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2"/>
+                        <text x="600" y="340" font-size="11" text-anchor="middle" fill="#333">Неправильный</text>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-pink-50 p-4 rounded border border-pink-300">
+                        <h4 lang="kk" class="lang-content font-bold text-pink-900 mb-3">🌸 Гүлінің Бөліндігі</h4>
+                        <h4 lang="en" class="lang-content font-bold text-pink-900 mb-3">🌸 Flower Components</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-pink-900 mb-3">🌸 Компоненты цветка</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Сепаль:</strong> Зеленые, защищают гүлдің сулағы</li>
+                            <li lang="en" class="lang-content"><strong>Sepal:</strong> Green, protect flower buds</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Чашелистик:</strong> Зелёный, защищает бутон</li>
+
+                            <li lang="kk" class="lang-content"><strong>Петаль:</strong> Яркие, привлекают мүндіс</li>
+                            <li lang="en" class="lang-content"><strong>Petal:</strong> Colorful, attract pollinators</li>
+                            <li lang="ru" class="lang-content"><strong>Лепесток:</strong> Яркий, привлекает опылителей</li>
+
+                            <li lang="kk" class="lang-content"><strong>Тәпе (Тычинка):</strong> Мужская өндіс орган - ылчақ құрайды</li>
+                            <li lang="en" class="lang-content"><strong>Stamen:</strong> Male reproductive - pollen</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Тычинка:</strong> Мужской орган - пыльца</li>
+
+                            <li lang="kk" class="lang-content"><strong>Түбік (Пестик):</strong> Нарын өндіс орган - зародыш құрайды</li>
+                            <li lang="en" class="lang-content"><strong>Pistil:</strong> Female reproductive - seeds</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Пестик:</strong> Женский орган - семена</li>
+
+                            <li lang="kk" class="lang-content"><strong>Цветоложе:</strong> Барлық бөліндіктердің орындарындағы</li>
+                            <li lang="en" class="lang-content"><strong>Receptacle:</strong> Holds all flower parts</li>
+                            <li lang="ru" class="lang-content"><strong>Ложе:</strong> Держит все части цветка</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-red-50 p-4 rounded border border-red-300">
+                        <h4 lang="kk" class="lang-content font-bold text-red-900 mb-3">🔬 Гүлінің Түрлері</h4>
+                        <h4 lang="en" class="lang-content font-bold text-red-900 mb-3">🔬 Flower Types</h4>
+                        <h4 lang="ru" class="lang-content font-bold text-red-900 mb-3">🔬 Типы цветков</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li lang="kk" class="lang-content"><strong>Обоеполый:</strong> Мужская + нарын өндіс органдарындағы</li>
+                            <li lang="en" class="lang-content"><strong>Bisexual:</strong> Both male + female organs</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Обоеполый:</strong> И мужские + женские органы</li>
+
+                            <li lang="kk" class="lang-content"><strong>Однодомный:</strong> Мужская және нарын гүлдер - бір өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Monoecious:</strong> Male + female flowers, same plant</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Однодомный:</strong> На одном растении</li>
+
+                            <li lang="kk" class="lang-content"><strong>Двудомный:</strong> Мужская және нарын гүлдер - әртүрлі өндіс</li>
+                            <li lang="en" class="lang-content"><strong>Dioecious:</strong> Male and female on different plants</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Двудомный:</strong> На разных растениях</li>
+
+                            <li lang="kk" class="lang-content"><strong>Правильный:</strong> Симметриялық - радиалды</li>
+                            <li lang="en" class="lang-content"><strong>Regular:</strong> Radial symmetry</li>
+                            <li lang="ru" class="lang-content"><strong>Правильный:</strong> Лучевая симметрия</li>
+
+                            <li lang="kk" class="lang-content"><strong>Неправильный:</strong> Асимметриялық - билатерально</li>
+                            <li lang="en" class="lang-content"><strong>Irregular:</strong> Bilateral symmetry</strong></li>
+                            <li lang="ru" class="lang-content"><strong>Неправильный:</strong> Двусторонняя симметрия</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Гүлінің Процессі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Flower Process</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Процессы в цветке</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-100 p-3 rounded border border-green-300">
+                        <h4 lang="kk" class="lang-content font-bold text-green-900 mb-2">🐝 Опыление</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Ылчақтың пестикке өткуі. Мүндеу және ветер арқылы</span>
+                            <span lang="en" class="lang-content">Pollen transfer to pistil. By insects or wind</span>
+                            <span lang="ru" class="lang-content">Передача пыльцы на рыльце. Насекомыми или ветром</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-100 p-3 rounded border border-blue-300">
+                        <h4 lang="kk" class="lang-content font-bold text-blue-900 mb-2">🔬 Ынамдау</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Мужской және нарын мүндетекі біршамасы. Зігота құрау</span>
+                            <span lang="en" class="lang-content">Male and female gametes unite. Zygote formation</span>
+                            <span lang="ru" class="lang-content">Слияние половых клеток. Образование зиготы</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-100 p-3 rounded border border-yellow-300">
+                        <h4 lang="kk" class="lang-content font-bold text-yellow-900 mb-2">🌾 Жеміс құрау</h4>
+                        <p class="text-sm text-gray-700">
+                            <span lang="kk" class="lang-content">Завязь өндіс → жеміс. Шотындысы詹развиваются</span>
+                            <span lang="en" class="lang-content">Ovary develops to fruit. Seeds mature</span>
+                            <span lang="ru" class="lang-content">Завязь развивается в плод. Семена созревают</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fbcfe8; border-radius: 1rem; border-top: 4px solid #ec4899;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-pink-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-md font-semibold text-pink-800">Гүл - өндіс өндіс орган. Құндыру және ынамдау механизмасын түсінік - биологияның маңызды бөлінді. Гүлінің құрамдарының түсіністігі - әрзілік өндіс ортасындағы адаптацияның көрінісі</p>
+            <p lang="en" class="lang-content text-md font-semibold text-pink-800">Flower is reproductive organ. Pollination and fertilization mechanisms are essential. Flower diversity reflects environmental adaptation</p>
+            <p lang="ru" class="lang-content text-md font-semibold text-pink-800">Цветок - орган размножения. Понимание опыления и оплодотворения - ключевые процессы. Разнообразие цветков показывает адаптацию к среде</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

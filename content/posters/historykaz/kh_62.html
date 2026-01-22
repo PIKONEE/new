@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Культура казахского народа (XVI–XVII вв.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .indigo-gradient {
+            background: radial-gradient(circle at top right, #1e1b4b, #020617 80%);
+        }
+
+        .museum-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 3.5rem;
+            border: 1px solid rgba(129, 140, 248, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .museum-panel:hover {
+            border-color: #818cf8;
+            box-shadow: 0 0 60px rgba(99, 102, 241, 0.1);
+        }
+
+        .lang-active {
+            background-color: #818cf8;
+            color: #020617;
+            box-shadow: 0 0 25px rgba(129, 140, 248, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .culture-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-top: 6px solid #818cf8;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.4s ease;
+            height: 100%;
+        }
+
+        .culture-card:hover {
+            transform: translateY(-10px);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .genre-badge {
+            background: #1e1b4b;
+            color: #c7d2fe;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="indigo-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-indigo-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-indigo-400">Культура казахского народа (XVI–XVII вв.)</h1>
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-indigo-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Tree of Knowledge (Canvas) -->
+        <div class="museum-panel p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block border border-indigo-500 text-indigo-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Oral Heritage Tree</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic tracking-tighter">Слово как Космос</h2>
+                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
+                        Культура казахов была преимущественно устной. Память народа хранилась в генеалогиях, эпосах и кюях. Нажмите на ветви Древа Наследия.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[3rem] bg-indigo-950/30 border-l-8 border-indigo-500 shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-indigo-300 mb-3 uppercase">Традиции Степи</h3>
+                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic font-light">Кликните на крону, ствол или корни дерева на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="cultureCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-indigo-900 font-mono uppercase tracking-[0.4em]">Spiritual Identity Architecture</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Core Cultural Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            
+            <!-- Shezhire -->
+            <div class="culture-card">
+                <div class="mb-4"><span class="genre-badge" id="tag-1">Генеалогия</span></div>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Шежире (Родословная)</h3>
+                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed">
+                    «Жеті ата» (знание семи предков) было обязательным условием для каждого казаха. Шежире служило не просто историей рода, а механизмом сохранения биологического здоровья нации и юридическим правом на владение родовыми пастбищами.
+                </p>
+            </div>
+
+            <!-- Poetry/Zhyrau -->
+            <div class="culture-card">
+                <div class="mb-4"><span class="genre-badge" id="tag-2">Поэзия</span></div>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Институт Жирау</h3>
+                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed">
+                    Жирау — это не просто поэты, а мудрецы и советники ханов. Великие **Доспамбет-жирау**, **Шалкииз-жирау** и **Жиембет** создавали философские оды-толгау, в которых анализировали политику, призывали к единству и храбрости.
+                </p>
+            </div>
+
+            <!-- Music -->
+            <div class="culture-card">
+                <div class="mb-4"><span class="genre-badge" id="tag-3">Музыка</span></div>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Философия Кюя</h3>
+                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed">
+                    Домбра и кобыз были главными инструментами. Кюй — инструментальная пьеса — передавала смыслы, которые невозможно было выразить словами. Формировались региональные школы (Западная, Южная), отражающие темперамент разных жузов.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Section 3: Epics Highlight -->
+        <div class="bg-indigo-900/20 p-10 md:p-16 rounded-[4rem] border border-indigo-500/20 shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h3 id="feat-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Героический эпос</h3>
+                    <p id="feat-d" class="text-slate-300 text-xl font-light leading-relaxed">
+                        Вершина культуры — лиро-эпические поэмы **«Козы Корпеш – Баян Сулу»**, **«Кыз Жибек»** и героические сказания **«Кобыланды»**, **«Алпамыс»**. Они воспевали верность, любовь к родине и рыцарский кодекс кочевника, став моральным ориентиром нации.
+                    </p>
+                    <div class="inline-flex items-center gap-4 bg-white/5 px-6 py-2 rounded-full border border-white/10">
+                        <span id="feat-tag" class="text-sm font-bold uppercase tracking-widest text-indigo-300">Золотой фонд степи</span>
+                    </div>
+                </div>
+                <div class="flex justify-center relative">
+                    <div class="w-80 h-80 border-4 border-dashed border-indigo-700/50 rounded-full flex items-center justify-center animate-spin-slow">
+                        <div class="text-center">
+                            <div class="text-7xl mb-4 grayscale opacity-20">📜</div>
+                            <div id="found-label" class="text-[10px] font-black uppercase text-indigo-400 tracking-[0.5em]">Oral History</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">WISDOM</div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-black border-t border-indigo-900/30 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl font-light italic leading-tight text-slate-500">
+                «Культура казахов XVI–XVII веков — это симфония слова и звука, ставшая духовным панцирем народа в эпоху бесконечных войн за свободу.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-indigo-700 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Культура казахского народа (XVI–XVII вв.)",
+                vizTitle: "Слово как Космос",
+                vizDesc: "Культура казахов была устной. Память народа хранилась в генеалогиях и эпосах. Нажмите на ветви Древа для расшифровки.",
+                badge: "Модель духовной идентичности",
+                elementTitleDefault: "Традиции Степи",
+                elementDescDefault: "Кликните на крону, ствол или корни дерева на холсте.",
+                tag1: "Генеалогия", tag2: "Поэзия", tag3: "Музыка",
+                c1T: "Шежире (Родословная)", c1D: "Знание 'Жеті ата' было моральным долгом. Это предотвращало кровосмешение и служило подтверждением принадлежности к народу и пастбищам.",
+                c2T: "Институт Жирау", c2D: "Мудрецы-советники. Доспамбет и Шалкииз создавали оды 'толгау', формируя политическую мысль и этику кочевой аристократии.",
+                c3T: "Философия Кюя", c3D: "Инструментальная музыка как высшее выражение духа. Кюй передавал историю сражений и личные переживания через струны домбры и кобыза.",
+                featT: "Героический эпос", featD: "Сказания о Кобыланды и Алпамысе воспевали рыцарский кодекс. Лирические поэмы вроде 'Кыз Жибек' стали эталоном эстетики и любви.",
+                featTag: "Золотой фонд нации",
+                footer: "«Культура казахов XVI–XVII веков — это симфония слова и звука, ставшая духовным панцирем народа.»",
+                nodes: {
+                    top: { name: "Крона: Эпос и Поэзия", text: "Высшее достижение — устная литература. Героические сказания и айтысы (состязания) развивали интеллект и риторику." },
+                    mid: { name: "Ствол: Обычное право", text: "Свод неписаных правил и морали. Советы биев и авторитет слова обеспечивали порядок без тюрем и полиции." },
+                    bot: { name: "Корни: Шежире и Язык", text: "Фундамент нации. Общий язык и знание своих корней до седьмого колена обеспечивали этническую монолитность казахов." }
+                }
+            },
+            kz: {
+                title: "Қазақ халқының мәдениеті (XVI–XVII ғғ.)",
+                vizTitle: "Сөз — Ғалам",
+                vizDesc: "Қазақ мәдениеті негізінен ауызша болды. Халық жады шежіре мен жырларда сақталды. Мұра ағашының бұтақтарын басып көріңіз.",
+                badge: "Рухани бірегейлік моделі",
+                elementTitleDefault: "Дала дәстүрлері",
+                elementDescDefault: "Кенептегі ағаштың бұтақтарын, діңін немесе тамырын басыңыз.",
+                tag1: "Шежіре", tag2: "Поэзия", tag3: "Музыка",
+                c1T: "Шежіре (Ататегі)", c1D: "«Жеті атаны» білу — әр қазақтың борышы. Бұл қан тазалығын сақтап, рулық жайылымдарға иелік ету құқығын растаған.",
+                c2T: "Жыраулар институты", c2D: "Данагөй кеңесшілер. Доспамбет пен Шалкииз толғаулар арқылы саяси ой мен көшпелілер этикасын қалыптастырды.",
+                c3T: "Күй философиясы", c3D: "Аспаптық музыка — рухтың ең жоғарғы көрінісі. Күй домбыра мен қобыз ішегі арқылы тарих пен сезімді жеткізді.",
+                featT: "Батырлық жырлар", featD: "Қобыланды мен Алпамыс туралы жырлар серілік кодексті дәріптеді. 'Қыз Жібек' сияқты лиро-эпостар махаббат пен эстетиканың үлгісі болды.",
+                featTag: "Ұлттың алтын қоры",
+                footer: "«XVI–XVII ғасырлардағы қазақ мәдениеті — азаттық жолындағы күрес кезінде халықтың рухани сауытына айналған сөз бен дыбыс симфониясы.»",
+                nodes: {
+                    top: { name: "Бұтақтар: Жыр мен Поэзия", text: "Ауыз әдебиетінің биік деңгейі. Батырлық жырлар мен айтыстар халықтың риторикасы мен зиятын дамытты." },
+                    mid: { name: "Дің: Әдет-ғұрып құқығы", text: "Жазылмаған ережелер мен мораль. Билер кеңесі мен сөз қадірі түрмесіз-ақ тәртіпті қамтамасыз етті." },
+                    bot: { name: "Тамыр: Шежіре мен Тіл", text: "Ұлттың негізі. Ортақ тіл мен жеті атаға дейінгі текті білу қазақтардың этникалық тұтастығын сақтады." }
+                }
+            },
+            en: {
+                title: "Kazakh Culture (16-17th centuries)",
+                vizTitle: "The Word as Cosmos",
+                vizDesc: "Kazakh culture was primarily oral. National memory was kept in genealogies and epics. Click on the Tree branches to explore.",
+                badge: "Spiritual Identity Model",
+                elementTitleDefault: "Steppe Traditions",
+                elementDescDefault: "Click on the crown, trunk, or roots of the tree on the canvas.",
+                tag1: "Genealogy", tag2: "Poetry", tag3: "Music",
+                c1T: "Shezhire (Ancestry)", c1D: "Knowing 'Zheti Ata' (seven ancestors) was a moral duty. It prevented inbreeding and served as a legal proof of tribal territory rights.",
+                c2T: "The Zhyrau Institute", c2D: "Sages and royal advisors. Dospambet and Shalkiiz created 'tolgau' odes, forming the political thought and nomadic ethics.",
+                c3T: "Philosophy of Kuy", c3D: "Instrumental music as the ultimate expression of spirit. Kuy conveyed historical battles and emotions through dombra strings.",
+                featT: "Heroic Epics", featD: "Tales of Kobylandy and Alpamys praised the knightly code. Lyric poems like 'Kyz Zhibek' became standards of aesthetics and love.",
+                featTag: "National Golden Fund",
+                footer: "«Kazakh culture of the 16-17th centuries was a symphony of word and sound, a spiritual armor for the nation.»",
+                nodes: {
+                    top: { name: "Crown: Epic & Poetry", text: "The peak achievement — oral literature. Heroic tales and aitys (competitions) developed intellect and rhetoric." },
+                    mid: { name: "Trunk: Common Law", text: "A code of unwritten rules and ethics. Biy councils and the power of the word ensured order without prisons." },
+                    bot: { name: "Roots: Shezhire & Language", text: "The foundation. A common language and knowledge of lineage ensured the ethnic monolithic nature of the Kazakhs." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('cultureCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 550;
+            drawTree();
+        }
+
+        function drawTree() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.height / 500;
+
+            // 1. Draw Axis (Trunk)
+            ctx.beginPath();
+            ctx.moveTo(cx, 120 * scale);
+            ctx.lineTo(cx, 400 * scale);
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.4)';
+            ctx.lineWidth = 12 * scale;
+            ctx.stroke();
+
+            // 2. Upper World (Crown - Poetry)
+            ctx.beginPath();
+            ctx.arc(cx, 120 * scale, 80 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(129, 140, 248, 0.15)';
+            ctx.fill();
+            ctx.strokeStyle = '#818cf8';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.font = `${36 * scale}px serif`;
+            ctx.textAlign = 'center';
+            ctx.fillText("📜", cx, 135 * scale);
+
+            // 3. Middle World (Center - Law)
+            ctx.beginPath();
+            ctx.arc(cx, cy + 20 * scale, 70 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fill();
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.stroke();
+            ctx.fillText("⚖️", cx, cy + 35 * scale);
+
+            // 4. Roots (Shezhire)
+            ctx.beginPath();
+            ctx.arc(cx, 420 * scale, 90 * scale, Math.PI, 0);
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.1)';
+            ctx.fill();
+            ctx.strokeStyle = '#6366f1';
+            ctx.stroke();
+            ctx.fillText("🧬", cx, 440 * scale);
+
+            // Decorative star dust
+            for(let i=0; i<30; i++) {
+                ctx.fillStyle = 'rgba(129, 140, 248, 0.3)';
+                ctx.beginPath();
+                ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 1.5, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseY = e.clientY - rect.top;
+            const scale = canvas.height / 500;
+
+            let zone = null;
+            if (mouseY < 200 * scale) zone = 'top';
+            else if (mouseY > 380 * scale) zone = 'bot';
+            else zone = 'mid';
+
+            if (zone) {
+                const info = translations[currentLang].nodes[zone];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (zone === 'top' ? '#818cf8' : (zone === 'mid' ? '#f1f5f9' : '#6366f1'));
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('feat-t').innerText = t.featT;
+            document.getElementById('feat-d').innerText = t.featD;
+            document.getElementById('feat-tag').innerText = t.featTag;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-indigo-300 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

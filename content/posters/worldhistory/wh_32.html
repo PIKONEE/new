@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Спарта: Государство-армия</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #450a0a, #1a1a1a, #0a0a0a);
+            color: #f3f4f6;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #991b1b;
+            color: white;
+            box-shadow: 0 0 30px rgba(153, 27, 27, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #991b1b;
+            background: linear-gradient(90deg, rgba(153, 27, 27, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8">
+        <div class="space-y-2 text-center lg:text-left">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-stone-400 to-red-400 uppercase">
+                Древняя Спарта
+            </h1>
+            <p id="sub-title" class="text-red-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Община равных и железная дисциплина</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-red-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-red-950 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-red-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-red-700 inline-block"></span>
+                Устройство Лакедемона
+            </h2>
+            <div class="relative flex-grow bg-black/50 rounded-[2.5rem] border border-red-900/20 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="spartaCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-red-500/50 italic text-center uppercase tracking-widest">Нажмите на части щита, чтобы изучить законы и слои общества</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-red-700 mb-8 font-black uppercase leading-tight" id="placeholder-title">Спартанский образ жизни</h3>
+                    <p class="text-stone-300 leading-relaxed text-lg" id="placeholder-text">
+                        Спарта (Лакедемон) была основана в долине реки Эврот на юге Пелопоннеса. Вся жизнь спартанца была посвящена одной цели — стать идеальным воином. Нажмите на точки схемы слева.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🛡️</span>
+                            <span id="hint-1" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Законы Ликурга</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⚔️</span>
+                            <span id="hint-2" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Военная мощь</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-red-950/40 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-red-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-stone-300 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-red-950/20 rounded-[2.5rem] border border-red-900/30 shadow-xl">
+                        <strong class="text-red-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-tradition">Спартанская норма:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👦</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-red-500 uppercase">Воспитание (Агогэ)</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">С 7 лет мальчиков забирали из семей в интернаты. Их приучали к холоду, голоду и боли. Главными целями были беспрекословное послушание, физическая сила и умение говорить кратко (<strong>лаконично</strong>).</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏚️</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Илоты — рабы Спарты</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Жители покоренной Мессении были превращены в <strong>илотов</strong>. Они не принадлежали конкретному хозяину, а были собственностью государства. Илоты кормили Спарту, отдавая спартиатам часть урожая.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-red-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🏛️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-red-400 uppercase">Власть в Спарте</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Спартой правили сразу два царя. Их власть ограничивал Совет старейшин (<strong>Герусия</strong>) и 5 выборных надзирателей (<strong>Эфоров</strong>). Народное собрание лишь одобряло или отвергало законы криком.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-red-950 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-red-100/70 leading-tight max-w-5xl mx-auto">
+            «Стены Спарты — это её юноши, а её границы — наконечники их копий».
+        </p>
+        <span class="block mt-4 text-red-600 uppercase tracking-widest text-sm">— Приписывается Ликургу</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Древняя Спарта",
+                subtitle: "Община равных и железная дисциплина",
+                visualTitle: "Устройство Лакедемона",
+                hint: "Нажмите на части щита, чтобы изучить законы и слои общества",
+                placeholderTitle: "Спартанский образ жизни",
+                placeholderText: "Спарта была государством, где гражданам запрещалось заниматься торговлей и ремеслом — только войной. Исследуйте их мир через символы щита.",
+                labelTradition: "Спартанская норма:",
+                hint1: "Законы Ликурга", hint2: "Военная мощь",
+                card1Title: "Воспитание (Агогэ)",
+                card1Text: "Спартанское воспитание сделало армию полиса лучшей пехотой Греции. Дисциплина была важнее грамотности.",
+                card2Title: "Илоты — рабы Спарты",
+                card2Text: "Бесправное большинство, державшееся в страхе через ежегодные кровавые расправы — криптии.",
+                card3Title: "Власть в Спарте",
+                card3Text: "Олигархия: власть немногих. Цари командовали армией, но эфоры и старейшины принимали главные решения.",
+                footerQuote: "«Стены Спарты — это её юноши, а её границы — наконечники их копий».",
+                nodes: [
+                    { id: 1, tag: "Законодатель", title: "Ликург", desc: "Легендарный мудрец, установивший порядки Спарты. Он запретил золото и серебро, введя тяжелые железные деньги, чтобы никто не стремился к богатству.", fact: "Ликург заставил спартанцев поклясться не менять законы до его возвращения и уморил себя голодом вдали от дома." },
+                    { id: 2, tag: "Высший орган", title: "Герусия", desc: "Совет старейшин из 28 человек старше 60 лет и двух царей. Они готовили законы и судили за тяжкие преступления. Должность была пожизненной.", fact: "Старейшин выбирали по силе крика Народного собрания (Апеллы)." },
+                    { id: 3, tag: "Господа", title: "Спартиаты", desc: "Полноправные граждане, 'община равных'. Им запрещалось заниматься любым трудом. Вся их жизнь — тренировки, охота и совместные трапезы (сисситии).", fact: "Число спартиатов было ограничено и постоянно сокращалось из-за войн." },
+                    { id: 4, tag: "Соседи", title: "Периэки", desc: "Лично свободные, но лишенные политических прав жители окрестных гор. Они занимались ремеслом и торговлей, обеспечивая Спарту всем необходимым.", fact: "Слово 'периэки' буквально означает 'живущие вокруг'." },
+                    { id: 5, tag: "Рабы", title: "Илоты", desc: "Рабы государства, работавшие на землях спартиатов. Они ненавидели своих угнетателей и часто поднимали восстания, вынуждая спартанцев всегда быть начеку.", fact: "Раз в год эфоры объявляли илотам войну, позволяя молодым спартанцам убивать самых сильных из рабов (криптии)." }
+                ]
+            },
+            kz: {
+                title: "Ежелгі Спарта",
+                subtitle: "Теңдер қауымдастығы және темірдей тәртіп",
+                visualTitle: "Лакедемон құрылымы",
+                hint: "Заңдар мен қоғамды зерттеу үшін қалқанды басыңыз",
+                placeholderTitle: "Спартандық өмір салты",
+                placeholderText: "Спарта — азаматтарына саудамен айналысуға тыйым салынған, тек соғысқа арналған мемлекет болды. Қалқан нышандары арқылы олардың әлемін зерттеңіз.",
+                labelTradition: "Спартандық норма:",
+                hint1: "Ликург заңдары", hint2: "Әскери қуат",
+                card1Title: "Тәрбие (Агогэ)",
+                card1Text: "Спартандық тәрбие полис әскерін Грекияның үздік жаяу әскеріне айналдырды. Тәртіп бәрінен жоғары болды.",
+                card2Title: "Илоттар — Спарта құлдары",
+                card2Text: "Көпшілік құлдар жыл сайынғы қанды қырғындар (криптиялар) арқылы қорқынышта ұсталды.",
+                card3Title: "Спартадағы билік",
+                card3Text: "Олигархия: азшылықтың билігі. Патшалар әскерді басқарды, бірақ ақсақалдар негізгі шешімдерді қабылдады.",
+                footerQuote: "«Спартаның қабырғасы — оның жастары, ал шекарасы — олардың найзаларының ұшы».",
+                nodes: [
+                    { id: 1, tag: "Заң шығарушы", title: "Ликург", desc: "Спарта тәртібін орнатқан аңызға айналған данышпан. Ол байлыққа ұмтылмас үшін алтын мен күміске тыйым салып, темір ақша енгізді.", fact: "Ликург спарталықтардан ол оралғанша заңдарды өзгертпеуге ант алған." },
+                    { id: 2, tag: "Жоғарғы орган", title: "Герусия", desc: "60 жастан асқан 28 ақсақал мен екі патшадан тұратын кеңес. Олар заңдар дайындап, ауыр қылмыстарды соттады.", fact: "Ақсақалдарды Халық жиналысының (Апелла) айқайының күшімен таңдаған." },
+                    { id: 3, tag: "Мырзалар", title: "Спартиаттар", desc: "Толық құқылы азаматтар, 'теңдер қауымдастығы'. Оларға еңбекпен айналысуға тыйым салынды. Өмірі тек жаттығудан тұрды.", fact: "Спартиаттар саны соғыстардың салдарынан үнемі азайып отырды." },
+                    { id: 4, tag: "Көршілер", title: "Периэктер", desc: "Жеке басы азат, бірақ саяси құқығы жоқ тұрғындар. Олар қолөнермен және саудамен айналысты.", fact: "'Периэк' сөзі 'айналада тұрушылар' деген мағынаны білдіреді." },
+                    { id: 5, tag: "Құлдар", title: "Илоттар", desc: "Мемлекет құлдары. Олар өз мырзаларын жек көрді және жиі көтеріліс жасады.", fact: "Жылына бір рет эфорлар илоттарға соғыс жариялап, жас спарталықтарға оларды өлтіруге рұқсат берген (криптиялар)." }
+                ]
+            },
+            en: {
+                title: "Ancient Sparta",
+                subtitle: "The Community of Equals and Iron Discipline",
+                visualTitle: "Structure of Lacedaemon",
+                hint: "Click on shield parts to study laws and social classes",
+                placeholderTitle: "Spartan Lifestyle",
+                placeholderText: "Sparta was a state where citizens were forbidden from trade and crafts — only war. Explore their world through the shield symbols.",
+                labelTradition: "Spartan Norm:",
+                hint1: "Laws of Lycurgus", hint2: "Military Might",
+                card1Title: "Education (Agoge)",
+                card1Text: "Spartan upbringing made the city's army the finest infantry in Greece. Discipline was more vital than literacy.",
+                card2Title: "Helots — Slaves of Sparta",
+                card2Text: "The disenfranchised majority, kept in check through annual blood purges called crypteia.",
+                card3Title: "Power in Sparta",
+                card3Text: "Oligarchy: rule of the few. Kings commanded the army, but ephors and elders made the key decisions.",
+                footerQuote: "«Sparta's walls are its young men, and its borders are the tips of their spears.»",
+                nodes: [
+                    { id: 1, tag: "Lawgiver", title: "Lycurgus", desc: "The legendary sage who established the Spartan way. He banned gold and silver, introducing iron currency to prevent greed.", fact: "Lycurgus made Spartans swear not to change laws until he returned, then starved himself abroad." },
+                    { id: 2, tag: "Supreme Council", title: "Gerousia", desc: "The Council of Elders (28 men over 60, plus 2 kings). They proposed laws and sat as a supreme court.", fact: "Elders were elected by the volume of shouting in the People's Assembly (Apella)." },
+                    { id: 3, tag: "Masters", title: "Spartiates", desc: "Full citizens, known as 'The Equals'. They were forbidden from manual labor. Their life was training, hunting, and communal dining.", fact: "The number of Spartiates was fixed and declined over time due to constant warfare." },
+                    { id: 4, tag: "Neighbors", title: "Perioeci", desc: "Free non-citizens living in outlying settlements. They handled trade and manufacturing, supplying Sparta with tools.", fact: "The name 'Perioeci' literally means 'those who live around'." },
+                    { id: 5, tag: "State Slaves", title: "Helots", desc: "Serfs bound to the land. They outnumbered Spartiates and were treated with systematic cruelty to prevent rebellion.", fact: "Once a year, ephors declared 'war' on helots to allow young Spartans to kill any they deemed dangerous." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('spartaCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-tradition').innerText = t.labelTradition;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = 160;
+
+            // Draw Hoplon Shield (Bronze)
+            const grad = ctx.createRadialGradient(cx, cy, 20, cx, cy, radius);
+            grad.addColorStop(0, '#92400e'); // Bronze light
+            grad.addColorStop(0.7, '#78350f'); // Bronze mid
+            grad.addColorStop(1, '#450a0a'); // Red edge
+            
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#fef3c7';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Draw the Lambda (Λ) symbol for Lacedaemon
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(cx - 60, cy + 60);
+            ctx.lineTo(cx, cy - 60);
+            ctx.lineTo(cx + 60, cy + 60);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, angle: -Math.PI/2, icon: "📜" }, // Lycurgus
+                { id: 2, angle: -Math.PI/6, icon: "🏛️" }, // Gerousia
+                { id: 3, angle: Math.PI/6, icon: "⚔️" },  // Spartiates
+                { id: 4, angle: 5*Math.PI/6, icon: "⚒️" }, // Perioeci
+                { id: 5, angle: 7*Math.PI/6, icon: "⛓️" }  // Helots
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const x = cx + Math.cos(pos.angle) * (radius * 0.85);
+                const y = cy + Math.sin(pos.angle) * (radius * 0.85);
+                
+                // Glow
+                const pointGrad = ctx.createRadialGradient(x, y, 5, x, y, 40);
+                pointGrad.addColorStop(0, 'rgba(220, 38, 38, 0.4)');
+                pointGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = pointGrad;
+                ctx.beginPath();
+                ctx.arc(x, y, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core Circle
+                ctx.fillStyle = (i === 4) ? '#1f2937' : '#991b1b';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, x, y);
+
+                // Label
+                ctx.fillStyle = '#fca5a5';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), x, y + 45);
+
+                canvasNodes.push({ x, y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

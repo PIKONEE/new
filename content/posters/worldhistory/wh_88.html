@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чехия: От Пржемысловичей до Гуситов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #450a0a, #1a1a1a, #000000);
+            color: #fee2e2;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #991b1b;
+            color: white;
+            box-shadow: 0 0 30px rgba(153, 27, 27, 0.4);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #991b1b;
+            background: linear-gradient(90deg, rgba(153, 27, 27, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-white to-red-400 uppercase">
+                Чешская держава
+            </h1>
+            <p id="sub-title" class="text-red-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase italic">Сердце Европы: IX – XV века</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-red-900/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-red-950 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-red-500 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-red-700 inline-block"></span>
+                Карта Богемы
+            </h2>
+            <div class="relative flex-grow bg-black/50 rounded-[2.5rem] border border-red-900/20 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="czechCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-red-500/50 italic text-center uppercase tracking-widest">Нажмите на символы для изучения ключевых событий</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-red-700 mb-8 font-black uppercase leading-tight" id="placeholder-title">Святой Вацлав и Карл</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Чешское государство (Богемия) прошло путь от славянского княжества до центра Священной Римской империи. Изучите эпоху Пржемысловичей и Люксембургов. Нажмите на схему.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏰</span>
+                            <span id="hint-1" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Золотая Прага</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">📜</span>
+                            <span id="hint-2" class="text-red-200/60 font-bold uppercase text-xs tracking-widest">Чаша гуситов</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-red-950/40 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-red-800"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-red-950/20 rounded-[2.5rem] border border-red-900/30 shadow-xl">
+                        <strong class="text-red-500 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-relevance">Значение эпохи:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-red-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">👑</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-red-500 uppercase">Карл IV (1346–1378)</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Чешский король и император СРИ. Он сделал Прагу столицей Европы, основал университет и построил знаменитый Карлов мост. Его правление — «Золотой век» Чехии.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-amber-900 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🔥</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-amber-500 uppercase">Ян Гус</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Профессор Пражского университета, призывавший к реформе церкви и защищавший чешский язык. Был сожжен как еретик в 1415 г., что вызвало народную войну.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-stone-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🛡️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-stone-300 uppercase">Гуситские войны</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">15 лет (1419–1434) гуситы под предводительством Яна Жижки громили крестовые походы. Они создали уникальную тактику боевых возов (вагенбург).</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-red-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-red-100/70 leading-tight max-w-5xl mx-auto">
+            «Люби истину, живи истиной, защищай истину даже до смерти».
+        </p>
+        <span class="block mt-4 text-red-600 uppercase tracking-widest text-sm">— Ян Гус</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Чешская держава",
+                subtitle: "Сердце Европы: IX – XV века",
+                visualTitle: "Карта Богемы",
+                hint: "Нажмите на символы для изучения ключевых событий",
+                placeholderTitle: "Святой Вацлав и Карл",
+                placeholderText: "Чехия — уникальный сплав славянского духа и имперской мощи. Исследуйте путь от первых князей до великой Реформации.",
+                labelRelevance: "Значение эпохи:",
+                hint1: "Золотая Прага", hint2: "Чаша гуситов",
+                card1Title: "Карл IV",
+                card1Text: "Величайший из чехов. Он превратил Богемию в самую процветающую землю империи, а чешский язык — в язык двора.",
+                card2Title: "Ян Гус",
+                card2Text: "Мученик за правду, чье учение предвосхитило европейскую Реформацию на сто лет.",
+                card3Title: "Гуситские войны",
+                card3Text: "Первая в Европе народная война с применением огнестрельного оружия и железной дисциплины пехоты.",
+                footerQuote: "«Люби истину, живи истиной, защищай истину даже до смерти».",
+                nodes: [
+                    { id: 1, tag: "Начало", title: "Пржемысловичи", desc: "Древнейшая династия (IX-XIV вв.). Князья Пржемысл и Борживой объединили чешские племена. Святой Вацлав стал небесным покровителем страны.", fact: "Согласно легенде, основателем рода был простой пахарь Пржемысл." },
+                    { id: 2, tag: "1346–1378 гг.", title: "Правление Карла IV", desc: "При нем Чехия стала центром Священной Римской империи. Издал 'Золотую буллу', закрепившую права курфюрстов. Основал первый университет в Центральной Европе (1348).", fact: "Прага в это время была третьим по величине городом Европы после Рима и Константинополя." },
+                    { id: 3, tag: "Идеология", title: "Ян Гус и реформа", desc: "Выступал против продажи индульгенций и за право мирян причащаться из чаши, как священники. Требовал, чтобы богослужение шло на родном чешском языке.", fact: "Чаша (Грааль) стала главным символом гуситского движения." },
+                    { id: 4, tag: "Война", title: "Ян Жижка и Гуситы", desc: "Полководец-новатор. Его армия из крестьян и горожан использовала 'вагенбурги' (крепости из повозок), которые не могли прорвать рыцари. Жижка не проиграл ни одной битвы.", fact: "Ян Жижка командовал армией, будучи полностью слепым на оба глаза." },
+                    { id: 5, tag: "Итог", title: "Липанская битва (1434)", desc: "Конец гуситских войн. Умеренные гуситы (чашники) договорились с церковью, разгромив радикалов (таборитов). Чехия осталась христианской, но сохранила особые вольности.", fact: "Гуситское движение подготовило почву для Мартина Лютера и мировой Реформации." }
+                ]
+            },
+            kz: {
+                title: "Чех мемлекеті",
+                subtitle: "Еуропа жүрегі: IX – XV ғасырлар",
+                visualTitle: "Богемия картасы",
+                hint: "Маңызды оқиғаларды зерттеу үшін белгілерді басыңыз",
+                placeholderTitle: "Әулие Вацлав пен Карл",
+                placeholderText: "Чехия — славян рухы мен империялық қуаттың бірегей қосындысы. Алғашқы кінәздерден Реформацияға дейінгі жолды зерттеңіз.",
+                labelRelevance: "Дәуір маңызы:",
+                hint1: "Алтын Прага", hint2: "Гуситтер тостағаны",
+                card1Title: "Карл IV",
+                card1Text: "Чехтардың ең ұлысы. Ол Богемияны империяның ең гүлденген жеріне айналдырды.",
+                card2Title: "Ян Гус",
+                card2Text: "Шындық үшін шейіт болған, ілімі Еуропалық Реформациядан жүз жыл бұрын пайда болған тұлға.",
+                card3Title: "Гусит соғыстары",
+                card3Text: "Еуропадағы атыс қаруы мен жаяу әскердің темірдей тәртібі қолданылған алғашқы халықтық соғыс.",
+                footerQuote: "«Шындықты сүй, шындықпен өмір сүр, шындықты өлімге дейін қорға».",
+                nodes: [
+                    { id: 1, tag: "Бастауы", title: "Пржемысловидтер", desc: "IX-XIV ғғ. билеген әулет. Борживой мен Вацлав чех тайпаларын біріктірді.", fact: "Әулеттің негізін қалаушы Пржемысл қарапайым егінші болған деседі." },
+                    { id: 2, tag: "1346–1378 жж.", title: "Карл IV билігі", desc: "Чехия Қасиетті Рим империясының орталығына айналды. 1348 жылы Орталық Еуропадағы алғашқы университетті ашты.", fact: "Ол кезде Прага Еуропаның үшінші ірі қаласы болды." },
+                    { id: 3, tag: "Идеология", title: "Ян Гус және реформа", desc: "Шіркеудің байлығына қарсы шығып, құлшылықты чех тілінде жүргізуді талап етті.", fact: "Тостаған гуситтік қозғалыстың басты нышанына айналды." },
+                    { id: 4, tag: "Соғыс", title: "Ян Жижка және Гуситтер", desc: "Жаңашыл қолбасшы. Оның әскері арбалардан бекініс құрып, рыцарьларды жеңіп отырды.", fact: "Жижка екі көзі көрмей қалса да, әскерді басқарып, жеңіске жеткен." },
+                    { id: 5, tag: "Қорытынды", title: "Липан шайқасы (1434)", desc: "Гусит соғыстарының аяқталуы. Чехия өзінің ерекше еркіндіктерін сақтап қалды.", fact: "Бұл қозғалыс болашақ Реформацияға жол ашты." }
+                ]
+            },
+            en: {
+                title: "The Czech State",
+                subtitle: "Heart of Europe: 9th – 15th Centuries",
+                visualTitle: "Map of Bohemia",
+                hint: "Click on symbols to study key milestones",
+                placeholderTitle: "St. Wenceslaus & Charles",
+                placeholderText: "Bohemia evolved from a Slavic duchy into the administrative hub of the Holy Roman Empire. Trace its path to the Hussite Reformation.",
+                labelRelevance: "Era Significance:",
+                hint1: "Golden Prague", hint2: "Chalice of Hussites",
+                card1Title: "Charles IV",
+                card1Text: "The 'Father of the Country'. He elevated Bohemia to its zenith, establishing Prague as an imperial capital and cultural beacon.",
+                card2Title: "Jan Hus",
+                card2Text: "A martyr for truth, whose critique of the Church ignited a national movement a century before Luther.",
+                card3Title: "Hussite Wars",
+                card3Text: "A revolutionary period of warfare featuring the first effective tactical use of gunpowder and peasant infantry.",
+                footerQuote: "«Love the truth, live the truth, defend the truth even unto death.»",
+                nodes: [
+                    { id: 1, tag: "Origins", title: "The Premyslids", desc: "The foundational dynasty (9th-14th C.). Duke Borivoj and St. Wenceslaus established the identity of the Czech kingdom.", fact: "Premysl, the legendary founder, was said to be a plowman chosen by a princess." },
+                    { id: 2, tag: "1346–1378 AD", title: "Golden Age of Charles IV", desc: "Charles IV founded Prague University (1348) and the New Town, turning Bohemia into the jewel of the Holy Roman Empire.", fact: "Prague became the imperial residence and the intellectual heart of the European North." },
+                    { id: 3, tag: "Ideology", title: "Hussite Reform", desc: "Jan Hus preached against clerical corruption and demanded communion with the cup for the laity, symbolizing spiritual equality.", fact: "The chalice became the defiant symbol of the movement against the Papacy." },
+                    { id: 4, tag: "Conflict", title: "Jan Zizka's Tactics", desc: "The legendary general Zizka invented the 'wagon fortress' (Wagenburg), allowing peasant armies to shatter professional knightly charges.", fact: "Zizka remains one of the few generals in history who never lost a single battle." },
+                    { id: 5, tag: "Outcome", title: "Battle of Lipany (1434)", desc: "The moderate Utraquists defeated the radical Taborites, leading to the Compacts of Basel and a unique dual-faith Bohemia.", fact: "The Hussite movement was the first successful challenge to the unified Roman Church." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('czechCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-relevance').innerText = t.labelRelevance;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Bohemia (Diamond shape)
+            ctx.fillStyle = 'rgba(153, 27, 27, 0.05)';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 180);
+            ctx.lineTo(cx + 150, cy);
+            ctx.lineTo(cx, cy + 180);
+            ctx.lineTo(cx - 150, cy);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(220, 38, 38, 0.2)';
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx - 80, y: cy - 60, icon: "🦁" }, // Premyslids
+                { id: 2, x: cx, y: cy, icon: "🏰" },          // Prague
+                { id: 3, x: cx + 50, y: cy - 100, icon: "📖" }, // Jan Hus
+                { id: 4, x: cx - 40, y: cy + 120, icon: "🚜" }, // Wagenburg
+                { id: 5, x: cx + 110, y: cy + 40, icon: "🏁" }  // Final
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(220, 38, 38, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 1) ? '#991b1b' : '#dc2626';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#fca5a5';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(ф<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Польша: Между Орлом и Короной</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, #0f172a, #000000);
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 2rem;
+            border-radius: 1.5rem;
+            font-weight: 800;
+        }
+        .btn-lang.active {
+            background: #ffffff;
+            color: #1e293b;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #f8fafc;
+            background: linear-gradient(90deg, rgba(248, 250, 252, 0.05), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f8fafc; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-12">
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-16 gap-8">
+        <div class="space-y-3 text-center lg:text-left">
+            <h1 id="main-title" class="text-5xl md:text-7xl font-black tracking-tighter text-white uppercase">
+                Польская Корона
+            </h1>
+            <p id="sub-title" class="text-slate-400 text-xl font-medium tracking-[0.2em] uppercase">От Мешко I до Грюнвальдской славы</p>
+        </div>
+        <div class="flex gap-4 glass p-3 border-white/10">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-8 glass p-10 flex flex-col shadow-2xl border-white/5">
+            <h2 id="visual-title" class="text-2xl mb-8 text-white uppercase font-bold tracking-widest flex items-center gap-4">
+                <span class="w-10 h-1 bg-white inline-block"></span>
+                Карта Польского королевства
+            </h2>
+            <div class="relative flex-grow bg-slate-900/40 rounded-[3rem] border border-white/10 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="polandCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-8 text-sm text-slate-500 italic text-center uppercase tracking-widest">Нажмите на узлы силы для изучения становления державы</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-4 glass p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-4xl text-white mb-10 font-black uppercase leading-none" id="placeholder-title">Белый Орел</h3>
+                    <p class="text-slate-300 leading-relaxed text-xl" id="placeholder-text">
+                        Польша возникла в долине реки Вислы. Приняв христианство из Рима, она стала восточным щитом западной цивилизации. Нажмите на схему слева.
+                    </p>
+                    <div class="mt-12 space-y-8">
+                        <div class="flex items-center gap-6 p-6 bg-white/5 rounded-[2rem]">
+                            <span class="text-4xl">👑</span>
+                            <span id="hint-1" class="text-white font-black uppercase text-xs tracking-widest">Династия Пястов</span>
+                        </div>
+                        <div class="flex items-center gap-6 p-6 bg-white/5 rounded-[2rem]">
+                            <span class="text-4xl">⚔️</span>
+                            <span id="hint-2" class="text-white font-black uppercase text-xs tracking-widest">Битва народов</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-white/10 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-8"></span>
+                    <h3 id="info-title" class="text-4xl text-white font-black mb-10 uppercase leading-tight"></h3>
+                    <div id="info-desc" class="text-slate-300 leading-relaxed text-lg mb-12 space-y-6"></div>
+                    <div class="p-10 bg-white/5 rounded-[3rem] border border-white/10 shadow-2xl">
+                        <strong class="text-white block mb-4 text-xs uppercase tracking-[0.3em]" id="label-relevance">Исторический итог:</strong>
+                        <p id="info-fact" class="text-slate-100 text-lg italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 mb-20">
+        <div class="glass p-12 border-t-8 border-slate-200 hover:bg-white/5 transition-all">
+            <div class="text-5xl mb-8">🕊️</div>
+            <h3 id="card1-title" class="text-2xl font-black mb-6 text-white uppercase">Крещение (966 г.)</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Князь <strong>Мешко I</strong> принял христианство по латинскому обряду. Это спасло Польшу от насильственной германизации и ввело её в круг развитых европейских стран.</p>
+        </div>
+        <div class="glass p-12 border-t-8 border-red-700 hover:bg-white/5 transition-all">
+            <div class="text-5xl mb-8">🏰</div>
+            <h3 id="card2-title" class="text-2xl font-black mb-6 text-white uppercase">Казимир III Великий</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">Единственный польский король с титулом «Великий». Он реформировал суды, основал Краковский университет и «застал Польшу деревянной, а оставил каменной».</p>
+        </div>
+        <div class="glass p-12 border-t-8 border-slate-600 hover:bg-white/5 transition-all">
+            <div class="text-5xl mb-8">🏹</div>
+            <h3 id="card3-title" class="text-2xl font-black mb-6 text-white uppercase">Ягеллоны</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Союз Польши и Литвы (Кревская уния) создал гигантское государство. Король Ягайло и Витовт остановили экспансию Тевтонского ордена на восток.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-24 glass border-white/5 mb-16">
+        <p id="footer-quote" class="text-4xl font-light italic text-white/70 leading-tight max-w-6xl mx-auto">
+            «Польша сильна своим единством и верой, ставшей фундаментом королевства от моря до моря».
+        </p>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Польская Корона",
+                subtitle: "От Мешко I до Грюнвальдской славы",
+                visualTitle: "Карта Польского королевства",
+                hint: "Нажмите на узлы силы для изучения",
+                placeholderTitle: "Белый Орел",
+                placeholderText: "История Польши — это путь борьбы за земли Вислы и создание мощного союза с Литвой. Изучите этапы её величия.",
+                labelRelevance: "Исторический итог:",
+                hint1: "Династия Пястов", hint2: "Битва народов",
+                card1Title: "Крещение (966 г.)",
+                card1Text: "Выбор латинского христианства определил западный вектор развития Польши, её культуру и политику на века.",
+                card2Title: "Казимир Великий",
+                card2Text: "Строитель и законодатель, заложивший основы экономического могущества и просвещения страны.",
+                card3Title: "Ягеллоны",
+                card3Text: "Рождение союза двух народов, ставшего мощнейшим заслоном против Тевтонского ордена.",
+                footerQuote: "«Польша сильна своим единством и верой, ставшей фундаментом королевства от моря до моря».",
+                nodes: [
+                    { id: 1, tag: "966 год", title: "Мешко I и Гнезно", desc: "Первый исторический правитель. Он объединил племена полян, вислян и мазовшан вокруг Гнезно — колыбели польской нации.", fact: "Согласно преданию, именно в Гнезно предки поляков увидели в небе белого орла, ставшего гербом." },
+                    { id: 2, tag: "1025 год", title: "Болеслав I Храбрый", desc: "Первый король Польши. Он расширил границы до Эльбы и Днепра, захватил Прагу и Киев, заставив соседей уважать мощь Пястов.", fact: "Болеслав получил корону из рук императора СРИ за поддержку в делах церкви." },
+                    { id: 3, tag: "1333–1370 гг.", title: "Казимир III Великий", desc: "Завершил объединение земель. Он открыл двери страны для переселенцев, развивал города и в 1364 году основал университет в Кракове.", fact: "При нем Польша стала убежищем для евреев, изгнанных из других стран Европы." },
+                    { id: 4, tag: "1385 год", title: "Кревская уния", desc: "Литовский князь Ягайло принял крещение и женился на польской королеве Ядвиге. Так возник союз двух держав против общей угрозы — крестоносцев.", fact: "Ягайло стал основателем династии Ягеллонов, правившей половиной Европы." },
+                    { id: 5, tag: "1410 год", title: "Триумф при Грюнвальде", desc: "Объединенная польско-литовская армия наголову разгромила войска Тевтонского ордена. Это событие навсегда остановило немецкую экспансию на восток.", fact: "В битве участвовали смоленские полки и чешские отряды Яна Жижки." }
+                ]
+            },
+            kz: {
+                title: "Поляк Тажы",
+                subtitle: "Мешко I-ден Грюнвальд даңқына дейін",
+                visualTitle: "Поляк патшалығының картасы",
+                hint: "Зерттеу үшін күш түйіндерін басыңыз",
+                placeholderTitle: "Ақ Бүркіт",
+                placeholderText: "Польша тарихы — Висла жерлері үшін күрес және Литвамен одақ құру жолы. Оның ұлылық кезеңдерін зерттеңіз.",
+                labelRelevance: "Тарихи қорытынды:",
+                hint1: "Пяст әулеті", hint2: "Халықтар шайқасы",
+                card1Title: "Шоқыну (966 ж.)",
+                card1Text: "Латын христиандығын таңдау Польшаның батыстық даму бағытын, оның мәдениеті мен саясатын анықтады.",
+                card2Title: "Ұлы Казимир",
+                card2Text: "Елдің экономикалық қуаты мен білімінің негізін қалаған құрылысшы және заңгер.",
+                card3Title: "Ягеллондар",
+                card3Text: "Тевтон орденіне қарсы екі халықтың одағының дүниеге келуі.",
+                footerQuote: "«Польша өз бірлігімен және теңізден теңізге дейінгі патшалықтың іргетасы болған сенімімен мықты».",
+                nodes: [
+                    { id: 1, tag: "966 жыл", title: "Мешко I және Гнезно", desc: "Алғашқы тарихи билеуші. Ол полян, вислян және мазовшан тайпаларын Гнезно айналасына біріктірді.", fact: "Аңыз бойынша, Гнезнода поляктардың арғы аталары аспаннан ақ бүркітті көрген." },
+                    { id: 2, tag: "1025 жыл", title: "Болеслав I Храбрый", desc: "Польшаның алғашқы патшасы. Ол шекараны Эльба мен Днепрге дейін кеңейтті.", fact: "Болеслав патшалық тәжін шіркеу істеріне қолдау көрсеткені үшін алды." },
+                    { id: 3, tag: "1333–1370 жж.", title: "Ұлы Казимир III", desc: "Жерлерді біріктіруді аяқтады. 1364 жылы Краковта университет ашты.", fact: "Оның тұсында Польша Еуропаның басқа елдерінен қуылғандар үшін пана болды." },
+                    { id: 4, tag: "1385 жыл", title: "Крев униясы", desc: "Литва кінәзі Ягайло шоқынып, поляк ханшайымы Ядвигаға үйленді.", fact: "Ягайло Еуропаның жартысын билеген Ягеллондар әулетінің негізін қалады." },
+                    { id: 5, tag: "1410 жыл", title: "Грюнвальд жеңісі", desc: "Поляк-литва әскері Тевтон орденін талқандады. Бұл неміс экспансиясын біржола тоқтатты.", fact: "Шайқасқа Ян Жижканың чех жасақтары да қатысты." }
+                ]
+            },
+            en: {
+                title: "The Polish Crown",
+                subtitle: "From Mieszko I to the Glory of Grunwald",
+                visualTitle: "Map of the Kingdom of Poland",
+                hint: "Click on the power nodes to study",
+                placeholderTitle: "The White Eagle",
+                placeholderText: "The history of Poland is a journey of struggle for the Vistula lands and the creation of a grand union with Lithuania.",
+                labelRelevance: "Historical Outcome:",
+                hint1: "Piast Dynasty", hint2: "Clash of Nations",
+                card1Title: "Baptism (966 AD)",
+                card1Text: "The choice of Latin Christianity anchored Poland in the Western cultural and political orbit for a millennium.",
+                card2Title: "Casimir the Great",
+                card2Text: "The builder and lawgiver who founded Krakow University and transformed Poland from wood to stone.",
+                card3Title: "The Jagiellonians",
+                card3Text: "The birth of the dynastic union with Lithuania, creating a regional superpower in Central Europe.",
+                footerQuote: "«Poland is strong in its unity and faith, the foundations of a kingdom spanning from sea to sea.»",
+                nodes: [
+                    { id: 1, tag: "966 AD", title: "Mieszko I & Gniezno", desc: "The first historical duke who unified the Polish tribes and brought the nation into the Christian fold.", fact: "Gniezno served as the first spiritual and political capital of the Piast realm." },
+                    { id: 2, tag: "1025 AD", title: "Boleslaw I the Brave", desc: "Poland's first King. A warrior who expanded territory and achieved full sovereign status for his dynasty.", fact: "Boleslaw's coronation marked Poland's emergence as a major player on the European stage." },
+                    { id: 3, tag: "1333–1370 AD", title: "Casimir III the Great", desc: "He codified laws, developed trade, and founded the Jagiellonian University (1364), fostering a period of immense stability.", fact: "Casimir famously 'found a Poland of wood and left it a Poland of stone'." },
+                    { id: 4, tag: "1385 AD", title: "Union of Krewo", desc: "Grand Duke Jagiello of Lithuania married Queen Jadwiga, establishing a personal union that lasted for centuries.", fact: "This union made the Polish-Lithuanian force the largest in Europe at the time." },
+                    { id: 5, tag: "1410 AD", title: "Battle of Grunwald", desc: "A colossal victory over the Teutonic Knights, breaking their military power and ensuring Slavic-Lithuanian dominance.", fact: "It was one of the largest medieval battles, involving over 50,000 combatants." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('polandCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-relevance').innerText = t.labelRelevance;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Stylized Vistula River
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
+            ctx.lineWidth = 15;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(cx + 80, cy + 180);
+            ctx.quadraticCurveTo(cx - 100, cy, cx + 50, cy - 180);
+            ctx.stroke();
+
+            const nodesData = [
+                { id: 1, x: cx - 120, y: cy - 40, icon: "🦅" }, // Gniezno
+                { id: 2, x: cx - 40, y: cy - 120, icon: "👑" }, // Boleslaw
+                { id: 3, x: cx + 20, y: cy + 40, icon: "🏰" },  // Krakow
+                { id: 4, x: cx + 140, y: cy - 80, icon: "🤝" }, // Lithuania
+                { id: 5, x: cx + 10, y: cy - 100, icon: "⚔️" }  // Grunwald
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 4) ? '#ef4444' : '#f8fafc';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.fillStyle = (i === 4) ? 'white' : '#1e293b';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = 'bold 10px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 45);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+</body>
+</html>), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

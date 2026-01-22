@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Anatomy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        body { background: radial-gradient(circle at center, #be185d, #831843, #000); color: white; min-height: 100vh; font-family: 'Inter'; }
+        .serif { font-family: 'Playfair Display', serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2rem; }
+        canvas { cursor: crosshair; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="flex justify-between items-center mb-8 border-b border-pink-400/30 pb-4">
+        <h1 class="serif text-4xl text-pink-300" id="main-title">Flower Anatomy</h1>
+        <div class="flex gap-2 text-xs font-bold text-pink-200">
+            <button onclick="window.setL('ru')" class="hover:text-white">RU</button>
+            <button onclick="window.setL('kz')" class="hover:text-white">KZ</button>
+            <button onclick="window.setL('en')" class="hover:text-white">EN</button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
+        <div class="lg:col-span-2 glass rounded-custom p-8 relative flex items-center justify-center">
+            <canvas id="flowerCanvas" class="w-full h-full"></canvas>
+            <div id="tooltip" class="absolute top-8 right-8 glass p-4 rounded-xl text-right opacity-0 transition duration-300">
+                <h3 id="tt-title" class="text-xl font-bold text-pink-300"></h3>
+                <p id="tt-desc" class="text-xs text-white/80 max-w-[200px]"></p>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+            <div class="glass p-6 rounded-2xl border-l-4 border-pink-500">
+                <h2 id="info-h" class="text-2xl font-bold mb-2"></h2>
+                <p id="info-t" class="text-sm leading-relaxed text-white/70"></p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-2 text-xs font-bold uppercase tracking-widest text-pink-300/60">
+                <div class="p-3 border border-white/10 rounded-lg hover:bg-white/5 cursor-default">♂ Stamen (Тычинка)</div>
+                <div class="p-3 border border-white/10 rounded-lg hover:bg-white/5 cursor-default">♀ Pistil (Пестик)</div>
+                <div class="p-3 border border-white/10 rounded-lg hover:bg-white/5 cursor-default">Perianth (Околоцветник)</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bio8Data = {
+            ru: {
+                title: "Строение Цветка",
+                mainH: "Генеративный орган",
+                mainT: "Цветок — это видоизмененный укороченный побег, служащий для семенного размножения. Главные части цветка — пестик и тычинки.",
+                parts: {
+                    pistil: {t: "Пестик (♀)", d: "Женская часть. Состоит из рыльца, столбика и завязи. В завязи находятся семязачатки."},
+                    stamen: {t: "Тычинка (♂)", d: "Мужская часть. Состоит из тычиночной нити и пыльника, где созревает пыльца."},
+                    petal: {t: "Лепесток", d: "Ярко окрашенная часть венчика. Привлекает насекомых-опылителей."},
+                    sepal: {t: "Чашелистик", d: "Зеленый листок чашечки. Защищает бутон до раскрытия."},
+                    receptacle: {t: "Цветоложе", d: "Расширенная часть цветоножки, к которой крепятся все части цветка."}
+                }
+            },
+            en: {
+                title: "Flower Anatomy",
+                mainH: "Generative Organ",
+                mainT: "A flower is a modified shoot used for sexual reproduction. The main parts are the pistil and stamens.",
+                parts: {
+                    pistil: {t: "Pistil (♀)", d: "Female part. Stigma, style, ovary. Ovules are inside the ovary."},
+                    stamen: {t: "Stamen (♂)", d: "Male part. Filament and anther. Pollen is produced here."},
+                    petal: {t: "Petal", d: "Brightly colored part of the corolla. Attracts pollinators."},
+                    sepal: {t: "Sepal", d: "Green part of the calyx. Protects the bud."},
+                    receptacle: {t: "Receptacle", d: "Base of the flower where parts are attached."}
+                }
+            }
+        };
+        // KZ logic implied
+
+        let lang = 'ru', cx, cvs;
+
+        window.setL = (l) => {
+            lang = l === 'kz' ? 'ru' : l; // Fallback
+            const t = bio8Data[lang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('info-h').textContent = t.mainH;
+            document.getElementById('info-t').textContent = t.mainT;
+        }
+
+        function draw() {
+            if(!cx) return;
+            const w = cvs.width, h = cvs.height;
+            const cx_ = w/2, cy_ = h*0.6;
+            cx.clearRect(0,0,w,h);
+
+            // Pedicel
+            cx.strokeStyle = '#4d7c0f'; cx.lineWidth = 8;
+            cx.beginPath(); cx.moveTo(cx_, h); cx.lineTo(cx_, h*0.7); cx.stroke();
+
+            // Receptacle
+            cx.fillStyle = '#65a30d';
+            cx.beginPath(); cx.ellipse(cx_, h*0.7, 40, 20, 0, 0, Math.PI*2); cx.fill();
+
+            // Sepals
+            cx.fillStyle = '#4ade80';
+            cx.beginPath(); cx.moveTo(cx_-40, h*0.7); cx.quadraticCurveTo(cx_-60, h*0.6, cx_-50, h*0.5); cx.fill();
+            cx.beginPath(); cx.moveTo(cx_+40, h*0.7); cx.quadraticCurveTo(cx_+60, h*0.6, cx_+50, h*0.5); cx.fill();
+
+            // Petals
+            cx.fillStyle = 'rgba(244, 114, 182, 0.8)';
+            for(let i=-2; i<=2; i++) {
+                cx.beginPath();
+                cx.ellipse(cx_ + i*40, cy_ - 50 - Math.abs(i)*10, 50, 100, i*0.2, 0, Math.PI*2);
+                cx.fill();
+                cx.strokeStyle = '#fbcfe8'; cx.lineWidth = 1; cx.stroke();
+            }
+
+            // Stamens
+            cx.strokeStyle = '#fef08a'; cx.lineWidth = 3;
+            for(let i=-1; i<=1; i+=2) {
+                cx.beginPath(); cx.moveTo(cx_ + i*30, h*0.7); cx.lineTo(cx_ + i*40, h*0.4); cx.stroke();
+                cx.fillStyle = '#facc15'; cx.beginPath(); cx.ellipse(cx_ + i*40, h*0.4, 10, 15, 0, 0, Math.PI*2); cx.fill();
+            }
+
+            // Pistil
+            cx.fillStyle = '#84cc16';
+            cx.beginPath();
+            cx.moveTo(cx_-15, h*0.7); 
+            cx.quadraticCurveTo(cx_-20, h*0.5, cx_-5, h*0.3); // Style
+            cx.lineTo(cx_+5, h*0.3);
+            cx.quadraticCurveTo(cx_+20, h*0.5, cx_+15, h*0.7); // Ovary
+            cx.fill();
+            // Stigma
+            cx.fillStyle = '#a3e635'; cx.beginPath(); cx.arc(cx_, h*0.3, 10, 0, Math.PI*2); cx.fill();
+        }
+
+        function checkHover(e) {
+            const r = cvs.getBoundingClientRect();
+            const x = e.clientX - r.left, y = e.clientY - r.top;
+            const w = cvs.width, h = cvs.height;
+            const t = bio8Data[lang].parts;
+            let part = null;
+
+            // Simplified hitboxes
+            if (Math.abs(x - w/2) < 20 && y < h*0.7 && y > h*0.3) part = t.pistil;
+            else if ((Math.abs(x - w/2 - 40) < 20 || Math.abs(x - w/2 + 40) < 20) && y < h*0.6) part = t.stamen;
+            else if (y < h*0.6) part = t.petal;
+            else if (y > h*0.7) part = t.receptacle;
+
+            const tt = document.getElementById('tooltip');
+            if (part) {
+                document.getElementById('tt-title').textContent = part.t;
+                document.getElementById('tt-desc').textContent = part.d;
+                tt.style.opacity = 1;
+            } else {
+                tt.style.opacity = 0;
+            }
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('flowerCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; draw(); };
+            window.addEventListener('resize', rs); rs();
+            cvs.addEventListener('mousemove', checkHover);
+            window.setL('ru');
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

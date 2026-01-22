@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Константин Великий: Перекресток эпох</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #312e81, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 3rem;
+        }
+        .btn-lang {
+            transition: all 0.3s ease;
+            padding: 0.6rem 1.8rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+        }
+        .btn-lang.active {
+            background: #ffffff;
+            color: #1e3a8a;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        .info-panel-accent {
+            border-left: 6px solid #60a5fa;
+            background: linear-gradient(90deg, rgba(96, 165, 250, 0.1), transparent);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #60a5fa; border-radius: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 text-center lg:text-left">
+        <div class="space-y-2">
+            <h1 id="main-title" class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-indigo-300 uppercase">
+                Константин Великий
+            </h1>
+            <p id="sub-title" class="text-blue-200/40 text-lg md:text-xl font-medium tracking-[0.3em] uppercase">Новая вера и Вторая столица</p>
+        </div>
+        <div class="flex gap-3 glass p-2 border-blue-500/20">
+            <button onclick="setLang('ru')" id="lang-ru" class="btn-lang active">RU</button>
+            <button onclick="setLang('kz')" id="lang-kz" class="btn-lang">KZ</button>
+            <button onclick="setLang('en')" id="lang-en" class="btn-lang">EN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+        <!-- Canvas Visual Model -->
+        <div class="lg:col-span-7 glass p-8 md:p-10 flex flex-col border-blue-900/30 shadow-2xl">
+            <h2 id="visual-title" class="text-2xl mb-6 text-blue-400 uppercase font-bold tracking-widest flex items-center gap-3">
+                <span class="w-10 h-1 bg-blue-600 inline-block"></span>
+                Карта Реформ
+            </h2>
+            <div class="relative flex-grow bg-slate-900/60 rounded-[2.5rem] border border-blue-900/40 overflow-hidden shadow-inner flex items-center justify-center">
+                <canvas id="constantineCanvas"></canvas>
+            </div>
+            <p id="hint" class="mt-6 text-sm text-blue-500/50 italic text-center uppercase tracking-widest">Нажмите на символы для изучения великих перемен</p>
+        </div>
+
+        <!-- Dynamic Info Panel -->
+        <div class="lg:col-span-5 glass p-8 md:p-10 flex flex-col info-panel-accent">
+            <div id="info-content" class="custom-scrollbar overflow-y-auto h-full pr-4">
+                <div id="info-placeholder" class="h-full flex flex-col justify-center">
+                    <h3 class="text-3xl md:text-4xl text-blue-400 mb-8 font-black uppercase leading-tight" id="placeholder-title">Символ Победы</h3>
+                    <p class="text-slate-300 leading-relaxed text-lg" id="placeholder-text">
+                        Император Константин (306–337 гг. н.э.) прекратил гонения на христиан и превратил Римскую империю в христианское государство. Его решения определили облик Европы на тысячу лет вперед.
+                    </p>
+                    <div class="mt-10 space-y-6">
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">⛪</span>
+                            <span id="hint-1" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Миланский эдикт</span>
+                        </div>
+                        <div class="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5">
+                            <span class="text-3xl">🏗️</span>
+                            <span id="hint-2" class="text-blue-200/60 font-bold uppercase text-xs tracking-widest">Новый Рим</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="info-data" class="hidden animate-in fade-in duration-500">
+                    <span id="info-tag" class="inline-block bg-blue-950/40 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"></span>
+                    <h3 id="info-title" class="text-3xl md:text-4xl text-white font-black mb-8 uppercase leading-none"></h3>
+                    <div id="info-desc" class="text-slate-200 leading-relaxed text-lg mb-10 space-y-4"></div>
+                    <div class="p-8 bg-blue-950/20 rounded-[2.5rem] border border-blue-900/30 shadow-xl">
+                        <strong class="text-blue-400 block mb-3 text-xs uppercase tracking-[0.2em]" id="label-note">Имперский шаг:</strong>
+                        <p id="info-fact" class="text-stone-100 text-base italic leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Fact Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="glass p-10 border-b-8 border-blue-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">📜</div>
+            <h3 id="card1-title" class="text-xl font-black mb-4 text-blue-400 uppercase">Миланский эдикт (313 г.)</h3>
+            <p id="card1-text" class="text-slate-400 text-sm leading-relaxed">Константин провозгласил свободу вероисповедания. Христиане получили право открыто строить храмы и занимать государственные должности. Церковь стала опорой императорской власти.</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-indigo-800 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">🕌</div>
+            <h3 id="card2-title" class="text-xl font-black mb-4 text-white uppercase">Константинополь</h3>
+            <p id="card2-text" class="text-slate-400 text-sm leading-relaxed">В 330 г. столица была перенесена из Рима в Византий (Константинополь). Город на Босфоре стал связующим звеном между Европой и Азией и был назван «Вторым Римом».</p>
+        </div>
+        <div class="glass p-10 border-b-8 border-slate-700 hover:bg-white/5 transition-all">
+            <div class="text-4xl mb-6">⛓️</div>
+            <h3 id="card3-title" class="text-xl font-black mb-4 text-blue-300 uppercase">Закрепощение колонов</h3>
+            <p id="card3-text" class="text-slate-400 text-sm leading-relaxed">Чтобы обеспечить армию и столицу хлебом, Константин издал указ, запрещавший <strong>колонам</strong> (земледельцам-арендаторам) покидать свои участки. Так рождались основы будущего феодализма.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center p-20 glass border-blue-900/20 mb-10">
+        <p id="footer-quote" class="text-3xl md:text-4xl font-light italic text-blue-100/70 leading-tight max-w-5xl mx-auto">
+            «Сим победиши! — под этим знаком победишь!»
+        </p>
+        <span class="block mt-4 text-blue-500 uppercase tracking-widest text-sm">— Легендарное видение Константина перед битвой</span>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Константин Великий",
+                subtitle: "Новая вера и Вторая столица",
+                visualTitle: "Карта Реформ",
+                hint: "Нажмите на символы для изучения великих перемен",
+                placeholderTitle: "Символ Победы",
+                placeholderText: "Император Константин (313–337 гг.) объединил империю и легализовал христианство. Исследуйте ключевые события его правления.",
+                labelNote: "Имперский шаг:",
+                hint1: "Миланский эдикт", hint2: "Новый Рим",
+                card1Title: "Миланский эдикт",
+                card1Text: "Акт веротерпимости, превративший гонимую веру в государственную религию. Начало эпохи христианской цивилизации.",
+                card2Title: "Константинополь",
+                card2Text: "Стратегический перенос центра тяжести на Восток. Рождение Византии как преемницы Римской славы.",
+                card3Title: "Законы о колонах",
+                card3Text: "Привязка людей к земле была вынужденной мерой для спасения экономики в условиях кризиса рабовладения.",
+                footerQuote: "«Сим победиши! — под этим знаком победишь!»",
+                nodes: [
+                    { id: 1, tag: "312 г. н.э.", title: "Битва у Мульвиева моста", desc: "Константин разгромил соперника Максенция. По легенде, перед боем он увидел в небе крест с надписью 'Сим победиши'. После этой победы он стал властелином Запада.", fact: "Константин приказал нанести христианскую монограмму (Хризму) на щиты своих солдат." },
+                    { id: 2, tag: "Религия", title: "Миланский эдикт", desc: "Указ, даровавший всем подданным свободу совести. Христианство перестало быть 'преступлением', а Церкви были возвращены земли, отобранные во время гонений.", fact: "Сам Константин принял крещение только на смертном одре, но всю жизнь поддерживал христиан." },
+                    { id: 3, tag: "330 г. н.э.", title: "Основание Константинополя", desc: "На месте древнегреческого Византия на берегу Босфора вырос новый город. Его украшали статуями и мрамором, вывезенными из всех храмов империи.", fact: "Город строился ударными темпами всего за 6 лет и сразу превзошел Рим по роскоши." },
+                    { id: 4, tag: "Армия", title: "Наемные легионы", desc: "Константин реформировал армию, сделав упор на мобильные полевые части. В легионы начали массово принимать варваров-германцев, которые становились офицерами.", fact: "Пограничные войска (лимитаны) постепенно превращались в вооруженных крестьян." },
+                    { id: 5, tag: "Власть", title: "Абсолютная монархия", desc: "Император стал недосягаемым владыкой. Был введен пышный придворный церемоний, восточные одежды и диадема. Сенат превратился в почетный совет города.", fact: "Личность императора была объявлена священной, а его воля — божественным законом." }
+                ]
+            },
+            kz: {
+                title: "Ұлы Константин",
+                subtitle: "Жаңа сенім және Екінші астана",
+                visualTitle: "Реформалар картасы",
+                hint: "Өзгерістерді зерттеу үшін нысандарды басыңыз",
+                placeholderTitle: "Жеңіс нышаны",
+                placeholderText: "Константин император (313–337 жж.) империяны біріктіріп, христиандықты заңдастырды. Оның билігінің басты оқиғаларын зерттеңіз.",
+                labelNote: "Империялық қадам:",
+                hint1: "Милан эдикті", hint2: "Жаңа Рим",
+                card1Title: "Милан эдикті",
+                card1Text: "Діни сенім бостандығы туралы заң. Христиандықтың мемлекеттік дінге айналуының бастамасы.",
+                card2Title: "Константинополь",
+                card2Text: "Орталықтың Шығысқа ауысуы. Византияның Рим даңқының мұрагері ретінде тууы.",
+                card3Title: "Колондар туралы заң",
+                card3Text: "Адамдарды жерге байлау экономикалық дағдарыс жағдайындағы мәжбүрлі шара болды.",
+                footerQuote: "«Осы белгімен жеңесің!»",
+                nodes: [
+                    { id: 1, tag: "312 ж.", title: "Мульвий көпіріндегі шайқас", desc: "Константин өз қарсыласын жеңіп, Батыстың билеушісі болды. Шайқас алдында ол аспаннан крест көрген деседі.", fact: "Константин сарбаздарының қалқандарына христиандық монограмма салуды бұйырды." },
+                    { id: 2, tag: "Дін", title: "Милан эдикті", desc: "Барлық азаматтарға діни бостандық берген жарлық. Шіркеуге тәркіленген жерлері қайтарылды.", fact: "Константин өмірінің соңында ғана шоқынды, бірақ үнемі христиандарды қолдады." },
+                    { id: 3, tag: "330 ж.", title: "Константинопольдің негізі", desc: "Босфор жағасында жаңа астана бой көтерді. Ол Римнен асып түсетіндей сәнді етіп салынды.", fact: "Қала небәрі 6 жыл ішінде салынып бітті." },
+                    { id: 4, tag: "Әскер", title: "Жалданбалы легиондар", desc: "Әскерге варварларды жаппай қабылдау басталды. Олар жоғары лауазымдарға дейін көтерілді.", fact: "Шекаралық әскерлер біртұдап қаруланған шаруаларға айналды." },
+                    { id: 5, tag: "Билік", title: "Абсолютті монархия", desc: "Император қол жетпес билеушіге айналды. Салтанатты сарай рәсімдері енгізілді.", fact: "Император тұлғасы қасиетті деп жарияланды." }
+                ]
+            },
+            en: {
+                title: "Constantine the Great",
+                subtitle: "A New Faith and a Second Capital",
+                visualTitle: "Reform Map",
+                hint: "Click on symbols to study the turning points",
+                placeholderTitle: "Symbol of Victory",
+                placeholderText: "Emperor Constantine (306–337 AD) ended the era of persecutions and redirected the Empire's course. Trace his legacy.",
+                labelNote: "Imperial Move:",
+                hint1: "Edict of Milan", hint2: "New Rome",
+                card1Title: "Edict of Milan",
+                card1Text: "An act of religious tolerance that transformed a persecuted faith into the Empire's spiritual foundation.",
+                card2Title: "Constantinople",
+                card2Text: "The strategic relocation of the capital to the East, creating a fortress of Greek and Roman heritage.",
+                card3Title: "Laws on Coloni",
+                card3Text: "Binding farmers to the land was a drastic measure to preserve the agrarian economy from total collapse.",
+                footerQuote: "«In hoc signo vinces — In this sign you shall conquer.»",
+                nodes: [
+                    { id: 1, tag: "312 AD", title: "Battle of Milvian Bridge", desc: "Constantine defeated Maxentius after reportedly seeing a holy cross in the sky. This victory made him the sole ruler of the West.", fact: "The Arch of Constantine in Rome commemorates this decisive military triumph." },
+                    { id: 2, tag: "Religion", title: "Edict of Milan", desc: "Constantine and Licinius granted full legal status to Christianity. Property was restored to Christians, and Sunday was declared a day of rest.", fact: "The Edict effectively ended nearly 300 years of periodic state persecution." },
+                    { id: 3, tag: "330 AD", title: "Founding of Constantinople", desc: "Built on the site of Byzantium, it was designed as a Christian alternative to pagan Rome, strategically located on the Bosporus.", fact: "The city was often called 'New Rome' and remained an imperial capital for over 1,100 years." },
+                    { id: 4, tag: "Military", title: "Barbarian Auxiliaries", desc: "The army relied increasingly on barbarian units (foederati). Germans served as generals, and the border became a porous zone of exchange.", fact: "Constantine separated military command from civil administration to prevent revolts." },
+                    { id: 5, tag: "Rule", title: "Dominatus", desc: "Transition to a fully autocratic court. The Emperor became an absolute monarch surrounded by divine ceremony and oriental majesty.", fact: "The Senate was relegated to a municipal council, losing its last shreds of true power." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('constantineCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasNodes = [];
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('sub-title').innerText = t.subtitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('hint').innerText = t.hint;
+            document.getElementById('placeholder-title').innerText = t.placeholderTitle;
+            document.getElementById('placeholder-text').innerText = t.placeholderText;
+            document.getElementById('label-note').innerText = t.labelNote;
+            document.getElementById('hint-1').innerText = t.hint1;
+            document.getElementById('hint-2').innerText = t.hint2;
+            document.getElementById('card1-title').innerText = t.card1Title;
+            document.getElementById('card1-text').innerText = t.card1Text;
+            document.getElementById('card2-title').innerText = t.card2Title;
+            document.getElementById('card2-text').innerText = t.card2Text;
+            document.getElementById('card3-title').innerText = t.card3Title;
+            document.getElementById('card3-text').innerText = t.card3Text;
+            document.getElementById('footer-quote').innerText = t.footerQuote;
+
+            if (!document.getElementById('info-data').classList.contains('hidden')) {
+                const activeId = parseInt(document.getElementById('info-data').dataset.activeId);
+                showNodeInfo(activeId);
+            }
+            drawCanvas();
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 450;
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Draw Connection between Rome and Constantinople
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(96, 165, 250, 0.4)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(cx - 100, cy); // Rome area
+            ctx.lineTo(cx + 100, cy - 20); // Constantinople area
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const nodesData = [
+                { id: 1, x: cx - 120, y: cy + 40, icon: "⚔️" }, // Battle
+                { id: 2, x: cx - 60, y: cy - 80, icon: "✝️" },  // Edict
+                { id: 3, x: cx + 120, y: cy - 40, icon: "🏛️" }, // New Rome
+                { id: 4, x: cx + 50, y: cy + 80, icon: "🛡️" },  // Army
+                { id: 5, x: cx, y: cy - 20, icon: "👑" }       // Power
+            ];
+
+            canvasNodes = [];
+            const nodes = translations[currentLang].nodes;
+
+            nodesData.forEach((pos, i) => {
+                const nodeInfo = nodes[i];
+                
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 45);
+                grad.addColorStop(0, 'rgba(96, 165, 250, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = (i === 4) ? '#1e3a8a' : '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pos.icon, pos.x, pos.y);
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = 'bold 9px Montserrat';
+                ctx.fillText(nodeInfo.tag.toUpperCase(), pos.x, pos.y + 40);
+
+                canvasNodes.push({ x: pos.x, y: pos.y, r: 40, id: nodeInfo.id });
+            });
+        }
+
+        function showNodeInfo(id) {
+            const node = translations[currentLang].nodes.find(n => n.id === id);
+            document.getElementById('info-placeholder').classList.add('hidden');
+            const dataPanel = document.getElementById('info-data');
+            dataPanel.classList.remove('hidden');
+            dataPanel.dataset.activeId = id;
+
+            document.getElementById('info-tag').innerText = node.tag;
+            document.getElementById('info-title').innerText = node.title;
+            document.getElementById('info-desc').innerText = node.desc;
+            document.getElementById('info-fact').innerText = node.fact;
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            canvasNodes.forEach(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (dist < node.r) {
+                    showNodeInfo(node.id);
+                }
+            });
+        });
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

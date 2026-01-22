@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Жылу есептеу - Нагревание и охлаждение</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #f5d0a9 0%, #fde4a8 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #d97706 0%, #854d0e 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #854d0e; border-bottom: 3px solid #fde4a8; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #d97706; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #d97706; background: white; color: #d97706; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #d97706; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #d97706; color: white; text-align: center; }
+        .info-box { background: linear-gradient(135deg, #fde4a8 0%, #f5d0a9 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #d97706; margin: 10px 0; }
+        .example-card { background: #fffbeb; padding: 15px; border-radius: 0.5rem; border-left: 4px solid #d97706; font-size: 11px; margin-bottom: 12px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-orange-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Жылу Есептеуі</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Heat Calculation</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Расчёт количества теплоты</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-orange-100">Q = m × c × ΔT толық есептеу. Нагревание және охлаждение. ТОЛЫҚ МЫСАЛДАР!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-orange-100">Q = m × c × ΔT complete calculation. Heating and cooling. FULL EXAMPLES!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-orange-100">Q = m × c × ΔT полный расчёт. Нагревание и охлаждение. ПОЛНЫЕ ПРИМЕРЫ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ТОЛЫҚ ЕСЕПТЕЛУ МЫСАЛДАРЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. COMPLETE CALCULATION EXAMPLES</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Полные примеры расчётов</h2>
+
+            <div class="rule-card">
+                <div class="example-card">
+                    <p lang="kk" class="lang-content"><strong>📌 ЕСЕПТЕУ 1: Су нагревание</strong></p>
+                    <p lang="kk" class="lang-content"><strong>ДАНО:</strong> m = 2 кг су, T₁ = 20°C, T₂ = 60°C, c = 4200 Дж/(кг·°C)</p>
+                    <p lang="kk" class="lang-content"><strong>НАЙТИ:</strong> Q = ?</p>
+                    <p lang="kk" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="kk" class="lang-content">1) ΔT = T₂ - T₁ = 60 - 20 = 40°C</p>
+                    <p lang="kk" class="lang-content">2) Q = m × c × ΔT = 2 × 4200 × 40</p>
+                    <p lang="kk" class="lang-content">3) Q = 336000 Дж = 336 кДж</p>
+                    <p lang="kk" class="lang-content"><strong>✅ ЖАУАП: 336000 Дж немесе 336 кДж</strong></p>
+
+                    <p lang="en" class="lang-content"><strong>📌 CALCULATION 1: Water heating</strong></p>
+                    <p lang="en" class="lang-content"><strong>GIVEN:</strong> m = 2 kg water, T₁ = 20°C, T₂ = 60°C, c = 4200 J/(kg·°C)</p>
+                    <p lang="en" class="lang-content"><strong>FIND:</strong> Q = ?</p>
+                    <p lang="en" class="lang-content"><strong>SOLUTION:</strong></p>
+                    <p lang="en" class="lang-content">1) ΔT = T₂ - T₁ = 60 - 20 = 40°C</p>
+                    <p lang="en" class="lang-content">2) Q = m × c × ΔT = 2 × 4200 × 40</p>
+                    <p lang="en" class="lang-content">3) Q = 336000 J = 336 kJ</p>
+                    <p lang="en" class="lang-content"><strong>✅ ANSWER: 336000 J or 336 kJ</strong></p>
+
+                    <p lang="ru" class="lang-content"><strong>📌 РАСЧЁТ 1: Нагревание воды</strong></p>
+                    <p lang="ru" class="lang-content"><strong>ДАНО:</strong> m = 2 кг вода, T₁ = 20°C, T₂ = 60°C, c = 4200 Дж/(кг·°C)</p>
+                    <p lang="ru" class="lang-content"><strong>НАЙТИ:</strong> Q = ?</p>
+                    <p lang="ru" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="ru" class="lang-content">1) ΔT = T₂ - T₁ = 60 - 20 = 40°C</p>
+                    <p lang="ru" class="lang-content">2) Q = m × c × ΔT = 2 × 4200 × 40</p>
+                    <p lang="ru" class="lang-content">3) Q = 336000 Дж = 336 кДж</p>
+                    <p lang="ru" class="lang-content"><strong>✅ ОТВЕТ: 336000 Дж или 336 кДж</strong></p>
+                </div>
+
+                <div class="example-card">
+                    <p lang="kk" class="lang-content"><strong>📌 ЕСЕПТЕУ 2: Темір охлаждение</strong></p>
+                    <p lang="kk" class="lang-content"><strong>ДАНО:</strong> m = 5 кг темір, T₁ = 100°C, T₂ = 40°C, c = 460 Дж/(кг·°C)</p>
+                    <p lang="kk" class="lang-content"><strong>НАЙТИ:</strong> Q = ?</p>
+                    <p lang="kk" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="kk" class="lang-content">1) ΔT = |T₂ - T₁| = |40 - 100| = 60°C</p>
+                    <p lang="kk" class="lang-content">2) Q = m × c × ΔT = 5 × 460 × 60</p>
+                    <p lang="kk" class="lang-content">3) Q = 138000 Дж = 138 кДж</p>
+                    <p lang="kk" class="lang-content"><strong>✅ ЖАУАП: -138000 Дж (жылу бөлінді)</strong></p>
+
+                    <p lang="en" class="lang-content"><strong>📌 CALCULATION 2: Iron cooling</strong></p>
+                    <p lang="en" class="lang-content"><strong>GIVEN:</strong> m = 5 kg iron, T₁ = 100°C, T₂ = 40°C, c = 460 J/(kg·°C)</p>
+                    <p lang="en" class="lang-content"><strong>FIND:</strong> Q = ?</p>
+                    <p lang="en" class="lang-content"><strong>SOLUTION:</strong></p>
+                    <p lang="en" class="lang-content">1) ΔT = |T₂ - T₁| = |40 - 100| = 60°C</p>
+                    <p lang="en" class="lang-content">2) Q = m × c × ΔT = 5 × 460 × 60</p>
+                    <p lang="en" class="lang-content">3) Q = 138000 J = 138 kJ</p>
+                    <p lang="en" class="lang-content"><strong>✅ ANSWER: -138000 J (heat released)</strong></p>
+
+                    <p lang="ru" class="lang-content"><strong>📌 РАСЧЁТ 2: Охлаждение железа</strong></p>
+                    <p lang="ru" class="lang-content"><strong>ДАНО:</strong> m = 5 кг железо, T₁ = 100°C, T₂ = 40°C, c = 460 Дж/(кг·°C)</p>
+                    <p lang="ru" class="lang-content"><strong>НАЙТИ:</strong> Q = ?</p>
+                    <p lang="ru" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="ru" class="lang-content">1) ΔT = |T₂ - T₁| = |40 - 100| = 60°C</p>
+                    <p lang="ru" class="lang-content">2) Q = m × c × ΔT = 5 × 460 × 60</p>
+                    <p lang="ru" class="lang-content">3) Q = 138000 Дж = 138 кДж</p>
+                    <p lang="ru" class="lang-content"><strong>✅ ОТВЕТ: -138000 Дж (тепло выделено)</strong></p>
+                </div>
+
+                <div class="example-card">
+                    <p lang="kk" class="lang-content"><strong>📌 ЕСЕПТЕУ 3: Мыс нагревание (c табу)</strong></p>
+                    <p lang="kk" class="lang-content"><strong>ДАНО:</strong> m = 0.2 кг мыс, ΔT = 10°C, Q = 800 Дж</p>
+                    <p lang="kk" class="lang-content"><strong>НАЙТИ:</strong> c = ?</p>
+                    <p lang="kk" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="kk" class="lang-content">1) Формула: c = Q / (m × ΔT)</p>
+                    <p lang="kk" class="lang-content">2) c = 800 / (0.2 × 10)</p>
+                    <p lang="kk" class="lang-content">3) c = 800 / 2 = 400 Дж/(кг·°C)</p>
+                    <p lang="kk" class="lang-content"><strong>✅ ЖАУАП: 400 Дж/(кг·°C) - мыс немесе булумса!</strong></p>
+
+                    <p lang="en" class="lang-content"><strong>📌 CALCULATION 3: Find copper's c</strong></p>
+                    <p lang="en" class="lang-content"><strong>GIVEN:</strong> m = 0.2 kg copper, ΔT = 10°C, Q = 800 J</p>
+                    <p lang="en" class="lang-content"><strong>FIND:</strong> c = ?</p>
+                    <p lang="en" class="lang-content"><strong>SOLUTION:</strong></p>
+                    <p lang="en" class="lang-content">1) Formula: c = Q / (m × ΔT)</p>
+                    <p lang="en" class="lang-content">2) c = 800 / (0.2 × 10)</p>
+                    <p lang="en" class="lang-content">3) c = 800 / 2 = 400 J/(kg·°C)</p>
+                    <p lang="en" class="lang-content"><strong>✅ ANSWER: 400 J/(kg·°C) - copper!</strong></p>
+
+                    <p lang="ru" class="lang-content"><strong>📌 РАСЧЁТ 3: Найти c меди</strong></p>
+                    <p lang="ru" class="lang-content"><strong>ДАНО:</strong> m = 0.2 кг медь, ΔT = 10°C, Q = 800 Дж</p>
+                    <p lang="ru" class="lang-content"><strong>НАЙТИ:</strong> c = ?</p>
+                    <p lang="ru" class="lang-content"><strong>РЕШЕНИЕ:</strong></p>
+                    <p lang="ru" class="lang-content">1) Формула: c = Q / (m × ΔT)</p>
+                    <p lang="ru" class="lang-content">2) c = 800 / (0.2 × 10)</p>
+                    <p lang="ru" class="lang-content">3) c = 800 / 2 = 400 Дж/(кг·°C)</p>
+                    <p lang="ru" class="lang-content"><strong>✅ ОТВЕТ: 400 Дж/(кг·°C) - медь!</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ЕСЕПТЕУІНІҢ ҚАДАМЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. STEPS FOR CALCULATION</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Этапы расчёта</h2>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>1️⃣ ДАНО:</strong> Барлық берілген мәндерді жазу (m, T₁, T₂, c)</p>
+                <p lang="en" class="lang-content text-sm"><strong>1️⃣ GIVEN:</strong> Write all values (m, T₁, T₂, c)</p>
+                <p lang="ru" class="lang-content text-sm"><strong>1️⃣ ДАНО:</strong> Записать все значения (m, T₁, T₂, c)</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 10px;"><strong>2️⃣ НАЙТИ:</strong> Іздейтін мәнді белгілі (Q? c? ΔT? m?)</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 10px;"><strong>2️⃣ FIND:</strong> Determine what to find (Q? c? ΔT? m?)</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 10px;"><strong>2️⃣ НАЙТИ:</strong> Определить, что найти (Q? c? ΔT? m?)</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 10px;"><strong>3️⃣ ФОРМУЛА:</strong> Q = m × c × ΔT немесе c = Q/(m×ΔT)</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 10px;"><strong>3️⃣ FORMULA:</strong> Q = m × c × ΔT or c = Q/(m×ΔT)</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 10px;"><strong>3️⃣ ФОРМУЛА:</strong> Q = m × c × ΔT или c = Q/(m×ΔT)</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 10px;"><strong>4️⃣ ЕСЕПТЕУ:</strong> ΔT = T₂ - T₁ болсын, сосын Q есептеу</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 10px;"><strong>4️⃣ CALCULATION:</strong> First ΔT = T₂ - T₁, then calculate Q</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 10px;"><strong>4️⃣ РАСЧЁТ:</strong> Сначала ΔT = T₂ - T₁, потом Q</strong></p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 10px;"><strong>5️⃣ ЖАУАП:</strong> Соңғы мәнді және өлшем бірлігін жазу (Дж немесе кДж)</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 10px;"><strong>5️⃣ ANSWER:</strong> Write final value and unit (J or kJ)</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 10px;"><strong>5️⃣ ОТВЕТ:</strong> Написать ответ с единицей (Дж или кДж)</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fde4a8; border-radius: 1rem; border-top: 4px solid #d97706;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-orange-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-orange-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-orange-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Жылу мөлшері есептеуі - массасы, нақ жылусыйлығы, температура айырмасының көбейтіндісі. Q = m×c×ΔT. Әрқашан ΔT = T₂ - T₁ болсын есептеу. Нағевание - Q оң, охлаждение - Q теріс (жылу бөлінді)!</p>
+            <p lang="en" class="lang-content text-sm">Heat calculation is product of mass, specific heat, temperature difference. Q = m×c×ΔT. Always calculate ΔT = T₂ - T₁ first. Heating - Q positive, cooling - Q negative (heat released)!</p>
+            <p lang="ru" class="lang-content text-sm">Расчёт теплоты - произведение массы, удельной теплоёмкости, изменения температуры. Q = m×c×ΔT. Всегда сначала ΔT = T₂ - T₁. Нагревание - Q положительно, охлаждение - Q отрицательно (выделяется тепло)!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

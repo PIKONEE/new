@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хан Тауекел: Военная экспансия</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #f5f5f4; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .war-gradient {
+            background: radial-gradient(circle at top right, #450a0a, #0c0a09 85%);
+        }
+
+        .premium-card {
+            background: rgba(28, 25, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            border-color: #ef4444;
+            box-shadow: 0 0 60px rgba(220, 38, 38, 0.15);
+        }
+
+        .lang-active {
+            background-color: #ef4444;
+            color: white;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2.5rem;
+            background: #1c1917;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+        }
+
+        .fact-card {
+            background: rgba(41, 37, 36, 0.6);
+            border-left: 6px solid #b91c1c;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .fact-card:hover {
+            transform: translateY(-10px);
+            border-color: #ef4444;
+        }
+
+        .term-badge {
+            background: #450a0a;
+            color: #fca5a5;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="war-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-red-900/30 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-red-500">Хан Тауекел (1582–1598 гг.)</h1>
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-red-900/30">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Military Vector Analysis (Canvas) -->
+        <div class="premium-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-8">
+                    <div id="badge" class="inline-block border border-red-500/50 text-red-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Strategic Conquest Compass</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Векторы военного триумфа</h2>
+                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
+                        Тауекел-хан превратил армию в инструмент глобальной экспансии. Нажмите на направления походов, чтобы изучить захват Ташкента и Самарканда.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-red-950/20 border-l-8 border-red-600 shadow-2xl transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-red-400 mb-3 uppercase tracking-tighter">План наступления</h3>
+                        <p id="element-desc" class="text-zinc-300 text-sm leading-relaxed italic font-light">Выберите вектор удара: Мавераннахр, Москва или Степные рубежи.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="warCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-red-900 font-mono uppercase tracking-[0.4em]">Tactical Military Simulation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Historical Content -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="fact-card">
+                <div class="mb-4"><span class="term-badge" id="t-war">Борьба за города</span></div>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Разгром Шайбанидов</h3>
+                <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed">В 1598 году Тауекел нанес финальный удар по государству Абдулла-хана II. Он захватил крупнейшие города Средней Азии: **Ташкент**, **Самарканд**, **Ходжент** и **Андижан**. Это был период максимального политического веса ханства в регионе.</p>
+            </div>
+            <div class="fact-card">
+                <div class="mb-4"><span class="term-badge" id="t-dip">Дипломатия</span></div>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Миссия Кул-Мухаммеда</h3>
+                <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed">В **1594 году** хан отправил посольство в Москву во главе с Кул-Мухаммедом. Целью был союз против хана Кучума (Сибирь) и Бухары. В ответ Россия отправила посла Степанова, признав суверенитет Казахского ханства.</p>
+            </div>
+            <div class="fact-card">
+                <div class="mb-4"><span class="term-badge" id="t-end">Финал</span></div>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Осада Бухары</h3>
+                <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed">Последним походом Тауекела стала осада Бухары. Несмотря на успех в начале, хан был тяжело ранен и скончался в Ташкенте в **1598 году**. Его правление закрепило за казахами роль главных наследников империи Чингисхана в Дешт-и-Кыпчаке.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Хан Тауекел (1582–1598 гг.)",
+                vizTitle: "Векторы военного триумфа",
+                vizDesc: "Тауекел-хан превратил армию в инструмент глобальной экспансии. Нажмите на векторы походов для анализа стратегии.",
+                badge: "Анализ стратегии наступления",
+                elementTitleDefault: "План наступления",
+                elementDescDefault: "Выберите вектор удара: Мавераннахр, Москва или Степные рубежи на холсте.",
+                tWar: "Борьба за города", tDip: "Дипломатия", tEnd: "Финал",
+                c1T: "Разгром Шайбанидов", c1D: "Захват Ташкента и Самарканда в 1598 г. вернул казахам контроль над ключевыми городами Сырдарьи и торговыми путями Мавераннахра.",
+                c2T: "Миссия Кул-Мухаммеда", c2D: "Посольство 1594 года в Россию стало прорывом. Тауекел искал огнестрельное оружие и военный союз против Бухарского ханства.",
+                c3T: "Осада Бухары", c3D: "Героический и трагический финал правления. Смерть хана в Ташкенте после ранения под Бухарой завершила эпоху великой экспансии.",
+                vectors: {
+                    south: { name: "Южный поход (Бухара)", text: "Цель: Полный разгром Шайбанидов. Результат: Взятие Самарканда и превращение ханства в гегемона Средней Азии." },
+                    north: { name: "Северный союз (Россия)", text: "Дипломатический прорыв 1594-1595 гг. Установление регулярных связей с царем Федором Ивановичем." },
+                    west: { name: "Западный фланг (Ногаи)", text: "Присоединение части ногайских родов и укрепление влияния в междуречье Волги и Жайыка." }
+                }
+            },
+            kz: {
+                title: "Тәуекел хан (1582–1598 жж.)",
+                vizTitle: "Әскери жеңіс бағыттары",
+                vizDesc: "Тәуекел хан әскерді жаһандық экспансия құралына айналдырды. Жорық бағыттарын басып, стратегияны талдаңыз.",
+                badge: "Шабуыл стратегиясын талдау",
+                elementTitleDefault: "Шабуыл жоспары",
+                elementDescDefault: "Кенептегі соққы бағытын таңдаңыз: Мәуереннахр, Мәскеу немесе Дала шептері.",
+                tWar: "Қалалар үшін күрес", tDip: "Дипломатия", tEnd: "Қорытынды",
+                c1T: "Шайбанилерді талқандау", c1D: "1598 ж. Ташкент пен Самарқандты басып алу қазақтарға Сырдария қалалары мен Мәуереннахр сауда жолдарын қайтарды.",
+                c2T: "Құл-Мұхаммед миссиясы", c2D: "1594 жылғы Ресейге елшілік үлкен жетістік болды. Тәуекел Бұқар хандығына қарсы отты қару мен әскери одақ іздеді.",
+                c3T: "Бұқара қоршауы", c3D: "Биліктің ерлікке толы әрі қайғылы соңы. Бұқара түбінде жараланып, Ташкентте қайтыс болуы ұлы экспансия дәуірін аяқтады.",
+                vectors: {
+                    south: { name: "Оңтүстік жорық (Бұқара)", text: "Мақсаты: Шайбанилерді толық талқандау. Нәтиже: Самарқандты алу және Орта Азияда гегемонға айналу." },
+                    north: { name: "Солтүстік одақ (Ресей)", text: "1594-1595 жж. дипломатиялық серпіліс. Федор Иванович патшамен тұрақты байланыс орнату." },
+                    west: { name: "Батыс қанат (Ноғайлар)", text: "Ноғай руларының бір бөлігін қосып алу және Еділ мен Жайық арасындағы ықпалды нығайту." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('warCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawVectors();
+        }
+
+        function drawVectors() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Base Map Lines
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.1)';
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath();
+            ctx.arc(cx, cy, 200 * scale, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Central Hub
+            ctx.beginPath();
+            ctx.arc(cx, cy, 40 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = '#ef4444';
+            ctx.fill();
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText("ORDA", cx, cy + 5);
+
+            // Vector: South
+            drawArrow(cx, cy, cx, cy + 180 * scale, '#dc2626', "SOUTH: BUKHARA");
+            // Vector: North
+            drawArrow(cx, cy, cx, cy - 180 * scale, '#3b82f6', "NORTH: RUSSIA");
+            // Vector: West
+            drawArrow(cx, cy, cx - 180 * scale, cy, '#f59e0b', "WEST: NOGAI");
+        }
+
+        function drawArrow(fx, fy, tx, ty, color, label) {
+            ctx.beginPath();
+            ctx.moveTo(fx, fy);
+            ctx.lineTo(tx, ty);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px Inter';
+            ctx.fillText(label, tx, ty + (ty > fy ? 20 : -10));
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const x = e.clientX - rect.left;
+
+            let target = null;
+            if (y > cy + 100) target = 'south';
+            else if (y < cy - 100) target = 'north';
+            else if (x < cx - 100) target = 'west';
+
+            if (target) {
+                const info = translations[currentLang].vectors[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#ef4444';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

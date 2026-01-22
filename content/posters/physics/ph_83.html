@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ыңғайлану және конденсация</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #fce7f3 0%, #fbcfe8 100%); }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #ec4899 0%, #831843 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #831843; border-bottom: 3px solid #fbcfe8; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #ec4899; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #ec4899; background: white; color: #ec4899; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #ec4899; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        .info-box { background: linear-gradient(135deg, #fbcfe8 0%, #fce7f3 100%); padding: 15px; border-radius: 0.75rem; border-left: 4px solid #ec4899; margin: 10px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .process-card { background: #fdf2f8; padding: 15px; border-radius: 0.5rem; border-left: 4px solid #ec4899; font-size: 11px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-pink-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase">Ыңғайлану және Конденсация</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">Evaporation and Condensation</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Испарение и конденсация</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-pink-100">Сұйық → газ және газ → сұйық. Қос фазалық өзгеру. ЫҢҒАЙЛАНУ ЗАҢЫ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-pink-100">Liquid → gas and gas → liquid. Two phase transitions. EVAPORATION LAW!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-pink-100">Жидкое → газ и газ → жидкое. Два фазовых перехода. ЗАКОН ИСПАРЕНИЯ!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. ЫҢҒАЙЛАНУ ЖӘНЕ КОНДЕНСАЦИЯ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. EVAPORATION AND CONDENSATION</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Испарение и конденсация</h2>
+
+            <div class="rule-card">
+                <div class="grid-2">
+                    <div class="process-card">
+                        <p lang="kk" class="lang-content"><strong>💨 ЫҢҒАЙЛАНУ</strong></p>
+                        <p lang="kk" class="lang-content">Сұйық → газ (ауыстыру)</p>
+                        <p lang="kk" class="lang-content">• Ісінгін болуы мүмкін T < T_қайнау</p>
+                        <p lang="kk" class="lang-content">• Беттен ауру қалмыс</p>
+                        <p lang="kk" class="lang-content">• Жылу сіңіру (қайнау)</p>
+                        <p lang="kk" class="lang-content">• Өндіктігінің таралуы</p>
+
+                        <p lang="en" class="lang-content"><strong>💨 EVAPORATION</strong></p>
+                        <p lang="en" class="lang-content">Liquid → gas (transformation)</p>
+                        <p lang="en" class="lang-content">• Can occur at T < T_boiling</p>
+                        <p lang="en" class="lang-content">• From surface only</p>
+                        <p lang="en" class="lang-content">• Heat absorbed (boiling)</p>
+                        <p lang="en" class="lang-content">• Cooling effect</p>
+
+                        <p lang="ru" class="lang-content"><strong>💨 ИСПАРЕНИЕ</strong></p>
+                        <p lang="ru" class="lang-content">Жидкое → газ (преобразование)</p>
+                        <p lang="ru" class="lang-content">• Может быть при T < T_кипения</p>
+                        <p lang="ru" class="lang-content">• Только с поверхности</p>
+                        <p lang="ru" class="lang-content">• Тепло поглощается (кипение)</p>
+                        <p lang="ru" class="lang-content">• Охлаждающий эффект</p>
+                    </div>
+
+                    <div class="process-card">
+                        <p lang="kk" class="lang-content"><strong>💧 КОНДЕНСАЦИЯ</strong></p>
+                        <p lang="kk" class="lang-content">Газ → сұйық (қайтару)</p>
+                        <p lang="kk" class="lang-content">• Т төмен болады</p>
+                        <p lang="kk" class="lang-content">• Барлық құрамасындағы</p>
+                        <p lang="kk" class="lang-content">• Жылу бөлінеді (қалыңдық)</p>
+                        <p lang="kk" class="lang-content">• Өндіктігінің өндіктігінең</p>
+
+                        <p lang="en" class="lang-content"><strong>💧 CONDENSATION</strong></p>
+                        <p lang="en" class="lang-content">Gas → liquid (reverse)</p>
+                        <p lang="en" class="lang-content">• Temperature lowers</p>
+                        <p lang="en" class="lang-content">• Throughout whole volume</p>
+                        <p lang="en" class="lang-content">• Heat released (warming)</p>
+                        <p lang="en" class="lang-content">• Warming effect</p>
+
+                        <p lang="ru" class="lang-content"><strong>💧 КОНДЕНСАЦИЯ</strong></p>
+                        <p lang="ru" class="lang-content">Газ → жидкое (обратно)</p>
+                        <p lang="ru" class="lang-content">• Температура понижается</p>
+                        <p lang="ru" class="lang-content">• По всему объёму</p>
+                        <p lang="ru" class="lang-content">• Тепло выделяется (нагрев)</p>
+                        <p lang="ru" class="lang-content">• Нагревающий эффект</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ПРОЦЕСС ГРАФИКАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. PROCESS GRAPH</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. График процесса</h2>
+
+            <div class="info-box">
+                <p lang="kk" class="lang-content text-sm"><strong>📊 СУ ЫҢҒАЙЛАНУ:</strong></p>
+                <p lang="kk" class="lang-content text-sm">0°C мұз → 100°C су → 100°C пар (T_қайнау = 100°C)</p>
+                <p lang="kk" class="lang-content text-sm">• Нагревание: 1 минут (20°C дан 100°C дейін)</p>
+                <p lang="kk" class="lang-content text-sm">• Қайнау: 10 минут (T = 100°C const) - энергия сіңіру</p>
+                <p lang="kk" class="lang-content text-sm">• Пар: T > 100°C болмауы мүмкін</p>
+
+                <p lang="en" class="lang-content text-sm"><strong>📊 WATER EVAPORATION:</strong></p>
+                <p lang="en" class="lang-content text-sm">0°C ice → 100°C water → 100°C steam (T_boiling = 100°C)</p>
+                <p lang="en" class="lang-content text-sm">• Heating: 1 min (20°C to 100°C)</p>
+                <p lang="en" class="lang-content text-sm">• Boiling: 10 min (T = 100°C const) - energy absorption</p>
+                <p lang="en" class="lang-content text-sm">• Steam: T > 100°C possible</p>
+
+                <p lang="ru" class="lang-content text-sm"><strong>📊 ИСПАРЕНИЕ ВОДЫ:</strong></p>
+                <p lang="ru" class="lang-content text-sm">0°C лёд → 100°C вода → 100°C пар (T_кипения = 100°C)</p>
+                <p lang="ru" class="lang-content text-sm">• Нагревание: 1 мин (20°C до 100°C)</p>
+                <p lang="ru" class="lang-content text-sm">• Кипение: 10 мин (T = 100°C const) - поглощение энергии</p>
+                <p lang="ru" class="lang-content text-sm">• Пар: T > 100°C возможно</p>
+
+                <p lang="kk" class="lang-content text-sm" style="margin-top: 15px;"><strong>⚡ ПРАКТИКАЛЫҚ:</strong> Сүндіктігі өндіктігінің (беске) - денсаулық азаяды. Конденсация - қалыңдықты араларында (бәлпістігі).</p>
+                <p lang="en" class="lang-content text-sm" style="margin-top: 15px;"><strong>⚡ PRACTICAL:</strong> Evaporation cooling (sweat) - health maintains. Condensation (dew on windows) warms air nearby.</p>
+                <p lang="ru" class="lang-content text-sm" style="margin-top: 15px;"><strong>⚡ ПРАКТИКА:</strong> Испарение охлаждает (пот) - тело остаёт. Конденсация (роса на окнах) нагревает воздух рядом.</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fbcfe8; border-radius: 1rem; border-top: 4px solid #ec4899;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-pink-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-pink-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">Ыңғайлану және конденсация - өндіктігінің құрамасындағы. Ыңғайлану - жылу сіңіру (ену). Конденсация - жылу бөлінеді (ыстықталу). Практикалық: сүндіктігі, қалыңдық, электр құйындысы!</p>
+            <p lang="en" class="lang-content text-sm">Evaporation and condensation are phase processes. Evaporation absorbs heat (cooling). Condensation releases heat (warming). Practical: sweating, dew, power plants!</p>
+            <p lang="ru" class="lang-content text-sm">Испарение и конденсация - фазовые процессы. Испарение поглощает тепло (охлаждение). Конденсация выделяет тепло (нагрев). Практика: пот, роса, электростанции!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

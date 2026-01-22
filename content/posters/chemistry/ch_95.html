@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phosphorus and its Compounds</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #312e81, #1e1b4b, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 3rem; }
+        canvas { border-radius: 2.5rem; cursor: pointer; }
+        .lang-btn.active { background: #818cf8; color: #020617; font-weight: 800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-t border-indigo-400/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-indigo-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/50 font-light tracking-widest text-xs uppercase"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/20 transition-all font-bold text-xs">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="lg:col-span-2 glass rounded-custom p-8 flex flex-col relative overflow-hidden">
+            <h2 id="canvas-heading" class="heading-font text-xl text-indigo-200 uppercase mb-8 self-start tracking-widest"></h2>
+            <canvas id="phosphorCanvas" class="w-full h-[450px] bg-black/40"></canvas>
+            <p id="canvas-hint" class="mt-4 text-[10px] text-white/30 uppercase tracking-[0.4em] text-center"></p>
+        </div>
+
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-indigo-500">
+            <div id="info-content">
+                <h3 id="info-title" class="heading-font text-3xl mb-6 text-indigo-300"></h3>
+                <div id="info-text" class="text-lg font-light leading-relaxed text-white/80 space-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 hover:bg-indigo-500/10 transition-all">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-indigo-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <footer class="glass rounded-custom p-12 text-center bg-indigo-950/20">
+        <p id="quote" class="text-2xl font-light italic mb-4 leading-tight"></p>
+        <cite id="author" class="text-indigo-400 font-bold uppercase tracking-[0.4em] text-xs"></cite>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Свет в темноте",
+                subtitle: "Фосфор и его соединения",
+                canvasHeading: "Модель белого фосфора P₄",
+                canvasHint: "Нажмите, чтобы увидеть переход к красному фосфору",
+                defaultTitle: "Элемент №15",
+                defaultText: "Фосфор — жизненно важный неметалл VА-группы. Обладает способностью к хемолюминесценции и существует в нескольких аллотропных формах.",
+                cards: [
+                    { title: "Аллотропия", desc: "Белый фосфор (P<sub>4</sub>) — ядовит, светится; Красный — полимер, более стабилен; Черный — похож на графит." },
+                    { title: "Биороль", desc: "Фосфор — 'элемент мысли'. Входит в состав АТФ (энергия клетки), костей, ДНК и РНК." },
+                    { title: "Соединения", desc: "P<sub>2</sub>O<sub>5</sub> — сильнейший водоотнимающий агент. H<sub>3</sub>PO<sub>4</sub> (фосфорная кислота) — основа удобрений." }
+                ],
+                quote: "«Фосфор — это элемент жизни и мысли, без него немыслимо движение материи»",
+                author: "Александр Ферсман"
+            },
+            kz: {
+                title: "Қараңғыдағы жарық",
+                subtitle: "Фосфор және оның қосылыстары",
+                canvasHeading: "Ақ фосфор моделі P₄",
+                canvasHint: "Қызыл фосфорға өтуді көру үшін басыңыз",
+                defaultTitle: "№15 Элемент",
+                defaultText: "Фосфор — VA топтың өмірлік маңызы бар бейметалы. Хемолюминесценция қабілетіне ие және бірнеше аллотропиялық түрде болады.",
+                cards: [
+                    { title: "Аллотропия", desc: "Ақ фосфор (P<sub>4</sub>) — улы, жарық шығарады; Қызыл — полимер, тұрақтырақ; Қара — графитке ұқсас." },
+                    { title: "Биоролі", desc: "Фосфор — 'ойлау элементі'. АТФ, сүйек, ДНҚ және РНҚ құрамына кіреді." },
+                    { title: "Қосылыстар", desc: "P<sub>2</sub>O<sub>5</sub> — күшті су тартқыш агент. H<sub>3</sub>PO<sub>4</sub> (фосфор қышқылы) — тыңайтқыштар негізі." }
+                ],
+                quote: "«Фосфор — бұл тіршілік пен ойлау элементі, онсыз материяның қозғалысын елестету мүмкін емес»",
+                author: "Александр Ферсман"
+            },
+            en: {
+                title: "Light in the Dark",
+                subtitle: "Phosphorus and its compounds",
+                canvasHeading: "White Phosphorus Model P₄",
+                canvasHint: "Click to see transformation to red phosphorus",
+                defaultTitle: "Element №15",
+                defaultText: "Phosphorus is a vital non-metal of Group VA. It exhibits chemiluminescence and exists in several allotropic forms.",
+                cards: [
+                    { title: "Allotropy", desc: "White phosphorus (P<sub>4</sub>) is toxic and glows; Red is a stable polymer; Black is graphite-like." },
+                    { title: "Biological Role", desc: "Phosphorus is the 'element of thought'. It's in ATP, bones, DNA, and RNA." },
+                    { title: "Compounds", desc: "P<sub>2</sub>O<sub>5</sub> is a powerful dehydrating agent. H<sub>3</sub>PO<sub>4</sub> is the base for fertilizers." }
+                ],
+                quote: "«Phosphorus is the element of life and thought; without it, the movement of matter is unthinkable»",
+                author: "Alexander Fersman"
+            }
+        };
+
+        let currentLang = 'ru';
+        let isRed = false;
+        const canvas = document.getElementById('phosphorCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('canvas-hint').textContent = t.canvasHint;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').innerHTML = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').innerHTML = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').innerHTML = t.cards[2].desc;
+            document.getElementById('quote').textContent = t.quote;
+            document.getElementById('author').textContent = t.author;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const time = Date.now() * 0.002;
+
+            if(!isRed) {
+                // White P4 Tetrahedron
+                ctx.shadowBlur = 20; ctx.shadowColor = '#4ade80';
+                drawAtom(cx, cy - 60, 15, '#fff');
+                drawAtom(cx - 50, cy + 30, 15, '#fff');
+                drawAtom(cx + 50, cy + 30, 15, '#fff');
+                drawAtom(cx, cy + 10, 15, '#fff');
+                ctx.shadowBlur = 0;
+            } else {
+                // Red P Polymer
+                for(let i=0; i<6; i++) {
+                    drawAtom(cx - 200 + i*80, cy + Math.sin(time + i)*20, 15, '#f87171');
+                }
+            }
+            requestAnimationFrame(draw);
+        }
+
+        function drawAtom(x, y, r, color) {
+            ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+        }
+
+        canvas.addEventListener('click', () => isRed = !isRed);
+        window.onload = () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; setLang('ru'); };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

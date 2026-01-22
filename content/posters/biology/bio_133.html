@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transpiration and Leaf Fall</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #fff; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .rounded-custom { border-radius: 2rem; }
+        canvas { cursor: pointer; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="p-8 flex flex-col h-screen">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-4xl font-bold text-sky-400" id="header-title">Transpiration</h1>
+        <div class="flex gap-2">
+            <button onclick="setL('ru')" class="bg-gray-800 px-3 py-1 rounded hover:bg-sky-600">RU</button>
+            <button onclick="setL('en')" class="bg-gray-800 px-3 py-1 rounded hover:bg-sky-600">EN</button>
+        </div>
+    </div>
+
+    <div class="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-1 flex flex-col gap-4">
+            <div class="glass p-6 rounded-2xl cursor-pointer hover:bg-sky-900/30 border-l-4 border-sky-500" onclick="setMode('water')">
+                <h3 class="font-bold text-xl mb-1">Испарение</h3>
+                <p class="text-xs text-gray-400">Движение воды через устьица. Охлаждение листа.</p>
+            </div>
+            <div class="glass p-6 rounded-2xl cursor-pointer hover:bg-orange-900/30 border-l-4 border-orange-500" onclick="setMode('fall')">
+                <h3 class="font-bold text-xl mb-1">Листопад</h3>
+                <p class="text-xs text-gray-400">Защита от иссушения зимой. Удаление вредных веществ.</p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 relative glass rounded-custom p-0 overflow-hidden flex items-center justify-center">
+            <canvas id="transCanvas" class="w-full h-full"></canvas>
+            <p class="absolute bottom-6 text-xs text-white/30 uppercase tracking-[0.5em]" id="mode-hint">Click to toggle Season</p>
+        </div>
+    </div>
+
+    <script>
+        const db = {
+            ru: { t: "Испарение и Листопад" },
+            en: { t: "Transpiration & Leaf Fall" }
+        };
+        let lang='ru', mode='water', cx, cvs;
+        let particles = [];
+
+        window.setL = (l) => { lang=l; document.getElementById('header-title').textContent = db[l].t; }
+        window.setMode = (m) => { mode = m; particles = []; }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.002;
+            cx.clearRect(0,0,w,h);
+
+            // Leaf
+            cx.fillStyle = mode === 'water' ? '#16a34a' : '#d97706';
+            cx.beginPath(); cx.ellipse(w/2, h/2, 100, 200, 0.1, 0, Math.PI*2); cx.fill();
+            
+            // Veins
+            cx.strokeStyle = mode === 'water' ? '#14532d' : '#78350f'; cx.lineWidth = 3;
+            cx.beginPath(); cx.moveTo(w/2 - 20, h/2 + 180); cx.lineTo(w/2 + 20, h/2 - 180); cx.stroke();
+
+            if (mode === 'water') {
+                // Stomata opening animation
+                cx.fillStyle = '#0f172a'; // Pore
+                cx.beginPath(); cx.ellipse(w/2, h/2, 10 + Math.sin(t)*5, 20, 0, 0, Math.PI*2); cx.fill();
+                
+                // Water vapor
+                if(Math.random() > 0.8) particles.push({x: w/2, y: h/2, v: 2, a: 1});
+                particles.forEach((p, i) => {
+                    p.y -= p.v; p.x += Math.sin(p.y*0.1)*2; p.a -= 0.01;
+                    cx.fillStyle = `rgba(186, 230, 253, ${p.a})`;
+                    cx.beginPath(); cx.arc(p.x, p.y, 5, 0, Math.PI*2); cx.fill();
+                    if(p.a <= 0) particles.splice(i, 1);
+                });
+            } else {
+                // Abscission layer (Cork)
+                cx.fillStyle = '#713f12';
+                cx.fillRect(w/2 - 30, h/2 + 180, 60, 10);
+                
+                // Falling leaves particles
+                if(Math.random() > 0.9) particles.push({x: Math.random()*w, y: 0, r: Math.random()*20, c: '#f59e0b'});
+                particles.forEach((p, i) => {
+                    p.y += 2; p.x += Math.sin(p.y*0.05)*2;
+                    cx.fillStyle = p.c;
+                    cx.beginPath(); cx.ellipse(p.x, p.y, 10, 5, 0.5, 0, Math.PI*2); cx.fill();
+                    if(p.y > h) particles.splice(i, 1);
+                });
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('transCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            cvs.addEventListener('click', () => mode = mode === 'water' ? 'fall' : 'water');
+            draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

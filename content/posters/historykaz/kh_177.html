@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Присоединение Среднего жуза к России (XIX в.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fcfaf7; color: #1c1917; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .imperial-gradient {
+            background: radial-gradient(circle at top right, #e7e5e4, #f4f1ea 80%);
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+
+        .document-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 3rem;
+            border: 2px solid #78716c;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .document-panel:hover {
+            border-color: #1c1917;
+            box-shadow: 0 40px 80px -20px rgba(28, 25, 23, 0.15);
+        }
+
+        .lang-active {
+            background-color: #1c1917;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        canvas {
+            cursor: pointer;
+            border-radius: 2rem;
+            background: #fff;
+            border: 1px solid #e7e5e4;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 2.5rem;
+            border-left: 10px solid #1c1917;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px);
+            border-color: #44403c;
+        }
+
+        .admin-badge {
+            background: #f5f5f4;
+            color: #44403c;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="imperial-gradient min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-stone-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-stone-800">Присоединение Среднего жуза к России</h1>
+            <div class="flex bg-stone-100 p-1 rounded-2xl border border-stone-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Administrative Map (Canvas) -->
+        <div class="document-panel p-8 md:p-12 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block bg-stone-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Administrative Annexation Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-stone-900 leading-tight uppercase italic tracking-tighter">Демонтаж Суверенитета</h2>
+                    <p id="viz-desc" class="text-lg text-stone-600 font-light leading-relaxed">
+                        После реформы 1822 года Средний жуз был разделен на внешние округа. Нажмите на административные узлы на карте, чтобы изучить структуру управления и ликвидацию ханской власти.
+                    </p>
+                    
+                    <div id="info-panel" class="info-card transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-stone-900 mb-3 uppercase">Выберите округ</h3>
+                        <p id="element-desc" class="text-stone-500 text-base leading-relaxed italic font-light">Кликните на Каркаралы, Кокчетав или Баянаул на холсте справа.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[550px]">
+                    <canvas id="mapCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-stone-300 font-mono uppercase tracking-[0.4em]">Administrative Overlay 1822-1840</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Deep Historical Context -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- Political Process -->
+            <div class="info-card">
+                <span class="admin-badge mb-4 inline-block" id="tag-1">Политика</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-stone-900">Конец власти Ханов</h3>
+                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed mb-4">
+                    После смерти хана **Вали** в 1819 году российское правительство решило не утверждать нового правителя Среднего жуза. Реформа М. Сперанского 1822 года («Устав о сибирских киргизах») юридически закрепила ликвидацию ханского достоинства. Вместо этого была введена система **Ага-султанов**, которые избирались только султанами и утверждались имперской администрацией.
+                </p>
+                <div class="pt-4 border-t border-stone-100 text-[10px] font-black text-stone-400 uppercase tracking-widest italic">1819: Последний хан Вали</div>
+            </div>
+
+            <!-- Administrative Structure -->
+            <div class="info-card">
+                <span class="admin-badge mb-4 inline-block" id="tag-2">Управление</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-stone-900">Внешние Округа</h3>
+                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed mb-4">
+                    Территория Среднего жуза была поделена на внешние округа: **Каркаралинский**, **Кокчетавский** (1824), **Аягузский** (1831), **Акмолинский** (1832). Округа делились на волости, а волости — на аулы. Во главе округов стояли старшие султаны (ага-султаны), а при них действовали Окружные приказы, состоявшие из русских чиновников и казахских заседателей.
+                </p>
+                <div class="pt-4 border-t border-stone-100 text-[10px] font-black text-stone-400 uppercase tracking-widest italic">Вертикаль власти: Степь — Омск</div>
+            </div>
+
+            <!-- Resistance -->
+            <div class="info-card">
+                <span class="admin-badge mb-4 inline-block" id="tag-3">Противодействие</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-stone-900">Сопротивление знати</h3>
+                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed mb-4">
+                    Присоединение не было мирным. Сын хана Вали — **Губайдулла** — пытался восстановить ханство и даже обращался за поддержкой к Китаю. В 1820-30-е годы сопротивление возглавил султан **Саржан Касымов**, а позже — его младший брат **Кенесары**. Они уничтожали имперские пикеты и приказы, стремясь вернуть независимость Степи.
+                </p>
+                <div class="pt-4 border-t border-stone-100 text-[10px] font-black text-stone-400 uppercase tracking-widest italic">Султан Саржан: Путь меча</div>
+            </div>
+        </div>
+
+        <!-- Section 3: Socio-Economic Impact -->
+        <div class="bg-stone-900 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h3 id="feat-t" class="text-3xl font-black mb-8 uppercase italic tracking-widest">Колониальный порядок</h3>
+                    <p id="feat-d" class="text-stone-300 text-xl font-light leading-relaxed mb-10">
+                        Присоединение Среднего жуза означало полную интеграцию региона в налоговую и правовую систему России. Был введен поочередный налог (ясак) — 1% со скота. Судебная система перешла от биев к Окружным приказам. Это вызвало глубокий кризис традиционного кочевого общества, но ускорило строительство городов и развитие торговли.
+                    </p>
+                    <div class="flex gap-4">
+                        <span id="feat-tag" class="px-6 py-2 bg-white/10 rounded-full border border-white/20 text-xs font-black uppercase tracking-widest text-stone-400">Ясак: 1/100 часть стада</span>
+                    </div>
+                </div>
+                <div class="flex justify-center relative">
+                    <div class="w-80 h-80 border-4 border-dashed border-stone-700/50 rounded-full flex items-center justify-center animate-spin-slow">
+                        <div class="text-center">
+                            <div class="text-7xl mb-4 grayscale opacity-30">⚖️</div>
+                            <div id="unit-label" class="text-[10px] font-black uppercase text-stone-500 tracking-[0.5em]">Imperial Order</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">RUSSIA</div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-24 bg-white border-t border-stone-200 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl font-light italic leading-tight text-stone-400">
+                «Присоединение Среднего жуза стало финальным аккордом в разрушении старой степной вольности, заменив её строгим, но чуждым порядком империи.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-stone-800 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Присоединение Среднего жуза (XIX в.)",
+                vizTitle: "Демонтаж Суверенитета",
+                vizDesc: "Реформа 1822 года разделила жуз на административные единицы. Нажмите на центры власти на холсте для анализа.",
+                badge: "Анализ административного поглощения",
+                elementTitleDefault: "Выберите округ",
+                elementDescDefault: "Кликните на Каркаралы, Кокчетав или Баянаул на чертеже справа.",
+                tag1: "Политика", tag2: "Управление", tag3: "Противодействие",
+                c1T: "Конец власти Ханов", c1D: "Смерть хана Вали в 1819 г. стала поводом для отмены титула. Россия внедрила систему ага-султанов, превратив родовую знать в часть чиновничьего аппарата.",
+                c2T: "Внешние Округа", c2D: "Создание округов (Каркаралы, Акмола) с центрами в укреплениях. Окружные приказы получили право суда и сбора налогов, лишив биев реальной власти.",
+                c3T: "Сопротивление знати", c3D: "Султаны Саржан и Губайдулла Касымовы возглавили борьбу за восстановление ханства. Их восстания стали предтечей великой войны Кенесары.",
+                featT: "Колониальный порядок", featD: "Введение ясака и ограничение кочевок. Традиционное право (адат) было потеснено имперскими законами, что привело к росту социальной напряженности.",
+                footer: "«Присоединение Среднего жуза заменило степную вольность строгим имперским порядком.»",
+                nodes: {
+                    karkaraly: { name: "Каркаралинский округ (1824)", text: "Один из первых внешних округов. Центр контроля над Восточной Сарыаркой. Первый ага-султан — Турсын Чингизов." },
+                    kokchetav: { name: "Кокчетавский округ (1824)", text: "Северный оплот реформы. Здесь находилась ставка хана Вали, ставшая административным центром имперского управления." },
+                    bayanaul: { name: "Баянаульский округ (1826)", text: "Узел в Центральном Казахстане. Место пересечения кочевых путей, превращенное в центр сбора податей и судебной власти." }
+                }
+            },
+            kz: {
+                title: "Орта жүздің Ресейге қосылуы (ХІХ ғ.)",
+                vizTitle: "Егемендікті жою",
+                vizDesc: "1822 жылғы реформа жүзді әкімшілік бірліктерге бөлді. Талдау жасау үшін кенептегі билік орталықтарын басыңыз.",
+                badge: "Әкімшілік жұтылуды талдау",
+                elementTitleDefault: "Округті таңдаңыз",
+                elementDescDefault: "Оң жақтағы сызбадан Қарқаралы, Көкшетау немесе Баянауылды басыңыз.",
+                tag1: "Саясат", tag2: "Басқару", tag3: "Қарсылық",
+                c1T: "Хан билігінің соңы", c1D: "1819 жылы Уәли ханның өлімі атақты жоюға сылтау болды. Ресей аға сұлтандар жүйесін енгізіп, рулық ақсүйектерді шенеуніктер аппаратының бөлігіне айналдырды.",
+                c2T: "Сыртқы округтер", c2D: "Бекіністерде орталықтары бар округтер (Қарқаралы, Ақмола) құрылды. Округтік приказдар сот жүргізу және салық жинау құқығын алып, билерді нақты биліктен айырды.",
+                c3T: "Ақсүйектер қарсылығы", c3D: "Саржан мен Ғұбайдолла Қасымовтар хандықты қалпына келтіру үшін күресті басқарды. Олардың көтерілістері Кенесарының ұлы соғысының бастамасы болды.",
+                featT: "Отарлық тәртіп", featD: "Зекет (ясақ) енгізу және көші-қонды шектеу. Дәстүрлі құқық (әдет) империялық заңдармен ығыстырылып, әлеуметтік шиеленістің артуына әкелді.",
+                footer: "«Орта жүздің қосылуы дала еркіндігін қатал империялық тәртіппен алмастырды.»",
+                nodes: {
+                    karkaraly: { name: "Қарқаралы округі (1824)", text: "Алғашқы сыртқы округтердің бірі. Шығыс Сарыарқаны бақылау орталығы. Алғашқы аға сұлтан — Тұрсын Шыңғысов." },
+                    kokchetav: { name: "Көкшетау округі (1824)", text: "Реформаның солтүстік тірегі. Мұнда Уәли ханның ордасы орналасқан болатын, ол империялық басқару орталығына айналды." },
+                    bayanaul: { name: "Баянауыл округі (1826)", text: "Орталық Қазақстандағы торап. Көш жолдарының қиылысқан жері, салық жинау және сот билігінің орталығына айналды." }
+                }
+            },
+            en: {
+                title: "Incorporation of the Middle Zhuz (19th century)",
+                vizTitle: "Dismantling Sovereignty",
+                vizDesc: "The 1822 Reform divided the Zhuz into administrative units. Click on power centers on the canvas for analysis.",
+                badge: "Administrative Annexation Analysis",
+                elementTitleDefault: "Select a District",
+                elementDescDefault: "Click on Karkaraly, Kokchetav, or Bayanaul on the canvas.",
+                tag1: "Politics", tag2: "Governance", tag3: "Resistance",
+                c1T: "End of Khan Rule", c1D: "The death of Wali Khan in 1819 served as a reason to abolish the title. Russia introduced the 'Aga-Sultan' system, turning tribal nobility into bureaucratic officials.",
+                c2T: "External Districts", c2D: "Creation of districts (Karkaraly, Akmola) with headquarters in fortifications. District orders gained judicial and tax powers, stripping Biys of real authority.",
+                c3T: "Noble Resistance", c3D: "Sultans Sarzhan and Gubaidulla Kasymov led the struggle to restore the khanate. Their uprisings were precursors to Kenesary's Great War.",
+                featT: "Colonial Order", featD: "Introduction of Yasak and migration restrictions. Traditional common law (Adat) was pushed aside by imperial laws, increasing social tension.",
+                footer: "«The incorporation of the Middle Zhuz replaced steppe freedom with strict imperial order.»",
+                nodes: {
+                    karkaraly: { name: "Karkaraly District (1824)", text: "One of the first external districts. A center for controlling Eastern Saryarka. The first Aga-Sultan was Tursyn Chingizov." },
+                    kokchetav: { name: "Kokchetav District (1824)", text: "The northern stronghold of the reform. The former headquarters of Wali Khan, transformed into an imperial administrative hub." },
+                    bayanaul: { name: "Bayanaul District (1826)", text: "A junction in Central Kazakhstan. A crossroads of nomadic routes turned into a center for tax collection and judicial power." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 550;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // 1. Draw Abstract Territory Outline (Central/North KZ)
+            ctx.beginPath();
+            ctx.moveTo(100 * scale, 150 * scale);
+            ctx.lineTo(400 * scale, 50 * scale);
+            ctx.lineTo(700 * scale, 150 * scale);
+            ctx.lineTo(600 * scale, 450 * scale);
+            ctx.lineTo(200 * scale, 450 * scale);
+            ctx.closePath();
+            ctx.strokeStyle = 'rgba(28, 25, 23, 0.1)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 2. Administrative Centers (Nodes)
+            drawNode(400 * scale, 100 * scale, '#1c1917', "KOKCHETAV (1824)", 'kokchetav');
+            drawNode(550 * scale, 300 * scale, '#44403c', "KARKARALY (1824)", 'karkaraly');
+            drawNode(350 * scale, 350 * scale, '#78716c', "BAYANAUL (1826)", 'bayanaul');
+
+            // 3. Command center (OMSK - Outside)
+            drawNode(400 * scale, 20 * scale, '#991b1b', "OMSK (HQ)", null, true);
+
+            // Instructions
+            ctx.fillStyle = 'rgba(28, 25, 23, 0.2)';
+            ctx.font = 'bold 10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText("TAP ON DISTRICT NODES TO ANALYZE", cx, 530 * scale);
+        }
+
+        function drawNode(x, y, color, label, id, isSmall = false) {
+            ctx.beginPath();
+            ctx.arc(x, y, isSmall ? 8 : 15, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + (isSmall ? -15 : 30));
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const scale = canvas.width / 800;
+
+            let found = null;
+            if (Math.sqrt((x-400*scale)**2 + (y-100*scale)**2) < 30) found = 'kokchetav';
+            else if (Math.sqrt((x-550*scale)**2 + (y-300*scale)**2) < 30) found = 'karkaraly';
+            else if (Math.sqrt((x-350*scale)**2 + (y-350*scale)**2) < 30) found = 'bayanaul';
+
+            if (found) {
+                const info = translations[currentLang].nodes[found];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = '#1c1917';
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.getElementById('tag-1').innerText = t.tag1;
+            document.getElementById('tag-2').innerText = t.tag2;
+            document.getElementById('tag-3').innerText = t.tag3;
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            document.getElementById('feat-t').innerText = t.featT; document.getElementById('feat-d').innerText = t.featD;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-stone-500 hover:text-stone-800 transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => setLang('ru');
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

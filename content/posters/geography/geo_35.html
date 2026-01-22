@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atmospheric Pressure Dynamics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom left, #1e293b, #0f172a, #020617);
+            color: white; min-height: 100vh;
+        }
+        .heading-font { font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2.5rem; }
+        canvas { border-radius: 2rem; cursor: pointer; }
+        .lang-btn.active { background: #38bdf8; color: #020617; font-weight: 800; }
+        .pressure-gauge { transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-2 border-sky-500/30">
+        <div>
+            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-sky-400"></h1>
+            <p id="sub-title" class="mt-2 text-white/40 font-light tracking-widest text-[10px] uppercase italic"></p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="window.setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">RU</button>
+            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">KZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl border border-white/20 text-xs font-bold transition-all">EN</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <!-- Interactive Pressure Box -->
+        <div class="lg:col-span-8 glass rounded-custom p-8 flex flex-col items-center justify-center relative min-h-[500px]">
+            <h2 id="canvas-heading" class="heading-font text-xl text-sky-200 uppercase absolute top-8 left-8 opacity-70"></h2>
+            <canvas id="pressureCanvas" class="w-full h-full"></canvas>
+            
+            <!-- Altitude Controls -->
+            <div class="absolute bottom-8 flex gap-4">
+                <button onclick="changeAlt(0)" class="px-6 py-2 glass rounded-full text-xs font-bold hover:bg-sky-500/20">Sea Level / 0 m</button>
+                <button onclick="changeAlt(5000)" class="px-6 py-2 glass rounded-full text-xs font-bold hover:bg-sky-500/20">Mt. Everest / 8848 m</button>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="lg:col-span-4 glass rounded-custom p-10 flex flex-col justify-center border-r-4 border-sky-500">
+            <div class="mb-10 text-center">
+                <div class="text-[10px] uppercase text-sky-400 tracking-[0.4em] mb-2" id="label-pressure">Pressure</div>
+                <div id="pressure-val" class="heading-font text-5xl text-white">760</div>
+                <div class="text-xs text-white/40 mt-1">mm Hg</div>
+            </div>
+            
+            <h3 id="info-title" class="heading-font text-2xl mb-4 text-sky-300"></h3>
+            <div id="info-text" class="text-sm font-light leading-relaxed text-white/70 space-y-4"></div>
+        </div>
+    </main>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="glass rounded-custom p-10 border-t border-white/5">
+            <h4 id="card1-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card1-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 border-t border-white/5">
+            <h4 id="card2-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card2-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+        <div class="glass rounded-custom p-10 border-t border-white/5">
+            <h4 id="card3-title" class="heading-font text-xl mb-4 text-sky-400"></h4>
+            <div id="card3-desc" class="text-white/60 text-sm leading-relaxed"></div>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Давление Воздуха", subtitle: "Сила невидимого океана",
+                canvasHeading: "Молекулярная плотность", labelPressure: "Давление",
+                defaultTitle: "Закон Паскаля",
+                defaultText: "Атмосферное давление — это сила, с которой воздух давит на земную поверхность и все предметы на ней. Оно возникает из-за гравитационного притяжения воздушной оболочки.",
+                cards: [
+                    { title: "Нормальное", desc: "Нормальным считается давление 760 мм рт. ст. на уровне моря при температуре 0°C." },
+                    { title: "Зависимость", desc: "С высотой давление падает: каждые 10.5 метров подъема давление уменьшается на 1 мм рт. ст." },
+                    { title: "Барометр", desc: "Прибор для измерения давления. Бывает ртутным (Торричелли) или металлическим (анероид)." }
+                ]
+            },
+            kz: {
+                title: "Ауа Қысымы", subtitle: "Көрінбейтін мұхиттың күші",
+                canvasHeading: "Молекулалық тығыздық", labelPressure: "Қысым",
+                defaultTitle: "Паскаль заңы",
+                defaultText: "Атмосфералық қысым — ауаның жер бетіне және ондағы барлық заттарға түсіретін күші. Ол ауа қабығының гравитациялық тартылысынан туындайды.",
+                cards: [
+                    { title: "Қалыпты қысым", desc: "Теңіз деңгейінде 0°C-та 760 мм сын. бағ. тең қысым қалыпты деп саналады." },
+                    { title: "Тәуелділік", desc: "Биіктік артқан сайын қысым төмендейді: әрбір 10.5 метр сайын 1 мм сын. бағ. кемиді." },
+                    { title: "Барометр", desc: "Қысымды өлшейтін аспап. Сынапты және металл (анероид) түрлері болады." }
+                ]
+            },
+            en: {
+                title: "Air Pressure", subtitle: "Force of the Invisible Ocean",
+                canvasHeading: "Molecular Density", labelPressure: "Pressure",
+                defaultTitle: "Pascal's Law",
+                defaultText: "Atmospheric pressure is the force exerted by air on the Earth's surface and everything on it. It results from the gravitational pull on the air shell.",
+                cards: [
+                    { title: "Normal Pressure", desc: "760 mm Hg at sea level at 0°C is considered standard atmospheric pressure." },
+                    { title: "Altitude Link", desc: "Pressure decreases with altitude: roughly by 1 mm Hg for every 10.5 meters of ascent." },
+                    { title: "Barometer", desc: "A device used to measure atmospheric pressure. Includes mercury and aneroid types." }
+                ]
+            }
+        };
+
+        let currentLang = 'ru', canvas, ctx, currentAlt = 0, particles = [];
+
+        window.setLang = function(l) {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${l}`).classList.add('active');
+            updateUI();
+        }
+
+        window.changeAlt = function(a) {
+            currentAlt = a;
+            const p = 760 - Math.round(a / 10.5);
+            document.getElementById('pressure-val').textContent = Math.max(p, 50);
+            initParticles();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('sub-title').textContent = t.subtitle;
+            document.getElementById('canvas-heading').textContent = t.canvasHeading;
+            document.getElementById('label-pressure').textContent = t.labelPressure;
+            document.getElementById('info-title').textContent = t.defaultTitle;
+            document.getElementById('info-text').textContent = t.defaultText;
+            document.getElementById('card1-title').textContent = t.cards[0].title;
+            document.getElementById('card1-desc').textContent = t.cards[0].desc;
+            document.getElementById('card2-title').textContent = t.cards[1].title;
+            document.getElementById('card2-desc').textContent = t.cards[1].desc;
+            document.getElementById('card3-title').textContent = t.cards[2].title;
+            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.max(20, 150 * (1 - currentAlt/10000));
+            for(let i=0; i<count; i++) {
+                particles.push({
+                    x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                    vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2
+                });
+            }
+        }
+
+        function draw() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x<0 || p.x>canvas.width) p.vx*=-1;
+                if(p.y<0 || p.y>canvas.height) p.vy*=-1;
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.6)';
+                ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('pressureCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight || 500;
+            setLang('ru');
+            initParticles();
+            draw();
+        };
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

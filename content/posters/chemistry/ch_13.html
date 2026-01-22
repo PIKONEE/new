@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Құрамның тұрақтылық заңы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fef08a; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .header-card { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); color: white; padding: 40px; border-radius: 1rem; }
+        .section-heading { color: #ca8a04; border-bottom: 3px solid #fef3c7; display: inline-block; padding-bottom: 5px; margin-bottom: 25px; font-weight: 700; }
+        .rule-card { background: white; border-radius: 0.75rem; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid #eab308; margin-bottom: 20px; }
+        .lang-btn { padding: 8px 16px; border: 2px solid #eab308; background: white; color: #eab308; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+        .lang-btn.active { background: #eab308; color: white; }
+        .lang-content { display: none; }
+        .lang-kk .lang-content[lang="kk"], .lang-en .lang-content[lang="en"], .lang-ru .lang-content[lang="ru"] { display: block; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; font-size: 12px; }
+        th { background-color: #eab308; color: white; }
+        .law-box { background: linear-gradient(135deg, #fef3c7 0%, #fef08a 100%); padding: 20px; border-radius: 0.75rem; border-left: 5px solid #eab308; margin: 15px 0; }
+        .example-calculation { background: #fffbeb; padding: 15px; border-radius: 0.75rem; border-left: 4px solid #eab308; margin: 10px 0; font-family: 'Courier New', monospace; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-yellow-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <div id="poster-container" class="container lang-kk">
+        <div style="display:flex; justify-content:center; margin-bottom:20px; gap:10px;">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-4xl font-extrabold uppercase"> Құрамның тұрақтылық ЗАҢЫ - ХИМИЯНЫҢ ФУНДАМЕНТ!</h1>
+            <h1 lang="en" class="lang-content text-4xl font-extrabold uppercase">LAW OF CONSTANT COMPOSITION - FOUNDATION OF CHEMISTRY!</h1>
+            <h1 lang="ru" class="lang-content text-4xl font-extrabold uppercase">Закон постоянства состава - ОСНОВА ХИМИИ!</h1>
+            <p lang="kk" class="lang-content mt-3 text-lg font-medium text-yellow-100">Құрамдас зат әрқашан бір элементтердің пайызын ұстайды! H₂O әрқашан 11% H + 89% O. CO₂ әрқашан 27% C + 73% O. ҒАЖАП ЗАҢЫ!</p>
+            <p lang="en" class="lang-content mt-3 text-lg font-medium text-yellow-100">Compound always has fixed percentage of elements! H₂O always 11% H + 89% O. CO₂ always 27% C + 73% O. AMAZING LAW!</p>
+            <p lang="ru" class="lang-content mt-3 text-lg font-medium text-yellow-100">Соединение всегда имеет постоянный состав! H₂O всегда 11% H + 89% O. CO₂ всегда 27% C + 73% O. УДИВИТЕЛЬНЫЙ ЗАКОН!</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1.   Құрамның тұрақтылық ЗАҢЫ - ПРИМЕРЫ ТАБЛИЦАСЫ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. LAW OF CONSTANT COMPOSITION - EXAMPLES TABLE</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Закон постоянства - примеры в таблице</h2>
+
+            <div class="rule-card">
+                <div class="overflow-x-auto">
+                    <table>
+                        <tr>
+                            <th lang="kk" class="lang-content">Байланыс</th>
+                            <th lang="kk" class="lang-content">ҚАЖЕТТІЛІКТЕМЕ</th>
+                            <th lang="kk" class="lang-content">ЭЛЕМЕНТ 1</th>
+                            <th lang="kk" class="lang-content">ЭЛЕМЕНТ 2</th>
+                            <th lang="kk" class="lang-content">ЭЛЕМЕНТ 3</th>
+                            <th lang="kk" class="lang-content">ҚАЖЕТ?</th>
+
+                            <th lang="en" class="lang-content">COMPOUND</th>
+                            <th lang="en" class="lang-content">FORMULA</th>
+                            <th lang="en" class="lang-content">ELEMENT 1</th>
+                            <th lang="en" class="lang-content">ELEMENT 2</th>
+                            <th lang="en" class="lang-content">ELEMENT 3</th>
+                            <th lang="en" class="lang-content">CONSTANT?</th>
+
+                            <th lang="ru" class="lang-content">СОЕДИНЕНИЕ</th>
+                            <th lang="ru" class="lang-content">ФОРМУЛА</th>
+                            <th lang="ru" class="lang-content">ЭЛЕМЕНТ 1</th>
+                            <th lang="ru" class="lang-content">ЭЛЕМЕНТ 2</th>
+                            <th lang="ru" class="lang-content">ЭЛЕМЕНТ 3</th>
+                            <th lang="ru" class="lang-content">ПОСТОЯННО?</th>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>СУ</strong></td>
+                            <td lang="kk" class="lang-content">H₂O</td>
+                            <td lang="kk" class="lang-content">H: 11,1%</td>
+                            <td lang="kk" class="lang-content">O: 88,9%</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">✓ ДА!</td>
+
+                            <td lang="en" class="lang-content"><strong>WATER</strong></td>
+                            <td lang="en" class="lang-content">H₂O</td>
+                            <td lang="en" class="lang-content">H: 11.1%</td>
+                            <td lang="en" class="lang-content">O: 88.9%</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">✓ YES!</td>
+
+                            <td lang="ru" class="lang-content"><strong>ВОДА</strong></td>
+                            <td lang="ru" class="lang-content">H₂O</td>
+                            <td lang="ru" class="lang-content">H: 11,1%</td>
+                            <td lang="ru" class="lang-content">O: 88,9%</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">✓ ДА!</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>ТҮТІН ГАЗ</strong></td>
+                            <td lang="kk" class="lang-content">CO₂</td>
+                            <td lang="kk" class="lang-content">C: 27,3%</td>
+                            <td lang="kk" class="lang-content">O: 72,7%</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">✓ ДА!</td>
+
+                            <td lang="en" class="lang-content"><strong>CARBON DIOXIDE</strong></td>
+                            <td lang="en" class="lang-content">CO₂</td>
+                            <td lang="en" class="lang-content">C: 27.3%</td>
+                            <td lang="en" class="lang-content">O: 72.7%</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">✓ YES!</td>
+
+                            <td lang="ru" class="lang-content"><strong>УГЛЕКИСЛЫЙ ГАЗ</strong></td>
+                            <td lang="ru" class="lang-content">CO₂</td>
+                            <td lang="ru" class="lang-content">C: 27,3%</td>
+                            <td lang="ru" class="lang-content">O: 72,7%</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">✓ ДА!</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>АС ТҰЗЫ</strong></td>
+                            <td lang="kk" class="lang-content">NaCl</td>
+                            <td lang="kk" class="lang-content">Na: 39,3%</td>
+                            <td lang="kk" class="lang-content">Cl: 60,7%</td>
+                            <td lang="kk" class="lang-content">-</td>
+                            <td lang="kk" class="lang-content">✓ ДА!</td>
+
+                            <td lang="en" class="lang-content"><strong>TABLE SALT</strong></td>
+                            <td lang="en" class="lang-content">NaCl</td>
+                            <td lang="en" class="lang-content">Na: 39.3%</td>
+                            <td lang="en" class="lang-content">Cl: 60.7%</td>
+                            <td lang="en" class="lang-content">-</td>
+                            <td lang="en" class="lang-content">✓ YES!</td>
+
+                            <td lang="ru" class="lang-content"><strong>ПОВАРЕННАЯ СОЛЬ</strong></td>
+                            <td lang="ru" class="lang-content">NaCl</td>
+                            <td lang="ru" class="lang-content">Na: 39,3%</td>
+                            <td lang="ru" class="lang-content">Cl: 60,7%</td>
+                            <td lang="ru" class="lang-content">-</td>
+                            <td lang="ru" class="lang-content">✓ ДА!</td>
+                        </tr>
+                        <tr>
+                            <td lang="kk" class="lang-content"><strong>ИЗ ВЕСТНЯКА</strong></td>
+                            <td lang="kk" class="lang-content">CaCO₃</td>
+                            <td lang="kk" class="lang-content">Ca: 40,0%</td>
+                            <td lang="kk" class="lang-content">C: 12,0%</td>
+                            <td lang="kk" class="lang-content">O: 48,0%</td>
+                            <td lang="kk" class="lang-content">✓ ДА!</td>
+
+                            <td lang="en" class="lang-content"><strong>LIMESTONE</strong></td>
+                            <td lang="en" class="lang-content">CaCO₃</td>
+                            <td lang="en" class="lang-content">Ca: 40.0%</td>
+                            <td lang="en" class="lang-content">C: 12.0%</td>
+                            <td lang="en" class="lang-content">O: 48.0%</td>
+                            <td lang="en" class="lang-content">✓ YES!</td>
+
+                            <td lang="ru" class="lang-content"><strong>ИЗВЕСТНЯК</strong></td>
+                            <td lang="ru" class="lang-content">CaCO₃</td>
+                            <td lang="ru" class="lang-content">Ca: 40,0%</td>
+                            <td lang="ru" class="lang-content">C: 12,0%</td>
+                            <td lang="ru" class="lang-content">O: 48,0%</td>
+                            <td lang="ru" class="lang-content">✓ ДА!</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. ПОСТОЯНСТВА СОСТАВА ВИЗУАЛДЫ ДИАГРАММА</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. VISUAL REPRESENTATION OF CONSTANT COMPOSITION</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Визуальное представление постоянства</h2>
+
+            <div class="rule-card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div style="background: #fffbeb; padding: 20px; border-radius: 0.75rem; border-left: 5px solid #eab308;">
+                        <p lang="kk" class="lang-content text-sm font-bold mb-3">💧 СУ (H₂O) - әрқашан:</p>
+                        <p lang="en" class="lang-content text-sm font-bold mb-3">💧 WATER (H₂O) - always:</p>
+                        <p lang="ru" class="lang-content text-sm font-bold mb-3">💧 ВОДА (H₂O) - всегда:</p>
+                        <svg viewBox="0 0 200 120" style="max-width: 200px; margin: 10px auto;">
+                            <!-- Diagram of H2O composition -->
+                            <rect x="10" y="20" width="90" height="60" fill="#4ecdc4" stroke="#333" stroke-width="2"/>
+                            <text x="55" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="white">H: 11.1%</text>
+                            <rect x="100" y="20" width="90" height="60" fill="#ff6b6b" stroke="#333" stroke-width="2"/>
+                            <text x="145" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="white">O: 88.9%</text>
+                        </svg>
+                        <p lang="kk" class="lang-content text-xs">✓ Мерзе қайт құрмасы</p>
+                        <p lang="en" class="lang-content text-xs">✓ Every time same composition</p>
+                        <p lang="ru" class="lang-content text-xs">✓ Всегда один состав</p>
+                    </div>
+
+                    <div style="background: #fffbeb; padding: 20px; border-radius: 0.75rem; border-left: 5px solid #eab308;">
+                        <p lang="kk" class="lang-content text-sm font-bold mb-3">⚫ ТҮТІН ГАЗ (CO₂) - әрқашан:</p>
+                        <p lang="en" class="lang-content text-sm font-bold mb-3">⚫ CARBON DIOXIDE (CO₂) - always:</p>
+                        <p lang="ru" class="lang-content text-sm font-bold mb-3">⚫ УГЛЕКИСЛЫЙ ГАЗ (CO₂) - всегда:</p>
+                        <svg viewBox="0 0 200 120" style="max-width: 200px; margin: 10px auto;">
+                            <!-- Diagram of CO2 composition -->
+                            <rect x="10" y="20" width="70" height="60" fill="#333" stroke="#333" stroke-width="2"/>
+                            <text x="45" y="55" text-anchor="middle" font-size="11" font-weight="bold" fill="white">C: 27.3%</text>
+                            <rect x="80" y="20" width="110" height="60" fill="#ff6b6b" stroke="#333" stroke-width="2"/>
+                            <text x="135" y="55" text-anchor="middle" font-size="11" font-weight="bold" fill="white">O: 72.7%</text>
+                        </svg>
+                        <p lang="kk" class="lang-content text-xs">✓ Мерзе қайт құрмасы</p>
+                        <p lang="en" class="lang-content text-xs">✓ Every time same composition</p>
+                        <p lang="ru" class="lang-content text-xs">✓ Всегда один состав</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. ПОСТОЯНСТВА СОСТАВА ДОКАЗАНЫ - БАҒАЛАУ</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. EVIDENCE OF CONSTANT COMPOSITION - EXPERIMENTS</h2>
+            <h2 lang="ru" class="lang-content text-3ll section-heading">3. Доказательства постоянства - экспериментально</h2>
+
+            <div class="rule-card">
+                <div class="space-y-4">
+                    <div class="law-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>🔬 ЭКСПЕРИМЕНТ 1: Су синтезі</strong></p>
+                        <p lang="kk" class="lang-content text-sm">2H₂ + O₂ → 2H₂O</p>
+                        <p lang="kk" class="lang-content text-sm">Салмағы: 4г H₂ + 32г O₂ = 36г H₂O</p>
+                        <p lang="kk" class="lang-content text-sm">ПАЙЫЗ: H = 4/36 = 11.1%, O = 32/36 = 88.9% ✓</p>
+
+                        <p lang="en" class="lang-content text-sm"><strong>🔬 EXPERIMENT 1: Water synthesis</strong></p>
+                        <p lang="en" class="lang-content text-sm">2H₂ + O₂ → 2H₂O</p>
+                        <p lang="en" class="lang-content text-sm">Mass: 4g H₂ + 32g O₂ = 36g H₂O</p>
+                        <p lang="en" class="lang-content text-sm">PERCENT: H = 4/36 = 11.1%, O = 32/36 = 88.9% ✓</p>
+
+                        <p lang="ru" class="lang-content text-sm"><strong>🔬 ОПЫТ 1: Синтез воды</strong></p>
+                        <p lang="ru" class="lang-content text-sm">2H₂ + O₂ → 2H₂O</p>
+                        <p lang="ru" class="lang-content text-sm">Масса: 4г H₂ + 32г O₂ = 36г H₂O</p>
+                        <p lang="ru" class="lang-content text-sm">ПРОЦЕНТ: H = 4/36 = 11,1%, O = 32/36 = 88,9% ✓</p>
+                    </div>
+
+                    <div class="law-box">
+                        <p lang="kk" class="lang-content text-sm"><strong>🔬 ЭКСПЕРИМЕНТ 2: Түтін газ синтезі</strong></p>
+                        <p lang="kk" class="lang-content text-sm">C + O₂ → CO₂</p>
+                        <p lang="kk" class="lang-content text-sm">Салмағы: 12г C + 32г O₂ = 44г CO₂</p>
+                        <p lang="kk" class="lang-content text-sm">ПАЙЫЗ: C = 12/44 = 27.3%, O = 32/44 = 72.7% ✓</p>
+
+                        <p lang="en" class="lang-content text-sm"><strong>🔬 EXPERIMENT 2: Carbon dioxide synthesis</strong></p>
+                        <p lang="en" class="lang-content text-sm">C + O₂ → CO₂</p>
+                        <p lang="en" class="lang-content text-sm">Mass: 12g C + 32g O₂ = 44g CO₂</p>
+                        <p lang="en" class="lang-content text-sm">PERCENT: C = 12/44 = 27.3%, O = 32/44 = 72.7% ✓</p>
+
+                        <p lang="ru" class="lang-content text-sm"><strong>🔬 ОПЫТ 2: Синтез углекислого газа</strong></p>
+                        <p lang="ru" class="lang-content text-sm">C + O₂ → CO₂</p>
+                        <p lang="ru" class="lang-content text-sm">Масса: 12г C + 32г O₂ = 44г CO₂</p>
+                        <p lang="ru" class="lang-content text-sm">ПРОЦЕНТ: C = 12/44 = 27,3%, O = 32/44 = 72,7% ✓</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 24px; background: #fef3c7; border-radius: 1rem; border-top: 4px solid #eab308;">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">ҚОРЫТЫНДЫ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">CONCLUSION</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">ЗАКЛЮЧЕНИЕ</h3>
+            <p lang="kk" class="lang-content text-sm">ПОСТОЯНСТВА СОСТАВА ЗАҢЫ: құрамдас зат әрқашан сол элементтердің бір пайызын ұстайды. H₂O әрқашан 11,1% H + 88,9% O. CO₂ әрқашан 27,3% C + 72,7% O. CaCO₃ әрқашан 40% Ca + 12% C + 48% O. БҰЛ ЗАҢЫ - ХИМИЯНЫҢ ФУНДАМЕНТ!</p>
+            <p lang="en" class="lang-content text-sm">LAW OF CONSTANT COMPOSITION: compound always has fixed percentage of elements. H₂O always 11.1% H + 88.9% O. CO₂ always 27.3% C + 72.7% O. CaCO₃ always 40% Ca + 12% C + 48% O. THIS LAW IS THE FOUNDATION OF CHEMISTRY!</p>
+            <p lang="ru" class="lang-content text-sm">ЗАКОН ПОСТОЯНСТВА СОСТАВА: соединение всегда содержит один и тот же процент элементов. H₂O всегда 11,1% H + 88,9% O. CO₂ всегда 27,3% C + 72,7% O. CaCO₃ всегда 40% Ca + 12% C + 48% O. ЭТО ОСНОВАНИЕ ХИМИИ!</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+            container.classList.add('lang-' + lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick') === `switchLang('${lang}')`);
+            });
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

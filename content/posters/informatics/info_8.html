@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<!-- Бастапқы тіл - Қазақша -->
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плакат: Исполнитель Чертёжник (Перо)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdfa; /* teal-50 */
+            overflow-x: hidden;
+            color: #064e3b; /* teal-900 */
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+        /* Тақырып карточкасы - Pen Teal Theme */
+        .header-card {
+            background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); /* teal-700 to 600 */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.4);
+            color: white;
+            padding: 40px;
+        }
+        /* Бөлім тақырыбы */
+        .section-heading {
+            color: #115e59; /* teal-800 */
+            border-bottom: 3px solid #5eead4; /* teal-300 */
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ереже карточкасы */
+        .rule-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+        }
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        /* Мысал блогы */
+        .example-block {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        /* Түйін */
+        .footer-card {
+            text-align: center;
+            margin-top: 40px;
+            padding: 24px;
+            background-color: #ccfbf1; /* teal-100 */
+            border-radius: 1rem;
+            border-top: 4px solid #0f766e; /* teal-700 */
+        }
+         .term {
+            font-weight: bold;
+            color: #0d9488; /* teal-600 */
+        }
+
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #0d9488;
+            background-color: #ffffff;
+            color: #0d9488;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover {
+            background-color: #f0fdfa;
+        }
+        .lang-btn.active {
+            background-color: #0d9488;
+            color: #ffffff;
+        }
+
+        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
+        .lang-content {
+            display: none;
+        }
+        .lang-kk .lang-content[lang="kk"],
+        .lang-en .lang-content[lang="en"],
+        .lang-ru .lang-content[lang="ru"] {
+            display: block;
+        }
+        .lang-kk span.lang-content[lang="kk"],
+        .lang-en span.lang-content[lang="en"],
+        .lang-ru span.lang-content[lang="ru"] {
+            display: inline;
+        }
+
+        .illustration-svg {
+            width: 100%;
+            height: 220px;
+            margin: 15px 0;
+            border: 1px solid #99f6e4;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+        /* Стили для подписей в SVG */
+        .svg-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #115e59;
+            text-anchor: middle;
+        }
+        /* Scratch Block Colors */
+        .block-pen { fill: #0fbd8c; stroke: #0b8e69; } /* Pen Color */
+        .block-motion { fill: #4c97ff; stroke: #3373cc; }
+        .block-events { fill: #ffbf00; stroke: #cc9900; }
+        .block-control { fill: #ffab19; stroke: #cf8b17; }
+
+        .svg-sprite {
+            fill: #fbbf24;
+            stroke: #b45309;
+            stroke-width: 2;
+        }
+        .svg-trace {
+            stroke: #0fbd8c;
+            stroke-width: 4;
+            stroke-linecap: round;
+            fill: none;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-teal-50">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(20, 184, 166, 0.6)';"
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(20, 184, 166, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <!-- ID-і бар негізгі контейнер -->
+    <div id="poster-container" class="container lang-kk">
+
+        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
+        </div>
+
+        <!-- БАСТЫ ТАҚЫРЫП -->
+        <header class="header-card text-center mb-10">
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ИСПОЛНИТЕЛЬ ЧЕРТЁЖНИК (ПЕРО)</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">THE PEN EXTENSION</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">ИСПОЛНИТЕЛЬ ЧЕРТЁЖНИК (ПЕРО)</h1>
+
+            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-teal-100">Scratch-та сурет салу және сызу.</p>
+            <p lang="en" class="lang-content mt-2 text-xl font-medium text-teal-100">Drawing and drafting in Scratch.</p>
+            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-teal-100">Рисование и черчение в Scratch.</p>
+        </header>
+
+        <!-- 1. ПЕРО (PEN) ДЕГЕНІМІЗ НЕ? -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">1. "Перо" кеңейтімі</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">1. The "Pen" Extension</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Расширение "Перо"</h2>
+
+            <div class="rule-card border-t-teal-500">
+                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="kk">Чертёжник (Перо)</span> – бұл Спрайттың артынан із қалдыруына мүмкіндік беретін құрал. Оны қосу үшін сол жақ төменгі бұрыштағы <strong>[+]</strong> батырмасын басу керек.
+                </p>
+                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    The <span class="term" lang="en">Pen</span> allows a Sprite to leave a trail behind it. To add it, click the <strong>[+]</strong> button in the bottom left corner.
+                </p>
+                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
+                    <span class="term" lang="ru">Перо (Чертёжник)</span> – инструмент, позволяющий Спрайту оставлять след. Чтобы добавить его, нажмите кнопку <strong>[+]</strong> в левом нижнем углу.
+                </p>
+
+                <!-- Illustration 1: Adding Pen Extension -->
+                <svg class="illustration-svg" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Sidebar -->
+                    <rect x="10" y="10" width="60" height="130" fill="#f1f5f9" stroke="#cbd5e1"/>
+                    <circle cx="40" cy="30" r="8" fill="#4c97ff"/>
+                    <circle cx="40" cy="50" r="8" fill="#9966ff"/>
+                    <circle cx="40" cy="70" r="8" fill="#cf63cf"/>
+
+                    <!-- Add Extension Button -->
+                    <rect x="20" y="110" width="40" height="25" rx="5" fill="#4f46e5"/>
+                    <text x="40" y="127" font-size="20" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+
+                    <!-- Arrow -->
+                    <line x1="80" y1="120" x2="120" y2="120" stroke="#0d9488" stroke-width="3" marker-end="url(#arrow-teal)"/>
+
+                    <!-- Pen Icon Block -->
+                    <g transform="translate(140, 80)">
+                        <rect x="0" y="0" width="80" height="80" rx="10" fill="#0fbd8c" stroke="#0b8e69"/>
+                        <path d="M 25 55 L 55 25 L 60 30 L 30 60 L 20 60 L 20 50 Z" fill="#fff"/> <!-- Pen Body -->
+                        <path d="M 20 60 L 25 55 L 30 60 Z" fill="#000"/> <!-- Pen Tip -->
+                        <text x="40" y="70" font-size="12" fill="#fff" font-weight="bold" text-anchor="middle">Pen</text>
+                    </g>
+
+                    <text x="280" y="80" class="svg-label" font-size="14">Сызу құралдары</text>
+                    <text x="280" y="100" class="svg-label" font-size="14">Drawing Tools</text>
+
+                    <defs>
+                        <marker id="arrow-teal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#0d9488" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 2. НЕГІЗГІ КОМАНДАЛАР -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Негізгі командалар</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">2. Main Commands</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Основные команды</h2>
+
+            <div class="rule-card border-t-green-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Commands List -->
+                    <div>
+                        <ul class="space-y-4">
+                            <li class="flex items-center">
+                                <svg viewBox="0 0 100 30" class="w-32 h-10 mr-2">
+                                    <path d="M 0 0 L 100 0 L 100 30 L 0 30 Z" class="block-pen" rx="4"/>
+                                    <text x="50" y="20" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">erase all</text>
+                                </svg>
+                                <span class="text-sm text-gray-700">Тазалау / Clear</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg viewBox="0 0 100 30" class="w-32 h-10 mr-2">
+                                    <path d="M 0 0 L 100 0 L 100 30 L 0 30 Z" class="block-pen" rx="4"/>
+                                    <text x="50" y="20" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">pen down</text>
+                                </svg>
+                                <span class="text-sm text-gray-700">Қаламды түсіру / Start drawing</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg viewBox="0 0 100 30" class="w-32 h-10 mr-2">
+                                    <path d="M 0 0 L 100 0 L 100 30 L 0 30 Z" class="block-pen" rx="4"/>
+                                    <text x="50" y="20" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">pen up</text>
+                                </svg>
+                                <span class="text-sm text-gray-700">Қаламды көтеру / Stop drawing</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Visual Representation -->
+                    <div class="flex items-center justify-center bg-teal-50 rounded-lg p-4">
+                        <svg viewBox="0 0 150 100" class="w-full h-32">
+                            <!-- Dashed line (Pen Up) -->
+                            <line x1="10" y1="50" x2="50" y2="50" stroke="#0fbd8c" stroke-width="2" stroke-dasharray="4"/>
+                            <text x="30" y="40" font-size="8" fill="#475569">Pen Up</text>
+
+                            <!-- Solid line (Pen Down) -->
+                            <line x1="50" y1="50" x2="120" y2="50" stroke="#0fbd8c" stroke-width="3"/>
+                            <text x="85" y="40" font-size="8" fill="#0fbd8c" font-weight="bold">Pen Down</text>
+
+                            <!-- Sprite -->
+                            <circle cx="120" cy="50" r="5" fill="#fbbf24"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. МЫСАЛ: КВАДРАТ СЫЗУ -->
+        <section class="mb-12">
+            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Мысал: Квадрат сызу</h2>
+            <h2 lang="en" class="lang-content text-3xl section-heading">3. Example: Drawing a Square</h2>
+            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Пример: Рисуем квадрат</h2>
+
+            <div class="rule-card border-t-indigo-500">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <!-- The Script -->
+                    <div class="flex-1">
+                        <h4 class="font-bold text-teal-900 mb-2" lang="ru">Скрипт:</h4>
+                        <svg viewBox="0 0 140 220" class="w-48 h-auto mx-auto">
+                            <!-- When flag clicked -->
+                            <path d="M 10 10 Q 30 0, 50 10 L 130 10 L 130 40 L 80 40 L 75 45 L 65 40 L 10 40 Z" class="block-events"/>
+                            <text x="70" y="30" font-size="10" fill="#78350f" font-weight="bold" text-anchor="middle">When 🏁 clicked</text>
+
+                            <!-- Erase All -->
+                            <rect x="10" y="40" width="120" height="30" class="block-pen"/>
+                            <path d="M 20 40 L 30 45 L 40 40" fill="#0b8e69"/> <!-- Notch top -->
+                            <path d="M 20 70 L 30 75 L 40 70" fill="#fff"/> <!-- Notch bottom -->
+                            <text x="70" y="60" font-size="10" fill="#fff" text-anchor="middle">erase all</text>
+
+                            <!-- Pen Down -->
+                            <rect x="10" y="70" width="120" height="30" class="block-pen"/>
+                            <text x="70" y="90" font-size="10" fill="#fff" text-anchor="middle">pen down</text>
+
+                            <!-- Repeat 4 -->
+                            <path d="M 10 100 L 130 100 L 130 130 L 30 130 L 30 180 L 130 180 L 130 200 L 10 200 Z" class="block-control"/>
+                            <text x="70" y="120" font-size="10" fill="#fff" text-anchor="middle">repeat (4)</text>
+
+                            <!-- Move 100 -->
+                            <rect x="30" y="130" width="100" height="25" class="block-motion"/>
+                            <text x="80" y="147" font-size="10" fill="#fff" text-anchor="middle">move (100)</text>
+
+                            <!-- Turn 90 -->
+                            <rect x="30" y="155" width="100" height="25" class="block-motion"/>
+                            <text x="80" y="172" font-size="10" fill="#fff" text-anchor="middle">turn ↷ (90)</text>
+                        </svg>
+                    </div>
+
+                    <!-- The Result -->
+                    <div class="flex-1 flex flex-col items-center justify-center bg-white border border-teal-200 rounded-lg p-4">
+                        <h4 class="font-bold text-teal-900 mb-4" lang="ru">Результат:</h4>
+                        <svg viewBox="0 0 200 200" class="w-48 h-48 border border-gray-200 bg-white">
+                            <!-- The Square Path -->
+                            <path d="M 50 50 L 150 50 L 150 150 L 50 150 Z" class="svg-trace"/>
+
+                            <!-- Sprite (Cat) at end position -->
+                            <circle cx="50" cy="50" r="8" class="svg-sprite"/>
+
+                            <!-- Direction Arrow -->
+                            <line x1="50" y1="50" x2="50" y2="30" stroke="#4c97ff" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                            <text x="50" y="20" font-size="10" fill="#4c97ff" text-anchor="middle">Direction</text>
+                        </svg>
+                    </div>
+
+                    <defs>
+                         <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#4c97ff" />
+                        </marker>
+                    </defs>
+                </div>
+            </div>
+        </section>
+
+        <!-- ТҮЙІН -->
+        <footer class="footer-card">
+            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-teal-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-teal-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-teal-900">ЗАПОМНИТЕ</h3>
+
+            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-teal-800">
+                Сурет салу үшін алдымен <strong>Pen Down</strong> (Қаламды түсіру) командасын қолдану керек. Қозғалыс (Move) командасы сызық сызады.
+            </p>
+            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-teal-800">
+                To draw, you must first use the <strong>Pen Down</strong> command. The Move command will then draw a line.
+            </p>
+            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-teal-800">
+                Чтобы рисовать, нужно сначала использовать команду <strong>Pen Down</strong> (Опустить перо). Команда Move (Идти) будет рисовать линию.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            const container = document.getElementById('poster-container');
+            if (container) {
+                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                container.classList.add('lang-' + lang);
+            }
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            switchLang('kk'); // Default
+        });
+
+        // QWebChannel Integration for Back Button
+        function goBack() {
+            if (typeof bridge !== 'undefined' && bridge) {
+                bridge.onBackClicked();
+            } else {
+                console.log('Bridge not found');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</body>
+</html>

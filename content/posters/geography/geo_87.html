@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samoa: Heart of Polynesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: radial-gradient(circle at center, #ea580c, #7c2d12); color: white; min-height: 100vh; font-family: 'Lato'; }
+        .serif { font-family: 'Cinzel', serif; }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #fcd34d; color: #451a03; }
+        canvas { cursor: pointer; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <header class="flex justify-between items-center mb-12 border-b border-orange-300/30 pb-4">
+        <div>
+            <h1 id="title" class="serif text-5xl text-orange-200"></h1>
+            <p class="text-xs uppercase tracking-[0.5em] text-orange-100/50 mt-2">The Independent State</p>
+        </div>
+        <div class="flex gap-2"><button onclick="setL('ru')" id="btn-ru" class="lang-btn px-4 py-1 rounded-full text-xs font-bold border border-white/20">RU</button><button onclick="setL('kz')" id="btn-kz" class="lang-btn px-4 py-1 rounded-full text-xs font-bold border border-white/20">KZ</button><button onclick="setL('en')" id="btn-en" class="lang-btn px-4 py-1 rounded-full text-xs font-bold border border-white/20">EN</button></div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Interactive Pattern Generator -->
+        <div class="glass rounded-custom p-4 relative h-[500px] flex flex-col items-center justify-center bg-black/20">
+            <canvas id="siapoCanvas" class="w-full h-full rounded-2xl"></canvas>
+            <p class="mt-4 text-xs font-bold uppercase tracking-widest text-orange-200">Click to weave 'Siapo' patterns</p>
+        </div>
+
+        <div class="flex flex-col justify-center gap-8">
+            <div class="glass p-8 rounded-custom border-l-8 border-orange-500">
+                <h2 id="h-info" class="text-3xl font-bold mb-4 text-orange-100"></h2>
+                <p id="t-info" class="text-lg leading-relaxed text-orange-50/80"></p>
+            </div>
+            
+            <div class="glass p-6 rounded-2xl">
+                <h4 class="text-orange-300 font-bold mb-2 uppercase text-xs tracking-widest">Fa'a Samoa</h4>
+                <p id="t-culture" class="text-sm italic opacity-80"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            ru: { t: "САМОА", h: "Сердце Полинезии", d: "Независимое государство на островах Савайи и Уполу. Экономика основана на экспорте рыбы, кокосового крема и туризме. В 2011 году страна сменила часовой пояс, «перепрыгнув» через сутки.", c: "«Путь Самоа» — традиционный уклад жизни, где вождь (матаи) играет главную роль." },
+            kz: { t: "САМОА", h: "Полинезия жүрегі", d: "Савайи және Уполу аралдарындағы тәуелсіз мемлекет. Экономикасы балық, кокос кремі және туризмге негізделген. 2011 жылы сағат белдеуін ауыстырды.", c: "«Самоа жолы» — көсем (матаи) басты рөл атқаратын дәстүрлі өмір салты." },
+            en: { t: "SAMOA", h: "Heart of Polynesia", d: "Independent state on Savai'i and Upolu islands. Economy relies on fishing, coconut cream, and tourism. In 2011, it skipped a day by shifting the dateline.", c: "«Fa'a Samoa» — the traditional Samoan way of life where the chief (matai) plays a central role." }
+        };
+
+        let lang='ru', cx, cvs, patternStep = 0;
+
+        window.setL = (l) => {
+            lang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+            document.getElementById('title').textContent = content[l].t;
+            document.getElementById('h-info').textContent = content[l].h;
+            document.getElementById('t-info').textContent = content[l].d;
+            document.getElementById('t-culture').textContent = content[l].c;
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            cx.clearRect(0,0,w,h);
+            
+            // Siapo (Tapa cloth) texture base
+            cx.fillStyle = '#78350f'; cx.fillRect(0,0,w,h);
+
+            cx.strokeStyle = '#fbbf24'; cx.lineWidth = 2;
+            
+            const gridSize = 60;
+            for(let x=0; x<w; x+=gridSize) {
+                for(let y=0; y<h; y+=gridSize) {
+                    if ((x+y)% (gridSize*2) === 0 && patternStep > 0) {
+                        // Flower motif
+                        cx.beginPath(); cx.arc(x+30, y+30, 20, 0, Math.PI*2); cx.stroke();
+                    }
+                    if (patternStep > 1) {
+                        // Geometric lines
+                        cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x+gridSize, y+gridSize); cx.stroke();
+                        cx.beginPath(); cx.moveTo(x+gridSize, y); cx.lineTo(x, y+gridSize); cx.stroke();
+                    }
+                }
+            }
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('siapoCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; draw(); };
+            window.addEventListener('resize', rs); rs();
+            cvs.addEventListener('click', () => { patternStep = (patternStep+1)%3; draw(); });
+            setL('ru');
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

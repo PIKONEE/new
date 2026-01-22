@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Культура средневековых городов Казахстана</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #1e293b; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .blueprint-bg {
+            background-color: #ffffff;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 2.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+        }
+
+        .lang-active {
+            background-color: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+        }
+
+        canvas {
+            cursor: crosshair;
+            border-radius: 1.5rem;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+        }
+
+        .info-card {
+            background: #ffffff;
+            border-radius: 2rem;
+            border: 1px solid #e2e8f0;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .info-card:hover {
+            border-color: #0f172a;
+            transform: translateY(-5px);
+        }
+
+        .accent-bar {
+            width: 3rem;
+            height: 0.5rem;
+            background: #0f172a;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .term-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="blueprint-bg min-h-screen pb-20">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+
+    <!-- Header (Strict, no emoji) -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-slate-900 text-center">Культура средневековых городов Казахстана</h1>
+            <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
+                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
+                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: Interactive Urban Plan (The Map replacement) -->
+        <div class="main-container p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-4 space-y-8">
+                    <div id="badge" class="inline-block bg-slate-900 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Master Plan Analysis</div>
+                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-slate-900 leading-tight uppercase italic">План древнего мегаполиса</h2>
+                    <p id="viz-desc" class="text-lg text-slate-500 font-light leading-relaxed">
+                        Города строились по строгим канонам. Нажмите на зоны чертежа (центр, жилое кольцо или предместье), чтобы изучить их назначение.
+                    </p>
+                    
+                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-slate-50 border-l-8 border-slate-900 shadow-sm transition-all duration-500">
+                        <h3 id="element-title" class="text-xl font-bold text-slate-900 mb-3 uppercase tracking-tighter">Выберите зону</h3>
+                        <p id="element-desc" class="text-slate-500 text-sm leading-relaxed italic">Кликните на элементы чертежа для подробной информации.</p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
+                    <canvas id="planCanvas"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[10px] text-slate-400 font-mono uppercase tracking-[0.3em]">Schematic Top-down view</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Detailed Fact Blocks (The Plan replacement) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            
+            <!-- Infrastructure -->
+            <div class="info-card">
+                <div class="accent-bar"></div>
+                <span class="term-label" id="t-eng">Инженерия</span>
+                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Системы Жизнеобеспечения</h3>
+                <p id="c1-d" class="text-slate-500 text-sm leading-relaxed mb-6">
+                    В X–XII веках Отрар и Тараз имели развитую систему водоснабжения. **Кубуры** (глиняные трубы) соединяли город с горными источниками. Также существовала уникальная система отопления **жарбас** — дымоходные каналы под полом зданий, которые обогревали дома в зимний период.
+                </p>
+                <div class="mt-auto pt-4 border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">Факт: 25+ городов на юге КЗ</div>
+            </div>
+
+            <!-- Social/Administration -->
+            <div class="info-card">
+                <div class="accent-bar"></div>
+                <span class="term-label" id="t-plan">Урбанизация</span>
+                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Архитектурный Код</h3>
+                <p id="c2-d" class="text-slate-500 text-sm leading-relaxed mb-6">
+                    Переход к использованию **жженого кирпича** позволил строить многометровые купольные мечети и мавзолеи. Городская усадьба была закрытого типа: окна выходили во внутренний дворик. Крупнейшим торговым центром был Испиджаб, где рынки занимали целые кварталы.
+                </p>
+                <div class="mt-auto pt-4 border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">Испиджаб — город купцов</div>
+            </div>
+
+            <!-- Science and Culture -->
+            <div class="info-card">
+                <div class="accent-bar"></div>
+                <span class="term-label" id="t-sci">Культура</span>
+                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-slate-900">Интеллектуальные Центры</h3>
+                <p id="c3-d" class="text-slate-500 text-sm leading-relaxed mb-6">
+                    Города были очагами науки. В Отраре располагалась вторая по величине библиотека мира после Александрийской. Здесь родился **Аль-Фараби**. Расцвет письменности привел к созданию шедевров Махмуда Кашгари и Юсуфа Баласагуни, объединивших тюркский дух и исламскую мысль.
+                </p>
+                <div class="mt-auto pt-4 border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">Отрар — центр науки</div>
+            </div>
+
+        </div>
+
+        <!-- Section 3: Economy Highlight -->
+        <div class="bg-slate-900 p-10 md:p-16 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h3 id="feat-t" class="text-3xl font-black mb-8 uppercase italic tracking-widest">Ремесло и Деньги</h3>
+                    <p id="feat-d" class="text-slate-400 text-xl font-light leading-relaxed mb-10">
+                        Каждый крупный город имел свой монетный двор. Мастера славились поливной бирюзовой керамикой, которая экспортировалась по всему Шелковому пути. Использование гончарного круга и печей для обжига вывело качество посуды на мировой уровень.
+                    </p>
+                    <div class="flex gap-4">
+                        <span id="feat-tag" class="px-6 py-2 bg-white/10 rounded-full border border-white/20 text-xs font-black uppercase tracking-widest">Silk Road Economy</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-white/5 p-8 rounded-3xl border border-white/10 text-center">
+                        <div class="text-4xl mb-3">🏺</div>
+                        <div id="re-1" class="text-[10px] font-bold text-slate-500 uppercase">Глазурь</div>
+                    </div>
+                    <div class="bg-white/5 p-8 rounded-3xl border border-white/10 text-center">
+                        <div class="text-4xl mb-3">🪙</div>
+                        <div id="re-2" class="text-[10px] font-bold text-slate-500 uppercase">Чеканка</div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -top-20 -right-20 text-[25rem] opacity-5 font-black rotate-12 pointer-events-none uppercase">METROPOLIS</div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 py-24 bg-white border-t border-slate-200 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-400">
+                «Средневековые города Казахстана стали монументальным свидетельством величия тюркской цивилизации, превратившей Степь в пространство высокой культуры.»
+            </p>
+            <div class="mt-12 h-1 w-24 bg-slate-200 mx-auto rounded-full"></div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "Культура средневековых городов Казахстана",
+                vizTitle: "План древнего мегаполиса",
+                vizDesc: "Города строились по строгим канонам. Нажмите на зоны чертежа (центр, жилое кольцо или окраины), чтобы изучить их назначение.",
+                badge: "Анализ генерального плана",
+                elementTitleDefault: "Выберите зону",
+                elementDescDefault: "Кликните на элементы чертежа для подробной информации.",
+                tEng: "Инженерия", tPlan: "Урбанизация", tSci: "Культура",
+                c1T: "Системы Жизнеобеспечения", c1D: "Использование кубуров (керамических труб) и системы канализации (ташнау). Уникальный обогрев полов (жарбас) был стандартом в общественных зданиях и богатых домах.",
+                c2T: "Архитектурный Код", c2D: "Деление на Цитадель, Шахристан и Рабад. Массовое использование жженого кирпича позволило строить прочные купольные мечети, мавзолеи и хаммамы.",
+                c3T: "Интеллектуальные Центры", c3D: "Отрарская библиотека, труды Аль-Фараби и Кашгари стали вершиной духовного развития региона. Города были центрами образования и международного обмена идеями.",
+                featT: "Ремесло и Деньги", featD: "Развитое гончарное ремесло (поливная керамика) и чеканка собственной монеты подтверждают экономический суверенитет городов Жетысу и Сырдарьи.",
+                featTag: "Экономика Шелкового пути", re1: "Керамика", re2: "Монеты",
+                footer: "«Средневековые города Казахстана стали монументальным свидетельством величия тюркской цивилизации.»",
+                zones: {
+                    citadel: { name: "Цитадель (Орда)", text: "Самая укрепленная центральная часть. Здесь находился дворец правителя, администрация и государственная казна." },
+                    shahristan: { name: "Шахристан", text: "Внутренняя часть города внутри стен. Место проживания знати, купцов и расположения главных мечетей и рынков." },
+                    rabad: { name: "Рабад", text: "Торгово-ремесленное предместье. Здесь находились мастерские, караван-сараи и кварталы простых горожан." }
+                }
+            },
+            kz: {
+                title: "Қазақстанның ортағасырлық қалаларының мәдениеті",
+                vizTitle: "Ежелгі мегаполис жоспары",
+                vizDesc: "Қалалар қатал канондар бойынша салынған. Олардың мақсатын білу үшін сызба аймақтарын (орталық, тұрғын үй немесе шет аймақ) басыңыз.",
+                badge: "Бас жоспарды талдау",
+                elementTitleDefault: "Аймақты таңдаңыз",
+                elementDescDefault: "Толық ақпарат алу үшін сызба элементтерін басыңыз.",
+                tEng: "Инженерия", tPlan: "Урбанизация", tSci: "Мәдениет",
+                c1T: "Тіршілікті қамтамасыз ету жүйелері", c1D: "Құбырларды (керамикалық құбырлар) және кәріз жүйесін (ташнау) пайдалану. Еденді жылытудың бірегей жүйесі (жарбас) қоғамдық ғимараттарда стандарт болды.",
+                c2T: "Сәулет коды", c2D: "Цитадель, Шахристан және Рабад болып бөліну. Күйдірілген кірпішті жаппай пайдалану берік күмбезді мешіттер, кесенелер мен хаммамдар салуға мүмкіндік берді.",
+                c3T: "Зерде орталықтары", c3D: "Отырар кітапханасы, әл-Фараби мен Қашқаридің еңбектері аймақтың рухани дамуының шыңы болды. Қалалар білім беру мен идеялар алмасу орталығы еді.",
+                featT: "Қолөнер мен Ақша", featD: "Дамыған қыш қолөнері (сырлы керамика) және меншікті монета соғу Жетісу мен Сырдария қалаларының экономикалық егемендігін дәлелдейді.",
+                featTag: "Жібек жолы экономикасы", re1: "Керамика", re2: "Монеталар",
+                footer: "«Қазақстанның ортағасырлық қалалары түркі өркениеті ұлылығының монументалды айғағы болды.»",
+                zones: {
+                    citadel: { name: "Цитадель (Орда)", text: "Ең бекіністі орталық бөлік. Мұнда билеуші сарайы, әкімшілік және мемлекеттік қазына орналасты." },
+                    shahristan: { name: "Шахристан", text: "Қабырға ішіндегі қаланың ішкі бөлігі. Ақсүйектер, көпестер тұратын және басты мешіттер мен базарлар орналасқан жер." },
+                    rabad: { name: "Рабад", text: "Сауда-қолөнер шет аймағы. Мұнда шеберханалар, керуен сарайлар мен қарапайым қала тұрғындарының кварталдары болды." }
+                }
+            },
+            en: {
+                title: "Culture of Medieval Cities of Kazakhstan",
+                vizTitle: "Ancient Metropolis Master Plan",
+                vizDesc: "Cities were built according to strict canons. Click on zones (center, residential ring, or suburbs) to learn their purpose.",
+                badge: "Master Plan Analysis",
+                elementTitleDefault: "Select a zone",
+                elementDescDefault: "Click on the blueprint elements for detailed information.",
+                tEng: "Engineering", tPlan: "Urbanization", tSci: "Culture",
+                c1T: "Life Support Systems", c1D: "The use of kuburs (ceramic pipes) and sewage systems (tashnau). Unique underfloor heating (jarbas) was standard in public buildings.",
+                c2T: "Architectural Code", c2D: "Division into Citadel, Shahristan, and Rabad. Mass use of baked bricks allowed building sturdy domed mosques, mausoleums, and hammams.",
+                c3T: "Intellectual Hubs", c3D: "Otrar Library, works of Al-Farabi and Kashgari were the peak of the region's spiritual development. Cities were centers of education.",
+                featT: "Crafts and Minting", featD: "Developed pottery (glazed ceramics) and the minting of own coins confirm the economic sovereignty of Zhetysu and Syr Darya cities.",
+                featTag: "Silk Road Economy", re1: "Ceramics", re2: "Coins",
+                footer: "«Medieval cities of Kazakhstan are a monumental testament to the greatness of Turkic civilization.»",
+                zones: {
+                    citadel: { name: "Citadel (Orda)", text: "The most fortified central part. Housed the ruler's palace, administration, and state treasury." },
+                    shahristan: { name: "Shahristan", text: "The inner city within the walls. Residence for nobility, merchants, and the site of main mosques and markets." },
+                    rabad: { name: "Rabad", text: "Trade and craft suburbs. Located here were workshops, caravanserais, and commoners' quarters." }
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+        const canvas = document.getElementById('planCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 500;
+            drawPlan();
+        }
+
+        function drawPlan() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            // Simple 2D Plan - Precise Geometry
+            
+            // 1. RABAD (Outer Circle)
+            ctx.beginPath();
+            ctx.arc(cx, cy, 220 * scale, 0, Math.PI * 2);
+            ctx.setLineDash([10, 10]);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 2. SHAHRISTAN (Middle Circle)
+            ctx.beginPath();
+            ctx.arc(cx, cy, 140 * scale, 0, Math.PI * 2);
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // 3. CITADEL (Inner Square-ish Circle)
+            ctx.beginPath();
+            ctx.arc(cx, cy, 60 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = '#0f172a';
+            ctx.fill();
+            ctx.strokeStyle = '#1e293b';
+            ctx.stroke();
+
+            // 4. City Gates (4 points)
+            for(let i=0; i<4; i++) {
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(i * Math.PI / 2);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(-10 * scale, -145 * scale, 20 * scale, 10 * scale);
+                ctx.restore();
+            }
+
+            // Labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText("RABAD", cx, cy + 180 * scale);
+            ctx.fillText("SHAHRISTAN", cx, cy + 100 * scale);
+            ctx.fillStyle = 'white';
+            ctx.fillText("CITADEL", cx, cy + 5 * scale);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = canvas.width / 800;
+
+            const dist = Math.sqrt((x - cx)**2 + (y - cy)**2);
+            let target = null;
+
+            if (dist < 60 * scale) target = 'citadel';
+            else if (dist < 140 * scale) target = 'shahristan';
+            else if (dist < 230 * scale) target = 'rabad';
+
+            if (target) {
+                const info = translations[currentLang].zones[target];
+                document.getElementById('element-title').innerText = info.name;
+                document.getElementById('element-desc').innerText = info.text;
+                document.getElementById('info-panel').style.borderColor = (target === 'citadel' ? '#0f172a' : (target === 'shahristan' ? '#475569' : '#94a3b8'));
+            }
+        });
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('viz-title').innerText = t.vizTitle;
+            document.getElementById('viz-desc').innerText = t.vizDesc;
+            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('element-title').innerText = t.elementTitleDefault;
+            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            
+            document.getElementById('t-eng').innerText = t.tEng;
+            document.getElementById('t-plan').innerText = t.tPlan;
+            document.getElementById('t-sci').innerText = t.tSci;
+
+            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
+            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
+            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
+            
+            document.getElementById('feat-t').innerText = t.featT;
+            document.getElementById('feat-d').innerText = t.featD;
+            document.getElementById('feat-tag').innerText = t.featTag;
+            document.getElementById('re-1').innerText = t.re1;
+            document.getElementById('re-2').innerText = t.re2;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            ['ru', 'kz', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-white transition-all";
+            });
+            resizeCanvas();
+        }
+
+        window.onload = () => { resizeCanvas(); setLang('ru'); };
+        window.onresize = resizeCanvas;
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>

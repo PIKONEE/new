@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Great & Central Plains</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #064e3b; color: white; min-height: 100vh; font-family: 'Inter'; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rounded-custom { border-radius: 2rem; }
+        .lang-btn.active { background: #4ade80; color: #064e3b; }
+    </style>
+</head>
+<body class="p-8">
+
+<!-- КНОПКА НАЗАД -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
+    <button onclick="goBack()" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
+       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
+        ← Назад
+    </button>
+</div>
+
+    <header class="flex justify-between items-center mb-8 border-b border-green-500/30 pb-4">
+        <h1 id="title" class="text-3xl font-montserrat text-green-300"></h1>
+        <div class="flex gap-2"><button onclick="setL('ru')" id="btn-ru" class="lang-btn px-3 py-1 rounded text-xs">RU</button><button onclick="setL('en')" id="btn-en" class="lang-btn px-3 py-1 rounded text-xs">EN</button></div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 glass rounded-custom p-4 h-[400px] relative">
+            <canvas id="plainsCanvas" class="w-full h-full"></canvas>
+            <div class="absolute top-4 right-4 bg-black/40 px-3 py-1 rounded text-xs text-green-200 uppercase tracking-widest">
+                Tornado Alley Visual
+            </div>
+        </div>
+
+        <div class="flex flex-col justify-center gap-6">
+            <div class="glass p-6 rounded-xl border-l-4 border-green-500">
+                <h3 id="h-info" class="text-xl font-bold mb-2 text-green-100"></h3>
+                <p id="t-info" class="text-sm leading-relaxed text-green-50/80"></p>
+            </div>
+            
+            <div class="glass p-6 rounded-xl">
+                <div class="text-xs uppercase text-green-300 font-bold mb-2">Agriculture</div>
+                <div class="flex gap-2 text-2xl">🌽 🌾 🐄</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const c = {
+            ru: { t: "Равнины Востока", h: "Житница континента", d: "Центральные и Великие равнины. Это область древнего оледенения (север) и плодородных прерий (юг). Климат континентальный. Характерны частые смены погоды и торнадо из-за отсутствия гор на севере и юге." },
+            en: { t: "Eastern Plains", h: "Breadbasket of the Continent", d: "Central and Great Plains. Area of ancient glaciation (north) and fertile prairies (south). Continental climate. Frequent weather changes and tornadoes due to lack of E-W mountain barriers." }
+        };
+
+        let cx, cvs, tornadoX = 0;
+
+        window.setL = (l) => {
+            const d = c[l] || c['en'];
+            document.getElementById('title').textContent = d.t;
+            document.getElementById('h-info').textContent = d.h;
+            document.getElementById('t-info').textContent = d.d;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+l).classList.add('active');
+        }
+
+        function draw() {
+            const w = cvs.width, h = cvs.height;
+            const t = Date.now() * 0.005;
+            cx.clearRect(0,0,w,h);
+
+            // Grass
+            cx.fillStyle = '#15803d'; cx.fillRect(0, h*0.6, w, h*0.4);
+            
+            // Sky
+            cx.fillStyle = '#0f172a'; cx.fillRect(0, 0, w, h*0.6);
+
+            // Tornado
+            tornadoX = (tornadoX + 1) % w;
+            cx.strokeStyle = '#9ca3af'; cx.lineWidth = 2;
+            cx.beginPath();
+            for(let i=0; i<100; i++) {
+                const y = h*0.6 - i*2;
+                const x = tornadoX + Math.sin(t + i*0.1) * (i*0.3);
+                if(i===0) cx.moveTo(x,y); else cx.lineTo(x,y);
+            }
+            cx.stroke();
+
+            requestAnimationFrame(draw);
+        }
+
+        window.onload = () => {
+            cvs = document.getElementById('plainsCanvas'); cx = cvs.getContext('2d');
+            const rs = () => { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; };
+            window.addEventListener('resize', rs); rs();
+            setL('ru'); draw();
+        }
+    </script>
+
+<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+    function goBack() {
+        console.log('goBack() вызвана');
+        if (typeof bridge !== 'undefined' && bridge) {
+            console.log('Bridge найден, вызываю onBackClicked()');
+            bridge.onBackClicked();
+        } else {
+            console.log('Bridge не найден!');
+        }
+    }
+
+    // Инициализация QWebChannel
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Инициализация QWebChannel...');
+
+        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    window.bridge = channel.objects.bridge;
+                    console.log('✅ Bridge подключен!');
+                });
+            } catch(e) {
+                console.error('❌ QWebChannel ошибка:', e);
+            }
+        } else {
+            console.warn('⚠️ QWebChannel или qt не найден');
+        }
+    });
+</script>
+
+</body>
+</html>
