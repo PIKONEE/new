@@ -120,17 +120,78 @@
             opacity: 0.8;
             font-size: 14px;
         }
+
+        .search-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 14px;
+  padding: 10px 12px;
+  backdrop-filter: blur(10px);
+  min-width: 320px;
+}
+
+#search-input{
+  width: 340px;
+  max-width: 45vw;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 15px;
+}
+
+#search-input::placeholder{
+  color: rgba(255,255,255,0.75);
+}
+
+.clear-btn{
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.clear-btn:hover{
+  background: rgba(255,255,255,0.26);
+  transform: scale(1.05);
+}
+
+.hint{
+  margin: 10px 0 18px;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
     </style>
     <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="header-left">
-                <button class="back-button" id="back-btn" onclick="goBack()">← Назад</button>
-                <h1 id="subject-title">Загрузка...</h1>
-            </div>
-        </header>
+  <div class="header-left">
+    <button class="back-button" id="back-btn" onclick="goBack()">← Назад</button>
+    <h1 id="subject-title">Загрузка...</h1>
+  </div>
+
+  <div class="search-wrap">
+    <input id="search-input" type="text" placeholder="Поиск плаката по названию..." autocomplete="off">
+    <button class="clear-btn" id="clear-btn" title="Очистить">✕</button>
+  </div>
+</header>
+
+<div class="hint" id="hint"></div>
+
 
         <div class="topics-grid" id="topics-grid">
             <!-- Темы будут загружены здесь -->
@@ -144,6 +205,8 @@
     <script>
         let bridge = null;
         let bridgeReady = false;
+        let allTopics = [];
+
 
         function goBack() {
             console.log("🔙 Клик на кнопку Назад");
@@ -153,6 +216,7 @@
         }
 
         function renderTopics(topics) {
+            allTopics = Array.isArray(topics) ? topics : [];
             console.log("📚 renderTopics() вызвана с", topics.length, "темами");
             const grid = document.getElementById('topics-grid');
             grid.innerHTML = '';
@@ -192,6 +256,57 @@
             } else {
                 console.error("❌ QWebChannel не найден!");
             }
+            const input = document.getElementById('search-input');
+const clearBtn = document.getElementById('clear-btn');
+const hint = document.getElementById('hint');
+
+function applyFilter() {
+  const q = (input.value || '').trim().toLowerCase();
+  const filtered = !q
+    ? allTopics
+    : allTopics.filter(t => (t.name || '').toLowerCase().includes(q));
+
+  // перерисуем список (без потери клика)
+  const grid = document.getElementById('topics-grid');
+  grid.innerHTML = '';
+
+  if (hint) {
+    hint.innerText = q
+      ? `Найдено: ${filtered.length} из ${allTopics.length}`
+      : `Найдено: ${allTopics.length}`;
+  }
+
+  filtered.forEach((topic, index) => {
+    const card = document.createElement('div');
+    card.className = 'topic-card';
+    card.style.animationDelay = `${index * 0.03}s`;
+    card.onclick = () => {
+      if (bridgeReady && bridge) bridge.onTopicClicked(topic.id);
+    };
+    card.innerHTML = `<h3>${topic.name}</h3>`;
+    grid.appendChild(card);
+  });
+}
+
+if (input) {
+  input.addEventListener('input', applyFilter);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      input.value = '';
+      applyFilter();
+      input.blur();
+    }
+  });
+}
+
+if (clearBtn) {
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    applyFilter();
+    input.focus();
+  });
+}
+
         });
     </script>
 </body>
