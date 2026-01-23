@@ -3,7 +3,7 @@ import sys
 import os
 import json
 import logging
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWebChannel import QWebChannel
@@ -92,6 +92,7 @@ class MainWindow(QMainWindow):
         # Переменные состояния
         self.current_lang = 'kz'
         self.current_subject = None
+        self.current_topic_id = None
         self.current_screen = 'activation'  # activation, subjects, topics, poster
         self.translations = {}
         self.subjects_structure = {}
@@ -105,6 +106,55 @@ class MainWindow(QMainWindow):
 
         self.web_view = QWebEngineView()
         self.layout.addWidget(self.web_view)
+        # === Overlay навигация (стрелки поверх плаката) ===
+        # === КНОПКИ НАВИГАЦИИ (не перекрывают плакат) ===
+        self.nav_left = QWidget(self.central_widget)
+        self.nav_right = QWidget(self.central_widget)
+
+        self.nav_left.setStyleSheet("background: transparent;")
+        self.nav_right.setStyleSheet("background: transparent;")
+
+        self.btn_prev = QPushButton("←", self.nav_left)
+        self.btn_next = QPushButton("→", self.nav_right)
+
+        for b in (self.btn_prev, self.btn_next):
+            b.setFixedSize(48, 48)
+            b.setCursor(Qt.CursorShape.PointingHandCursor)
+            b.setStyleSheet("""
+                QPushButton{
+                    border:none; border-radius:24px;
+                    background: rgba(0,0,0,160);
+                    color:white; font-size:20px; font-weight:700;
+                }
+                QPushButton:hover{ background: rgba(0,0,0,210); }
+            """)
+
+        self.btn_prev.clicked.connect(self.go_prev_poster)
+        self.btn_next.clicked.connect(self.go_next_poster)
+
+        self.nav_left.hide()
+        self.nav_right.hide()
+
+        def _place_nav():
+            g = self.web_view.geometry()
+            h = g.height()
+            y = g.y() + h // 2 - 24
+
+            # левый контейнер — маленький, только под кнопку
+            self.nav_left.setGeometry(g.x(), g.y(), 80, h)
+            self.btn_prev.move(16, h // 2 - 24)
+
+            # правый контейнер — маленький, только под кнопку
+            self.nav_right.setGeometry(g.x() + g.width() - 80, g.y(), 80, h)
+            self.btn_next.move(80 - 16 - 48, h // 2 - 24)
+
+            self.nav_left.raise_()
+            self.nav_right.raise_()
+
+        self._place_nav = _place_nav
+        # ===============================================
+
+        # ================================================
 
         # ВАЖНО: Разрешаем загрузку локальных файлов (для Chart.js и других библиотек)
         settings = self.web_view.settings()
@@ -125,6 +175,11 @@ class MainWindow(QMainWindow):
         # Загрузка данных и навигация
         self.load_all_data()
         self.navigate()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, "_place_nav"):
+            self._place_nav()
 
     def load_all_data(self):
         """Загружаем структуру предметов и переводы"""
@@ -339,8 +394,7 @@ class MainWindow(QMainWindow):
         self.web_view.page().runJavaScript(js_code)
 
     def update_topics_screen(self):
-        """Отправляем темы выбранного предмета и скроллим к нужной"""
-        print(f"   📚 update_topics_screen()")
+        """Отправляем темы и скроллим к нужной МГНОВЕННО"""
         if not self.current_subject:
             return
 
@@ -349,49 +403,67 @@ class MainWindow(QMainWindow):
             return
 
         subject_name = self._get_translation(subject.get('name_key', self.current_subject))
-
         topics_data = []
         for topic in subject.get('topics', []):
             topic_name = topic.get('title_ru') or topic.get('name') or topic['id']
-            topics_data.append({
-                'id': topic['id'],
-                'name': topic_name
-            })
+            topics_data.append({'id': topic['id'], 'name': topic_name})
 
         topics_json = json.dumps(topics_data, ensure_ascii=False)
         subject_name_escaped = subject_name.replace("'", "\\'").replace('"', '\\"')
         is_lang_subject = subject.get('is_language_subject', False)
 
-        # --- НАЧАЛО ИЗМЕНЕНИЙ ---
+        # !!! ЛОГИКА ПРОКРУТКИ (БЕЗ ЗАДЕРЖКИ) !!!
         scroll_script = ""
         if self.current_topic:
-            # Увеличиваем задержку до 500мс, чтобы CSS анимация (0.4с) успела закончиться
-            # block: 'center' — ставит элемент ровно в середину экрана
+            # Мы убрали setTimeout. Код выполняется сразу после renderTopics.
+            # behavior: 'auto' - это мгновенный прыжок, без плавной прокрутки.
             scroll_script = f"""
-                setTimeout(() => {{
-                    const card = document.querySelector('.topic-card[data-topic-id="{self.current_topic}"]');
-                    if (card) {{
-                        console.log('✅ Прокручиваю к теме: {self.current_topic}');
+                var card = document.querySelector('.topic-card[data-topic-id="{self.current_topic}"]');
+                if (card) {{
+                    console.log('⚡ Instant scroll to:', '{self.current_topic}');
 
-                        // Плавная прокрутка к центру элемента
-                        card.scrollIntoView({{ behavior: 'smooth', block: 'center' }});
+                    // 1. Мгновенно скроллим
+                    card.scrollIntoView({{ behavior: 'auto', block: 'center' }});
 
-                        // Визуальное выделение (подсветка), чтобы глаз сразу нашел тему
-                        card.style.transition = 'transform 0.5s, box-shadow 0.5s, background-color 0.5s';
-                        card.style.transform = 'scale(1.1)';
-                        card.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-                        card.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.8)';
+                    // 2. Визуально выделяем (опционально, можно убрать если раздражает)
+                    card.style.transform = 'scale(1.05)';
+                    card.style.border = '2px solid #FFD700';
+                    card.style.transition = 'transform 0.3s ease';
 
-                        // Убираем выделение через 1.5 секунды
-                        setTimeout(() => {{ 
-                            card.style.transform = ''; 
-                            card.style.boxShadow = '';
-                            card.style.backgroundColor = '';
-                        }}, 1500);
-                    }}
-                }}, 500); 
+                    setTimeout(() => {{ 
+                        card.style.transform = ''; 
+                        card.style.border = '';
+                    }}, 1000);
+                }}
             """
-        # --- КОНЕЦ ИЗМЕНЕНИЙ ---
+
+        js_code = f"""
+            document.getElementById('subject-title').innerText = '{subject_name_escaped}';
+            window.topicsData = {topics_json};
+            window.isLangSubject = {str(is_lang_subject).lower()};
+
+            if (typeof renderTopics === 'function') {{
+                // Сначала отрисовываем карточки
+                renderTopics(window.topicsData);
+
+                // Сразу после отрисовки вызываем скролл
+                {scroll_script}
+            }}
+
+            // Настройка кнопок языка
+            var langControls = document.getElementById('language-controls');
+            if (langControls) {{
+                langControls.style.display = window.isLangSubject ? 'none' : 'flex';
+                if (!window.isLangSubject) {{
+                    document.querySelectorAll('.lang-btn').forEach(btn => {{
+                        btn.classList.remove('active');
+                    }});
+                    var activeLangBtn = document.getElementById('lang-{self.current_lang}');
+                    if (activeLangBtn) activeLangBtn.classList.add('active');
+                }}
+            }}
+        """
+        self.web_view.page().runJavaScript(js_code)
 
         js_code = f"""
             document.getElementById('subject-title').innerText = '{subject_name_escaped}';
@@ -419,11 +491,47 @@ class MainWindow(QMainWindow):
         """
         self.web_view.page().runJavaScript(js_code)
 
+    def _get_topics_ids(self):
+        """Список topic_id в текущем предмете в порядке subjects.json"""
+        subj = self.subjects_structure.get(self.current_subject)
+        if not subj:
+            return []
+        topics = subj.get("topics", [])
+        ids = []
+        for t in topics:
+            if isinstance(t, dict) and "id" in t:
+                ids.append(t["id"])
+            elif isinstance(t, str):
+                ids.append(t)
+        return ids
+
+    def go_next_poster(self):
+        ids = self._get_topics_ids()
+        if not ids or not self.current_topic_id:
+            return
+        try:
+            i = ids.index(self.current_topic_id)
+        except ValueError:
+            return
+        if i < len(ids) - 1:
+            self.show_poster_screen(ids[i + 1])
+
+    def go_prev_poster(self):
+        ids = self._get_topics_ids()
+        if not ids or not self.current_topic_id:
+            return
+        try:
+            i = ids.index(self.current_topic_id)
+        except ValueError:
+            return
+        if i > 0:
+            self.show_poster_screen(ids[i - 1])
+
     def show_poster_screen(self, topic_id):
         """Показываем плакат выбранной темы"""
         print(f"\n🎨 show_poster_screen({topic_id})")
 
-        # ВАЖНО: Запоминаем текущую тему, чтобы при возврате скроллить к ней
+        # ВАЖНО: Запоминаем текущую тему
         self.current_topic = topic_id
 
         try:
@@ -432,56 +540,97 @@ class MainWindow(QMainWindow):
                 logging.error("Предмет не выбран")
                 return
 
+            self.current_topic_id = topic_id
+
             poster_path = os.path.join(
                 CONTENT_ROOT, 'posters', self.current_subject, f"{topic_id}.html"
             )
-
-            print(f"   Путь: {poster_path}")
-            print(f"   Существует: {os.path.exists(poster_path)}")
 
             if os.path.exists(poster_path):
                 print(f"   ✅ Загружаю плакат")
                 url = QUrl.fromLocalFile(poster_path)
                 url.setQuery(f"lang={self.current_lang}")
                 self.web_view.setUrl(url)
+
+                # === ФИНАЛЬНЫЙ ФИКС ЗАВИСАНИЯ ===
+                # Мы запускаем таймер внутри браузера.
+                # Он будет принудительно обновлять экран КАЖДЫЕ 100мс (5 раз подряд).
+                # Это гарантирует, что как только страница загрузится, она сразу перерисуется.
+                aggressive_fix_js = """
+                    var attempts = 0;
+                    function forceRepaint() {
+                        // 1. Микро-скролл
+                        window.scrollBy(0, 1);
+                        setTimeout(function(){ window.scrollBy(0, -1); }, 5);
+
+                        // 2. Передергивание прозрачности (заставляет GPU пересчитать слой)
+                        document.body.style.opacity = '0.99';
+                        setTimeout(function(){ document.body.style.opacity = '1'; }, 5);
+
+                        console.log('👊 Force repaint attempt: ' + attempts);
+                        attempts++;
+
+                        // Повторяем 5 раз (в течение 500мс)
+                        if (attempts < 5) {
+                            setTimeout(forceRepaint, 100);
+                        }
+                    }
+                    // Запускаем через 50мс после старта
+                    setTimeout(forceRepaint, 50);
+                """
+                self.web_view.page().runJavaScript(aggressive_fix_js)
+                # =================================
+
                 self.current_screen = 'poster'
+
+                # ✅ показать стрелки
+                if hasattr(self, 'nav_left'):
+                    self.nav_left.show()
+                if hasattr(self, 'nav_right'):
+                    self.nav_right.show()
+                if hasattr(self, '_place_nav'):
+                    self._place_nav()
+
                 logging.info(
-                    f"Открыт плакат: {self.current_subject}/{topic_id} на языке {self.current_lang}")
+                    f"Открыт плакат: {self.current_subject}/{topic_id} на языке {self.current_lang}"
+                )
             else:
                 error_msg = f"Плакат не найден: {poster_path}"
                 print(f"   ❌ {error_msg}")
-                logging.error(error_msg)
-                self.web_view.setHtml(f"""
-                    <html>
-                    <head><meta charset="UTF-8"></head>
-                    <body style="font-family: Arial; background: #f0f0f0; padding: 50px;">
-                        <h1>❌ Ошибка</h1>
-                        <p>{error_msg}</p>
-                        <button onclick="if(typeof bridge !== 'undefined') bridge.onBackClicked(); else window.history.back();" 
-                                style="padding: 10px 20px; font-size: 16px; cursor: pointer; background: #667eea; color: white; border: none; border-radius: 6px;">
-                            ← Назад
-                        </button>
-                    </body>
-                    </html>
-                """)
+                # Скрыть стрелки при ошибке
+                if hasattr(self, 'nav_left'): self.nav_left.hide()
+                if hasattr(self, 'nav_right'): self.nav_right.hide()
+
+                self.web_view.setHtml(
+                    f"<html><body><h1>❌ {error_msg}</h1><button onclick='history.back()'>Назад</button></body></html>")
         except Exception as e:
             print(f"   ❌ ОШИБКА: {e}")
             logging.error(f"Ошибка при открытии плаката: {e}", exc_info=True)
-            self.web_view.setHtml(f"<h1>Ошибка: {str(e)}</h1>")
+            if hasattr(self, 'nav_left'): self.nav_left.hide()
+            if hasattr(self, 'nav_right'): self.nav_right.hide()
 
     def go_back(self):
         """Кнопка 'Назад' - возвращаемся на уровень выше"""
         print(f"\n⬅️ go_back() - текущий экран: {self.current_screen}")
 
         if self.current_screen == 'poster':
-            print(f"   ➜ Возвращаюсь на экран тем")
-            # Просто показываем экран. Прокрутка теперь произойдет
-            # автоматически внутри update_topics_screen()
+            print("   ➜ Возвращаюсь на экран тем")
+
+            # 🔴 СКРЫВАЕМ стрелки навигации
+            if hasattr(self, 'nav_left'):
+                self.nav_left.hide()
+            if hasattr(self, 'nav_right'):
+                self.nav_right.hide()
+
+            self.current_screen = 'topics'
             self.show_topics_screen()
 
         elif self.current_screen == 'topics':
-            print(f"   ➜ Возвращаюсь на экран предметов")
-            self.current_topic = None  # Сбрасываем текущую тему при выходе в меню предметов
+            print("   ➜ Возвращаюсь на экран предметов")
+
+            self.current_topic = None
+            self.current_topic_id = None
+            self.current_screen = 'subjects'
             self.show_subjects_screen()
 
     def change_language(self, lang_code):
