@@ -96,6 +96,7 @@ class MainWindow(QMainWindow):
         self.translations = {}
         self.subjects_structure = {}
 
+        self.current_topic = None
         # Построение UI
         self.central_widget = QWidget()
         self.layout = QVBoxLayout(self.central_widget)
@@ -338,17 +339,13 @@ class MainWindow(QMainWindow):
         self.web_view.page().runJavaScript(js_code)
 
     def update_topics_screen(self):
-        """Отправляем темы выбранного предмета"""
+        """Отправляем темы выбранного предмета и скроллим к нужной"""
         print(f"   📚 update_topics_screen()")
         if not self.current_subject:
-            print(f"   ❌ current_subject не установлено")
-            logging.error("current_subject не установлено")
             return
 
         subject = self.subjects_structure.get(self.current_subject)
         if not subject:
-            print(f"   ❌ Предмет {self.current_subject} не найден")
-            logging.error(f"Предмет {self.current_subject} не найден")
             return
 
         subject_name = self._get_translation(subject.get('name_key', self.current_subject))
@@ -365,6 +362,37 @@ class MainWindow(QMainWindow):
         subject_name_escaped = subject_name.replace("'", "\\'").replace('"', '\\"')
         is_lang_subject = subject.get('is_language_subject', False)
 
+        # --- НАЧАЛО ИЗМЕНЕНИЙ ---
+        scroll_script = ""
+        if self.current_topic:
+            # Увеличиваем задержку до 500мс, чтобы CSS анимация (0.4с) успела закончиться
+            # block: 'center' — ставит элемент ровно в середину экрана
+            scroll_script = f"""
+                setTimeout(() => {{
+                    const card = document.querySelector('.topic-card[data-topic-id="{self.current_topic}"]');
+                    if (card) {{
+                        console.log('✅ Прокручиваю к теме: {self.current_topic}');
+
+                        // Плавная прокрутка к центру элемента
+                        card.scrollIntoView({{ behavior: 'smooth', block: 'center' }});
+
+                        // Визуальное выделение (подсветка), чтобы глаз сразу нашел тему
+                        card.style.transition = 'transform 0.5s, box-shadow 0.5s, background-color 0.5s';
+                        card.style.transform = 'scale(1.1)';
+                        card.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                        card.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.8)';
+
+                        // Убираем выделение через 1.5 секунды
+                        setTimeout(() => {{ 
+                            card.style.transform = ''; 
+                            card.style.boxShadow = '';
+                            card.style.backgroundColor = '';
+                        }}, 1500);
+                    }}
+                }}, 500); 
+            """
+        # --- КОНЕЦ ИЗМЕНЕНИЙ ---
+
         js_code = f"""
             document.getElementById('subject-title').innerText = '{subject_name_escaped}';
             window.topicsData = {topics_json};
@@ -372,15 +400,13 @@ class MainWindow(QMainWindow):
 
             if (typeof renderTopics === 'function') {{
                 renderTopics(window.topicsData);
+                {scroll_script}
             }}
 
-            // Показываем/скрываем кнопки языков
             var langControls = document.getElementById('language-controls');
             if (langControls) {{
                 langControls.style.display = window.isLangSubject ? 'none' : 'flex';
-
                 if (!window.isLangSubject) {{
-                    // Устанавливаем активный язык
                     document.querySelectorAll('.lang-btn').forEach(btn => {{
                         btn.classList.remove('active');
                     }});
@@ -391,12 +417,15 @@ class MainWindow(QMainWindow):
                 }}
             }}
         """
-        print(f"   ✅ Отправляю {len(topics_data)} тем в JavaScript")
         self.web_view.page().runJavaScript(js_code)
 
     def show_poster_screen(self, topic_id):
         """Показываем плакат выбранной темы"""
         print(f"\n🎨 show_poster_screen({topic_id})")
+
+        # ВАЖНО: Запоминаем текущую тему, чтобы при возврате скроллить к ней
+        self.current_topic = topic_id
+
         try:
             if not self.current_subject:
                 print(f"   ❌ Предмет не выбран")
@@ -443,23 +472,17 @@ class MainWindow(QMainWindow):
     def go_back(self):
         """Кнопка 'Назад' - возвращаемся на уровень выше"""
         print(f"\n⬅️ go_back() - текущий экран: {self.current_screen}")
+
         if self.current_screen == 'poster':
             print(f"   ➜ Возвращаюсь на экран тем")
+            # Просто показываем экран. Прокрутка теперь произойдет
+            # автоматически внутри update_topics_screen()
             self.show_topics_screen()
-            # Обновляем данные тем после загрузки
-            import time
-            self.web_view.page().runJavaScript(
-                "setTimeout(() => { if(typeof bridge !== 'undefined') bridge.onFrontEndReady(); }, 500);")
+
         elif self.current_screen == 'topics':
             print(f"   ➜ Возвращаюсь на экран предметов")
+            self.current_topic = None  # Сбрасываем текущую тему при выходе в меню предметов
             self.show_subjects_screen()
-            # Обновляем данные предметов после загрузки
-            import time
-            self.web_view.page().runJavaScript(
-                "setTimeout(() => { if(typeof bridge !== 'undefined') bridge.onFrontEndReady(); }, 500);")
-        elif self.current_screen == 'subjects':
-            print(f"   ➜ На главном экране, назад некуда")
-            pass
 
     def change_language(self, lang_code):
         """Пользователь переключил язык"""
