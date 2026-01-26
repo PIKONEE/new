@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>География: Инфографика Будущего Специалиста</title>
+    <title>Эволюция Географических Знаний о Земле</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
@@ -13,63 +12,83 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 650px; /* Увеличено для лучшей видимости Bar Chart */
-            margin-left: auto;
-            margin-right: auto;
-            height: 350px;
-            max-height: 450px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
-        }
-        .gradient-text {
-            background: linear-gradient(to right, #0a9396, #ee9b00);
+        .gradient-title {
+            background: linear-gradient(to right, #0077b6, #e76f51); /* Синий (мир) и Оранжевый (открытия) */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        /* Стиль для Flow Chart элементов */
-        .flow-node {
-            border: 2px solid #0a9396;
-            transition: all 0.3s ease-in-out;
+        .timeline-container {
+            position: relative;
+            padding-bottom: 50px;
         }
-        .flow-node:hover {
-            box-shadow: 0 10px 15px rgba(10, 147, 150, 0.3);
-            transform: translateY(-3px);
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 4px;
+            background-color: #0077b6;
+            height: 100%;
+            transform: translateX(-50%);
         }
-        .arrow-down {
-            content: '';
-            display: block;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 10px solid #94d2bd;
-            margin: 10px auto;
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+        }
+        .timeline-dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #e76f51;
+            border: 4px solid #f4a261;
+            border-radius: 50%;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        .timeline-content {
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background-color: #ffffff;
+            transition: transform 0.3s ease;
+        }
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(231, 111, 81, 0.4);
+        }
+        /* Адаптация для мобильных устройств (перенос на левый край) */
+        @media (max-width: 767px) {
+            .timeline-line {
+                left: 20px;
+            }
+            .timeline-dot {
+                left: 20px;
+                transform: translateX(-50%);
+            }
+            .timeline-content {
+                margin-left: 40px;
+                width: calc(100% - 40px);
+            }
         }
     </style>
-    <!-- 
+    <!--
     Narrative Plan:
-    The infographic now emphasizes a dynamic flow.
-    1. The "Why" (Importance): Uses clear stats and a Bar Chart for career comparison.
-    2. The "How" (Process): Replaced the abstract Radar Chart with a concrete, visually engaging HTML/CSS Process Flow Diagram to show the five active learning methods.
-    3. The "What" (Outcome): Clear, iconic cards summarizing the final skills.
+    The infographic uses a vertical timeline to structure the history of geographical knowledge.
+    1. Header.
+    2. Section I: Antiquity and Middle Ages (Foundation).
+    3. Section II: Age of Discovery (Mapping the World).
+    4. Section III: Modern Era (Analysis and Technology).
 
     Visualization Choices:
-    - Section 1.1 (Homeland): Goal: Inform. Chosen Visualization: Large text stats and improved HTML/CSS cards for quick consumption. Confirmed NO SVG.
-    - Section 1.2 (Careers): Goal: Compare. Chosen Visualization: Horizontal Bar Chart (Chart.js) for comparing profession demand. Confirmed NO SVG.
-    - Section 2 (Methods): Goal: Organize/Process. Chosen Visualization: HTML/CSS Flow Chart. Justification: This is a direct response to the user's request for more structure and linked illustrations, showing the sequential nature of skill development better than a chart. Confirmed NO SVG, NO MERMAID JS.
-    - Section 3 (Outcome): Goal: Inform. Chosen Visualization: Enhanced Styled HTML/CSS cards with Unicode icons and hover effects. Confirmed NO SVG.
+    - Main Structure: HTML/CSS Timeline. Justification: Best visualization for historical development over time. Confirmed NO SVG.
+    - Icons: Unicode characters for visual cues. Confirmed NO SVG.
 
-    Color Palette Chosen: "Brilliant Blues" (#005f73, #0a9396, #94d2bd) as primary, with "Energetic & Playful" accents (#ee9b00, #ca6702) for highlights and charts.
-    CRITICAL CONFIRMATION: NEITHER Mermaid JS NOR SVG were used anywhere in this file. All visualizations are rendered using Chart.js on Canvas or structured HTML/CSS with Tailwind.
+    Color Palette Chosen: "Brilliant Blues" (#0077b6, #00b4d8) for structure and theme, combined with "Energetic Orange/Red" (#e76f51, #f4a261) for timeline dots and accents (representing discoveries/milestones).
+    CRITICAL CONFIRMATION: NEITHER Mermaid JS NOR SVG were used anywhere in this file. All visualizations are structured HTML/CSS with Tailwind.
     -->
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-50 text-gray-800">
 
 <!-- КНОПКА НАЗАД -->
 <div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
@@ -92,229 +111,118 @@
 </div>
 
 
-    <header class="bg-[#005f73] text-white text-center p-8 shadow-xl">
-        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-wider">🗺️ ГЕОГРАФИЯ:</h1>
-        <p class="text-xl md:text-3xl font-extrabold mt-2 gradient-text">ЗНАЮ. ПОНИМАЮ. ДЕЙСТВУЮ.</p>
-        <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-200">Твой путеводитель к востребованной карьере в современном Казахстане.</p>
+    <header class="bg-white text-center p-8 shadow-xl border-b-8 border-[#0077b6]">
+        <h1 class="text-5xl md:text-6xl font-black uppercase tracking-wider gradient-title">ЭВОЛЮЦИЯ ЗНАНИЙ О ЗЕМЛЕ</h1>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#e76f51]">От плоского диска до цифрового двойника</p>
+        <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Как человечество открывало, измеряло и понимало свою планету.</p>
     </header>
 
     <main class="container mx-auto p-4 md:p-10">
 
-        <section id="why" class="mb-16">
-            <h2 class="text-4xl font-extrabold text-center mb-10 text-[#005f73] border-b-4 border-[#ee9b00] pb-2">I. ПОЧЕМУ ЭТО КЛЮЧЕВОЙ ПРЕДМЕТ?</h2>
-            <p class="text-center text-xl text-gray-600 mb-12 max-w-5xl mx-auto">География — это мост между природными ресурсами, технологиями и обществом. Она дает тебе аналитический фундамент для решения реальных проблем.</p>
+        <h2 class="text-3xl font-extrabold text-center mb-12 pb-2 text-[#0077b6]">⏳ Хронология Великих Открытий</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                <!-- Карта и Роль РК -->
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:shadow-2xl transition duration-300">
-                    <span class="text-5xl block mb-3">⭐</span>
-                    <h3 class="text-xl font-bold text-[#0a9396]">ГЕОПОЛИТИЧЕСКИЙ ЦЕНТР</h3>
-                    <p class="text-4xl font-black text-[#ee9b00]">ЕВРАЗИЯ</p>
-                    <p class="text-gray-500">Понимание стратегической роли Казахстана.</p>
+        <!-- Timeline Container -->
+        <div class="timeline-container max-w-4xl mx-auto">
+            <div class="timeline-line hidden md:block"></div>
+
+            <!-- 1. АНТИЧНОСТЬ: Фундамент -->
+            <div class="timeline-item grid md:grid-cols-2 gap-6 items-start">
+                <div class="timeline-content md:col-span-1 md:col-start-2 bg-blue-50">
+                    <h3 class="text-xl font-black mb-2 text-[#0077b6]">АНТИЧНОСТЬ И СРЕДНЕВЕКОВЬЕ</h3>
+                    <p class="text-sm font-bold text-[#e76f51]">VI в. до н.э. — XV в. н.э.</p>
+                    <p class="mt-3 text-gray-700">Переход от мифологии к рациональному знанию. **Факт:** Земля не плоский диск, а сфера.</p>
+                    <ul class="list-disc pl-5 mt-3 text-sm">
+                        <li>**Пифагор (VI в. до н.э.):** Впервые предложил идею шарообразности Земли.</li>
+                        <li>**Эратосфен (III в. до н.э.):** Впервые вычислил длину экватора с удивительной точностью.</li>
+                        <li>**Птолемей (II в. н.э.):** Создал "Географию" — систему знаний и карт (хотя и геоцентрическую).</li>
+                    </ul>
                 </div>
-                <!-- Ресурсы -->
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:shadow-2xl transition duration-300">
-                    <span class="text-5xl block mb-3">⛏️</span>
-                    <h3 class="text-xl font-bold text-[#0a9396]">АНАЛИЗ РЕСУРСОВ</h3>
-                    <p class="text-4xl font-black text-[#ee9b00]">ВОДА & МИНЕРАЛЫ</p>
-                    <p class="text-gray-500">Управление критически важными запасами.</p>
-                </div>
-                <!-- Мәңгілік Ел -->
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:shadow-2xl transition duration-300">
-                    <span class="text-5xl block mb-3">🏛️</span>
-                    <h3 class="text-xl font-bold text-[#0a9396]">ГРАЖДАНСКАЯ ПОЗИЦИЯ</h3>
-                    <p class="text-4xl font-black text-[#ee9b00]">МӘҢГІЛІК ЕЛ</p>
-                    <p class="text-gray-500">Знание своего народа и территорий.</p>
-                </div>
+                <div class="timeline-dot"></div>
+                <!-- Дата на мобильном -->
+                <p class="md:hidden text-center text-sm font-bold text-[#e76f51] -mt-6">VI в. до н.э. — XV в. н.э.</p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-2xl p-8 md:col-span-2">
-                 <h3 class="text-3xl font-bold mb-6 text-[#005f73]">📊 Востребованность: Карьера с географией</h3>
-                 <p class="mb-6 text-gray-600 max-w-4xl mx-auto">Географические знания, особенно в сфере ГИС и экологии, — это прямая дорога в перспективные отрасли. Диаграмма демонстрирует индекс спроса на специалистов, использующих географический анализ (на основе условных данных).</p>
-                <div class="chart-container h-96 md:h-[450px]">
-                    <canvas id="professionsChart"></canvas>
+            <!-- 2. ЭПОХА ВГО: Карта мира -->
+            <div class="timeline-item grid md:grid-cols-2 gap-6 items-start">
+                <div class="timeline-content md:col-span-1 bg-yellow-50">
+                    <h3 class="text-xl font-black mb-2 text-[#e76f51]">ЭПОХА ВЕЛИКИХ ОТКРЫТИЙ</h3>
+                    <p class="text-sm font-bold text-[#0077b6]">XV в. — XVII в.</p>
+                    <p class="mt-3 text-gray-700">Открытие Америки, кругосветные путешествия и нанесение новых континентов на карты. **Результат:** Мировая карта обретает реальные очертания.</p>
+                    <ul class="list-disc pl-5 mt-3 text-sm">
+                        <li>**Колумб (1492):** Открыл Новый Свет.</li>
+                        <li>**Магеллан (1519-1522):** Первое кругосветное плавание, доказавшее шарообразность Земли и её огромный размер.</li>
+                        <li>**Меркатор (1569):** Создал проекцию, которая стала основой для всех морских карт.</li>
+                    </ul>
                 </div>
+                <div class="timeline-dot"></div>
+                <!-- Дата на мобильном -->
+                <p class="md:hidden text-center text-sm font-bold text-[#0077b6] -mt-6">XV в. — XVII в.</p>
             </div>
-        </section>
 
-        <section id="how" class="mb-16">
-            <h2 class="text-4xl font-extrabold text-center mb-10 text-[#005f73] border-b-4 border-[#ee9b00] pb-2">II. МЕТОДЫ: ОТ ТЕОРИИ К ДЕЙСТВИЮ</h2>
-            <p class="text-center text-xl text-gray-600 mb-12 max-w-5xl mx-auto">Учебный процесс построен как непрерывный цикл исследования. Мы не просто читаем, мы действуем, используя 5 ключевых современных методов.</p>
-            
-            <div class="bg-white rounded-xl shadow-2xl p-8">
-                 <h3 class="text-3xl font-bold mb-8 text-center text-[#0a9396]">🔄 Цикл исследовательских навыков</h3>
-                 
-                 <!-- Flow Chart / Process Diagram -->
-                 <div class="flex flex-wrap justify-center items-start text-center">
-                    
-                    <!-- 1. Наблюдение -->
-                    <div class="w-1/2 md:w-1/5 p-2 flex flex-col items-center">
-                        <div class="flow-node bg-[#94d2bd] text-white p-4 rounded-full text-4xl mb-3">🔭</div>
-                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
-                            <p class="font-bold text-lg text-[#0a9396]">1. НАБЛЮДЕНИЕ</p>
-                            <p class="text-sm mt-1 text-gray-600">Сбор первичных данных на местности (Полевые работы).</p>
-                        </div>
-                        <div class="arrow-down"></div>
-                    </div>
-
-                    <!-- 2. Картография -->
-                    <div class="w-1/2 md:w-1/5 p-2 flex flex-col items-center">
-                         <div class="flow-node bg-[#94d2bd] text-white p-4 rounded-full text-4xl mb-3">🗺️</div>
-                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
-                            <p class="font-bold text-lg text-[#0a9396]">2. КАРТОГРАФИЯ</p>
-                            <p class="text-sm mt-1 text-gray-600">Чтение "языка" географии, работа с ГИС-сетками.</p>
-                        </div>
-                        <div class="arrow-down"></div>
-                    </div>
-
-                    <!-- 3. Сравнительный анализ -->
-                    <div class="w-1/2 md:w-1/5 p-2 flex flex-col items-center">
-                         <div class="flow-node bg-[#94d2bd] text-white p-4 rounded-full text-4xl mb-3">⚖️</div>
-                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
-                            <p class="font-bold text-lg text-[#0a9396]">3. СРАВНЕНИЕ</p>
-                            <p class="text-sm mt-1 text-gray-600">Сопоставление регионов, климата и экономики.</p>
-                        </div>
-                        <div class="arrow-down"></div>
-                    </div>
-                    
-                    <!-- 4. Исследование -->
-                    <div class="w-1/2 md:w-1/5 p-2 flex flex-col items-center">
-                         <div class="flow-node bg-[#94d2bd] text-white p-4 rounded-full text-4xl mb-3">🔬</div>
-                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
-                            <p class="font-bold text-lg text-[#0a9396]">4. ИССЛЕДОВАНИЕ</p>
-                            <p class="text-sm mt-1 text-gray-600">Создание проектов и обработка статистических данных.</p>
-                        </div>
-                        <div class="arrow-down"></div>
-                    </div>
-                    
-                    <!-- 5. Решение Проблем -->
-                    <div class="w-full md:w-1/5 p-2 flex flex-col items-center">
-                         <div class="flow-node bg-[#ee9b00] text-white p-4 rounded-full text-4xl mb-3">💡</div>
-                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
-                            <p class="font-bold text-lg text-[#ee9b00]">5. РЕШЕНИЕ</p>
-                            <p class="text-sm mt-1 text-gray-600">Разработка путей преодоления экологических и социальных вызовов.</p>
-                        </div>
-                    </div>
-
-                 </div>
+            <!-- 3. НОВОЕ ВРЕМЯ: Анализ и Система -->
+            <div class="timeline-item grid md:grid-cols-2 gap-6 items-start">
+                <div class="timeline-content md:col-span-1 md:col-start-2 bg-blue-50">
+                    <h3 class="text-xl font-black mb-2 text-[#0077b6]">НОВОЕ ВРЕМЯ И СИСТЕМАТИЗАЦИЯ</h3>
+                    <p class="text-sm font-bold text-[#e76f51]">XVIII в. — XIX в.</p>
+                    <p class="mt-3 text-gray-700">Переход от описательной географии к аналитической. **Фокус:** Понимание причинно-следственных связей.</p>
+                    <ul class="list-disc pl-5 mt-3 text-sm">
+                        <li>**Гумбольдт:** Основатель современной физической географии, установил связи между природой и климатом.</li>
+                        <li>**Риттер:** Основатель социально-экономической географии, изучал связь человека и среды.</li>
+                        <li>**Русские экспедиции:** Активное изучение Сибири, Дальнего Востока, Арктики и Антарктиды.</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot"></div>
+                <!-- Дата на мобильном -->
+                <p class="md:hidden text-center text-sm font-bold text-[#e76f51] -mt-6">XVIII в. — XIX в.</p>
             </div>
-        </section>
 
-        <section id="result">
-            <h2 class="text-4xl font-extrabold text-center mb-10 text-[#005f73] border-b-4 border-[#ee9b00] pb-2">III. ТВОЙ РЕЗУЛЬТАТ: ГОТОВНОСТЬ К XXI ВЕКУ</h2>
-             <p class="text-center text-xl text-gray-600 mb-12 max-w-4xl mx-auto">Изучение географии трансформирует тебя в профессионала с тремя ключевыми качествами, необходимыми в любой сфере.</p>
+            <!-- 4. СОВРЕМЕННОСТЬ: Технологии и Прогнозы -->
+            <div class="timeline-item grid md:grid-cols-2 gap-6 items-start">
+                <div class="timeline-content md:col-span-1 bg-yellow-50">
+                    <h3 class="text-xl font-black mb-2 text-[#e76f51]">СОВРЕМЕННОСТЬ И ЦИФРОВАЯ ЭРА</h3>
+                    <p class="text-sm font-bold text-[#0077b6]">XX в. — Настоящее время</p>
+                    <p class="mt-3 text-gray-700">География становится наукой о прогнозировании и моделировании. **Инструмент:** Космос и Компьютер.</p>
+                    <ul class="list-disc pl-5 mt-3 text-sm">
+                        <li>**Спутниковая съемка:** Открытие глубин Мирового океана и точная картография рельефа.</li>
+                        <li>**ГИС (Геоинформационные системы):** Многослойный анализ данных и планирование развития территорий.</li>
+                        <li>**Устойчивое развитие:** Фокус на решении глобальных экологических проблем.</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot"></div>
+                 <!-- Дата на мобильном -->
+                <p class="md:hidden text-center text-sm font-bold text-[#0077b6] -mt-6">XX в. — Настоящее время</p>
+            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-xl shadow-2xl p-8 text-center border-t-4 border-[#0a9396] transform hover:scale-[1.03] transition-transform duration-300">
-                    <span class="text-7xl block mb-4 text-[#0a9396]">🎓</span>
-                    <h3 class="text-2xl font-black mb-2 text-[#0a9396]">ЗНАННЯ</h3>
-                    <p class="text-gray-700 font-medium">Ты понимаешь сложные мировые процессы и роль в них Казахстана.</p>
+        </div> <!-- End Timeline Container -->
+
+        <section class="mt-12">
+            <h2 class="text-3xl font-extrabold text-center mb-8 pb-2 text-[#0077b6]">💡 Главные Выводы Эволюции</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-[#e76f51]">
+                    <span class="text-5xl block mb-3 text-[#e76f51]">🌍</span>
+                    <p class="font-bold text-xl text-[#0077b6]">Форма</p>
+                    <p class="text-gray-700">От плоского диска к **Геоиду**, измеренному с помощью спутников.</p>
                 </div>
-                <div class="bg-white rounded-xl shadow-2xl p-8 text-center border-t-4 border-[#ee9b00] transform hover:scale-[1.03] transition-transform duration-300">
-                     <span class="text-7xl block mb-4 text-[#ee9b00]">💡</span>
-                    <h3 class="text-2xl font-black mb-2 text-[#ee9b00]">АНАЛИТИКА</h3>
-                    <p class="text-gray-700 font-medium">Ты умеешь работать с цифровыми картами (ГИС) и принимать взвешенные решения.</p>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-[#0077b6]">
+                    <span class="text-5xl block mb-3 text-[#0077b6]">🧭</span>
+                    <p class="font-bold text-xl text-[#0077b6]">Инструмент</p>
+                    <p class="text-gray-700">От компаса и секстанта к **ГИС** и дистанционному зондированию.</p>
                 </div>
-                <div class="bg-white rounded-xl shadow-2xl p-8 text-center border-t-4 border-[#ca6702] transform hover:scale-[1.03] transition-transform duration-300">
-                     <span class="text-7xl block mb-4 text-[#ca6702]">🌿</span>
-                    <h3 class="text-2xl font-black mb-2 text-[#ca6702]">ДЕЙСТВИЕ</h3>
-                    <p class="text-gray-700 font-medium">Ты готов внедрять решения для сохранения экологии и развития общества.</p>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-[#e76f51]">
+                    <span class="text-5xl block mb-3 text-[#e76f51]">🔬</span>
+                    <p class="font-bold text-xl text-[#0077b6]">Цель</p>
+                    <p class="text-gray-700">От простого **описания** территорий к **прогнозированию** и устойчивому развитию.</p>
                 </div>
             </div>
         </section>
 
     </main>
-    
-    <footer class="text-center p-6 mt-12 bg-[#005f73] text-gray-300">
-        <p class="text-sm">Инфографика подготовлена для повышения мотивации и демонстрации практической значимости предмета.</p>
+
+    <footer class="text-center p-6 mt-12 bg-[#0077b6] text-gray-200">
+        <p class="text-sm">География — это непрерывное путешествие, которое продолжается до сих пор.</p>
     </footer>
 
-    <script>
-        function wrapLabel(str, maxLen) {
-            if (str.length <= maxLen) {
-                return str;
-            }
-            const words = str.split(' ');
-            const lines = [];
-            let currentLine = '';
-            for (const word of words) {
-                if ((currentLine + word).length > maxLen) {
-                    lines.push(currentLine.trim());
-                    currentLine = '';
-                }
-                currentLine += word + ' ';
-            }
-            lines.push(currentLine.trim());
-            return lines;
-        }
-
-        const mandatoryTooltipOptions = {
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        title: function(tooltipItems) {
-                            const item = tooltipItems[0];
-                            let label = item.chart.data.labels[item.dataIndex];
-                            if (Array.isArray(label)) {
-                              return label.join(' ');
-                            } else {
-                              return label;
-                            }
-                        }
-                    }
-                }
-            }
-        };
-
-        function renderProfessionsChart() {
-            const ctx = document.getElementById('professionsChart').getContext('2d');
-            const rawLabels = ['IT (ГИС-технологии)', 'Логистика', 'Экология', 'Градостроительство', 'Туризм', 'Госуправление'];
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: rawLabels.map(label => wrapLabel(label, 16)),
-                    datasets: [{
-                        label: 'Индекс востребованности',
-                        data: [95, 88, 85, 78, 75, 70],
-                        backgroundColor: ['#0a9396', '#94d2bd', '#e9d8a6', '#ee9b00', '#ca6702', '#bb3e03'],
-                        borderColor: '#ffffff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    ...mandatoryTooltipOptions,
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%'; 
-                                }
-                            },
-                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
-                        },
-                        y: {
-                            grid: { display: false }
-                        }
-                    },
-                    plugins: {
-                        ...mandatoryTooltipOptions.plugins,
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            renderProfessionsChart();
-        });
-    </script>
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -347,5 +255,144 @@
     });
 </script>
 
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+.oi-map-modal{
+  width:min(1100px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:56px; /* место под тулбар */
+}
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
+.oi-map-tab{
+  width:36px; height:34px; border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+<script data-oi-map-overlay>
+(function(){
+  const btn = document.querySelector('[data-oi-map-btn]');
+  const backdrop = document.querySelector('[data-oi-map-backdrop]');
+  const closeBtn = document.querySelector('[data-oi-map-close]');
+  const viewport = document.querySelector('[data-oi-map-viewport]');
+  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
+
+  let scale = 1;
+
+  function applyScale(){
+    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+  function openMap(){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMap(){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  function showMap(n){
+    imgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    viewport.scrollTop = 0;
+    viewport.scrollLeft = 0;
+  }
+
+  btn.addEventListener('click', openMap);
+  closeBtn.addEventListener('click', closeMap);
+  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
+  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
+
+  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+  viewport.addEventListener('wheel', (e)=>{
+    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
+    e.preventDefault();
+    const delta = -Math.sign(e.deltaY) * 0.1;
+    scale = Math.min(4, Math.max(0.6, scale + delta));
+    applyScale();
+  }, {passive:false});
+
+  applyScale();
+  showMap(1);
+})();
+</script>
 </body>
 </html>

@@ -3,120 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ориентирование на Местности</title>
+    <title>Изображение Рельефа: Горизонтали</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0d221f; /* Темно-зеленый, лесной фон */
-            color: #e6ffec; /* Светлый текст */
+            background-color: #f7f3e8; /* Светлый фон (цвет бумаги) */
+            color: #333;
         }
         .gradient-title {
-            background: linear-gradient(to right, #40e0d0, #008080); /* Бирюзово-зеленый градиент */
+            background: linear-gradient(to right, #0077b6, #00b4d8); /* Сине-голубой градиент (цвет воды/карты) */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .fact-card {
-            background-color: #1a3632; /* Чуть светлее фон карточки */
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            min-height: 250px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border-left: 5px solid #00b4d8;
         }
         .fact-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(64, 224, 208, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3);
         }
         .fact-icon {
-            font-size: 2.5rem;
+            font-size: 2.25rem;
             line-height: 1;
+            color: #0077b6;
         }
         .fact-metric {
-            color: #ffc300; /* Золотистый акцент */
-            font-weight: 900;
-            font-size: 1.8rem;
-            line-height: 1.2;
-            margin-top: 5px;
+            color: #00b4d8;
+            font-weight: 700;
+            font-size: 1.125rem;
             margin-bottom: 5px;
         }
         .fact-text {
             font-size: 0.9rem;
-            line-height: 1.4;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 500px; /* Ограничиваем ширину для радар-графика */
-            margin-left: auto;
-            margin-right: auto;
-            height: 400px;
+            line-height: 1.5;
+            color: #4b5563;
         }
         .lang-button {
             padding: 8px 16px;
             border-radius: 9999px;
             font-weight: 700;
-            background-color: #008080;
+            background-color: #0077b6;
             color: white;
             transition: all 0.2s;
             cursor: pointer;
         }
         .lang-button:hover {
-            background-color: #40e0d0;
-            color: #0d221f;
+            background-color: #00b4d8;
         }
         .lang-button.active {
-            background-color: #ffc300;
-            color: #0d221f;
-            box-shadow: 0 0 10px rgba(255, 195, 0, 0.7);
+            background-color: #00b4d8;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 180, 216, 0.7);
+        }
+        /* --- Стили для диаграммы КАРТЫ (Холм) --- */
+        .hill-diagram {
+            background-color: #f0f4f8;
+            border: 2px solid #ddd;
+            border-radius: 1rem;
+        }
+        .cross-section {
+            border-bottom: 3px solid #654321; /* Земля */
+            position: relative;
+            height: 150px;
+        }
+        .hill-shape {
+            width: 80%;
+            height: 100px;
+            background: #a3c9a8; /* Цвет холма */
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.1);
+        }
+        .contour-line-top {
+            border: 2px dashed #0077b6;
+            border-radius: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            left: 50%;
+            top: 50%;
+            opacity: 0.7;
+        }
+        .top-view {
+            width: 100%;
+            height: 250px;
+            position: relative;
+        }
+        .contour-label {
+            position: absolute;
+            color: #0077b6;
+            font-weight: 700;
+            font-size: 0.75rem;
         }
     </style>
     <script>
         let currentLang = 'ru';
 
-        // --- 10 ПРАВИЛ ОРИЕНТИРОВАНИЯ (ПЛАН) ---
-        const orientationRules = [
-            { icon: '🧭', metric: 'Азимут', ru: 'Азимут — это угол между направлением на Север и направлением на объект, измеряется по часовой стрелке от $0^\circ$ до $360^\circ$.', kz: 'Азимут — Бұл Солтүстік бағыт пен объектіге бағытталған бұрыш, сағат тілі бойынша $0^\circ$-тан $360^\circ$-қа дейін өлшенеді.', en: 'Azimuth is the angle between North and the object direction, measured clockwise from $0^\circ$ to $360^\circ$.' },
-            { icon: '☀️', metric: 'Полдень', ru: 'В полдень (12:00 по солнечному времени) Солнце всегда находится на **Юге** в Северном полушарии.', kz: 'Түскі уақытта (Күн уақыты бойынша 12:00) Күн Солтүстік жарты шарда әрдайым **Оңтүстікте** болады.', en: 'At solar noon (12:00 solar time), the Sun is always in the **South** in the Northern Hemisphere.' },
-            { icon: '🌙', metric: 'Луна', ru: 'Положение Луны: При полной Луне ее фазы повторяют фазы Солнца (по отношению к направлению на Юг).', kz: 'Айдың орналасуы: Толық айда оның фазалары Күннің фазаларын қайталайды (Оңтүстікке бағыт бойынша).', en: 'Moon Position: During a full Moon, its phases repeat the Sun\'s phases (relative to the South direction).' },
-            { icon: '🌳', metric: 'Север', ru: 'Мхи и лишайники чаще всего растут на северной стороне стволов деревьев и камней (в Северном полушарии).', kz: 'Мүктер мен қыналар көбінесе ағаш діңдері мен тастардың солтүстік жағында өседі (Солтүстік жарты шарда).', en: 'Moss and lichen most often grow on the North side of tree trunks and stones (in the Northern Hemisphere).' },
-            { icon: '🌟', metric: 'Полярная', ru: 'Полярная звезда всегда указывает точно на **Север**. Найдите ее, следуя по Большому Ковшу.', kz: 'Поляр жұлдызы әрдайым нақты **Солтүстікті** көрсетеді. Оны Үлкен Шөміш арқылы табыңыз.', en: 'The North Star (Polaris) always points exactly to the **North**. Find it by following the Big Dipper.' },
-            { icon: '🕌', metric: 'Здания', ru: 'Алтари православных церквей обращены на Восток, а мусульманские мечети (михрабы) — на Мекку.', kz: 'Православ шіркеулерінің құрбандық орындары Шығысқа, ал мұсылман мешіттері (михрабтар) — Меккеге бағытталған.', en: 'Orthodox church altars face East, and Muslim mosques (mihrabs) face Mecca.' },
-            { icon: '🌲', metric: 'Кольца', ru: 'Годовые кольца на срезе дерева шире с южной стороны, так как там больше тепла и света.', kz: 'Ағаш кесіндісіндегі жылдық сақиналар оңтүстік жағында кеңірек болады, себебі ол жерде жылу мен жарық көп.', en: 'Annual rings on a tree cross-section are wider on the South side, due to more heat and light.' },
-            { icon: '🐜', metric: 'Муравей', ru: 'Муравейники почти всегда строятся с южной стороны дерева или пня и имеют более пологий южный склон.', kz: 'Құмырсқа илеулері әрдайым дерлік ағаштың немесе діңінің оңтүстік жағынан салынады және оңтүстік беткейі тіктеу болады.', en: 'Ant hills are almost always built on the South side of a tree or stump and have a gentler slope facing South.' },
-            { icon: '⌚', metric: 'Часы', ru: 'Ориентирование по часам: Направьте часовую стрелку на Солнце; биссектриса угла между часовой стрелкой и цифрой $12$ покажет направление **Юг-Север**.', kz: 'Сағат бойынша бағдарлау: Сағат тілін Күнге бағыттаңыз; сағат тілі мен $12$ саны арасындағы бұрыштың биссектрисасы **Оңтүстік-Солтүстік** бағытын көрсетеді.', en: 'Watch orientation: Point the hour hand at the Sun; the bisector of the angle between the hour hand and the number $12$ indicates the **South-North** direction.' },
-            { icon: '🔄', metric: 'Компас', ru: 'Компас показывает магнитный Север. Для точного навигации необходима поправка на **Магнитное склонение** (разницу между магнитным и истинным Севером).', kz: 'Компас магниттік Солтүстікті көрсетеді. Дәл навигация үшін **Магниттік ауытқуды** (магниттік және шынайы Солтүстік арасындағы айырмашылық) ескеру қажет.', en: 'Compass shows Magnetic North. For accurate navigation, you must account for **Magnetic Declination** (the difference between Magnetic and True North).' }
+        // --- 10 ПРАВИЛ ЧТЕНИЯ РЕЛЬЕФА (ПЛАН) ---
+        const scaleRules = [
+            { icon: '〰️', metric: 'Контур', ru: '**Горизонтали** — это линии, соединяющие точки с одинаковой абсолютной высотой над уровнем моря.', kz: '**Горизонтальдар** — тең абсолютті биіктіктегі нүктелерді қосатын сызықтар.', en: '**Contour lines** connect points of the same absolute elevation above sea level.' },
+            { icon: '🔺', metric: 'Интервал', ru: '**Интервал сечения** — это постоянная разница высот (например, 5 м) между соседними горизонталями. Он указывается на карте.', kz: '**Қима аралығы** — көршілес горизонтальдар арасындағы тұрақты биіктік айырмасы (мысалы, 5 м). Ол картада көрсетіледі.', en: 'The **Contour Interval** is the constant vertical distance (e.g., 5 m) between adjacent contour lines. It is noted on the map.' },
+            { icon: '⛰️', metric: 'Склон', ru: 'Чем **ближе** горизонтали друг к другу, тем **круче** склон. Это означает быстрое изменение высоты на коротком расстоянии.', kz: 'Горизонтальдар бір-біріне неғұрлым **жақын** болса, беткей соғұрлым **тік** болады. Бұл қысқа қашықтықта биіктіктің тез өзгеруін білдіреді.', en: 'The **closer** the contour lines are to each other, the **steeper** the slope is. This indicates a rapid change in elevation over a short distance.' },
+            { icon: '🏞️', metric: 'Ровность', ru: 'Чем **дальше** горизонтали друг от друга, тем более **пологий** и ровный склон, что характерно для равнин.', kz: 'Горизонтальдар бір-бірінен неғұрлым **алыс** болса, беткей соғұрлым **жайпақ** және тегіс болады, бұл жазықтықтарға тән.', en: 'The **farther** apart the contour lines are, the **gentler** and flatter the slope is, typical for plains.' },
+            { icon: '⭕', metric: 'Замкнутость', ru: 'Замкнутая горизонталь (не пересекающая края плана) означает вершину холма или горы (если высота растет внутрь).', kz: 'Тұйық горизонталь (жоспардың жиектерін қиып өтпейтін) төбенің немесе таудың шыңын білдіреді (егер биіктік ішке қарай өссе).', en: 'A closed contour line (that does not cross the plan edges) signifies the summit of a hill or mountain (if elevation increases inward).' },
+            { icon: '🔽', metric: 'Впадина', ru: 'Впадины или котловины обозначаются замкнутыми горизонталями с маленькими штрихами (**бергштрихами**) внутрь.', kz: 'Ойпаттар немесе қазаншұңқырлар ішке қарай кішкентай сызықтармен (**бергштрихтармен**) тұйықталған горизонтальдармен белгіленеді.', en: 'Depressions are indicated by closed contour lines with small tick marks (**hachures**) pointing inward.' },
+            { icon: '💧', metric: 'Реки', ru: 'Горизонтали изгибаются в форме буквы V, пересекая реки. Острие V всегда направлено **вверх по течению** (против движения воды).', kz: 'Горизонтальдар өзендерді қиып өткенде V әрпі түрінде иіледі. V ұшы әрқашан **ағысқа қарсы** бағытталады.', en: 'Contour lines bend in a V-shape when crossing rivers. The point of the V always points **upstream** (against the water flow).' },
+            { icon: '🚫', metric: 'Пересечение', ru: 'Горизонтали никогда не пересекаются друг с другом, за исключением очень редких случаев отвесных обрывов (вертикальная стена), где они сливаются в одну линию.', kz: 'Горизонтальдар бір-бірімен ешқашан қиылыспайды, тек тік жардың өте сирек жағдайларында ғана бір сызыққа қосылады.', en: 'Contour lines never intersect each other, except in very rare cases of vertical cliffs, where they merge into a single line.' },
+            { icon: '🔢', metric: 'Обозначение', ru: 'Каждая пятая горизонталь (утолщенная) имеет числовую **подпись высоты**, чтобы облегчить чтение рельефа.', kz: 'Әрбір бесінші горизонталь (қалыңдатылған) жер бедерін оқуды жеңілдету үшін **биіктік жазуымен** белгіленеді.', en: 'Every fifth contour line (index contour) has a numerical **elevation label** to make reading the relief easier.' },
+            { icon: '🌊', metric: 'Нулевая', ru: 'Береговая линия моря, озера или океана всегда является нулевой горизонталью (0 м), так как это уровень отсчета.', kz: 'Теңіз, көл немесе мұхит жағалау сызығы әрқашан нөлдік горизонталь (0 м) болып табылады, өйткені бұл санақ деңгейі.', en: 'The shoreline of a sea, lake, or ocean is always the zero contour line (0 m), as it is the reference level.' }
         ];
         // --- КОНЕЦ ПРАВИЛ ---
 
-        // Данные для Радар-карты (Надежность методов: 1=Низкая, 5=Высокая)
-        const radarLabels = {
-            ru: ['Компас', 'Солнце', 'Полярная звезда', 'Местные признаки', 'Часы'],
-            kz: ['Компас', 'Күн', 'Поляр жұлдызы', 'Жергілікті белгілер', 'Сағат'],
-            en: ['Compass', 'Sun', 'North Star', 'Local Signs', 'Watch Method']
-        };
-        const radarData = [5, 4, 4, 3, 3]; // Единые данные надежности
-
-        let orientationChart = null;
+        let currentLang = 'ru';
 
         // Функция рендеринга фактов (ПЛАН)
         function renderFacts(lang) {
             const factsGrid = document.getElementById('facts-grid');
             let factsHTML = '';
 
-            orientationRules.forEach(fact => {
+            scaleRules.forEach(fact => {
                 const factText = fact[lang] || fact.ru;
 
                 factsHTML += `
-                    <div class="fact-card rounded-xl shadow-lg p-4 flex flex-col items-center justify-start border-b-4 border-[#ffc300]">
-                        <div class="fact-icon">${fact.icon}</div>
-                        <div class="fact-metric font-mono">${fact.metric}</div>
-
-                        <p class="fact-text font-bold text-center border-t border-gray-600 pt-2 mt-2">${factText}</p>
+                    <div class="fact-card rounded-xl shadow-lg p-6">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="fact-icon">${fact.icon}</div>
+                            <div class="fact-metric">${fact.metric}</div>
+                        </div>
+                        <p class="fact-text">${factText}</p>
                     </div>
                 `;
             });
@@ -125,22 +148,6 @@
             updateActiveButton(lang);
         }
 
-        // Функция: Обновление Радар-графика (КАРТА)
-        function updateChart(lang) {
-            if (orientationChart) {
-                orientationChart.data.labels = radarLabels[lang];
-
-                const chartTitle = {
-                    ru: 'Надежность Методов Ориентирования (5 - Макс)',
-                    kz: 'Бағдарлау Әдістерінің Сенімділігі (5 - Макс)',
-                    en: 'Orientation Methods Reliability (5 - Max)'
-                };
-
-                orientationChart.options.plugins.title.text = chartTitle[lang];
-
-                orientationChart.update();
-            }
-        }
 
         // Функция: Управление видимостью языковых блоков
         function updateContentVisibility(lang) {
@@ -163,7 +170,6 @@
             currentLang = lang;
             renderFacts(lang);
             updateContentVisibility(lang);
-            updateChart(lang);
         }
 
         // Функция обновления активной кнопки
@@ -179,57 +185,6 @@
 
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Инициализация Chart.js (КАРТА: Радар-график)
-            const ctx = document.getElementById('orientationRadarChart').getContext('2d');
-
-            orientationChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: radarLabels.ru,
-                    datasets: [
-                        {
-                            label: 'Надежность',
-                            data: radarData,
-                            backgroundColor: 'rgba(64, 224, 208, 0.4)', // Бирюзовый с прозрачностью
-                            borderColor: '#40e0d0',
-                            pointBackgroundColor: '#ffc300',
-                            pointBorderColor: '#fff',
-                            pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: '#ffc300'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        title: {
-                            display: true,
-                            text: 'Надежность Методов Ориентирования (5 - Макс)',
-                            color: '#e6ffec',
-                            font: { size: 16, weight: 'bold' }
-                        }
-                    },
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(230, 255, 236, 0.3)' },
-                            grid: { color: 'rgba(230, 255, 236, 0.3)' },
-                            pointLabels: {
-                                color: '#e6ffec',
-                                font: { size: 14 }
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 5,
-                            ticks: {
-                                display: false // Скрываем цифры на шкале
-                            },
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
             // Привязка событий к кнопкам
             document.getElementById('lang-ru').addEventListener('click', () => switchLang('ru'));
             document.getElementById('lang-kz').addEventListener('click', () => switchLang('kz'));
@@ -240,7 +195,7 @@
         });
     </script>
 </head>
-<body class="text-gray-100">
+<body class="text-gray-800">
 
 <!-- КНОПКА НАЗАД -->
 <div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
@@ -263,7 +218,7 @@
 </div>
 
 
-    <header class="bg-[#1a3632] text-center p-8 shadow-2xl border-b-8 border-[#40e0d0]">
+    <header class="bg-white text-center p-8 shadow-md border-b-8 border-[#0077b6]">
 
         <!-- Language Switcher Buttons -->
         <div class="flex justify-center space-x-4 mb-6">
@@ -272,56 +227,91 @@
             <button id="lang-en" data-lang="en" class="lang-button">ENG</button>
         </div>
 
-        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-wider gradient-title">ОРИЕНТИРОВАНИЕ</h1>
+        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-wider gradient-title">ИЗОБРАЖЕНИЕ РЕЛЬЕФА</h1>
         <!-- Subtitles controlled by visibility toggling -->
-        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ffc300] ru-text">СУТЬ НАВИГАЦИИ БЕЗ ГАДЖЕТОВ</p>
-        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ffc300] kz-text hidden">ГАДЖЕТСІЗ НАВИГАЦИЯНЫҢ МӘНІ</p>
-        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#ffc300] en-text hidden">THE ESSENCE OF NAVIGATION WITHOUT GADGETS</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#00b4d8] ru-text">ОСНОВНОЙ МЕТОД — ГОРИЗОНТАЛИ</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#00b4d8] kz-text hidden">БАСТЫ ӘДІС — ГОРИЗОНТАЛЬДАР</p>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#00b4d8] en-text hidden">THE MAIN METHOD IS CONTOUR LINES</p>
     </header>
 
     <main class="container mx-auto p-4 md:p-10">
 
-        <!-- СЕКЦИЯ 1: КАРТА (Радар-график надежности) -->
-        <section class="mb-12 bg-[#1a3632] p-6 rounded-xl shadow-xl">
+        <!-- СЕКЦИЯ 1: КАРТА (Визуализация) -->
+        <section class="mb-12 bg-white p-6 rounded-xl shadow-xl border-4 border-[#00b4d8]">
 
             <!-- Map Titles (Fully localized) -->
-            <h2 class="text-3xl font-extrabold pb-2 text-[#40e0d0] ru-text">🗺️ Карта: Надежность Методов</h2>
-            <h2 class="text-3xl font-extrabold pb-2 text-[#40e0d0] kz-text hidden">🗺️ Карта: Әдістердің Сенімділігі</h2>
-            <h2 class="text-3xl font-extrabold pb-2 text-[#40e0d0] en-text hidden">🗺️ Map: Reliability of Methods</h2>
+            <h2 class="text-3xl font-extrabold pb-2 text-[#0077b6] ru-text">🗺️ Карта: Схема Горизонталей</h2>
+            <h2 class="text-3xl font-extrabold pb-2 text-[#0077b6] kz-text hidden">🗺️ Карта: Горизонтальдар Схемасы</h2>
+            <h2 class="text-3xl font-extrabold pb-2 text-[#0077b6] en-text hidden">🗺️ Map: Contour Line Diagram</h2>
 
             <!-- Description paragraphs (Fully localized) -->
-            <p class="text-lg text-gray-400 mb-4 ru-text">
-                **RU:** Карта визуализирует относительную надежность каждого метода. **Компас** — самый надежный ($5/5$), тогда как ориентирование по **местным признакам** требует внимательности ($3/5$).
+            <p class="text-lg text-gray-600 mb-6 ru-text">
+                **RU:** Карта показывает, как **трехмерный холм** (разрез) проецируется на **двухмерный план** (вид сверху) с помощью линий равной высоты — горизонталей. Интервал сечения здесь $10$ м.
             </p>
-            <p class="text-lg text-gray-400 mb-4 kz-text hidden">
-                **KZ:** Карта әр әдістің салыстырмалы сенімділігін көрсетеді. **Компас** — ең сенімді ($5/5$), ал **жергілікті белгілер** бойынша бағдарлау мұқияттылықты қажет етеді ($3/5$).
+            <p class="text-lg text-gray-600 mb-6 kz-text hidden">
+                **KZ:** Карта **үш өлшемді төбе** (кесінді) **екі өлшемді жоспарға** (жоғарыдан көрініс) тең биіктік сызықтары — горизонтальдар арқылы қалай проекцияланатынын көрсетеді. Мұнда қима аралығы $10$ м.
             </p>
-            <p class="text-lg text-gray-400 mb-4 en-text hidden">
-                **EN:** The Map visualizes the relative reliability of each method. The **Compass** is the most reliable ($5/5$), while relying on **local signs** requires close attention ($3/5$).
+            <p class="text-lg text-gray-600 mb-6 en-text hidden">
+                **EN:** The Map shows how a **three-dimensional hill** (cross-section) is projected onto a **two-dimensional plan** (top view) using lines of equal elevation — contour lines. The contour interval here is $10$ m.
             </p>
 
-            <!-- Chart Container (Radar Chart) -->
-            <div class="chart-container mt-6">
-                <canvas id="orientationRadarChart"></canvas>
+            <!-- Диаграмма Холма (HTML/CSS Simulation) -->
+            <div class="hill-diagram p-4">
+                <div class="flex flex-col md:flex-row gap-8">
+
+                    <!-- Вид 1: Разрез (Профиль) -->
+                    <div class="md:w-1/2 cross-section relative mb-8 md:mb-0">
+                        <div class="hill-shape"></div>
+                        <div class="absolute inset-0 flex flex-col justify-end items-center">
+                            <!-- Линии высоты на разрезе -->
+                            <div class="w-full h-1/5 border-t border-dashed border-gray-500 absolute bottom-[20%]"></div>
+                            <div class="w-full h-1/5 border-t border-dashed border-gray-500 absolute bottom-[40%]"></div>
+                            <div class="w-full h-1/5 border-t border-dashed border-gray-500 absolute bottom-[60%]"></div>
+                            <div class="w-full h-1/5 border-t border-dashed border-gray-500 absolute bottom-[80%]"></div>
+
+                            <span class="absolute left-0 bottom-[20%] text-sm text-[#0077b6]">10 м</span>
+                            <span class="absolute left-0 bottom-[40%] text-sm text-[#0077b6]">20 м</span>
+                            <span class="absolute left-0 bottom-[60%] text-sm text-[#0077b6]">30 м</span>
+                            <span class="absolute left-0 bottom-[80%] text-sm text-[#0077b6] font-bold">40 м (Вершина)</span>
+                        </div>
+                        <p class="absolute bottom-[-2rem] w-full text-center text-gray-600">Профиль (Разрез)</p>
+                    </div>
+
+                    <!-- Вид 2: Вид Сверху (План с горизонталями) -->
+                    <div class="md:w-1/2 top-view relative">
+                        <!-- Контурные линии (центр 50%, 50%) -->
+                        <div class="contour-line-top w-2/3 h-2/3" style="border-width: 3px;"></div>
+                        <div class="contour-line-top w-1/2 h-1/2"></div>
+                        <div class="contour-line-top w-1/3 h-1/3"></div>
+                        <div class="contour-line-top w-1/5 h-1/5"></div>
+
+                        <!-- Подписи высот -->
+                        <span class="contour-label" style="top: 17%; left: 52%;">40 м</span>
+                        <span class="contour-label" style="top: 30%; left: 25%;">30 м</span>
+                        <span class="contour-label" style="top: 50%; left: 80%;">20 м</span>
+                        <span class="contour-label" style="top: 75%; left: 15%;">10 м</span>
+                        <p class="absolute bottom-[-2rem] w-full text-center text-gray-600">План (Вид сверху)</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 2: ПЛАН (Сетка Фактов) -->
+        <!-- СЕКЦИЯ 2: ПЛАН (Сетка Правил) -->
 
         <!-- Title for the Fact Grid (Fully localized) -->
-        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ffc300] ru-text">📑 План: 10 Основных Правил</h2>
-        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ffc300] kz-text hidden">📑 Жоспар: 10 Негізгі Ереже</h2>
-        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#ffc300] en-text hidden">📑 Plan: 10 Essential Rules</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#00b4d8] ru-text">📑 План: 10 Правил Чтения Рельефа</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#00b4d8] kz-text hidden">📑 Жоспар: Жер Бедерін Оқудың 10 Ережесі</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#00b4d8] en-text hidden">📑 Plan: 10 Rules for Reading Relief</h2>
 
         <!-- FACT GRID (Presents all 10 facts) -->
-        <div id="facts-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div id="facts-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Facts will be inserted here by JavaScript -->
         </div>
 
     </main>
 
-    <footer class="text-center p-6 mt-12 bg-[#1a3632] text-gray-400">
-        <p class="text-sm">Помните: в навигации всегда используйте несколько методов для проверки направления!</p>
+    <footer class="text-center p-6 mt-12 bg-white text-gray-500">
+        <p class="text-sm">Искусство чтения горизонталей — ключ к пониманию ландшафта!</p>
     </footer>
 
 
@@ -356,5 +346,144 @@
     });
 </script>
 
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+.oi-map-modal{
+  width:min(1100px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:56px; /* место под тулбар */
+}
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
+.oi-map-tab{
+  width:36px; height:34px; border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+<script data-oi-map-overlay>
+(function(){
+  const btn = document.querySelector('[data-oi-map-btn]');
+  const backdrop = document.querySelector('[data-oi-map-backdrop]');
+  const closeBtn = document.querySelector('[data-oi-map-close]');
+  const viewport = document.querySelector('[data-oi-map-viewport]');
+  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
+
+  let scale = 1;
+
+  function applyScale(){
+    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+  function openMap(){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMap(){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  function showMap(n){
+    imgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    viewport.scrollTop = 0;
+    viewport.scrollLeft = 0;
+  }
+
+  btn.addEventListener('click', openMap);
+  closeBtn.addEventListener('click', closeMap);
+  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
+  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
+
+  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+  viewport.addEventListener('wheel', (e)=>{
+    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
+    e.preventDefault();
+    const delta = -Math.sign(e.deltaY) * 0.1;
+    scale = Math.min(4, Math.max(0.6, scale + delta));
+    applyScale();
+  }, {passive:false});
+
+  applyScale();
+  showMap(1);
+})();
+</script>
 </body>
 </html>
