@@ -3,437 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ханство Абулхаира (1428–1468 гг.)</title>
+    <title>История Казахстана: Образовательный Атлас</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; transition: all 0.5s ease; overflow-x: hidden; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .dusk-gradient {
-            background: radial-gradient(circle at top right, #1e293b, #0f172a 90%);
-        }
-
-        .imperial-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(20px);
-            border-radius: 3rem;
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .imperial-card:hover {
-            border-color: #f97316;
-            box-shadow: 0 0 50px rgba(249, 115, 22, 0.1);
+        
+        .tab-active {
+            background-color: white !important;
+            color: #1e293b !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
 
         .lang-active {
-            background-color: #f97316;
-            color: #0f172a;
-            box-shadow: 0 0 25px rgba(249, 115, 22, 0.4);
+            background-color: #facc15 !important;
+            color: #1e293b !important;
+            font-weight: 900;
         }
 
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: rgba(2, 6, 23, 0.5);
+        .glass { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
         }
+        
+        /* Themes */
+        .theme-agri { background: #fffbeb; --accent: #b45309; --grad: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); }
+        .theme-social { background: #f0fdf4; --accent: #15803d; --grad: linear-gradient(135deg, #22c55e 0%, #15803d 100%); }
+        .theme-spirit { background: #eef2ff; --accent: #4338ca; --grad: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); }
+        
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .fact-card {
-            background: rgba(15, 23, 42, 0.7);
-            border-left: 4px solid #f97316;
-            padding: 2rem;
+        .learning-card {
             border-radius: 2rem;
             transition: all 0.3s ease;
-            height: 100%;
         }
-
-        .fact-card:hover {
-            transform: translateX(8px);
-            background: rgba(30, 41, 59, 0.8);
-        }
-
-        .term-badge {
-            background: #431407;
-            color: #fdba74;
-            padding: 4px 12px;
-            border-radius: 99px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+        .learning-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1);
         }
     </style>
 </head>
-<body class="dusk-gradient min-h-screen pb-20">
+<body class="theme-agri text-slate-900 pb-20">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <!-- Интерактивная панель управления -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md text-white shadow-2xl">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col lg:flex-row justify-between items-center gap-6">
+            <!-- Вкладки тем -->
+            <nav class="flex flex-wrap justify-center gap-2 bg-white/10 p-1.5 rounded-2xl border border-white/5">
+                <button onclick="setTheme('agri')" id="btn-agri" class="tab-active px-5 py-2.5 rounded-xl text-[10px] md:text-xs font-bold uppercase transition-all">🚜 Сельское хозяйство</button>
+                <button onclick="setTheme('social')" id="btn-social" class="px-5 py-2.5 rounded-xl text-[10px] md:text-xs font-bold uppercase transition-all opacity-60 hover:opacity-100">🏠 Социальное развитие</button>
+                <button onclick="setTheme('spirit')" id="btn-spirit" class="px-5 py-2.5 rounded-xl text-[10px] md:text-xs font-bold uppercase transition-all opacity-60 hover:opacity-100">🎓 Духовная жизнь</button>
+            </nav>
 
-
-    <!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-orange-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-orange-500">Ханство Абулхаира (1428–1468 гг.)</h1>
-            <div class="flex bg-slate-900 p-1 rounded-xl border border-orange-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            <!-- Языковая панель -->
+            <div class="flex gap-2 bg-white/10 p-1 rounded-full border border-white/5">
+                <button onclick="setLang('ru')" id="lang-ru" class="lang-active w-11 h-11 rounded-full text-xs transition-all">RU</button>
+                <button onclick="setLang('kz')" id="lang-kz" class="w-11 h-11 rounded-full text-xs transition-all opacity-60 hover:opacity-100">KZ</button>
+                <button onclick="setLang('en')" id="lang-en" class="w-11 h-11 rounded-full text-xs transition-all opacity-60 hover:opacity-100">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Strategic Map Analysis (Canvas) -->
-        <div class="imperial-card p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-orange-500/50 text-orange-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Geopolitical Crisis Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Точка распада: 1457 год</h2>
-                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
-                        Поражение под Сыгнаком стало катализатором конца империи. Нажмите на ключевые события на карте, чтобы увидеть, как рождалось Казахское ханство через откочевку.
-                    </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-orange-950/20 border-l-8 border-orange-500 shadow-2xl transition-all duration-500">
-                        <h3 id="event-title" class="text-xl font-bold text-orange-300 mb-3 uppercase tracking-tighter">Сценарий истории</h3>
-                        <p id="event-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на Сыгнак, восточные рубежи или путь на юг.</p>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="splitMapCanvas"></canvas>
-                    <div class="absolute bottom-8 right-10 text-[10px] text-orange-900 font-mono uppercase tracking-[0.3em]">Geopolitical Conflict Schematic</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Detailed History (The Plan) -->
-        <div id="plan-section" class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-orange-600">Государство кочевых узбеков</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                
-                <!-- Dynastic Power -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-badge" id="t-dyn">Династия</span></div>
-                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Власть Шайбанидов</h3>
-                    <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
-                        В **1428 году** 17-летний Абулхаир из рода Шайбани был провозглашен ханом в городе Тура. Он объединил 92 племени, создав «Узбекский улус». Его власть опиралась на военную силу и подавление сепаратизма потомков других ветвей Чингизидов.
-                    </p>
-                    <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest">40 лет правления</div>
-                </div>
-
-                <!-- Expansion & Centers -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-badge" id="t-geo">География</span></div>
-                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Перенос столицы</h3>
-                    <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
-                        В **1446 году** Абулхаир захватил города на Сырдарье. Политический центр переместился из Сибири в город **Сыгнак**. Это позволило хану контролировать торговлю с Мавераннахром и использовать ресурсы оседлых оазисов для укрепления армии.
-                    </p>
-                    <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest">От Тобола до Сырдарьи</div>
-                </div>
-
-                <!-- The Great Secession -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-badge" id="t-split">Раскол</span></div>
-                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Откочевка Керея и Жанибека</h3>
-                    <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
-                        После поражения от ойратов в 1457 году авторитет Абулхаира упал. Султаны **Керей** и **Жанибек** возглавили протест племен против жесткой налоговой политики и войн. Около 200 тысяч человек ушли в Могулистан, что стало моментом рождения Казахского ханства.
-                    </p>
-                    <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest">1459–1460 гг.</div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Section 3: Military Decline (Full Width) -->
-        <div class="bg-orange-950/20 rounded-[4rem] p-10 md:p-16 border border-orange-500/20 shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h3 id="end-t" class="text-3xl font-black text-white mb-8 uppercase italic tracking-widest">Закат империи</h3>
-                    <p id="end-d" class="text-slate-300 text-xl font-light leading-relaxed mb-10">
-                        Абулхаир хан пытался вернуть беглецов и восстановить власть, но в 1468 году он скончался во время похода против Керея и Жанибека. После его смерти государство фактически распалось под ударами внутренних врагов и внешних захватчиков, освободив место для новой казахской державы.
-                    </p>
-                    <div class="flex gap-4">
-                        <div id="end-tag" class="px-6 py-2 bg-orange-500/10 rounded-2xl border border-orange-500/20 text-xs font-black text-orange-400 uppercase">1468: Конец государства</div>
-                    </div>
-                </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-orange-900/40 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-7xl mb-4 opacity-30">🛡️</div>
-                            <div class="text-[10px] font-black uppercase text-orange-600 tracking-[0.5em]">Decline phase</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">UZBEK</div>
-        </div>
-
+    <main id="main-content" class="max-w-6xl mx-auto px-6 mt-16 fade-in">
+        <!-- Контент динамически генерируется скриптом -->
     </main>
 
-    <footer class="mt-20 py-24 bg-black border-t border-orange-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6 text-zinc-600">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
-                «Ханство Абулхаира стало последней попыткой объединения Степи под знаменем Улуса Джучи, ставшей почвой для великой казахской откочевки.»
-            </p>
-            <div class="mt-12 h-1 w-24 bg-orange-900 mx-auto rounded-full"></div>
-        </div>
-    </footer>
-
     <script>
+        let currentTheme = 'agri';
+        let currentLang = 'ru';
+        let activeChart = null;
+
         const translations = {
             ru: {
-                title: "Ханство Абулхаира (1428–1468 гг.)",
-                vizTitle: "Точка распада: 1457 год",
-                vizDesc: "Поражение под Сыгнаком стало катализатором конца империи. Нажмите на события на карте для анализа кризиса.",
-                badge: "Анализ геополитического кризиса",
-                eventTitleDefault: "Сценарий истории",
-                eventDescDefault: "Кликните на Сыгнак, восточные рубежи или путь на юг.",
-                planTitle: "Государство кочевых узбеков",
-                tDyn: "Династия", tGeo: "География", tSplit: "Раскол",
-                c1T: "Власть Шайбанидов", c1D: "Абулхаир хан объединил 92 племени, создав мощное государство. Он жестко централизовал власть, опираясь на поддержку городской знати Сырдарьи.",
-                c2T: "Перенос столицы", c2D: "В 1446 году столицей стал Сыгнак. Город на Шелковом пути обеспечил хану доходы от торговли и контроль над ключевыми переправами.",
-                c3T: "Откочевка султанов", c3D: "В 1459–1460 гг. Керей и Жанибек увели часть племен в Могулистан. Это было не просто бегство, а политический протест против тирании хана.",
-                endT: "Закат империи", endD: "После смерти Абулхаира в 1468 году его государство не выдержало давления внутренних усобиц. Большинство племен перешло на сторону Керея и Жанибека.",
-                endTag: "1468: Распад",
-                footer: "«Ханство Абулхаира стало почвой для великой казахской откочевки и рождения новой нации.»",
-                events: {
-                    sygnak: { name: "Битва под Сыгнаком (1457)", text: "Абулхаир потерпел сокрушительное поражение от ойратов (калмыков). Он был вынужден подписать унизительный мир, что подорвало его авторитет среди племен." },
-                    oirat: { name: "Ойратская угроза", text: "С востока началось давление ойратских племен. Они разграбили города Сырдарьи, показав слабость обороны ханства." },
-                    migration: { name: "Путь Керея и Жанибека", text: "Маршрут откочевки племен на юго-восток в Жетысу (долина рек Чу и Козы-Баши), где было провозглашено Казахское ханство." }
+                agri: {
+                    period: "1954 — 1965 годы",
+                    title: "Развитие Сельского Хозяйства",
+                    desc: "Эпоха великого освоения целинных и залежных земель",
+                    f1T: "Целинная кампания", f1D: "Распахано 25 млн га земель. Казахстан стал крупнейшим производителем зерна в СССР.",
+                    f2T: "Технизация", f2D: "В степь направлены тысячи тракторов и комбайнов. Созданы сотни новых зерновых совхозов.",
+                    f3T: "Проблемы", f3D: "Экстенсивный путь развития и ветровая эрозия почв привели к экологическим трудностям.",
+                    chartTitle: "Валовой сбор зерна (млн тонн)",
+                    learnTitle: "Важно запомнить",
+                    learnD: "В 1956 году Казахстан впервые собрал «золотой миллиард» пудов зерна, что вывело республику в число мировых лидеров агросектора."
+                },
+                social: {
+                    period: "1950 — 1970 годы",
+                    title: "Социальное Развитие",
+                    desc: "Урбанизация, массовое жилье и повышение качества жизни",
+                    f1T: "Жилищный прорыв", f1D: "Начало строительства «хрущевок». Миллионы людей переехали из бараков в отдельные квартиры.",
+                    f2T: "Урбанизация", f2D: "Быстрый рост городов: Караганда, Темиртау, Павлодар стали мощными индустриальными центрами.",
+                    f3T: "Благосостояние", f3D: "Рост реальных доходов населения и развитие системы здравоохранения и соцобеспечения.",
+                    chartTitle: "Рост городского населения (%)",
+                    learnTitle: "Социальный факт",
+                    learnD: "В 1960-е годы темпы жилищного строительства в Казахстане были одними из самых высоких в мире на душу населения."
+                },
+                spirit: {
+                    period: "Середина XX века",
+                    title: "Духовная Жизнь",
+                    desc: "Интеллектуальный взлет: наука, образование и искусство",
+                    f1T: "Академия наук", f1D: "1946 г. — основание АН КазССР. Становление Казахстана как научного центра Средней Азии.",
+                    f2T: "Образование", f2D: "Ликвидация неграмотности и переход к всеобщему среднему образованию. Рост числа ВУЗов.",
+                    f3T: "Искусство", f3D: "Расцвет национального кино, оперы и литературы. Шакен Айманов и Мухтар Ауэзов — иконы эпохи.",
+                    chartTitle: "Число научных учреждений",
+                    learnTitle: "Личность в истории",
+                    learnD: "Каныш Сатпаев — первый президент Академии наук. Под его руководством была создана карта прогнозных ресурсов республики."
                 }
             },
             kz: {
-                title: "Әбілқайыр хандығы (1428–1468 жж.)",
-                vizTitle: "Ыдырау нүктесі: 1457 жыл",
-                vizDesc: "Сығанақ түбіндегі жеңіліс империяның соңына әкелді. Дағдарысты талдау үшін картадағы оқиғаларды басыңыз.",
-                badge: "Геосаяси дағдарысты талдау",
-                eventTitleDefault: "Тарих сценарийі",
-                eventDescDefault: "Сығанақты, шығыс шекараны немесе оңтүстікке көшу жолын басыңыз.",
-                planTitle: "Көшпелі өзбектер мемлекеті",
-                tDyn: "Әулет", tGeo: "География", tSplit: "Бөліну",
-                c1T: "Шайбанидтер билігі", c1D: "Әбілқайыр хан 92 тайпаны біріктіріп, қуатты мемлекет құрды. Ол Сырдария ақсүйектеріне сүйене отырып, билікті орталықтандырды.",
-                c2T: "Астананы ауыстыру", c2D: "1446 жылы Сығанақ астана болды. Жібек жолындағы қала ханға саудадан табыс пен маңызды өткелдерді бақылауды қамтамасыз етті.",
-                c3T: "Сұлтандардың бөлінуі", c3D: "1459–1460 жж. Керей мен Жәнібек тайпалардың бір бөлігін Моғолстанға бастап кетті. Бұл хан тираниясына қарсы саяси наразылық еді.",
-                endT: "Империяның құлауы", endD: "1468 жылы Әбілқайыр қайтыс болғаннан кейін мемлекет ішкі тартыстарға шыдамады. Тайпалардың көбі Керей мен Жәнібек жағына шықты.",
-                endTag: "1468: Ыдырау",
-                footer: "«Әбілқайыр хандығы ұлы қазақ көші мен жаңа ұлттың дүниеге келуіне негіз болды.»",
-                events: {
-                    sygnak: { name: "Сығанақ шайқасы (1457)", text: "Әбілқайыр ойраттардан (қалмақтардан) жеңілді. Ол қорлық келісімге қол қоюға мәжбүр болды, бұл оның беделін түсірді." },
-                    oirat: { name: "Ойрат қаупі", text: "Шығыстан ойрат тайпаларының қысымы басталды. Олар Сырдария қалаларын талқандап, хандықтың әлсіздігін көрсетті." },
-                    migration: { name: "Керей мен Жәнібек көші", text: "Тайпалардың оңтүстік-шығысқа, Жетісуға (Шу және Қозыбасы алқабы) көшу бағыты, мұнда Қазақ хандығы жарияланды." }
+                agri: {
+                    period: "1954 — 1965 жылдар",
+                    title: "Ауыл Шаруашылығын Дамыту",
+                    desc: "Тың және тыңайған жерлерді игерудің ұлы дәуірі",
+                    f1T: "Тың игеру", f1D: "25 млн га жер жыртылды. Қазақстан КСРО-дағы ең ірі астық өндірушіге айналды.",
+                    f2T: "Техникаландыру", f2D: "Далаға мыңдаған трактор мен комбайн жіберілді. Жүздеген жаңа астық кеңшарлары құрылды.",
+                    f3T: "Мәселелер", f3D: "Экстенсивті даму жолы мен топырақ эрозиясы экологиялық қиындықтарға әкелді.",
+                    chartTitle: "Астық жинау көлемі (млн тонна)",
+                    learnTitle: "Есте сақтау маңызды",
+                    learnD: "1956 жылы Қазақстан алғаш рет «алтын миллиард» пұт астық жинады, бұл республиканы әлемдік агросектор көшбасшыларының қатарына қосты."
+                },
+                social: {
+                    period: "1950 — 1970 жылдар",
+                    title: "Әлеуметтік Даму",
+                    desc: "Урбанизация, жаппай тұрғын үй және өмір сапасын арттыру",
+                    f1T: "Тұрғын үй серпілісі", f1D: "«Хрущевкалар» құрылысының басталуы. Миллиондаған адам барақтардан жеке пәтерлерге көшті.",
+                    f2T: "Урбанизация", f2D: "Қалалардың қарқынды өсуі: Қарағанды, Теміртау, Павлодар қуатты индустриялық орталықтарға айналды.",
+                    f3T: "Әл-ауқат", f3D: "Халықтың нақты табысының өсуі және денсаулық сақтау мен әлеуметтік қамсыздандыру жүйесін дамыту.",
+                    chartTitle: "Қала халқының өсуі (%)",
+                    learnTitle: "Әлеуметтік дерек",
+                    learnD: "1960-жылдары Қазақстандағы тұрғын үй құрылысының қарқыны жан басына шаққанда әлемдегі ең жоғары көрсеткіштердің бірі болды."
+                },
+                spirit: {
+                    period: "XX ғасырдың ортасы",
+                    title: "Рухани Өмір",
+                    desc: "Интеллектуалды өрлеу: ғылым, білім және өнер",
+                    f1T: "Ғылым академиясы", f1D: "1946 ж. — ҚазКСР Ғылым академиясының негізі қаланды. Қазақстан Орта Азияның ғылыми орталығына айналды.",
+                    f2T: "Білім беру", f2D: "Сауатсыздықты жою және жаппай орта білімге көшу. Жоғары оқу орындарының санының артуы.",
+                    f3T: "Өнер", f3D: "Ұлттық кино, опера және әдебиеттің гүлденуі. Шәкен Айманов пен Мұхтар Әуезов — дәуір тұлғалары.",
+                    chartTitle: "Ғылыми мекемелер саны",
+                    learnTitle: "Тарихи тұлға",
+                    learnD: "Қаныш Сәтбаев — Ғылым академиясының тұңғыш президенті. Оның жетекшілігімен республиканың болжамды ресурстар картасы жасалды."
                 }
             },
             en: {
-                title: "Abulkhair Khanate (1428–1468 AD)",
-                vizTitle: "The Split Point: 1457",
-                vizDesc: "The defeat at Sygnak catalyzed the empire's fall. Click on events on the map to analyze the geopolitical crisis.",
-                badge: "Geopolitical Crisis Analysis",
-                eventTitleDefault: "Historical Scenario",
-                eventDescDefault: "Click on Sygnak, the eastern borders, or the migration path.",
-                planTitle: "State of Nomadic Uzbeks",
-                tDyn: "Dynasty", tGeo: "Geography", tSplit: "The Split",
-                c1T: "Shaybanid Power", c1D: "Abulkhair Khan united 92 tribes, creating a powerful state. He strictly centralized authority, backed by the Syr Darya urban elite.",
-                c2T: "The New Capital", c2D: "In 1446, Sygnak became the capital. Located on the Silk Road, it provided trade revenues and control over key passages.",
-                c3T: "The Great Secession", c3D: "In 1459–1460, Kerey and Janibek led clans to Moghulistan. This was a political protest against the Khan's policies.",
-                endT: "Decline of Empire", endD: "After Abulkhair's death in 1468, the state collapsed under internal strife. Most tribes joined Kerey and Janibek.",
-                endTag: "1468: Dissolution",
-                footer: "«Abulkhair's Khanate provided the context for the Great Kazakh Migration and the birth of a new nation.»",
-                events: {
-                    sygnak: { name: "Battle of Sygnak (1457)", text: "Abulkhair suffered a crushing defeat by the Oirats. Forced to sign a humiliating peace, his authority among tribes shattered." },
-                    oirat: { name: "Oirat Threat", text: "Pressure from Oirat tribes began in the east. They sacked Syr Darya cities, exposing the khanate's military weaknesses." },
-                    migration: { name: "The Path of Kerey and Janibek", text: "The migration route to the southeast (Zhetysu, Chu river valley), where the Kazakh Khanate was proclaimed." }
+                agri: {
+                    period: "1954 — 1965",
+                    title: "Agricultural Development",
+                    desc: "The era of the great Virgin Lands campaign",
+                    f1T: "Virgin Lands", f1D: "25 million hectares of land were plowed. Kazakhstan became a primary grain producer in the USSR.",
+                    f2T: "Technical Shift", f2D: "Thousands of tractors were sent to the steppe. Hundreds of new state grain farms were established.",
+                    f3T: "Challenges", f3D: "Extensive development and wind erosion led to significant environmental difficulties.",
+                    chartTitle: "Grain Harvest (Million Tons)",
+                    learnTitle: "Key Takeaway",
+                    learnD: "In 1956, Kazakhstan harvested its first 'billion poods' of grain, placing the republic among global agricultural leaders."
+                },
+                social: {
+                    period: "1950 — 1970",
+                    title: "Social Development",
+                    desc: "Urbanization, mass housing, and quality of life improvements",
+                    f1T: "Housing Boom", f1D: "The start of 'Khrushchyovka' construction. Millions moved from barracks to private apartments.",
+                    f2T: "Urbanization", f2D: "Rapid city growth: Karaganda, Temirtau, and Pavlodar became massive industrial hubs.",
+                    f3T: "Well-being", f3D: "Rise in real income and development of the healthcare and social security systems.",
+                    chartTitle: "Urban Population Growth (%)",
+                    learnTitle: "Social Fact",
+                    learnD: "In the 1960s, Kazakhstan's housing construction rate per capita was among the highest in the world."
+                },
+                spirit: {
+                    period: "Mid-20th Century",
+                    title: "Spiritual Life",
+                    desc: "Intellectual Rise: Science, Education, and Art",
+                    f1T: "Academy of Sciences", f1D: "1946 — foundation of the AS of KazSSR. Kazakhstan became the scientific hub of Central Asia.",
+                    f2T: "Education", f2D: "Eradication of illiteracy and transition to universal secondary education. Growth of universities.",
+                    f3T: "The Arts", f3D: "The heyday of national cinema, opera, and literature. Shaken Aimanov and Mukhtar Auezov were icons.",
+                    chartTitle: "Number of Scientific Institutions",
+                    learnTitle: "Key Personality",
+                    learnD: "Kanysh Satpayev — the first president of the Academy of Sciences. He led the creation of the republic's metallogenic map."
                 }
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('splitMapCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 500;
-            drawMap();
-        }
-
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Territory Outline (Abstract)
-            ctx.beginPath();
-            ctx.moveTo(100 * scale, 150 * scale);
-            ctx.lineTo(450 * scale, 100 * scale);
-            ctx.lineTo(500 * scale, 350 * scale);
-            ctx.lineTo(150 * scale, 450 * scale);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(249, 115, 22, 0.05)';
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(249, 115, 22, 0.2)';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // 2. Oirat Strike (East to West - Red)
-            drawArrow(650 * scale, 250 * scale, 450 * scale, 300 * scale, '#dc2626', "Oirat Invasion");
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.body.className = `theme-${theme} pb-20`;
             
-            // 3. Migration Path (Syrdarya to Zhetysu - Blue)
-            drawArrow(380 * scale, 410 * scale, 650 * scale, 450 * scale, '#3b82f6', "Great Secession");
+            ['agri', 'social', 'spirit'].forEach(t => {
+                const btn = document.getElementById(`btn-${t}`);
+                btn.className = t === theme ? "tab-active px-5 py-2.5 rounded-xl text-[10px] md:text-xs font-bold uppercase transition-all" : "px-5 py-2.5 rounded-xl text-[10px] md:text-xs font-bold uppercase transition-all opacity-60 hover:opacity-100";
+            });
 
-            // 4. Cities
-            drawMarker(400 * scale, 380 * scale, '#f97316', "SYGNAK", true);
-            drawMarker(200 * scale, 150 * scale, '#94a3b8', "TURA", false);
-            drawMarker(650 * scale, 450 * scale, '#3b82f6', "ZHETYSU", false);
-
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-            ctx.font = 'bold 10px Inter';
-            ctx.textAlign = 'center';
-            ctx.fillText("TAP ON MARKERS TO VIEW EVENTS", cx, 40 * scale);
+            render();
         }
-
-        function drawMarker(x, y, color, label, pulse) {
-            ctx.beginPath();
-            ctx.arc(x, y, 8, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = 'black 10px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x, y - 15);
-        }
-
-        function drawArrow(fromX, fromY, toX, toY, color, label) {
-            const headlen = 15;
-            const angle = Math.atan2(toY - fromY, toX - fromX);
-            ctx.beginPath();
-            ctx.moveTo(fromX, fromY);
-            ctx.lineTo(toX, toY);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 4;
-            ctx.setLineDash([5, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            ctx.beginPath();
-            ctx.moveTo(toX, toY);
-            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
-            ctx.closePath();
-            ctx.fillStyle = color;
-            ctx.fill();
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const scale = canvas.width / 800;
-
-            let target = null;
-            if (Math.sqrt((x - 400*scale)**2 + (y - 380*scale)**2) < 30) target = 'sygnak';
-            else if (x > 500 * scale && y < 350 * scale) target = 'oirat';
-            else if (x > 450 * scale && y > 380 * scale) target = 'migration';
-
-            if (target) {
-                const info = translations[currentLang].events[target];
-                document.getElementById('event-title').innerText = info.name;
-                document.getElementById('event-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = (target === 'migration' ? '#3b82f6' : '#f97316');
-            }
-        });
 
         function setLang(lang) {
             currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('event-title').innerText = t.eventTitleDefault;
-            document.getElementById('event-desc').innerText = t.eventDescDefault;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            
-            document.getElementById('t-dyn').innerText = t.tDyn;
-            document.getElementById('t-geo').innerText = t.tGeo;
-            document.getElementById('t-split').innerText = t.tSplit;
-
-            document.getElementById('end-t').innerText = t.endT;
-            document.getElementById('end-d').innerText = t.endD;
-            document.getElementById('end-tag').innerText = t.endTag;
-            document.getElementById('footer-text').innerText = t.footer;
-
             ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
+                const btn = document.getElementById(`lang-${l}`);
+                btn.className = l === lang ? "lang-active w-11 h-11 rounded-full text-xs transition-all" : "w-11 h-11 rounded-full text-xs transition-all opacity-60 hover:opacity-100";
             });
-            resizeCanvas();
+            render();
         }
 
-        window.onload = () => { resizeCanvas(); setLang('ru'); };
-        window.onresize = resizeCanvas;
-    </script>
+        function render() {
+            const container = document.getElementById('main-content');
+            const t = translations[currentLang][currentTheme];
+            const accent = getComputedStyle(document.body).getPropertyValue('--accent');
+            const grad = getComputedStyle(document.body).getPropertyValue('--grad');
 
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-<script>
-    function goBack() {
-        console.log('goBack() вызвана');
-        if (typeof bridge !== 'undefined' && bridge) {
-            console.log('Bridge найден, вызываю onBackClicked()');
-            bridge.onBackClicked();
-        } else {
-            console.log('Bridge не найден!');
+            container.innerHTML = `
+                <div class="space-y-12">
+                    <!-- Заголовок-плакат -->
+                    <header class="p-12 md:p-20 rounded-[4rem] text-white text-center shadow-2xl relative overflow-hidden" style="background: ${grad}">
+                        <div class="relative z-10">
+                            <span class="inline-block bg-white/20 px-6 py-2 rounded-full text-xs font-black uppercase mb-6 tracking-widest border border-white/10">${t.period}</span>
+                            <h1 class="text-4xl md:text-7xl font-black uppercase mb-6 leading-none tracking-tighter">${t.title}</h1>
+                            <p class="text-xl md:text-2xl font-light opacity-90 max-w-3xl mx-auto italic">${t.desc}</p>
+                        </div>
+                        <div class="absolute top-0 right-0 text-[20rem] opacity-10 pointer-events-none font-black translate-x-1/4 -translate-y-1/4">
+                            ${currentTheme === 'agri' ? '🌾' : currentTheme === 'social' ? '🏗️' : '🔭'}
+                        </div>
+                    </header>
+
+                    <!-- Образовательные карточки -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="glass p-10 learning-card border-t-8" style="border-color: ${accent}">
+                            <div class="text-4xl mb-6">📌</div>
+                            <h3 class="font-black uppercase mb-4 text-xl tracking-tight" style="color: ${accent}">${t.f1T}</h3>
+                            <p class="text-slate-600 leading-relaxed">${t.f1D}</p>
+                        </div>
+                        <div class="glass p-10 learning-card border-t-8" style="border-color: ${accent}">
+                            <div class="text-4xl mb-6">⚙️</div>
+                            <h3 class="font-black uppercase mb-4 text-xl tracking-tight" style="color: ${accent}">${t.f2T}</h3>
+                            <p class="text-slate-600 leading-relaxed">${t.f2D}</p>
+                        </div>
+                        <div class="glass p-10 learning-card border-t-8" style="border-color: ${accent}">
+                            <div class="text-4xl mb-6">⚠️</div>
+                            <h3 class="font-black uppercase mb-4 text-xl tracking-tight" style="color: ${accent}">${t.f3T}</h3>
+                            <p class="text-slate-600 leading-relaxed">${t.f3D}</p>
+                        </div>
+                    </div>
+
+                    <!-- Секция Аналитики -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
+                        <div class="bg-white p-10 rounded-[3.5rem] shadow-xl border border-slate-100 flex flex-col">
+                            <h3 class="text-2xl font-black mb-8 uppercase text-center" style="color: ${accent}">${t.chartTitle}</h3>
+                            <div class="h-[400px] flex-grow">
+                                <canvas id="contentChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="p-12 rounded-[3.5rem] shadow-2xl text-white flex flex-col justify-center relative overflow-hidden bg-slate-900 border-b-[12px]" style="border-color: ${accent}">
+                            <div class="relative z-10">
+                                <div class="inline-block bg-yellow-400 text-slate-900 px-4 py-1 rounded-lg text-xs font-black uppercase mb-6 tracking-wider">Learning Hint</div>
+                                <h3 class="text-4xl font-black mb-8 uppercase leading-tight text-white">${t.learnTitle}</h3>
+                                <p class="text-xl font-light leading-relaxed text-slate-300 italic">«${t.learnD}»</p>
+                            </div>
+                            <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5 pointer-events-none">⭐</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            initChart(accent, t.chartTitle);
         }
-    }
 
-    // Инициализация QWebChannel
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Инициализация QWebChannel...');
+        function initChart(color, title) {
+            const ctx = document.getElementById('contentChart').getContext('2d');
+            if (activeChart) activeChart.destroy();
 
-        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-            try {
-                new QWebChannel(qt.webChannelTransport, function(channel) {
-                    window.bridge = channel.objects.bridge;
-                    console.log('✅ Bridge подключен!');
-                });
-            } catch(e) {
-                console.error('❌ QWebChannel ошибка:', e);
+            let config = {};
+            if (currentTheme === 'agri') {
+                config = {
+                    type: 'bar',
+                    data: {
+                        labels: ['1953', '1956', '1960', '1964'],
+                        datasets: [{ data: [5.4, 16.1, 12.5, 14.8], backgroundColor: color, borderRadius: 15 }]
+                    }
+                };
+            } else if (currentTheme === 'social') {
+                config = {
+                    type: 'line',
+                    data: {
+                        labels: ['1945', '1955', '1965', '1975'],
+                        datasets: [{ 
+                            data: [28, 37, 51, 62], 
+                            borderColor: color, 
+                            backgroundColor: color + '22', 
+                            fill: true, 
+                            tension: 0.4, 
+                            borderWidth: 6,
+                            pointRadius: 8,
+                            pointBackgroundColor: 'white'
+                        }]
+                    }
+                };
+            } else {
+                config = {
+                    type: 'doughnut',
+                    data: {
+                        labels: currentLang === 'ru' ? ['Институты', 'ВУЗы', 'Театры', 'Музеи'] : (currentLang === 'kz' ? ['Институттар', 'ЖОО', 'Театрлар', 'Мұражайлар'] : ['Institutes', 'Unis', 'Theaters', 'Museums']),
+                        datasets: [{ 
+                            data: [52, 45, 28, 35], 
+                            backgroundColor: [color, color + 'CC', color + '99', color + '66'],
+                            borderWidth: 5,
+                            borderColor: 'white'
+                        }]
+                    },
+                    options: { cutout: '65%' }
+                };
             }
-        } else {
-            console.warn('⚠️ QWebChannel или qt не найден');
-        }
-    });
-</script>
 
+            activeChart = new Chart(ctx, {
+                ...config,
+                options: {
+                    ...config.options,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: currentTheme === 'spirit' ? true : false, position: 'bottom' } },
+                    scales: currentTheme !== 'spirit' ? { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } } : { }
+                }
+            });
+        }
+
+<<<<<<< HEAD
 
 
 
@@ -641,5 +536,9 @@
   applyScale();
 })();
 </script>
+=======
+        window.onload = () => setTheme('agri');
+    </script>
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

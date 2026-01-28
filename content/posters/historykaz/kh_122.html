@@ -3,372 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Западный Казахстан в эпоху раннего железа</title>
+    <title>Трудности новой жизни: Восстановление</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: #fffbeb; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .desert-gradient {
-            background: radial-gradient(circle at top right, #92400e, #0f172a 80%);
-        }
-
-        .sarmat-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 2.5rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .sarmat-card:hover {
-            transform: scale(1.02);
-            border-color: #f59e0b;
-            box-shadow: 0 0 40px rgba(245, 158, 11, 0.1);
-        }
-
-        .lang-active {
-            background-color: #f59e0b;
-            color: #0f172a;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
-        }
-
-        canvas {
-            cursor: crosshair;
-            border-radius: 2rem;
-            background: #1e293b;
-        }
-
-        .gold-border {
-            border-left: 6px solid #f59e0b;
-        }
-
-        .scroll-reveal {
-            animation: reveal 0.8s ease-out forwards;
-        }
-
-        @keyframes reveal {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .amber-gradient { background: linear-gradient(135deg, #92400e 0%, #d97706 100%); }
     </style>
 </head>
-<body class="desert-gradient min-h-screen pb-20">
+<body class="pb-20">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
-
-    <!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-amber-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-amber-500">Западный Казахстан в эпоху раннего железа</h1>
-            <div class="flex bg-slate-900 p-1 rounded-xl border border-amber-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
-            </div>
+    <header class="amber-gradient text-white py-20 px-6 text-center shadow-xl">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-black uppercase mb-4 leading-tight">Трудности новой жизни</h1>
+            <p class="text-xl font-light opacity-90">Голод, НЭП и первые шаги социалистического строительства</p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Ustyurt Sanctuary (Custom Canvas) -->
-        <div class="sarmat-card p-8 md:p-12 border-amber-500/20">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-amber-500 text-amber-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Ritual Complex Map</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight italic">Святилища плато Устюрт</h2>
-                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
-                        На западе Казахстана обнаружены уникальные культовые сооружения — Байте, Терен, Шолпа. Нажмите на элементы схемы справа, чтобы исследовать архитектуру веры сарматов.
+    <main class="max-w-6xl mx-auto px-6 -mt-10 space-y-12">
+        <!-- Голод 1921-1922 -->
+        <div class="bg-white p-12 rounded-[4rem] shadow-2xl border-t-8 border-amber-900 relative overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center relative z-10">
+                <div>
+                    <h2 class="text-3xl font-black text-amber-950 mb-6 uppercase leading-tight">Трагедия 1921-1922 годов</h2>
+                    <p class="text-lg text-amber-900 leading-relaxed font-medium mb-6">
+                        Засуха и последствия продразверстки привели к массовому голоду. В Казахстане число голодающих превысило 2,3 миллиона человек.
                     </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-amber-950/20 border-l-8 border-amber-600 shadow-lg transition-all duration-500">
-                        <h3 id="element-title" class="text-xl font-bold text-amber-400 mb-3 uppercase">Начните исследование</h3>
-                        <p id="element-desc" class="text-slate-300 text-sm leading-relaxed italic">Кликните на изваяния, жертвенники или кольцевые ограды.</p>
+                    <div class="bg-amber-50 p-6 rounded-3xl border border-amber-200">
+                        <p class="text-xs font-black text-amber-800 uppercase mb-2">Меры помощи:</p>
+                        <p class="text-sm font-bold text-amber-900 italic">Комиссия "Помгол", закуп продовольствия за рубежом, отмена продразверстки.</p>
                     </div>
                 </div>
-                
-                <div class="lg:col-span-7 bg-slate-900 p-4 rounded-[3.5rem] flex items-center justify-center relative min-h-[450px] shadow-inner">
-                    <canvas id="ustyurtCanvas"></canvas>
-                    <div class="absolute bottom-8 right-10 text-[10px] text-amber-700 font-mono uppercase tracking-widest">Bird's-eye view / Reconstruction</div>
+                <div class="h-[300px]">
+                    <canvas id="hungerChart"></canvas>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 pointer-events-none">🌾</div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <!-- Экономика НЭП -->
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl border border-amber-100">
+                <h3 class="text-2xl font-black mb-8 uppercase text-amber-900 text-center">Экономические показатели (НЭП)</h3>
+                <div class="h-[400px]">
+                    <canvas id="nepRecoveryChart"></canvas>
+                </div>
+            </div>
+            <!-- Социальные изменения -->
+            <div class="space-y-6">
+                <div class="bg-amber-800 text-white p-8 rounded-[3rem] shadow-xl">
+                    <h4 class="text-xl font-black uppercase mb-4 text-amber-200 text-center">Культурная революция</h4>
+                    <ul class="space-y-4 text-sm font-light">
+                        <li class="flex items-center gap-3"><span class="text-xl">📚</span> Ликвидация неграмотности (Ликбез)</li>
+                        <li class="flex items-center gap-3"><span class="text-xl">🐫</span> "Красные караваны" (Агитпоезда)</li>
+                        <li class="flex items-center gap-3"><span class="text-xl">🎓</span> Открытие первых ВУЗов и техникумов</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-[3rem] shadow-xl border-l-8 border-amber-600">
+                    <h4 class="text-xl font-black uppercase mb-4 text-amber-900">Земельно-водная реформа</h4>
+                    <p class="text-sm leading-relaxed text-amber-800 font-semibold">1921-1922 гг. — возвращение казахам земель, изъятых при царизме вдоль рек Иртыш и Урал.</p>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Detailed Regional Content (The Plan) -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-amber-500">Наследие Сарматов</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                
-                <!-- Araltobe Exploration -->
-                <div class="sarmat-card p-10 flex flex-col justify-between border-t-8 border-amber-600">
-                    <div>
-                        <div class="text-5xl mb-6">🦅</div>
-                        <h3 id="c1-t" class="text-2xl font-bold mb-4 uppercase text-amber-500">Курган Аралтобе</h3>
-                        <p id="c1-d" class="text-slate-300 text-sm leading-relaxed mb-6">
-                            В 1999 году в Атырауской области экспедиция З. Самашева обнаружила захоронение сарматского вождя. Это **Второй Золотой человек** Казахстана. Уникальность находки в том, что вместе с вождем был погребен скелет беркута — священной птицы, символизирующей власть и связь с небом.
-                        </p>
-                        <div class="p-4 bg-amber-900/30 rounded-2xl border border-amber-500/20 text-xs font-mono text-amber-200">
-                            Датировка: II век до н.э. Найдено более 400 золотых бляшек.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Savyromatians -->
-                <div class="sarmat-card p-10 flex flex-col justify-between border-t-8 border-slate-500">
-                    <div>
-                        <div class="text-5xl mb-6">🏹</div>
-                        <h3 id="c2-t" class="text-2xl font-bold mb-4 uppercase text-slate-300">Савроматский союз</h3>
-                        <p id="c2-d" class="text-slate-300 text-sm leading-relaxed mb-6">
-                            Предшественники сарматов, населявшие Приуралье в VIII-IV вв. до н.э. Геродот писал, что они произошли от союза скифов и амазонок. Это объясняет **высокий статус женщин**: сарматские женщины часто были жрицами и воительницами, их хоронили с оружием и богатыми украшениями.
-                        </p>
-                        <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700 text-xs font-mono text-slate-400">
-                            Регион: Бассейны рек Урал (Жайык), Илек, Эмба.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Megaliths and Religion -->
-                <div class="md:col-span-2 sarmat-card p-10 md:p-14 flex flex-col md:flex-row items-center gap-10 bg-slate-900/80">
-                    <div class="shrink-0 text-7xl">🗿</div>
-                    <div>
-                        <h3 id="c3-t" class="text-2xl font-bold mb-4 uppercase text-white tracking-tight">Культ предков и камня</h3>
-                        <p id="c3-d" class="text-slate-400 text-lg leading-relaxed">
-                            Особенность Западного Казахстана — **антропоморфные изваяния** (менгиры). Сарматы устанавливали каменные столбы в честь погибших героев. На плато Устюрт целые скопления таких изваяний ориентированы на восток, что свидетельствует о развитом культе Солнца и Огня.
-                        </p>
-                    </div>
-                </div>
-
+        <!-- Социальный срез -->
+        <div class="bg-amber-900 p-12 rounded-[4rem] text-white shadow-2xl">
+            <h3 class="text-2xl font-black mb-10 uppercase text-amber-200 text-center">Индикаторы уровня жизни (1920-1925)</h3>
+            <div class="h-[400px]">
+                <canvas id="lifeIndicatorsChart"></canvas>
             </div>
         </div>
-
     </main>
 
-    <footer class="mt-20 py-24 bg-black border-t border-amber-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6 text-slate-500">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-400">
-                «Западные степи стали колыбелью рыцарства кочевников, где сталь панцирей встречалась с вечностью каменных святилищ Устюрта.»
-            </p>
-            <div class="mt-12 h-1 w-24 bg-amber-700 mx-auto rounded-full"></div>
-        </div>
-    </footer>
-
     <script>
-        const translations = {
-            ru: {
-                title: "Западный Казахстан в эпоху раннего железа",
-                vizTitle: "Святилища плато Устюрт",
-                vizDesc: "На западе Казахстана обнаружены уникальные культовые сооружения. Нажмите на элементы схемы, чтобы исследовать архитектуру сарматов.",
-                badge: "Карта ритуального комплекса",
-                elementTitleDefault: "Начните исследование",
-                elementDescDefault: "Кликните на изваяния, жертвенники или ограды.",
-                planTitle: "Наследие Сарматов",
-                c1T: "Курган Аралтобе", c1D: "Место находки Второго Золотого человека (II в. до н.э.). С ним был найден беркут — символ власти. Это доказывает высочайший ранг правителей Западного Казахстана.",
-                c2T: "Савроматский союз", c2D: "Племена VIII-IV вв. до н.э. Известны «рыцарским» отношением к женщинам, которые занимали высшие посты в управлении и жречестве.",
-                c3T: "Культ предков и камня", c3D: "Запад славится изваяниями и менгирами. Святилища Байте и Терен были центрами притяжения родов для совершения ежегодных обрядов.",
-                footer: "«Западные степи стали колыбелью рыцарства кочевников, где сталь панцирей встречалась с вечностью каменных святилищ Устюрта.»",
-                elements: {
-                    statues: { name: "Антропоморфные изваяния", text: "Группы каменных фигур, изображающих воинов. Они устанавливались рядами и символизировали предков-защитников." },
-                    altar: { name: "Жертвенный стол", text: "Массивный плоский камень в центре. Здесь сарматы совершали жертвоприношения огню и богам войны." },
-                    ring: { name: "Кольцевая ограда", text: "Каменная выкладка, обозначающая границу сакрального пространства. Внутри кольца находились тайники с артефактами." }
-                }
+        // Статистика голода (Bar)
+        new Chart(document.getElementById('hungerChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Голодающие', 'Оказана помощь', 'Погибло (оцен.)'],
+                datasets: [{
+                    label: 'Миллионы чел.',
+                    data: [2.3, 0.8, 0.6],
+                    backgroundColor: ['#92400e', '#d97706', '#451a03']
+                }]
             },
-            kz: {
-                title: "Ерте темір дәуіріндегі Батыс Қазақстан",
-                vizTitle: "Үстірт үстіртіндегі ғибадатханалар",
-                vizDesc: "Батыс Қазақстанда бірегей діни құрылыстар табылды. Сарматтардың сәулетін зерттеу үшін сызбаның элементтерін басыңыз.",
-                badge: "Ритуалдық кешен картасы",
-                elementTitleDefault: "Зерттеуді бастаңыз",
-                elementDescDefault: "Мүсіндерді, құрбандық орындарын немесе қоршауларды басыңыз.",
-                planTitle: "Сарматтар мұрасы",
-                c1T: "Аралтобе қорғаны", c1D: "Екінші Алтын адам табылған жер (б.з.б. ІІ ғ.). Онымен бірге билік символы — бүркіт табылды. Бұл Батыс Қазақстан билеушілерінің жоғары мәртебесін дәлелдейді.",
-                c2T: "Савроматтар одағы", c2D: "Б.з.б. VIII-IV ғғ. тайпалары. Басқару мен абыздық қызметте жоғары орынға ие болған әйелдерге деген құрметімен белгілі.",
-                c3T: "Ата-баба мен тасқа табыну", c3D: "Батыс аймақ мүсіндер мен менгирлермен танымал. Бәйте және Терен ғибадатханалары жыл сайынғы жоралғылар өткізілетін орталықтар болды.",
-                footer: "«Батыс даласы көшпелілер серілігінің бесігі болды, онда сауыттардың болаттары Үстірт ғибадатханаларының тас мәңгілігімен түйісті.»",
-                elements: {
-                    statues: { name: "Антропоморфты мүсіндер", text: "Жауынгерлерді бейнелейтін тас мүсіндер тобы. Олар қатар-қатар орнатылып, қорғаушы ата-бабаларды білдірген." },
-                    altar: { name: "Құрбандық үстелі", text: "Орталықтағы ауыр жалпақ тас. Мұнда сарматтар отқа және соғыс құдайларына құрбандық шалған." },
-                    ring: { name: "Сақиналы қоршау", text: "Қасиетті кеңістіктің шекарасын білдіретін тас қаланды. Сақина ішінде жәдігерлер сақталған жасырын орындар болған." }
-                }
-            },
-            en: {
-                title: "Western Kazakhstan in the Early Iron Age",
-                vizTitle: "Ustyurt Plateau Sanctuaries",
-                vizDesc: "Unique religious structures have been found in Western Kazakhstan. Click on diagram elements to explore Sarmatian architecture.",
-                badge: "Ritual Complex Map",
-                elementTitleDefault: "Start exploring",
-                elementDescDefault: "Click on statues, altars, or enclosures.",
-                planTitle: "Sarmatian Legacy",
-                c1T: "Araltobe Mound", c1D: "The site of the Second Golden Man (2nd c. BC). A golden eagle was found with him, proving the supreme rank of Western Kazakhstan rulers.",
-                c2T: "Savromatian Union", c2D: "Tribes of the 8th-4th c. BC. Known for the high status of women, who held key positions in governance and priesthood.",
-                c3T: "Cult of Ancestors & Stone", c3D: "The West is famous for statues and menhirs. Baite and Teren sanctuaries were magnets for clans during annual rituals.",
-                footer: "«The western steppes became the cradle of nomadic knighthood, where the steel of armor met the eternity of Ustyurt stone sanctuaries.»",
-                elements: {
-                    statues: { name: "Anthropomorphic Statues", text: "Groups of stone figures depicting warriors. They were placed in rows, symbolizing protective ancestors." },
-                    altar: { name: "Sacrificial Altar", text: "A massive flat stone in the center. Here, Sarmatians performed sacrifices to fire and war deities." },
-                    ring: { name: "Circular Enclosure", text: "Stone masonry marking the boundary of sacred space. Inside the ring, caches with artifacts were often found." }
-                }
-            }
-        };
-
-        let currentLang = 'ru';
-        const canvas = document.getElementById('ustyurtCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 400;
-            drawSanctuary();
-        }
-
-        function drawSanctuary() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const scale = canvas.width / 600;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            // 1. Draw Sacral Ring
-            ctx.beginPath();
-            ctx.arc(cx, cy, 180 * scale, 0, Math.PI * 2);
-            ctx.setLineDash([10, 10]);
-            ctx.strokeStyle = 'rgba(245, 158, 11, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // 2. Draw Central Altar
-            ctx.fillStyle = '#475569';
-            ctx.fillRect(cx - 40 * scale, cy - 40 * scale, 80 * scale, 80 * scale);
-            ctx.strokeStyle = '#94a3b8';
-            ctx.strokeRect(cx - 40 * scale, cy - 40 * scale, 80 * scale, 80 * scale);
-
-            // 3. Draw Statues (Menhirs) in rows
-            const statuePos = [
-                {x: cx - 120, y: cy - 100}, {x: cx - 120, y: cy}, {x: cx - 120, y: cy + 100},
-                {x: cx + 120, y: cy - 100}, {x: cx + 120, y: cy}, {x: cx + 120, y: cy + 100}
-            ];
-            
-            ctx.fillStyle = '#64748b';
-            statuePos.forEach(p => {
-                ctx.beginPath();
-                ctx.ellipse(p.x * scale, p.y * scale, 15 * scale, 10 * scale, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-            });
-
-            // 4. Ritual Fire Glow
-            const grad = ctx.createRadialGradient(cx, cy, 5 * scale, cx, cy, 50 * scale);
-            grad.addColorStop(0, 'rgba(245, 158, 11, 0.4)');
-            grad.addColorStop(1, 'transparent');
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 50 * scale, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 600;
-
-            const distFromCenter = Math.sqrt((mouseX - cx)**2 + (mouseY - cy)**2);
-            
-            let zone = null;
-            if (distFromCenter < 50 * scale) {
-                zone = 'altar';
-            } else if (distFromCenter > 150 * scale && distFromCenter < 210 * scale) {
-                zone = 'ring';
-            } else if (Math.abs(mouseX - (cx - 120 * scale)) < 30 * scale || Math.abs(mouseX - (cx + 120 * scale)) < 30 * scale) {
-                zone = 'statues';
-            }
-
-            if (zone) {
-                const info = translations[currentLang].elements[zone];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = (zone === 'altar' ? '#f59e0b' : (zone === 'statues' ? '#94a3b8' : '#475569'));
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
-        function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('footer-text').innerText = t.footer;
+        // Восстановление при НЭПе (Line)
+        new Chart(document.getElementById('nepRecoveryChart'), {
+            type: 'line',
+            data: {
+                labels: ['1921', '1922', '1923', '1924', '1925'],
+                datasets: [{
+                    label: 'Поголовье скота (% от 1913г)',
+                    data: [30, 35, 55, 75, 88],
+                    borderColor: '#92400e',
+                    borderWidth: 4,
+                    tension: 0.3
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
 
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-lg text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-amber-500 transition-all";
-            });
-
-            resizeCanvas();
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        window.onload = () => setLang('ru');
-    </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-<script>
-    function goBack() {
-        console.log('goBack() вызвана');
-        if (typeof bridge !== 'undefined' && bridge) {
-            console.log('Bridge найден, вызываю onBackClicked()');
-            bridge.onBackClicked();
-        } else {
-            console.log('Bridge не найден!');
-        }
-    }
-
-    // Инициализация QWebChannel
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Инициализация QWebChannel...');
-
-        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-            try {
-                new QWebChannel(qt.webChannelTransport, function(channel) {
-                    window.bridge = channel.objects.bridge;
-                    console.log('✅ Bridge подключен!');
-                });
-            } catch(e) {
-                console.error('❌ QWebChannel ошибка:', e);
+        // Индикаторы (Radar)
+        new Chart(document.getElementById('lifeIndicatorsChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Грамотность', 'С/Х производство', 'Ярмарочная торговля', 'Мед. пункты', 'Арт. мастерские'],
+                datasets: [{
+                    label: 'Уровень развития',
+                    data: [20, 80, 70, 40, 50],
+                    borderColor: '#fbbf24',
+                    backgroundColor: 'rgba(251, 191, 36, 0.2)'
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, angleLines: { color: 'white' }, ticks: { display: false } } }
             }
+<<<<<<< HEAD
         } else {
             console.warn('⚠️ QWebChannel или qt не найден');
         }
@@ -582,5 +339,9 @@
   applyScale();
 })();
 </script>
+=======
+        });
+    </script>
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

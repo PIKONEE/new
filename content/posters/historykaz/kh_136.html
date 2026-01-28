@@ -3,403 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Великий Шелковый путь на территории Казахстана</title>
+    <title>Плакат: Освоение целины в Казахстане</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fdfcf6; color: #451a03; }
+        body { font-family: 'Inter', sans-serif; background: #fffbeb; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .silk-gradient {
-            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #fde68a 100%);
-        }
-
-        .premium-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(15px);
-            border-radius: 3rem;
-            border: 1px solid #d97706;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .premium-panel:hover {
-            border-color: #92400e;
-            box-shadow: 0 30px 60px -12px rgba(146, 64, 14, 0.2);
-        }
-
-        .lang-active {
-            background-color: #92400e;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(146, 64, 14, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: #fff;
-            box-shadow: inset 0 0 40px rgba(217, 119, 6, 0.05);
-        }
-
-        .info-card {
-            background: white;
-            border-radius: 2.5rem;
-            border-bottom: 6px solid #b45309;
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .info-card:hover {
-            transform: translateY(-10px);
-            border-color: #d97706;
-            box-shadow: 0 20px 40px rgba(146, 64, 14, 0.1);
-        }
-
-        .route-badge {
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .south-route { background: #fee2e2; color: #991b1b; }
-        .central-route { background: #fef3c7; color: #92400e; }
-        .north-route { background: #dcfce7; color: #166534; }
+        .lang-active { background-color: #d97706 !important; color: white !important; font-weight: 900; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(217, 119, 6, 0.1); }
+        .gold-grad { background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); }
     </style>
 </head>
-<body class="silk-gradient min-h-screen pb-20">
+<body class="pb-20">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <!-- Переключатель языков -->
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-slate-900/80 backdrop-blur p-1 rounded-full border border-white/20 shadow-xl">
+        <button onclick="setLang('ru')" id="lang-ru" class="lang-active w-10 h-10 rounded-full text-xs transition-all">RU</button>
+        <button onclick="setLang('kz')" id="lang-kz" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">KZ</button>
+        <button onclick="setLang('en')" id="lang-en" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">EN</button>
+    </div>
 
-
-    <!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-amber-200 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-amber-950">Великий Шелковый путь на территории Казахстана</h1>
-            <div class="flex bg-amber-50 p-1 rounded-xl border border-amber-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+    <main class="max-w-6xl mx-auto px-6 mt-12 space-y-10">
+        <header class="p-16 rounded-[4rem] text-white text-center shadow-2xl relative overflow-hidden gold-grad">
+            <div class="relative z-10">
+                <span id="period" class="inline-block bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 tracking-widest">1954 — 1965 гг.</span>
+                <h1 id="title" class="text-4xl md:text-6xl font-black uppercase mb-4 leading-none">Освоение целины</h1>
+                <p id="desc" class="text-xl font-light opacity-90">Превращение Казахстана в главную житницу страны</p>
             </div>
-        </div>
-    </header>
+            <div class="absolute top-0 right-0 text-[15rem] opacity-10 pointer-events-none font-black translate-x-1/4 -translate-y-1/4">🌾</div>
+        </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Route Map (Custom Canvas) -->
-        <div class="premium-panel p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-4 space-y-8">
-                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Trade Route Hub Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic">Карта транзита</h2>
-                    <p id="viz-desc" class="text-lg text-amber-900/70 font-light leading-relaxed">
-                        Казахстан был ключевым участком пути. Нажмите на основные направления (Южное, Центральное, Северное) на схеме, чтобы увидеть ключевые города и товары.
-                    </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-white border-l-8 border-amber-700 shadow-xl transition-all duration-500">
-                        <h3 id="route-title" class="text-xl font-bold text-amber-900 mb-3 uppercase tracking-tighter">Исследование путей</h3>
-                        <p id="route-desc" class="text-amber-800/70 text-sm leading-relaxed italic font-light">Выберите одну из трех линий маршрута на интерактивной карте.</p>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="routeCanvas"></canvas>
-                    <div class="absolute top-8 left-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.4em]">Schematic of Silk Road Branches</div>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-amber-600">
+                <h3 id="f1T" class="font-black uppercase mb-4 text-amber-900">Масштаб</h3>
+                <p id="f1D" class="text-sm leading-relaxed">За первые два года было распахано 25 млн га земель. В Казахстан прибыло более 600 тысяч новоселов.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-amber-600">
+                <h3 id="f2T" class="font-black uppercase mb-4 text-amber-900">Рекорд 1956</h3>
+                <p id="f2D" class="text-sm leading-relaxed">Казахстан впервые выдал «золотой миллиард» пудов зерна, став мировым лидером по темпам роста посевов.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-amber-600">
+                <h3 id="f3T" class="font-black uppercase mb-4 text-amber-900">Экология</h3>
+                <p id="f3D" class="text-sm leading-relaxed">Нарушение баланса почв привело к пыльным бурям и ветровой эрозии. Потеряно до 30% плодородного слоя.</p>
             </div>
         </div>
 
-        <!-- Section 2: Deep Historical Content -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-amber-950 uppercase tracking-[0.5em]">Экономика и Культура</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                
-                <!-- City Nodes -->
-                <div class="info-card">
-                    <div class="mb-4"><span class="route-badge south-route" id="tag-1">Города-узлы</span></div>
-                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Центры Процветания</h3>
-                    <p id="c1-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                        Города **Тараз**, **Отрар**, **Испиджаб** и **Сыгнак** процветали благодаря торговле. Тараз называли «городом купцов», а Испиджаб был «городом-рынком», освобожденным от налогов на землю. В этих центрах работали международные рынки, караван-сараи и монетные дворы.
-                    </p>
-                    <div class="text-[10px] font-black text-amber-700 uppercase tracking-widest italic">Сыгнак: Порт на Сырдарье</div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl">
+                <h3 id="chartTitle" class="text-2xl font-black mb-6 uppercase text-amber-900">Производство зерна (млн тонн)</h3>
+                <div class="h-[350px]">
+                    <canvas id="grainChart"></canvas>
                 </div>
-
-                <!-- Global Exchange -->
-                <div class="info-card">
-                    <div class="mb-4"><span class="route-badge central-route" id="tag-2">Обмен</span></div>
-                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Товары и Технологии</h3>
-                    <p id="c2-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                        Путь связывал Восток и Запад. Из Китая везли шелк, фарфор и бумагу. Из Индии — специи и хлопок. Казахстан экспортировал **поростых лошадей**, **серебро**, **пушнину** и **коней**. Путь также стал каналом передачи технологий (стекловарение, производство шелка).
-                    </p>
-                    <div class="text-[10px] font-black text-amber-700 uppercase tracking-widest italic">Шелк — мировая валюта</div>
-                </div>
-
-                <!-- Cultural Synthesis -->
-                <div class="info-card">
-                    <div class="mb-4"><span class="route-badge north-route" id="tag-3">Дипломатия</span></div>
-                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Диалог Культур</h3>
-                    <p id="c3-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                        Благодаря ВШП в Казахстане мирно сосуществовали **Ислам**, **Буддизм**, **Христианство** и **Зороастризм**. Тюркские каганы обеспечивали безопасность караванов («Великий тюркский мир»), получая огромную прибыль и становясь мировыми посредниками.
-                    </p>
-                    <div class="text-[10px] font-black text-amber-700 uppercase tracking-widest italic">568 г. — Посольство Маниаха</div>
-                </div>
-
             </div>
-
-            <!-- Full Width Focus: Scientific Hubs -->
-            <div class="bg-amber-900 p-10 md:p-16 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h3 id="science-t" class="text-3xl font-black mb-8 uppercase italic tracking-widest">Интеллектуальный транзит</h3>
-                        <p id="science-d" class="text-amber-100/70 text-xl font-light leading-relaxed mb-10">
-                            Торговые пути стали магистралями знаний. В городах ВШП работали крупнейшие библиотеки и обсерватории. **Аль-Фараби**, уроженец города Отрар, стал «Вторым учителем» мира после Аристотеля, объединив античную мысль и восточную мудрость именно в контексте культурного обмена Шелкового пути.
-                        </p>
-                        <div class="flex flex-wrap gap-4">
-                            <div class="px-6 py-2 bg-white/10 rounded-2xl border border-white/20 text-xs font-black text-amber-400 uppercase tracking-widest">Отрарская библиотека</div>
-                        </div>
-                    </div>
-                    <div class="flex justify-center relative">
-                        <div class="w-80 h-80 border-2 border-dashed border-amber-500/20 rounded-full flex items-center justify-center animate-spin-slow">
-                            <div class="text-8xl opacity-20">📜</div>
-                        </div>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="text-center">
-                                <div class="text-6xl mb-4">🔬</div>
-                                <div id="sci-label" class="text-[10px] font-black uppercase text-amber-400 tracking-[0.5em]">Philosophy & Science</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute -top-20 -right-20 text-[20rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">ARTERY</div>
+            <div class="p-10 rounded-[3rem] shadow-2xl text-white flex flex-col justify-center relative overflow-hidden bg-slate-900">
+                <h3 id="specialTitle" class="text-3xl font-black mb-6 uppercase text-yellow-400">Демографический сдвиг</h3>
+                <p id="specialD" class="text-xl font-light leading-relaxed relative z-10">В результате миграции населения в целинные годы доля коренного населения в республике временно снизилась до 30%, сделав Казахстан многонациональным краем.</p>
+                <div class="absolute -bottom-10 -right-10 text-[20rem] opacity-5 pointer-events-none">🏘️</div>
             </div>
         </div>
-
     </main>
-
-    <footer class="mt-20 py-20 bg-stone-950 text-stone-500 text-center border-t border-amber-900/20">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-stone-400">
-                «Великий Шелковый путь превратил Казахстан в сердце мира, где на перекрестке дорог ковалась глобальная история человечества.»
-            </p>
-            <div class="mt-10 h-1 w-24 bg-amber-900 mx-auto rounded-full"></div>
-        </div>
-    </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Великий Шелковый путь на территории Казахстана",
-                vizTitle: "Карта транзита",
-                vizDesc: "Казахстан был ключевым участком пути. Нажмите на основные ветви (Южную, Центральную, Северную) на схеме для анализа.",
-                badge: "Анализ торговых маршрутов",
-                routeTitleDefault: "Исследование путей",
-                routeDescDefault: "Выберите одну из трех линий маршрута на интерактивной карте.",
-                planTitle: "Экономика и Культура",
-                tag1: "Города-узлы", tag2: "Обмен", tag3: "Дипломатия",
-                c1T: "Центры Процветания", c1D: "Тараз, Отрар и Испиджаб стали богатейшими городами. Здесь работали караван-сараи, а купцы были освобождены от многих налогов для стимулирования товарооборота.",
-                c2T: "Товары и Технологии", c2D: "Транзит шелка, фарфора и пряностей сочетался с экспортом степного серебра и лошадей. Путь стал основой глобальной экономики того времени.",
-                c3T: "Диалог Культур", c3D: "Безопасность путей гарантировала расцвет религий и искусств. Тюркские каганы выступали гарантами стабильности на огромных пространствах Степи.",
-                scienceT: "Интеллектуальный транзит", scienceD: "Шелковый путь принес не только золото, но и идеи. Отрар стал центром науки, где сформировалось мировоззрение Аль-Фараби.",
-                footer: "«Великий Шелковый путь превратил Казахстан в сердце мира, где на перекрестке дорог ковалась глобальная история человечества.»",
-                routes: {
-                    south: { name: "Южная ветвь (Главная)", text: "Пролегала через Тараз, Отрар, Туркестан в Среднюю Азию. Самый оживленный маршрут, богатый городами и караван-сараями." },
-                    central: { name: "Центральная ветвь", text: "Шла из Отрара через Сарысу в Центральный Казахстан (Улытау). Путь для транзита металлов (медь, серебро) и пушнины." },
-                    north: { name: "Северная ветвь", text: "Огибала Каспий и шла через Приуралье. Использовалась для связей с Русью и Византией, специализировалась на транзите меха и коней." }
-                }
+                period: "1954 — 1965 гг.", title: "Освоение целины", desc: "Превращение Казахстана в главную житницу страны",
+                f1T: "Масштаб", f1D: "За первые два года было распахано 25 млн га земель. В Казахстан прибыло более 600 тысяч новоселов.",
+                f2T: "Рекорд 1956", f2D: "Казахстан впервые выдал «золотой миллиард» пудов зерна, став мировым лидером по темпам роста посевов.",
+                f3T: "Экология", f3D: "Нарушение баланса почв привело к пыльным бурям и ветровой эрозии. Потеряно до 30% плодородного слоя.",
+                chartTitle: "Производство зерна (млн тонн)", specialTitle: "Демографический сдвиг",
+                specialD: "В результате миграции населения в целинные годы доля коренного населения в республике временно снизилась до 30%, сделав Казахстан многонациональным краем.",
+                labels: ['1953', '1956', '1958', '1960', '1964']
             },
             kz: {
-                title: "Қазақстан аумағындағы Ұлы Жібек жолы",
-                vizTitle: "Транзит Картасы",
-                vizDesc: "Қазақстан жолдың негізгі бөлігі болды. Талдау жасау үшін сызбадағы негізгі тармақтарды (Оңтүстік, Орталық, Солтүстік) басыңыз.",
-                badge: "Сауда бағыттарын талдау",
-                routeTitleDefault: "Жолдарды зерттеу",
-                routeDescDefault: "Интерактивті картадан үш маршрут желісінің бірін таңдаңыз.",
-                planTitle: "Экономика және Мәдениет",
-                tag1: "Торапты қалалар", tag2: "Алмасу", tag3: "Дипломатия",
-                c1T: "Өркендеу орталықтары", c1D: "Тараз, Отырар және Испиджаб ең бай қалаларға айналды. Мұнда керуен сарайлары жұмыс істеді, ал көпестерге сауданы ынталандыру үшін жеңілдіктер жасалды.",
-                c2T: "Тауарлар мен Технологиялар", c2D: "Жібек, фарфор және дәмдеуіштер транзиті дала күмісі мен жылқы экспортымен ұштасты. Жол сол заманғы жаһандық экономиканың негізі болды.",
-                c3T: "Мәдениеттер диалогы", c3D: "Жолдардың қауіпсіздігі діндер мен өнердің гүлденуіне кепіл болды. Түркі қағандары Даланың кең кеңістігіндегі тұрақтылықтың кепілі ретінде танылды.",
-                scienceT: "Зерде транзиті", scienceD: "Жібек жолы тек алтын ғана емес, идеяларды да әкелді. Отырар ғылым орталығына айналып, әл-Фарабидің дүниетанымы осында қалыптасты.",
-                footer: "«Ұлы Жібек жолы Қазақстанды әлемнің жүрегіне айналдырды, онда жолдардың түйіскен жерінде адамзаттың жаһандық тарихы шыңдалды.»",
-                routes: {
-                    south: { name: "Оңтүстік тармақ (Негізгі)", text: "Тараз, Отырар, Түркістан арқылы Орта Азияға өтті. Қалалар мен керуен сарайларға бай ең қарбалас бағыт." },
-                    central: { name: "Орталық тармақ", text: "Отырардан Сарысу арқылы Орталық Қазақстанға (Ұлытау) бет алды. Металдар (мыс, күміс) мен аң терісін тасымалдауға арналған." },
-                    north: { name: "Солтүстік тармақ", text: "Каспийді айналып өтіп, Жайық бойымен жүрді. Русь және Византиямен байланыс үшін пайдаланылды, аң терісі мен жылқы саудасына маманданды." }
-                }
+                period: "1954 — 1965 жж.", title: "Тың игеру", desc: "Қазақстанның елдің басты астық қоймасына айналуы",
+                f1T: "Ауқымы", f1D: "Алғашқы екі жылда 25 млн га жер жыртылды. Қазақстанға 600 мыңнан астам жаңа қоныстанушылар келді.",
+                f2T: "1956 ж. рекорды", f2D: "Қазақстан алғаш рет «алтын миллиард» пұт астық беріп, егіс өсімі бойынша әлемдік көшбасшы атанды.",
+                f3T: "Экология", f3D: "Топырақ тепе-теңдігінің бұзылуы шаңды дауылдар мен эрозияға әкелді. Құнарлы қабаттың 30%-ы жоғалды.",
+                chartTitle: "Астық өндірісі (млн тонн)", specialTitle: "Демографиялық өзгеріс",
+                specialD: "Тың игеру жылдарындағы көші-қон нәтижесінде республикадағы жергілікті халықтың үлесі уақытша 30%-ға дейін төмендеді.",
+                labels: ['1953', '1956', '1958', '1960', '1964']
             },
             en: {
-                title: "The Great Silk Road in Kazakhstan",
-                vizTitle: "Transit Map",
-                vizDesc: "Kazakhstan was a vital segment of the Silk Road. Click on the main branches (Southern, Central, Northern) on the diagram for analysis.",
-                badge: "Trade Routes Analysis",
-                routeTitleDefault: "Explore Routes",
-                routeDescDefault: "Select one of the three route lines on the interactive map.",
-                planTitle: "Economy and Culture",
-                tag1: "City Nodes", tag2: "Exchange", tag3: "Diplomacy",
-                c1T: "Prosperity Centers", c1D: "Taraz, Otrar, and Ispidjab became the wealthiest cities. Caravanserais operated here, and merchants enjoyed tax exemptions to boost trade.",
-                c2T: "Goods and Tech", c2D: "Silk, porcelain, and spice transit merged with the export of steppe silver and horses. The road was the backbone of the era's global economy.",
-                c3T: "Dialogue of Cultures", c3D: "Route security ensured the bloom of religions and arts. Turkic Khagans acted as guarantors of stability across the Steppe.",
-                scienceT: "Intellectual Transit", scienceD: "The Silk Road brought ideas along with gold. Otrar became a scientific hub where Al-Farabi's worldview was shaped.",
-                footer: "«The Great Silk Road turned Kazakhstan into the heart of the world, where global human history was forged at the crossroads.»",
-                routes: {
-                    south: { name: "Southern Branch (Main)", text: "Ran through Taraz, Otrar, and Turkestan to Central Asia. The most active route, rich in cities and infrastructure." },
-                    central: { name: "Central Branch", text: "Led from Otrar through Sarysu to Central Kazakhstan (Ulytau). Used for metal (copper, silver) and fur transit." },
-                    north: { name: "Northern Branch", text: "Circled the Caspian and went through the Ural region. Vital for ties with Rus and Byzantium, specialized in furs and horses." }
-                }
+                period: "1954 — 1965", title: "Virgin Lands Campaign", desc: "Turning Kazakhstan into the main breadbasket of the country",
+                f1T: "Scale", f1D: "25 million hectares of land were plowed in the first two years. Over 600,000 new settlers arrived.",
+                f2T: "1956 Record", f2D: "Kazakhstan produced its first billion poods of grain, becoming a global leader in crop growth rates.",
+                f3T: "Ecology", f3D: "Soil imbalance led to dust storms and erosion. Up to 30% of the fertile layer was lost.",
+                chartTitle: "Grain Production (Million Tons)", specialTitle: "Demographic Shift",
+                specialD: "Migration during the Virgin Lands years caused the indigenous population share to temporarily drop to 30%.",
+                labels: ['1953', '1956', '1958', '1960', '1964']
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('routeCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 500;
-            drawRoutes();
-        }
-
-        function drawRoutes() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Draw Stylized Map Outline (Abstract)
-            ctx.beginPath();
-            ctx.moveTo(100 * scale, 350 * scale);
-            ctx.quadraticCurveTo(cx, 100, 700 * scale, 150 * scale);
-            ctx.strokeStyle = 'rgba(217, 119, 6, 0.05)';
-            ctx.lineWidth = 100 * scale;
-            ctx.stroke();
-
-            // 2. SOUTH ROUTE (Reddish)
-            ctx.beginPath();
-            ctx.moveTo(100 * scale, 450 * scale);
-            ctx.bezierCurveTo(300 * scale, 400 * scale, 500 * scale, 450 * scale, 750 * scale, 400 * scale);
-            ctx.strokeStyle = '#991b1b';
-            ctx.lineWidth = 8 * scale;
-            ctx.stroke();
-            
-            // 3. CENTRAL ROUTE (Gold)
-            ctx.beginPath();
-            ctx.moveTo(350 * scale, 410 * scale);
-            ctx.quadraticCurveTo(450 * scale, 300 * scale, 550 * scale, 100 * scale);
-            ctx.strokeStyle = '#d97706';
-            ctx.lineWidth = 6 * scale;
-            ctx.stroke();
-
-            // 4. NORTHERN ROUTE (Green)
-            ctx.beginPath();
-            ctx.moveTo(150 * scale, 430 * scale);
-            ctx.bezierCurveTo(200 * scale, 250 * scale, 400 * scale, 100 * scale, 650 * scale, 50 * scale);
-            ctx.strokeStyle = '#166534';
-            ctx.lineWidth = 6 * scale;
-            ctx.stroke();
-
-            // 5. City Nodes
-            drawNode(350 * scale, 410 * scale, '#991b1b', "OTRAR");
-            drawNode(450 * scale, 430 * scale, '#991b1b', "TARAZ");
-            drawNode(480 * scale, 250 * scale, '#d97706', "ULYTAU");
-            drawNode(200 * scale, 250 * scale, '#166534', "URALS");
-
-            // Interactive instruction
-            ctx.fillStyle = 'rgba(69, 26, 3, 0.2)';
-            ctx.font = 'bold 10px Inter';
-            ctx.textAlign = 'center';
-            ctx.fillText("TAP ON COLORFUL PATHS TO ANALYZE BRANCHES", cx, 40 * scale);
-        }
-
-        function drawNode(x, y, color, label) {
-            ctx.beginPath();
-            ctx.arc(x, y, 6, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#451a03';
-            ctx.font = 'bold 9px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x, y + 18);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const scale = canvas.width / 800;
-
-            let target = null;
-            // Detection areas based on y positions mainly
-            if (y > 380 * scale) target = 'south';
-            else if (x > 380 * scale && y < 350 * scale && x < 600 * scale) target = 'central';
-            else if (y < 250 * scale) target = 'north';
-
-            if (target) {
-                const info = translations[currentLang].routes[target];
-                document.getElementById('route-title').innerText = info.name;
-                document.getElementById('route-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = (target === 'south' ? '#991b1b' : (target === 'central' ? '#d97706' : '#166534'));
-            }
-        });
+        let activeChart = null;
 
         function setLang(lang) {
-            currentLang = lang;
+            ['ru', 'kz', 'en'].forEach(l => document.getElementById(`lang-${l}`).classList.toggle('lang-active', l === lang));
             const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('route-title').innerText = t.routeTitleDefault;
-            document.getElementById('route-desc').innerText = t.routeDescDefault;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            
-            document.getElementById('tag-1').innerText = t.tag1;
-            document.getElementById('tag-2').innerText = t.tag2;
-            document.getElementById('tag-3').innerText = t.tag3;
-
-            document.getElementById('science-t').innerText = t.scienceT;
-            document.getElementById('science-d').innerText = t.scienceD;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-amber-700 hover:bg-white transition-all";
-            });
-            resizeCanvas();
+            document.getElementById('period').innerText = t.period;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('f1T').innerText = t.f1T; document.getElementById('f1D').innerText = t.f1D;
+            document.getElementById('f2T').innerText = t.f2T; document.getElementById('f2D').innerText = t.f2D;
+            document.getElementById('f3T').innerText = t.f3T; document.getElementById('f3D').innerText = t.f3D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('specialTitle').innerText = t.specialTitle;
+            document.getElementById('specialD').innerText = t.specialD;
+            renderChart(t.labels);
         }
 
-        window.onload = () => { resizeCanvas(); setLang('ru'); };
-        window.onresize = resizeCanvas;
+        function renderChart(labels) {
+            const ctx = document.getElementById('grainChart').getContext('2d');
+            if (activeChart) activeChart.destroy();
+            activeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Зерно', data: [5.4, 16.1, 14.5, 12.8, 15.0], backgroundColor: '#d97706', borderRadius: 8
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        window.onload = () => setLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -639,5 +369,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

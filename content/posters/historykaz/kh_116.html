@@ -3,309 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Великое переселение народов</title>
+    <title>Казахстан — Арсенал Победы</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .migration-gradient {
-            background: radial-gradient(circle at bottom left, #1e1b4b, #0f172a 80%);
+        .war-theme {
+            background: linear-gradient(to bottom right, #fee2e2, #fecaca);
         }
 
-        .storm-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(12px);
-            border-radius: 2rem;
-            border: 1px solid rgba(249, 115, 22, 0.2);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .hero-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #991b1b;
+            box-shadow: 0 10px 30px -5px rgba(153, 27, 27, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .storm-card:hover {
-            transform: scale(1.03);
-            border-color: #f97316;
-            box-shadow: 0 0 30px rgba(249, 115, 22, 0.15);
+        .hero-card:hover {
+            transform: scale(1.02);
+            border-color: #dc2626;
         }
 
-        .lang-active {
-            background-color: #f97316;
-            color: #0f172a;
-            box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+        .soviet-red-glow {
+            box-shadow: 0 0 30px rgba(153, 27, 27, 0.3);
         }
 
-        .fire-text {
-            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #dc2626 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .btn-active {
+            background-color: #991b1b;
+            color: white;
+            box-shadow: 0 4px 15px rgba(153, 27, 27, 0.4);
         }
-
-        canvas {
-            filter: drop-shadow(0 0 20px rgba(249, 115, 22, 0.1));
-        }
-
-        /* Анимация миграции */
-        @keyframes drift {
-            from { transform: translateX(-5px); }
-            to { transform: translateX(5px); }
-        }
-        .drift-anim { animation: drift 3s infinite alternate ease-in-out; }
     </style>
 </head>
-<body class="migration-gradient min-h-screen">
+<body class="war-theme text-red-950 min-h-screen">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
-
-    <!-- Header Navigation -->
-    <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-orange-900/30 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-red-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <span class="text-4xl drift-anim">🌍</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest fire-text">Мировой пожар</h1>
+                <span class="text-3xl">⭐</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-red-900">Вклад в Победу</h1>
             </div>
-            <div class="flex bg-slate-900 p-1 rounded-2xl border border-slate-800">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            <div class="flex bg-red-100/50 p-1 rounded-full border border-red-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-20">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: Migration Intensity (Visual Map) -->
-        <div class="storm-card p-8 md:p-12 relative overflow-hidden">
-            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl"></div>
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-orange-500/50 text-orange-500 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Global Shift</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Движение Народов</h2>
-                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
-                        Начавшееся во II веке н.э. движение гуннов вызвало цепную реакцию. Десятки племен снялись с мест, сокрушая границы Римской империи и создавая новую Европу.
-                    </p>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-4 p-4 bg-orange-950/20 rounded-2xl border border-orange-900/30">
-                            <span class="text-3xl">⏳</span>
-                            <div>
-                                <div class="text-orange-500 font-black">II - VII вв.</div>
-                                <div id="period-label" class="text-[10px] uppercase font-bold text-slate-500">Хронология переселения</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="lg:col-span-7 h-80 md:h-[450px]">
-                    <canvas id="migrationChart"></canvas>
+        <!-- Section 1: Arsenal (Visualization) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-red-800 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Frontline Support</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase text-red-900">Казахстан — Арсенал фронта</h2>
+                <p id="viz-desc" class="text-lg text-red-900/80 leading-relaxed font-light">
+                    9 из 10 пуль в годы войны были отлиты из казахстанского свинца. В республику было эвакуировано более 140 заводов, что превратило её в индустриальное сердце тыла.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="frontSupportChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Stages and Figures (The Plan) -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.4em]">Хроника событий</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
-                
-                <!-- Causes: Small but Wide -->
-                <div class="lg:col-span-7 storm-card p-10 flex flex-col justify-center border-l-8 border-orange-600">
-                    <div class="text-5xl mb-6">🧊</div>
-                    <h3 id="c1-t" class="text-2xl font-black mb-4 uppercase text-orange-500">Причины сдвига</h3>
-                    <p id="c1-d" class="text-slate-300 text-lg leading-relaxed">
-                        Похолодание в степях Евразии и давление гуннов на соседей заставили миллионы людей искать спасения на Западе и Юге.
+        <!-- Section 2: Heroes -->
+        <div class="bg-red-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl soviet-red-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">🎖️</div>
+                    <div id="hero-label" class="text-red-300 font-black text-sm uppercase tracking-[0.3em]">Heroes of Kazakhstan</div>
+                </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="hero-title" class="text-3xl font-black tracking-tight uppercase text-red-200">Отвага и Честь</h3>
+                    <p id="hero-desc" class="text-xl text-red-50 font-light leading-relaxed">
+                        Более 1.2 млн казахстанцев ушли на фронт. Панфиловцы под Москвой, Бауыржан Момышулы, Алия Молдагулова и Маншук Маметова — их имена стали символом несокрушимости.
                     </p>
                 </div>
+            </div>
+            <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-10 pointer-events-none rotate-12">🎖️</div>
+        </div>
 
-                <!-- Attila: Featured Block -->
-                <div class="lg:col-span-5 bg-orange-600 p-10 rounded-[3rem] shadow-2xl flex flex-col justify-center relative overflow-hidden text-orange-950">
-                    <div class="relative z-10">
-                        <div class="text-6xl mb-6">⚔️</div>
-                        <h3 id="c2-t" class="text-2xl font-black mb-4 uppercase italic">Аттила: Бич Божий</h3>
-                        <p id="c2-d" class="text-orange-100 text-sm leading-relaxed font-bold">
-                            Под его предводительством гунны достигли пика могущества, угрожая Константинополю и Риму. Его империя простиралась от Рейна до Волги.
-                        </p>
-                    </div>
-                    <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-10">👑</div>
-                </div>
-
-                <!-- Consequences: Full Width -->
-                <div class="lg:col-span-12 storm-card p-10 md:p-16 flex flex-col md:flex-row items-center gap-12">
-                    <div class="shrink-0 text-center">
-                        <div class="text-8xl mb-4">🏛️🔥</div>
-                        <div id="conseq-tag" class="bg-red-600 text-white px-6 py-1 rounded-full text-xs font-black uppercase tracking-widest">Collapse of Rome</div>
-                    </div>
-                    <div class="flex-1">
-                        <h3 id="c3-t" class="text-3xl font-black text-white mb-6 uppercase">Новый Мир</h3>
-                        <p id="c3-d" class="text-slate-400 text-xl font-light leading-relaxed">
-                            Переселение привело к падению Западной Римской империи в 476 году. На её руинах возникли варварские королевства, ставшие основой современных европейских государств.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Kazakhstan's Role -->
-                <div class="lg:col-span-12 bg-slate-950 rounded-[3rem] p-10 border border-slate-800 shadow-inner text-center relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h3 id="c4-t" class="text-2xl font-bold mb-6 text-orange-500 uppercase italic">Степной коридор</h3>
-                        <p id="c4-d" class="text-slate-400 text-lg font-light leading-relaxed max-w-3xl mx-auto">
-                            Территория Казахстана служила главными «воротами» переселения. Именно отсюда начинали свой путь на Запад гунны, авары и другие кочевые союзы.
-                        </p>
-                    </div>
-                    <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none flex items-center justify-center">
-                        <div class="text-[20rem]">🏹</div>
-                    </div>
-                </div>
-
+        <!-- Section 3: Key Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="hero-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-800">
+                <div class="text-5xl mb-4">⛏️</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Свинец и Медь</h4>
+                <p id="fact1-d" class="text-sm text-red-900/60 leading-relaxed">Казахстан давал 85% союзного свинца. Чимкентский свинцовый завод работал на пределе возможностей для нужд обороны.</p>
+            </div>
+            <div class="hero-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-orange-600">
+                <div class="text-5xl mb-4">🥖</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Хлеб фронту</h4>
+                <p id="fact2-d" class="text-sm text-red-900/60 leading-relaxed">Миллионы пудов зерна и тысячи тонн мяса были отправлены солдатам. Жители аулов отдавали последнее ради победы.</p>
+            </div>
+            <div class="hero-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-slate-800">
+                <div class="text-5xl mb-4">🏭</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Эвакуация</h4>
+                <p id="fact3-d" class="text-sm text-red-900/60 leading-relaxed">Казахстан стал новым домом для заводов, театров и миллионов людей, эвакуированных из оккупированных зон.</p>
             </div>
         </div>
 
     </main>
 
-    <footer class="mt-20 py-24 bg-black border-t border-orange-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
-                «Великое переселение народов — это шторм, который разрушил старую цивилизацию, чтобы на её обломках выстроить фундамент современного мира.»
+    <footer class="mt-20 py-20 bg-red-950 text-red-200/40">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Победа ковалась не только на передовой, но и в каждой шахте, на каждом поле Казахстана».
             </p>
-            <div class="mt-12 h-1 w-24 bg-orange-600 mx-auto rounded-full"></div>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-red-800">WWII Contribution: Kazakhstan Digital Museum</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Мировой пожар",
-                vizTitle: "Движение Народов",
-                vizDesc: "Начавшееся движение гуннов вызвало цепную реакцию, сокрушившую границы античного мира и создавшую новую карту Европы.",
-                badge: "Эпоха перемен",
-                periodLabel: "II - VII века нашей эры",
-                planTitle: "Хроника событий",
-                c1T: "Причины сдвига", c1D: "Резкое похолодание (аридизация) и давление кочевых союзов заставили племена искать новые земли для выживания.",
-                c2T: "Аттила: Бич Божий", c2D: "Лидер гуннов, объединивший племена от Европы до Азии. Его походы поставили великий Рим на край гибели.",
-                c3T: "Новый Мир", c3D: "Падение Западной Римской империи и формирование новых народов. Эпоха, завершившая историю Древнего мира.",
-                conseqTag: "Крах Империй",
-                c4T: "Степной коридор", c4D: "Казахстан стал эпицентром великих миграций. Степные просторы Жетысу и Сарыарки были отправной точкой для мировых перемен.",
-                footer: "«Великое переселение народов — это шторм, который разрушил старую цивилизацию, чтобы выстроить фундамент современного мира.»",
-                chartLabels: ["II в.", "III в.", "IV в. (Гунны)", "V в. (Пик)", "VI в.", "VII в."],
-                chartTitle: "Интенсивность миграционных волн"
+                title: "Вклад в Победу",
+                vizTitle: "Арсенал фронта",
+                vizDesc: "Промышленность Казахстана в 1941-45 годах была полностью перестроена под нужды армии. Свинец, медь, уголь и продовольствие стали решающими факторами.",
+                statusBadge: "Все для фронта",
+                heroTitle: "Подвиг народа",
+                heroDesc: "500 казахстанцев стали Героями Советского Союза. Талгат Бегельдинов стал дважды Героем. Мы помним каждого, кто защитил мир.",
+                fact1T: "Металл Победы", fact1D: "Почти каждая пуля, выпущенная по врагу, содержала в себе труд казахстанских рабочих.",
+                fact2T: "Продовольствие", fact2D: "Казахстан стал главной продовольственной базой СССР после потери западных территорий.",
+                fact3T: "Индустриализация тыла", fact3D: "За годы войны объем промышленного производства вырос в несколько раз благодаря эвакуации.",
+                footer: "«Победа ковалась не только на передовой, но и в каждой шахте, на каждом поле Казахстана».",
+                chartLabels: ["Свинец", "Медь", "Уголь", "Молибден"],
+                chartTitle: "Доля в общесоюзном производстве (%)"
             },
             kz: {
-                title: "Әлемдік дүрбелең",
-                vizTitle: "Халықтардың қозғалысы",
-                vizDesc: "Ғұндардың бастаған көші антикалық дүниенің шекараларын талқандап, Еуропаның жаңа картасын жасаған тізбекті реакцияны тудырды.",
-                badge: "Өзгерістер дәуірі",
-                periodLabel: "II - VII ғасырлар",
-                planTitle: "Оқиғалар хроникасы",
-                c1T: "Көшу себептері", c1D: "Күрт суыту және көшпелі одақтардың қысымы тайпаларды аман қалу үшін жаңа жерлер іздеуге мәжбүр етті.",
-                c2T: "Еділ: Тәңірдің қамшысы", c2D: "Еуропадан Азияға дейінгі тайпаларды біріктірген ғұн көсемі. Оның жорықтары ұлы Римді жойылу алдына қойды.",
-                c3T: "Жаңа Әлем", c3D: "Батыс Рим империясының құлауы және жаңа халықтардың қалыптасуы. Ежелгі дүние тарихын аяқтаған дәуір.",
-                conseqTag: "Империялардың күйреуі",
-                c4T: "Дала дәлізі", c4D: "Қазақстан ұлы миграциялардың эпицентрі болды. Жетісу мен Сарыарқаның кең даласы әлемдік өзгерістердің бастау нүктесі болды.",
-                footer: "«Халықтардың ұлы қоныс аударуы — бұл қазіргі әлемнің іргетасын қалау үшін ескі өркениетті қиратқан дауыл.»",
-                chartLabels: ["II ғ.", "III ғ.", "IV ғ. (Ғұндар)", "V ғ. (Шың)", "VI ғ.", "VII ғ."],
-                chartTitle: "Миграциялық толқындардың қарқындылығы"
+                title: "Жеңіске қосқан үлес",
+                vizTitle: "Майдан арсеналы",
+                vizDesc: "1941-45 жылдары Қазақстан өнеркәсібі толықтай майдан мүддесіне бейімделді. Қорғасын, мыс, көмір мен азық-түлік шешуші рөл атқарды.",
+                statusBadge: "Бәрі де майдан үшін",
+                heroTitle: "Халық ерлігі",
+                heroDesc: "500 қазақстандық Кеңес Одағының Батыры атанды. Талғат Бигелдинов екі мәрте Батыр атанды. Біз бейбітшілікті қорғаған әрбір жанды ұмытпаймыз.",
+                fact1T: "Жеңіс металы", fact1D: "Жауға атылған дерлік әрбір оқ қазақстандық жұмысшылардың еңбегімен жасалды.",
+                fact2T: "Азық-түлік", fact2D: "Батыс аймақтардан айырылған соң, Қазақстан КСРО-ның басты азық-түлік базасына айналды.",
+                fact3T: "Тыл индустриясы", fact3D: "Соғыс жылдарында эвакуацияның арқасында өнеркәсіп көлемі бірнеше есеге артты.",
+                footer: "«Жеңіс тек алдыңғы шепте емес, Қазақстанның әрбір шахтасында, әрбір егістігінде шыңдалды».",
+                chartLabels: ["Қорғасын", "Мыс", "Көмір", "Молибден"],
+                chartTitle: "Жалпыодақтық өндірістегі үлесі (%)"
             },
             en: {
-                title: "World Fire",
-                vizTitle: "Migration Flow",
-                vizDesc: "The movement of the Huns triggered a chain reaction that crushed the borders of the ancient world and created a new map of Europe.",
-                badge: "Era of Change",
-                periodLabel: "2nd - 7th Centuries AD",
-                planTitle: "Chronicle of Events",
-                c1T: "Causes of Shift", c1D: "Sudden cooling and pressure from nomadic unions forced tribes to seek new lands for survival.",
-                c2T: "Attila: Scourge of God", c2D: "The Hunnic leader who united tribes from Europe to Asia. His campaigns brought Rome to the brink of collapse.",
-                c3T: "New World", c3D: "The fall of the Western Roman Empire and the formation of new peoples. The era that ended Ancient history.",
-                conseqTag: "Imperial Collapse",
-                c4T: "Steppe Corridor", c4D: "Kazakhstan became the epicenter of great migrations. The vast steppes of Zhetysu were the starting point for global changes.",
-                footer: "«The Great Migration is a storm that destroyed the old civilization to build the foundation of the modern world.»",
-                chartLabels: ["2nd c.", "3rd c.", "4th c. (Huns)", "5th c. (Peak)", "6th c.", "7th c."],
-                chartTitle: "Intensity of Migration Waves"
+                title: "Victory Contribution",
+                vizTitle: "Arsenal for the Front",
+                vizDesc: "In 1941-45, Kazakhstan's industry was completely repurposed for military needs. Lead, copper, and food were critical survival factors.",
+                statusBadge: "Everything for the Front",
+                heroTitle: "The Nation's Valor",
+                heroDesc: "500 Kazakhstanis were awarded Hero of the Soviet Union. Talgat Begeldinov was twice honored. We honor all who defended peace.",
+                fact1T: "Metal of Victory", fact1D: "Almost every bullet fired at the enemy contained the labor of Kazakhstan's workers.",
+                fact2T: "Food Supply", fact2D: "Kazakhstan became the primary food source for the USSR after the loss of western territories.",
+                fact3T: "Rear Industrialization", fact3D: "Industrial output increased significantly during the war due to the influx of evacuated equipment.",
+                footer: "«Victory was forged not only on the front lines but in every mine and every field of Kazakhstan.»",
+                chartLabels: ["Lead", "Copper", "Coal", "Molybdenum"],
+                chartTitle: "Share in Soviet Production (%)"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('migrationChart').getContext('2d');
+            const ctx = document.getElementById('frontSupportChart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: translations[lang].chartLabels,
                     datasets: [{
-                        label: 'Intensity',
-                        data: [20, 35, 80, 100, 60, 40],
-                        borderColor: '#f97316',
-                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                        borderWidth: 4,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 6,
-                        pointBackgroundColor: '#fff'
+                        label: '%',
+                        data: [85, 35, 20, 60],
+                        backgroundColor: ['#991b1b', '#b91c1c', '#dc2626', '#ef4444'],
+                        borderRadius: 12
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { display: false, min: 0 },
-                        x: {
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            ticks: { color: '#94a3b8', font: { family: 'Montserrat', weight: 'bold' } }
-                        }
-                    },
                     plugins: {
                         legend: { display: false },
-                        title: { display: true, text: translations[lang].chartTitle, color: '#f97316', font: { family: 'Montserrat', size: 16 } }
-                    }
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    },
+                    scales: { y: { beginAtZero: true, max: 100 } }
                 }
             });
         }
 
-        function setLang(lang) {
+        function changeLang(lang) {
             const t = translations[lang];
             document.getElementById('main-title').innerText = t.title;
             document.getElementById('viz-title').innerText = t.vizTitle;
             document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('period-label').innerText = t.periodLabel;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('conseq-tag').innerText = t.conseqTag;
-            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
-            document.getElementById('footer-text').innerText = t.footer;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('hero-title').innerText = t.heroTitle;
+            document.getElementById('hero-desc').innerText = t.heroDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-xl text-sm font-bold text-slate-500 hover:text-orange-500 transition-all";
+                btn.className = l === lang ? "px-6 py-2 rounded-full text-sm font-black btn-active" : "px-6 py-2 rounded-full text-sm font-bold text-red-700 hover:bg-red-50 transition-all";
             });
 
             initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
+        window.onload = () => changeLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -545,5 +458,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

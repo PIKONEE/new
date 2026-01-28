@@ -1,175 +1,150 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Добавляет ВИДИМУЮ кнопку "Назад" в верхнюю часть всех HTML плакатов
+Удаляет кнопки "Назад" из всех HTML плакатов
 """
 
 import os
 import re
 
-# HTML код для кнопки "Назад"
-BACK_BUTTON_HTML = """
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    " onmouseover="this.style.transform='translateX(-3px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-"""
+# Путь к папке с плакатами
+POSTERS_PATH = r'C:\Users\Admin\PycharmProjects\pythonProject\interactive-posters\content\posters'
 
-# JavaScript код для функции goBack() и QWebChannel
-JAVASCRIPT_CODE = """
-<script>
-    function goBack() {
-        if (typeof bridge !== 'undefined' && bridge) {
-            bridge.onBackClicked();
-        } else {
-            console.log('Bridge не найден');
-        }
-    }
 
-    // Инициализация QWebChannel
-    if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-        try {
-            new QWebChannel(qt.webChannelTransport, function(channel) {
-                window.bridge = channel.objects.bridge;
-                console.log('Bridge подключен');
-            });
-        } catch(e) {
-            console.log('QWebChannel ошибка:', e);
-        }
-    }
-</script>
-"""
-
-def add_back_button_to_file(file_path):
-    """Добавляет кнопку назад и JavaScript в файл"""
+def remove_back_button(file_path):
+    """Удаляет кнопку назад из HTML файла"""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        modified = False
+        original_content = content
+        changes = []
 
-        # 1. Проверяем и добавляем кнопку, если её нет
-        if '<!-- КНОПКА НАЗАД -->' not in content:
-            # Ищем <body> с возможными атрибутами
-            body_pattern = r'(<body[^>]*>)'
-            if re.search(body_pattern, content):
-                content = re.sub(body_pattern, r'\1\n' + BACK_BUTTON_HTML, content)
-                modified = True
-            else:
-                return False, "не найден тег <body>"
+        # 1. Удаляем блок с кнопкой "Назад"
+        button_pattern = r'<div\s+style="position:\s*fixed;\s*top:\s*20px;\s*left:\s*20px;[^"]*">\s*<button[^>]*onclick="goBack\(\)"[^>]*>.*?</button>\s*</div>'
 
-        # 2. Проверяем и добавляем JavaScript, если его нет
-        if 'function goBack()' not in content:
-            if '</body>' in content:
-                content = content.replace('</body>', JAVASCRIPT_CODE + '\n</body>')
-                modified = True
-            elif '</html>' in content:
-                content = content.replace('</html>', JAVASCRIPT_CODE + '\n</html>')
-                modified = True
+        button_matches = re.findall(button_pattern, content, re.DOTALL | re.IGNORECASE)
+        if button_matches:
+            content = re.sub(button_pattern, '', content, flags=re.DOTALL | re.IGNORECASE)
+            changes.append(f"кнопка({len(button_matches)})")
 
-        # 3. Добавляем QWebChannel script, если его нет
-        if 'qwebchannel.js' not in content.lower():
-            head_pattern = r'(<head[^>]*>)'
-            qwebchannel_script = '\n    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>'
-            if re.search(head_pattern, content):
-                content = re.sub(head_pattern, r'\1' + qwebchannel_script, content)
-                modified = True
+        # 2. Удаляем комментарий <!-- КНОПКА НАЗАД -->
+        comment_pattern = r'<!--\s*КНОПКА\s+НАЗАД\s*-->\s*'
+        if re.search(comment_pattern, content, re.IGNORECASE):
+            content = re.sub(comment_pattern, '', content, flags=re.IGNORECASE)
+            changes.append("комментарий")
 
-        if modified:
+        # 3. Удаляем скрипт с function goBack()
+        script_pattern = r'<script[^>]*>\s*function\s+goBack\s*\(\)[\s\S]*?</script>'
+
+        script_matches = re.findall(script_pattern, content, re.DOTALL | re.IGNORECASE)
+        if script_matches:
+            content = re.sub(script_pattern, '', content, flags=re.DOTALL | re.IGNORECASE)
+            changes.append(f"скрипт({len(script_matches)})")
+
+        # 4. Убираем дубли qwebchannel.js
+        qweb_pattern = r'<script\s+type="text/javascript"\s+src="qrc:///qtwebchannel/qwebchannel\.js"></script>'
+        qweb_matches = re.findall(qweb_pattern, content, re.IGNORECASE)
+
+        if len(qweb_matches) > 1:
+            head_end_match = re.search(r'</head>', content, re.IGNORECASE)
+            if head_end_match:
+                head_end = head_end_match.start()
+
+                content_before_head = content[:head_end]
+                content_after_head = content[head_end:]
+
+                content_after_head = re.sub(qweb_pattern, '', content_after_head, flags=re.IGNORECASE)
+
+                if 'qwebchannel.js' not in content_before_head.lower():
+                    content_before_head = re.sub(
+                        r'(</head>)',
+                        r'    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>\n\1',
+                        content_before_head,
+                        count=1,
+                        flags=re.IGNORECASE
+                    )
+
+                content = content_before_head + content_after_head
+                changes.append(f"qweb({len(qweb_matches)}→1)")
+
+        if content != original_content:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            return True, "обновлено"
+            return True, ", ".join(changes)
         else:
-            return False, "уже обновлено"
+            return False, "чистый"
 
     except Exception as e:
         return False, f"ошибка: {str(e)}"
 
+
 def main():
-    print("=" * 80)
-    print("🔵 ДОБАВЛЕНИЕ ВИДИМОЙ КНОПКИ 'НАЗАД' НА ВСЕ ПЛАКАТЫ")
+    print("\n" + "=" * 80)
+    print("🧹 УДАЛЕНИЕ КНОПОК 'НАЗАД' ИЗ ВСЕХ ПЛАКАТОВ")
     print("=" * 80 + "\n")
 
-    # Ищем папку content
-    content_dir = None
-    for possible_path in ['content', './content', '../content']:
-        if os.path.exists(possible_path):
-            content_dir = possible_path
-            break
-
-    if not content_dir:
-        print("❌ ОШИБКА: Папка 'content' не найдена!")
-        print("   Запустите скрипт из корневой папки проекта")
+    if not os.path.exists(POSTERS_PATH):
+        print(f"❌ Папка не найдена: {POSTERS_PATH}")
         return
 
-    print(f"📁 Найдена папка: {os.path.abspath(content_dir)}\n")
+    print(f"📁 Папка: {POSTERS_PATH}\n")
 
-    updated = 0
+    cleaned = 0
     skipped = 0
-    failed = 0
+    errors = 0
+    total = 0
 
-    # Ищем все HTML файлы в папке content/posters
-    posters_dir = os.path.join(content_dir, 'posters')
-    
-    if not os.path.exists(posters_dir):
-        print(f"❌ ОШИБКА: Папка плакатов не найдена: {posters_dir}")
-        return
+    # Проходим по всем папкам предметов
+    for subject_folder in sorted(os.listdir(POSTERS_PATH)):
+        subject_path = os.path.join(POSTERS_PATH, subject_folder)
 
-    print(f"🔍 Сканирую папку: {posters_dir}\n")
+        if not os.path.isdir(subject_path):
+            continue
 
-    for root, dirs, files in os.walk(posters_dir):
-        # Пропускаем скрытые папки
-        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        print(f"\n📂 {subject_folder}/")
 
-        for file in files:
-            if file.endswith('.html'):
-                path = os.path.join(root, file)
-                success, message = add_back_button_to_file(path)
+        # Проходим по всем HTML файлам
+        html_files = [f for f in os.listdir(subject_path) if f.endswith('.html')]
 
-                # Показываем относительный путь
-                rel_path = os.path.relpath(path, content_dir)
-                
-                if success:
-                    print(f"✅ {rel_path}")
-                    updated += 1
-                elif "уже обновлено" in message:
-                    skipped += 1
-                else:
-                    print(f"❌ {rel_path} - {message}")
-                    failed += 1
+        if not html_files:
+            print(f"   ⚠️  Нет HTML файлов")
+            continue
+
+        for filename in sorted(html_files):
+            file_path = os.path.join(subject_path, filename)
+            total += 1
+
+            success, message = remove_back_button(file_path)
+
+            if success:
+                print(f"   ✅ {filename} - {message}")
+                cleaned += 1
+            elif "чистый" in message:
+                skipped += 1
+            else:
+                print(f"   ❌ {filename} - {message}")
+                errors += 1
 
     print("\n" + "=" * 80)
     print(f"📊 РЕЗУЛЬТАТЫ:")
-    print(f"   ✅ Обновлено:  {updated} файлов")
-    print(f"   ⏭️  Пропущено:  {skipped} файлов")
-    print(f"   ❌ Ошибок:     {failed} файлов")
+    print(f"   ✅ Очищено:    {cleaned} файлов")
+    print(f"   ⏭️  Пропущено:  {skipped} файлов (уже чистые)")
+    print(f"   ❌ Ошибок:     {errors} файлов")
+    print(f"   📝 Всего:      {total} файлов")
     print("=" * 80)
-    
-    if updated > 0:
-        print("\n🎉 ГОТОВО! Кнопка 'Назад' теперь видна на всех плакатах!")
-        print("   Перезапустите приложение, чтобы увидеть изменения.")
+
+    if cleaned > 0:
+        print("\n🎉 ГОТОВО! Кнопки удалены из всех плакатов.")
+        print("\n📱 ЧТО ДАЛЬШЕ:")
+        print("   1. Проверьте несколько файлов вручную")
+        print("   2. Запустите приложение")
+        print("   3. Overlay-кнопка появится из main_app.py")
     elif skipped > 0:
-        print("\n✓ Все файлы уже обновлены!")
-    
-    print("=" * 80)
+        print("\n✓ Все файлы уже чистые!")
+
+    print("=" * 80 + "\n")
+
 
 if __name__ == '__main__':
     main()

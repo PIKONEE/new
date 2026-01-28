@@ -3,300 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Духовный мир древних людей</title>
+    <title>Развитие орудий труда</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .mystic-gradient {
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
         }
 
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(251, 191, 36, 0.1);
-            transition: all 0.4s ease;
+            background-color: rgba(255, 255, 255, 0.8);
         }
 
-        .glass-card:hover {
-            border-color: rgba(251, 191, 36, 0.5);
-            transform: translateY(-10px);
-            box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
+        canvas {
+            background: radial-gradient(circle, #ffffff 0%, #f0f9ff 100%);
+            border-radius: 1.5rem;
         }
-
-        .lang-active {
-            background: #fbbf24;
-            color: #0f172a;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-        }
-
-        .spirit-glow {
-            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.3));
-        }
-
-        /* Анимация мерцания */
-        @keyframes pulse-gold {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        .animate-pulse-gold { animation: pulse-gold 3s infinite; }
     </style>
 </head>
-<body class="mystic-gradient text-slate-200 min-h-screen">
+<body class="bg-slate-50 text-slate-900">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
-
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-[#0f172a]/80 backdrop-blur-md border-b border-amber-900/30 px-6 py-4">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-4">
-                <span class="text-3xl animate-pulse-gold">✨</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-amber-400">Духовный мир</h1>
-            </div>
-            <div class="flex bg-slate-800/50 p-1 rounded-full border border-slate-700">
-                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
-                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
-                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
+    <!-- Header & Languages -->
+    <header class="sticky-header border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h1 id="title" class="text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent">
+                Развитие орудий труда
+            </h1>
+            <div class="flex space-x-2 bg-slate-100 p-1 rounded-xl">
+                <button onclick="setLanguage('ru')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-ru">RU</button>
+                <button onclick="setLanguage('kz')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-kz">KZ</button>
+                <button onclick="setLanguage('en')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-en">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-10 space-y-16">
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-12">
         
-        <!-- Section 1: The Circle of Spirits (Map) -->
-        <div class="relative">
-            <div class="absolute -top-20 -left-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
-            <div class="glass-card p-8 md:p-12 rounded-[3rem] relative z-10">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- Section 1: Map (Visual Analytics) -->
+        <section id="map-section" class="space-y-6">
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
+                <div class="flex items-center space-x-3 mb-6">
+                    <span class="text-3xl">📈</span>
                     <div>
-                        <div id="badge" class="inline-block border border-amber-500/50 text-amber-500 px-4 py-1 rounded-full text-xs font-black uppercase mb-6 tracking-widest">Early Religion</div>
-                        <h2 id="viz-title" class="text-3xl md:text-4xl font-black mb-6 leading-tight text-white">Круг первобытной магии</h2>
-                        <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed mb-8">
-                            Древние люди не отделяли себя от природы. Каждое дерево, камень или животное обладало, по их мнению, душой и магической силой.
-                        </p>
-                        <div class="flex items-center space-x-3 text-amber-400">
-                            <span class="text-2xl">🧿</span>
-                            <span id="viz-stat" class="font-bold text-sm uppercase tracking-widest">Гармония с миром</span>
-                        </div>
-                    </div>
-                    <div class="h-80 spirit-glow">
-                        <canvas id="beliefsChart"></canvas>
+                        <h2 id="map-title" class="text-xl font-bold">Индекс эффективности инструментов</h2>
+                        <p id="map-subtitle" class="text-sm text-slate-500">Сравнение сложности изготовления и остроты лезвия</p>
                     </div>
                 </div>
+                <!-- Canvas Container -->
+                <div class="h-80 md:h-96 w-full">
+                    <canvas id="toolsChart"></canvas>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Section 2: Four Pillars (Plan) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="glass-card p-10 rounded-[2.5rem] flex items-start space-x-6">
-                <div class="text-5xl">🐺</div>
-                <div>
-                    <h3 id="p1-t" class="text-xl font-bold mb-3 text-amber-400 uppercase">Тотемизм</h3>
-                    <p id="p1-d" class="text-slate-400 leading-relaxed">Вера в сверхъестественное родство между группой людей и определенным видом животных или растений. Тотем считался предком и защитником рода.</p>
-                </div>
+        <!-- Section 2: Plan (Theory & Facts) -->
+        <section id="plan-section" class="space-y-8">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">⚒️</span>
+                <h2 id="plan-heading" class="text-2xl font-bold">Технологическая эволюция</h2>
             </div>
-            <div class="glass-card p-10 rounded-[2.5rem] flex items-start space-x-6">
-                <div class="text-5xl">👻</div>
-                <div>
-                    <h3 id="p2-t" class="text-xl font-bold mb-3 text-amber-400 uppercase">Анимизм</h3>
-                    <p id="p2-d" class="text-slate-400 leading-relaxed">Вера в существование душ и духов. Люди верили, что вся природа живая: у гор, рек и лесов есть свои невидимые хозяева.</p>
-                </div>
-            </div>
-            <div class="glass-card p-10 rounded-[2.5rem] flex items-start space-x-6">
-                <div class="text-5xl">🔮</div>
-                <div>
-                    <h3 id="p3-t" class="text-xl font-bold mb-3 text-amber-400 uppercase">Магия</h3>
-                    <p id="p3-d" class="text-slate-400 leading-relaxed">Система обрядов, с помощью которых люди пытались воздействовать на природу: вызвать дождь, обеспечить удачную охоту или исцелить больного.</p>
-                </div>
-            </div>
-            <div class="glass-card p-10 rounded-[2.5rem] flex items-start space-x-6">
-                <div class="text-5xl">🗿</div>
-                <div>
-                    <h3 id="p4-t" class="text-xl font-bold mb-3 text-amber-400 uppercase">Фетишизм</h3>
-                    <p id="p4-d" class="text-slate-400 leading-relaxed">Поклонение неодушевленным предметам, которые наделялись сверхъестественными свойствами. Амулеты и обереги защищали от злых сил.</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Section 3: Cave Art (Visual highlight) -->
-        <div class="bg-amber-400 p-1 md:p-12 rounded-[3.5rem] shadow-2xl">
-            <div class="bg-[#0f172a] p-8 md:p-16 rounded-[3rem] border border-amber-400/20">
-                <div class="flex flex-col md:flex-row items-center gap-12">
-                    <div class="shrink-0 text-center">
-                        <div class="text-8xl mb-4">🦌</div>
-                        <div id="art-tag" class="bg-amber-400 text-[#0f172a] px-6 py-1 rounded-full text-xs font-black uppercase tracking-widest">Sacred Art</div>
-                    </div>
-                    <div class="space-y-6 text-center md:text-left">
-                        <h3 id="art-title" class="text-3xl font-black text-white italic">Наскальная живопись</h3>
-                        <p id="art-desc" class="text-slate-400 text-xl font-light leading-relaxed">
-                            Рисунки в пещерах были не просто искусством, а частью магического ритуала. Изображая раненое животное, охотник верил, что «убивает» его душу перед настоящей схваткой.
-                        </p>
-                    </div>
-                </div>
+            <div id="grid-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Cards will be rendered by JS -->
             </div>
-        </div>
+        </section>
 
     </main>
 
-    <footer class="mt-20 py-24 border-t border-amber-900/30 text-center">
-        <div class="max-w-2xl mx-auto px-6">
-            <div class="text-amber-500 text-5xl mb-8">“</div>
-            <p id="footer-text" class="text-2xl font-light italic text-slate-300 leading-relaxed">
-                Мифологическое мышление древнего человека было способом объяснения мира, в котором нет случайностей, а всё пронизано волей духов.
+    <footer class="bg-slate-900 text-white py-12 mt-20 border-t-4 border-blue-600">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <p id="footer-text" class="text-lg font-medium italic opacity-90 leading-relaxed">
+                Каждый новый скол на камне приближал человечество к освоению мира и созданию современной цивилизации.
             </p>
-            <div class="mt-10 flex justify-center space-x-1">
-                <div class="w-1 h-1 bg-amber-500 rounded-full"></div>
-                <div class="w-8 h-1 bg-amber-500 rounded-full"></div>
-                <div class="w-1 h-1 bg-amber-500 rounded-full"></div>
-            </div>
         </div>
     </footer>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Духовный мир",
-                vizTitle: "Круг первобытной магии",
-                vizDesc: "Древние люди не отделяли себя от природы. Каждое дерево, камень или животное обладало душой и магической силой.",
-                vizStat: "Связь с духами",
-                badge: "Ранняя религия",
-                p1T: "Тотемизм", p1D: "Вера в сверхъестественное родство между группой людей и определенным животным — покровителем рода.",
-                p2T: "Анимизм", p2D: "Вера в существование душ и духов. Представление о том, что вся природа является одушевленной.",
-                p3T: "Магия", p3D: "Обряды и действия, направленные на сверхъестественное влияние на окружающий мир и события.",
-                p4T: "Фетишизм", p4D: "Вера в магическую силу предметов (амулетов, камней), способных защитить или принести удачу.",
-                artTitle: "Наскальная живопись",
-                artDesc: "Петроглифы и рисунки охрой были частью ритуалов «охотничьей магии», помогая человеку обрести власть над зверем.",
-                artTag: "Священное искусство",
-                footer: "«Мифологическое мышление древнего человека было способом объяснения мира, в котором нет случайностей, а всё пронизано волей духов.»",
-                chartLabels: ["Тотемизм", "Анимизм", "Магия", "Фетишизм"]
+                title: "Развитие орудий труда",
+                mapTitle: "Индекс эффективности инструментов",
+                mapSubtitle: "Сравнение сложности изготовления и остроты лезвия (условные единицы)",
+                planHeading: "Технологическая эволюция",
+                footer: "Каждый новый скол на камне приближал человечество к освоению мира и созданию современной цивилизации.",
+                chartLabel: "Уровень сложности/эффективности",
+                cards: [
+                    { icon: "🪨", title: "Чоппер", desc: "Древнейшее орудие (2.5 млн лет назад). Массивная галька, край которой оббит лишь с одной стороны." },
+                    { icon: "🔨", title: "Чоппинг", desc: "Усовершенствованная галька, оббитая с двух сторон. Давала более острое и длинное лезвие." },
+                    { icon: "🪓", title: "Рубило", desc: "Универсальное клиновидное орудие. Использовалось для резки, копания и охоты. Мастерство симметрии." },
+                    { icon: "🔪", title: "Скребло", desc: "Каменная пластина с острым краем. Применялась для обработки шкур животных и обработки дерева." },
+                    { icon: "📏", title: "Техника ретуши", desc: "Вторичная обработка края камня мелкими сколами. Позволяла делать инструменты очень острыми." },
+                    { icon: "💎", title: "Микролиты", desc: "Маленькие каменные вкладыши (1-2 см). Использовались как наконечники стрел или лезвия ножей." },
+                    { icon: "🎋", title: "Составные орудия", desc: "Объединение камня, кости и дерева (копья, топоры с рукоятками). Революция в силе удара." },
+                    { icon: "✨", title: "Полировка", desc: "Поздняя техника обработки камня песком и водой. Позволяла делать прочные топоры и мотыги." }
+                ]
             },
             kz: {
-                title: "Рухани әлем",
-                vizTitle: "Алғашқы сиқыр шеңбері",
-                vizDesc: "Ежелгі адамдар өздерін табиғаттан бөлмеген. Әрбір ағаш, тас немесе жануардың жаны мен сиқырлы күші бар деп сенген.",
-                vizStat: "Рухтармен байланыс",
-                badge: "Ертедегі дін",
-                p1T: "Тотемизм", p1D: "Адамдар тобы мен белгілі бір жануар — рудың қамқоршысы арасындағы тылсым туыстыққа сену.",
-                p2T: "Анимизм", p2D: "Жан мен рухтардың бар екеніне сену. Бүкіл табиғаттың жанды екендігі туралы түсінік.",
-                p3T: "Магия", p3D: "Қоршаған ортаға және оқиғаларға тылсым күшпен әсер етуге бағытталған жоралғылар мен іс-әрекеттер.",
-                p4T: "Фетишизм", p4D: "Заттардың (тұмарлардың, тастардың) қорғауға немесе сәттілік әкелуге қабілетті сиқырлы күшіне сену.",
-                artTitle: "Жартас суреттері",
-                artDesc: "Петроглифтер мен суреттер «аңшылық сиқыры» жоралғыларының бөлігі болды, бұл адамға аңнан басым түсуге көмектесті.",
-                artTag: "Қасиетті өнер",
-                footer: "«Ежелгі адамның мифологиялық ойлауы — кездейсоқтық жоқ, бәрі де рухтардың еркімен болатын әлемді түсіндіру тәсілі болды.»",
-                chartLabels: ["Тотемизм", "Анимизм", "Магия", "Фетишизм"]
+                title: "Еңбек құралдарының дамуы",
+                mapTitle: "Құралдардың тиімділік индексі",
+                mapSubtitle: "Дайындау күрделілігі мен жүзінің өткірлігін салыстыру (шартты бірліктер)",
+                planHeading: "Технологиялық эволюция",
+                footer: "Тастағы әрбір жаңа ұрып жасалған із адамзатты әлемді игеруге және қазіргі өркениетті құруға жақындатты.",
+                chartLabel: "Күрделілік/тиімділік деңгейі",
+                cards: [
+                    { icon: "🪨", title: "Чоппер", desc: "Ең ежелгі құрал (2.5 млн жыл бұрын). Бір жағынан ғана ұрып өңделген ірі малта тас." },
+                    { icon: "🔨", title: "Чоппинг", desc: "Екі жағынан да ұрып өңделген малта тас. Өткірлеу және ұзынырақ жүзді болды." },
+                    { icon: "🪓", title: "Қол шапқы", desc: "Әмбебап сына тәрізді құрал. Кесу, қазу және аң аулау үшін пайдаланылды. Симметрия шеберлігі." },
+                    { icon: "🔪", title: "Қырғыш", desc: "Өткір жиекті тас пластина. Жануарлар терісін және ағашты өңдеу үшін қолданылды." },
+                    { icon: "📏", title: "Ретушь әдісі", desc: "Тас жиегін ұсақ сынықтармен қайталап өңдеу. Құралдарды өте өткір етуге мүмкіндік берді." },
+                    { icon: "💎", title: "Микролиттер", desc: "Кішкентай тас құралдар (1-2 см). Жебе ұштары немесе пышақ жүздері ретінде пайдаланылды." },
+                    { icon: "🎋", title: "Құрама құралдар", desc: "Тас, сүйек және ағашты біріктіру (сабы бар найзалар, балталар). Соққы күшіндегі революция." },
+                    { icon: "✨", title: "Тегістеу", desc: "Тасты құммен және сумен өңдеудің кейінгі әдісі. Мықты балталар мен кетпендер жасауға мүмкіндік берді." }
+                ]
             },
             en: {
-                title: "Spiritual World",
-                vizTitle: "Circle of Primal Magic",
-                vizDesc: "Ancient people did not separate themselves from nature. Every tree, stone, or animal possessed a soul and magical power.",
-                vizStat: "Spirit Connection",
-                badge: "Early Religion",
-                p1T: "Totemism", p1D: "Belief in a supernatural kinship between a group of people and a specific animal — the guardian of the clan.",
-                p2T: "Animism", p2D: "Belief in the existence of souls and spirits. The idea that all nature is animated.",
-                p3T: "Magic", p3D: "Rites and actions aimed at influencing the world and events through supernatural means.",
-                p4T: "Fetishism", p4D: "Belief in the magical power of objects (amulets, stones) capable of protecting or bringing luck.",
-                artTitle: "Cave Painting",
-                artDesc: "Petroglyphs and ochre drawings were part of 'hunting magic' rituals, helping humans gain power over beasts.",
-                artTag: "Sacred Art",
-                footer: "«Mythological thinking of ancient humans was a way to explain a world where there are no accidents, but everything is permeated by the will of spirits.»",
-                chartLabels: ["Totemism", "Animism", "Magic", "Fetishism"]
+                title: "Evolution of Labor Tools",
+                mapTitle: "Tool Efficiency Index",
+                mapSubtitle: "Comparison of manufacturing complexity and blade sharpness (arbitrary units)",
+                planHeading: "Technological Evolution",
+                footer: "Every new chip on a stone brought humanity closer to mastering the world and creating modern civilization.",
+                chartLabel: "Complexity/Efficiency Level",
+                cards: [
+                    { icon: "🪨", title: "Chopper", desc: "Ancient tool (2.5M years ago). Massive pebble flaked on only one side of the edge." },
+                    { icon: "🔨", title: "Chopping", desc: "Improved pebble flaked on both sides. Provided a sharper and longer blade." },
+                    { icon: "🪓", title: "Hand Axe", desc: "Universal wedge-shaped tool. Used for cutting, digging, and hunting. Mastery of symmetry." },
+                    { icon: "🔪", title: "Scraper", desc: "Stone flake with a sharp edge. Used for processing animal hides and woodworking." },
+                    { icon: "📏", title: "Retouch Technique", desc: "Secondary processing of stone edges with tiny chips. Made tools extremely sharp." },
+                    { icon: "💎", title: "Microliths", desc: "Small stone inserts (1-2 cm). Used as arrowheads or knife blades." },
+                    { icon: "🎋", title: "Composite Tools", desc: "Combining stone, bone, and wood (spears, axes with handles). Revolution in impact force." },
+                    { icon: "✨", title: "Polishing", desc: "Late stone processing technique using sand and water. Allowed making durable axes and hoes." }
+                ]
             }
         };
 
-        let currentChart = null;
+        let currentLang = 'ru';
+        let chartInstance = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('beliefsChart').getContext('2d');
-            if (currentChart) currentChart.destroy();
+            const ctx = document.getElementById('toolsChart').getContext('2d');
+            const tools = {
+                ru: ["Чоппер", "Чоппинг", "Рубило", "Скребло", "Микролиты", "Составные"],
+                kz: ["Чоппер", "Чоппинг", "Қол шапқы", "Қырғыш", "Микролиттер", "Құрама"],
+                en: ["Chopper", "Chopping", "Hand Axe", "Scraper", "Microliths", "Composite"]
+            };
 
-            currentChart = new Chart(ctx, {
-                type: 'radar',
+            const dataComplexity = [15, 30, 55, 65, 85, 95]; 
+            const dataSharpness = [10, 25, 45, 70, 90, 80];
+
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
                 data: {
-                    labels: translations[lang].chartLabels,
-                    datasets: [{
-                        label: 'Intensity',
-                        data: [85, 90, 75, 80],
-                        backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                        borderColor: '#fbbf24',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#fbbf24',
-                        pointBorderColor: '#fff',
-                        pointHoverRadius: 8
-                    }]
+                    labels: tools[lang],
+                    datasets: [
+                        {
+                            label: lang === 'ru' ? 'Сложность изготовления' : (lang === 'kz' ? 'Дайындау күрделілігі' : 'Complexity'),
+                            data: dataComplexity,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#3b82f6'
+                        },
+                        {
+                            label: lang === 'ru' ? 'Эффективность/Острота' : (lang === 'kz' ? 'Тиімділік/Өткірлік' : 'Efficiency/Sharpness'),
+                            data: dataSharpness,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#f59e0b'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(255,255,255,0.1)' },
-                            grid: { color: 'rgba(255,255,255,0.1)' },
-                            pointLabels: {
-                                color: '#fbbf24',
-                                font: { family: 'Montserrat', size: 12, weight: 'bold' }
-                            },
-                            ticks: { display: false },
-                            beginAtZero: true,
-                            max: 100
-                        }
+                    plugins: {
+                        legend: { position: 'bottom' },
                     },
-                    plugins: { legend: { display: false } }
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            max: 100,
+                            grid: { color: '#e2e8f0' }
+                        },
+                        x: { grid: { display: false } }
+                    }
                 }
             });
         }
 
-        function changeLang(lang) {
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('viz-stat').innerText = t.vizStat;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('p1-t').innerText = t.p1T; document.getElementById('p1-d').innerText = t.p1D;
-            document.getElementById('p2-t').innerText = t.p2T; document.getElementById('p2-d').innerText = t.p2D;
-            document.getElementById('p3-t').innerText = t.p3T; document.getElementById('p3-d').innerText = t.p3D;
-            document.getElementById('p4-t').innerText = t.p4T; document.getElementById('p4-d').innerText = t.p4D;
-            document.getElementById('art-title').innerText = t.artTitle;
-            document.getElementById('art-desc').innerText = t.artDesc;
-            document.getElementById('art-tag').innerText = t.artTag;
-            document.getElementById('footer-text').innerText = t.footer;
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            document.getElementById('title').innerText = content[lang].title;
+            document.getElementById('map-title').innerText = content[lang].mapTitle;
+            document.getElementById('map-subtitle').innerText = content[lang].mapSubtitle;
+            document.getElementById('plan-heading').innerText = content[lang].planHeading;
+            document.getElementById('footer-text').innerText = content[lang].footer;
 
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-full text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-full text-sm font-bold text-amber-500 hover:bg-white/5 transition-all";
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-blue-600');
             });
+            document.getElementById(`btn-${lang}`).classList.add('bg-white', 'shadow-sm', 'text-blue-600');
+
+            const grid = document.getElementById('grid-content');
+            grid.innerHTML = content[lang].cards.map(card => `
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm card-hover">
+                    <div class="text-4xl mb-4">${card.icon}</div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">${card.title}</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">${card.desc}</p>
+                </div>
+            `).join('');
 
             initChart(lang);
         }
 
-        window.onload = () => changeLang('ru');
+        window.onload = () => {
+            setLanguage('ru');
+        };
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -536,5 +483,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

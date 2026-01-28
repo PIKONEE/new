@@ -3,299 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>История уйсунов и их расселение</title>
+    <title>Казахстан в 1917 году: Февральская революция</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .valley-gradient {
-            background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+        .february-theme {
+            background: linear-gradient(to bottom right, #f1f5f9, #e2e8f0);
         }
 
-        .silk-card {
+        .state-card {
             background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border-radius: 2.5rem;
-            border: 1px solid #b91c1c; /* Красный цвет стен Чигучена */
-            transition: all 0.4s ease;
+            border: 1px solid #1e40af;
+            box-shadow: 0 10px 30px -5px rgba(30, 64, 175, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .silk-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px -10px rgba(185, 28, 28, 0.1);
+        .state-card:hover {
+            transform: translateY(-5px);
+            border-color: #1d4ed8;
         }
 
-        .lang-active {
-            background-color: #b91c1c;
+        .power-glow {
+            box-shadow: 0 0 25px rgba(30, 64, 175, 0.2);
+        }
+
+        .btn-active {
+            background-color: #1e3a8a;
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(185, 28, 28, 0.3);
-        }
-
-        .mountain-accent {
-            background: linear-gradient(to right, #065f46, #047857);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
         }
 
         canvas {
-            filter: drop-shadow(0 10px 20px rgba(6, 95, 70, 0.15));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
     </style>
 </head>
-<body class="valley-gradient text-emerald-950 min-h-screen">
-
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
+<body class="february-theme text-slate-900 min-h-screen">
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-emerald-100 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-blue-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <span class="text-4xl">🏔️</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tight text-emerald-900 italic">Уйсуны: Держава Жетысу</h1>
+                <span class="text-3xl">🏛️</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-blue-900">Февраль 1917</h1>
             </div>
-            <div class="flex bg-emerald-50 p-1 rounded-2xl border border-emerald-100">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            <div class="flex bg-blue-100/50 p-1 rounded-full border border-blue-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: Settlement Map (Visual Analytics) -->
-        <div class="bg-white rounded-[3.5rem] p-8 md:p-12 shadow-2xl border border-emerald-50 relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl"></div>
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-red-700 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">Great Settlement</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-emerald-950 leading-tight uppercase italic">География Уйсунов</h2>
-                    <p id="viz-desc" class="text-lg text-emerald-800/70 font-light leading-relaxed">
-                        В II веке до н.э. уйсуны создали мощное государство в самом центре Семиречья, граничащее с империей Хань и гуннами.
-                    </p>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-red-700 text-2xl">🏰</span>
-                            <span id="loc1" class="font-bold">Чигучен (Столица на Иссык-Куле)</span>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <span class="text-blue-600 text-2xl">🌊</span>
-                            <span id="loc2" class="font-bold">Долины рек Или, Чу и Талас</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="lg:col-span-7 h-80 md:h-[450px]">
-                    <canvas id="settlementChart"></canvas>
+        <!-- Section 1: Political Analysis (Chart) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-blue-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Political Crisis</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase text-blue-900">Феномен Двоевластия</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    Революция в Казахстане имела свои особенности: здесь одновременно действовали органы Временного правительства, Советы депутатов и национальные комитеты Алаш.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="powerChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: History & Power (Plan) -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-emerald-900 uppercase tracking-[0.3em]">История и Власть</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Gunmo Block -->
-                <div class="mountain-accent p-10 rounded-[3rem] text-white shadow-xl flex flex-col justify-between">
-                    <div>
-                        <div class="text-5xl mb-6">👑</div>
-                        <h3 id="c1-t" class="text-2xl font-bold mb-4 uppercase">Титул Гуньмо</h3>
-                        <p id="c1-d" class="text-emerald-50/70 text-sm leading-relaxed italic">
-                            Главу государства называли Гуньмо (Кунби). Ему подчинялись 12 племенных вождей, а его власть была абсолютной и священной.
-                        </p>
-                    </div>
-                    <div class="mt-8 h-1 w-12 bg-emerald-300 rounded-full"></div>
+        <!-- Section 2: Important Event (Focus) -->
+        <div class="bg-blue-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl power-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">🕊️</div>
+                    <div id="focus-label" class="text-blue-300 font-black text-sm uppercase tracking-[0.3em]">Spring of Freedom</div>
                 </div>
-
-                <!-- Chigu City -->
-                <div class="silk-card p-10 flex flex-col justify-between">
-                    <div>
-                        <div class="text-5xl mb-6">🏜️</div>
-                        <h3 id="c2-t" class="text-2xl font-bold mb-4 text-emerald-900 uppercase">Город Красной Долины</h3>
-                        <p id="c2-d" class="text-emerald-800/60 text-sm leading-relaxed">
-                            Чигучен — столица уйсунов. Город был важным торговым и дипломатическим центром, где располагалась ставка Гуньмо.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Foreign Policy -->
-                <div class="bg-red-700 p-10 rounded-[3rem] text-white shadow-xl flex flex-col justify-between">
-                    <div>
-                        <div class="text-5xl mb-6">🤝</div>
-                        <h3 id="c3-t" class="text-2xl font-bold mb-4 uppercase">Дипломатия</h3>
-                        <p id="c3-d" class="text-red-100/70 text-sm leading-relaxed">
-                            Уйсуны вели активную внешнюю политику. Дипломатические браки с китайскими принцессами помогали сдерживать натиск гуннов.
-                        </p>
-                    </div>
-                    <div class="mt-8 h-1 w-12 bg-red-400 rounded-full"></div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="focus-title" class="text-3xl font-black tracking-tight uppercase text-blue-200">Демократические перемены</h3>
+                    <p id="focus-desc" class="text-xl text-blue-50 font-light leading-relaxed">
+                        Революция принесла свободу слова и печати. Вернулись мобилизованные в 1916 году «на тыловые работы», была объявлена амнистия участникам восстания, а национальный вопрос стал центральным в политике.
+                    </p>
                 </div>
             </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none">📰</div>
+        </div>
 
-            <!-- Silk Road Feature -->
-            <div class="bg-white rounded-[4rem] p-10 md:p-16 border-4 border-emerald-900 shadow-2xl relative overflow-hidden">
-                <div class="relative z-10 flex flex-col md:flex-row items-center gap-12">
-                    <div class="shrink-0 text-7xl animate-pulse">🐫</div>
-                    <div>
-                        <h3 id="c4-t" class="text-3xl font-black text-emerald-900 mb-6 uppercase italic">Шелковый путь</h3>
-                        <p id="c4-d" class="text-emerald-800/70 text-xl font-light leading-relaxed">
-                            Расселение уйсунов в Жетысу позволило им контролировать ключевые участки Шелкового пути. Это способствовало развитию торговли, ремесел и городской культуры.
-                        </p>
-                    </div>
-                </div>
-                <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-5 rotate-12">📜</div>
+        <!-- Section 3: Key Structures -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="state-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-900">
+                <div class="text-5xl mb-4">⚖️</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Временное правительство</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">Создавало Областные исполкомы. Назначало комиссаров (А. Букейханов в Торгае), стараясь сохранить порядок старыми методами.</p>
+            </div>
+            <div class="state-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-600">
+                <div class="text-5xl mb-4">🚩</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Советы депутатов</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">Органы рабочих и солдат. Требовали немедленного мира, 8-часового рабочего дня и передачи земли крестьянам.</p>
+            </div>
+            <div class="state-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-amber-500">
+                <div class="text-5xl mb-4">🦅</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Казахские комитеты</h4>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">Национальные органы власти, ставшие базой для будущего правительства Алаш-Орды. Проводили съезды по всей степи.</p>
             </div>
         </div>
 
     </main>
 
-    <footer class="mt-20 py-24 bg-emerald-950 text-emerald-400/50">
+    <footer class="mt-20 py-20 bg-slate-900 text-slate-400">
         <div class="max-w-4xl mx-auto px-6 text-center">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-emerald-100">
-                «Уйсуны были хозяевами горных долин и степных рек, создавшими мост между Востоком и Западом в самом сердце Азии.»
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Февраль 1917 года превратил Казахстан из колонии в бурлящий котел политической жизни».
             </p>
-            <div class="mt-12 text-[10px] uppercase font-bold tracking-[0.8em]">Usun Kingdom Heritage</div>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-slate-600">History of Kazakhstan: Revolution of 1917</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Уйсуны: Держава Жетысу",
-                vizTitle: "География Уйсунов",
-                vizDesc: "В II веке до н.э. уйсуны создали мощное государство в самом центре Семиречья, контролируя долины рек и горные перевалы.",
-                badge: "Великое расселение",
-                loc1: "Чигучен (Столица на Иссык-Куле)", loc2: "Долины рек Или, Чу и Талас",
-                planTitle: "История и Власть",
-                c1T: "Титул Гуньмо", c1D: "Главу государства называли Гуньмо (Кунби). Ему подчинялись 12 племенных вождей, а его власть была священной.",
-                c2T: "Город Красной Долины", c2D: "Чигучен — столица уйсунов. Город был торговым центром на берегу Иссык-Куля, где располагалась ставка правителя.",
-                c3T: "Дипломатия", c3D: "Уйсуны вели активную внешнюю политику, заключая союзы с империей Хань против воинственных гуннов.",
-                c4T: "Шелковый путь", c4D: "Контроль над Жетысу сделал уйсунов ключевыми посредниками в мировой торговле шелком, золотом и специями.",
-                footer: "«Уйсуны были хозяевами горных долин и степных рек, создавшими мост между Востоком и Западом в самом сердце Азии.»",
-                chartTitle: "Ареал влияния и плотность населения"
+                title: "Февраль 1917",
+                vizTitle: "Феномен Двоевластия",
+                vizDesc: "В Казахстане Февральская революция привела к переплетению трех сил: либеральной власти центра, революционных советов и национального движения.",
+                statusBadge: "Политический кризис",
+                focusTitle: "Демократическая весна",
+                focusDesc: "Отмена национальных ограничений, легализация политических партий и возвращение 'реквизированных' рабочих в аулы изменили социальный климат края.",
+                fact1T: "Временное правительство", fact1D: "Органы либеральной буржуазии. Включали представителей интеллигенции, стремившихся к реформам без потрясений.",
+                fact2T: "Советы депутатов", fact2D: "Революционные органы в городах и на железных дорогах. Опирались на вооруженных солдат и рабочих.",
+                fact3T: "Движение «Алаш»", fact3D: "Главная политическая сила казахов. Формировала национальные комитеты и готовила созыв Общеказахского съезда.",
+                footer: "«Февраль 1917 года превратил Казахстан из колонии в бурлящий котел политической жизни».",
+                chartLabels: ["Временное правительство", "Советы (большевики/эсеры)", "Движение Алаш", "Другие силы"],
+                chartTitle: "Распределение политического влияния (%)"
             },
             kz: {
-                title: "Үйсіндер: Жетісу мемлекеті",
-                vizTitle: "Үйсіндер географиясы",
-                vizDesc: "Б.з.б. ІІ ғасырда үйсіндер Жетісудың қақ ортасында, өзен алқаптары мен тау асуларын бақылайтын қуатты мемлекет құрды.",
-                badge: "Ұлы қоныстану",
-                loc1: "Шығу қаласы (Ыстықкөл жағасы)", loc2: "Іле, Шу және Талас өзендерінің алқаптары",
-                planTitle: "Тарих және Билік",
-                c1T: "Гуньмо лауазымы", c1D: "Мемлекет басшысын Гуньмо (Күнби) деп атаған. Оған 12 тайпа көсемі бағынған, оның билігі қасиетті саналған.",
-                c2T: "Қызыл Аңғар қаласы", c2D: "Шығу (Чигучен) — үйсіндердің астанасы. Ыстықкөл жағасында орналасқан қала сауда мен дипломатия орталығы болды.",
-                c3T: "Дипломатия", c3D: "Үйсіндер ғұндарға қарсы Хань империясымен одақтасып, белсенді сыртқы саясат жүргізді.",
-                c4T: "Жібек жолы", c4D: "Жетісуды бақылау үйсіндерді жібек, алтын және дәмдеуіштер саудасындағы негізгі делдалдарға айналдырды.",
-                footer: "«Үйсіндер — тау аңғарлары мен дала өзендерінің иесі, Азияның қақ ортасында Шығыс пен Батысты байланыстырған халық.»",
-                chartTitle: "Ықпал ету аймағы және халық тығыздығы"
+                title: "Ақпан 1917",
+                vizTitle: "Қос билік феномені",
+                vizDesc: "Қазақстанда Ақпан төңкерісі үш күштің: орталықтың либералды билігі, революциялық кеңестер мен ұлттық қозғалыстың тоғысуына әкелді.",
+                statusBadge: "Саяси дағдарыс",
+                focusTitle: "Демократиялық көктем",
+                focusDesc: "Ұлттық шектеулердің жойылуы, саяси партиялардың заңдастырылуы және тыл жұмыстарынан жұмысшылардың оралуы өлкенің әлеуметтік ахуалын өзгертті.",
+                fact1T: "Уақытша үкімет", fact1D: "Либералды буржуазия органдары. Көбіне зиялы қауым өкілдерінен тұрды, реформаларды бейбіт жолмен өткізуді көздеді.",
+                fact2T: "Депутаттар кеңестері", fact2D: "Қалалар мен теміржол бойындағы революциялық органдар. Қарулы солдаттар мен жұмысшыларға сүйенді.",
+                fact3T: "«Алаш» қозғалысы", fact3D: "Қазақтардың басты саяси күші. Ұлттық комитеттер құрып, жалпықазақ съезін шақыруға дайындалды.",
+                footer: "«1917 жылғы Ақпан төңкерісі Қазақстанды отардан саяси өмір қайнаған ортаға айналдырды».",
+                chartLabels: ["Уақытша үкімет", "Кеңестер", "Алаш қозғалысы", "Басқа күштер"],
+                chartTitle: "Саяси ықпалдың бөлінуі (%)"
             },
             en: {
-                title: "Usun: Kingdom of Zhetysu",
-                vizTitle: "Usun Geography",
-                vizDesc: "In the 2nd century BC, the Usuns created a powerful state in the heart of Semirechye, controlling river valleys and mountain passes.",
-                badge: "Great Settlement",
-                loc1: "Chigu City (Issyk-Kul Capital)", loc2: "Valleys of Ili, Chu, and Talas",
-                planTitle: "History and Power",
-                c1T: "Gunmo Title", c1D: "The head of state was called Gunmo (Kunbi). 12 tribal chiefs obeyed him, and his power was sacred and absolute.",
-                c2T: "Red Valley City", c2D: "Chigu — the capital of Usun. It was a trade center on the shores of Issyk-Kul, housing the ruler's headquarters.",
-                c3T: "Diplomacy", c3D: "The Usuns conducted active foreign policy, forming alliances with the Han Empire against the warlike Huns.",
-                c4T: "The Silk Road", c4D: "Control over Zhetysu made the Usuns key intermediaries in world trade of silk, gold, and spices.",
-                footer: "«The Usun were masters of mountain valleys and steppe rivers, creating a bridge between East and West in the heart of Asia.»",
-                chartTitle: "Sphere of Influence and Population Density"
+                title: "February 1917",
+                vizTitle: "Dual Power Phenomenon",
+                vizDesc: "In Kazakhstan, the February Revolution led to the intertwining of three forces: central liberal authority, revolutionary soviets, and the national movement.",
+                statusBadge: "Political Crisis",
+                focusTitle: "Democratic Spring",
+                focusDesc: "The abolition of national restrictions, legalization of parties, and the return of mobilized rear workers changed the region's social climate.",
+                fact1T: "Provisional Govt", fact1D: "Liberal bourgeois organs. Comprised of intellectuals aiming for gradual reforms without radical upheavals.",
+                fact2T: "Soviets of Deputies", fact2D: "Revolutionary bodies in cities and railways, supported by armed soldiers and industrial workers.",
+                fact3T: "Alash Movement", fact3D: "The primary Kazakh political force. It formed national committees and prepared for the All-Kazakh Congress.",
+                footer: "«February 1917 transformed Kazakhstan from a colony into a bubbling cauldron of political activity.»",
+                chartLabels: ["Provisional Govt", "Soviets", "Alash Movement", "Other Forces"],
+                chartTitle: "Political Influence Distribution (%)"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('settlementChart').getContext('2d');
+            const ctx = document.getElementById('powerChart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'radar',
+                type: 'polarArea',
                 data: {
-                    labels: lang === 'ru' ? ["Жетысу", "Иссык-Куль", "Долина Или", "Тянь-Шань", "Река Чу", "Река Талас"] : 
-                            (lang === 'kz' ? ["Жетісу", "Ыстықкөл", "Іле алқабы", "Тянь-Шань", "Шу өзені", "Талас өзені"] : 
-                            ["Zhetysu", "Issyk-Kul", "Ili Valley", "Tian-Shan", "Chu River", "Talas River"]),
+                    labels: translations[lang].chartLabels,
                     datasets: [{
-                        label: 'Concentration',
-                        data: [100, 95, 90, 70, 85, 80],
-                        backgroundColor: 'rgba(6, 95, 70, 0.2)',
-                        borderColor: '#065f46',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#065f46',
-                        pointRadius: 5
+                        data: [35, 25, 30, 10],
+                        backgroundColor: [
+                            'rgba(30, 64, 175, 0.7)', 
+                            'rgba(220, 38, 38, 0.7)', 
+                            'rgba(245, 158, 11, 0.7)', 
+                            'rgba(100, 116, 139, 0.7)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        r: {
-                            angleLines: { color: 'rgba(6, 95, 70, 0.1)' },
-                            grid: { color: 'rgba(6, 95, 70, 0.1)' },
-                            pointLabels: {
-                                color: '#064e3b',
-                                font: { family: 'Inter', size: 12, weight: 'bold' }
-                            },
-                            ticks: { display: false },
-                            beginAtZero: true,
-                            max: 100
-                        }
+                        r: { ticks: { display: false } }
                     },
                     plugins: {
-                        legend: { display: false },
-                        title: { display: true, text: translations[lang].chartTitle, color: '#065f46', font: { family: 'Montserrat', size: 16 } }
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
                     }
                 }
             });
         }
 
-        function setLang(lang) {
+        function changeLang(lang) {
             const t = translations[lang];
             document.getElementById('main-title').innerText = t.title;
             document.getElementById('viz-title').innerText = t.vizTitle;
             document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('loc1').innerText = t.loc1;
-            document.getElementById('loc2').innerText = t.loc2;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
-            document.getElementById('footer-text').innerText = t.footer;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('focus-title').innerText = t.focusTitle;
+            document.getElementById('focus-desc').innerText = t.focusDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
                 btn.className = l === lang 
-                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-xl text-sm font-bold text-emerald-700 hover:bg-emerald-100 transition-all";
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-blue-700 hover:bg-blue-100 transition-all";
             });
 
             initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
+        window.onload = () => changeLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -535,5 +471,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

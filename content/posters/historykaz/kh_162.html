@@ -3,339 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Присоединение Младшего жуза к России (XVIII в.)</title>
+    <title>Казахстан в годы ПМВ</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f1ea; color: #1c1917; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .imperial-bg {
-            background: radial-gradient(circle at top right, #e7e5e4, #f4f1ea 80%);
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        .ww1-theme {
+            background: linear-gradient(to bottom right, #f1f5f9, #cbd5e1);
         }
 
-        .scroll-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(15px);
-            border-radius: 3rem;
-            border: 2px solid #991b1b;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        .industrial-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #475569;
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .scroll-panel:hover {
-            border-color: #dc2626;
-            box-shadow: 0 40px 80px -20px rgba(153, 27, 27, 0.15);
+        .industrial-card:hover {
+            transform: scale(1.01);
+            border-color: #1e293b;
         }
 
-        .lang-active {
-            background-color: #991b1b;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(153, 27, 27, 0.3);
+        .war-glow {
+            box-shadow: 0 0 20px rgba(153, 27, 27, 0.2);
+        }
+
+        .btn-active {
+            background-color: #1e293b;
+            color: white;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.3);
         }
 
         canvas {
-            cursor: pointer;
-            border-radius: 2rem;
-            background: #fff;
-            border: 1px solid #e7e5e4;
-        }
-
-        .history-card {
-            background: white;
-            border-radius: 2.5rem;
-            border-bottom: 8px solid #991b1b;
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .history-card:hover {
-            transform: translateY(-10px);
-            border-color: #dc2626;
-        }
-
-        .term-badge {
-            background: #fef2f2;
-            color: #991b1b;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
     </style>
 </head>
-<body class="imperial-bg min-h-screen pb-20">
-
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
+<body class="ww1-theme text-slate-900 min-h-screen">
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-red-100 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-red-900">Присоединение Младшего жуза к России</h1>
-            <div class="flex bg-red-50 p-1 rounded-2xl border border-red-100">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-slate-300 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">⚔️</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-slate-800">Казахстан 1914-1918</h1>
+            </div>
+            <div class="flex bg-slate-200/50 p-1 rounded-full border border-slate-300">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: Interactive Diplomatic Scroll (Canvas) -->
-        <div class="scroll-panel p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-red-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Treaty of 1731 Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-red-950 leading-tight uppercase italic tracking-tighter">Свиток Протектората</h2>
-                    <p id="viz-desc" class="text-lg text-red-900/60 font-light leading-relaxed">
-                        Решение Абулхаира было вызвано угрозой со стороны жунгар. Нажмите на печати дипломатического свитка, чтобы изучить условия и ключевые даты принятия подданства.
-                    </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[3rem] bg-white border-l-8 border-red-800 shadow-2xl transition-all duration-500">
-                        <h3 id="element-title" class="text-xl font-bold text-red-900 mb-3 uppercase">Анализ документа</h3>
-                        <p id="element-desc" class="text-red-800/70 text-base leading-relaxed italic font-light">Кликните на восковые печати на холсте справа для расшифровки.</p>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
-                    <canvas id="scrollCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-red-800/30 font-mono uppercase tracking-[0.4em]">Official Imperial Correspondence Replica</div>
+        <!-- Section 1: Economic Burden -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-slate-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Colonial Resource Base</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase">Тыл для фронта</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    Казахстан стал сырьевым придатком войны. На нужды фронта забирали скот, хлеб и фураж. Налоги выросли в 3-4 раза, что привело к массовому обнищанию аулов.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="resourceChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Detailed Text Blocks -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <!-- 1730 Embassy -->
-            <div class="history-card">
-                <span class="term-badge mb-4 inline-block" id="t-mission">Миссия 1730 г.</span>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-red-950">Посольство в Петербург</h3>
-                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed">
-                    В сентябре **1730 года** Абулхаир-хан отправил посольство во главе с **Сейткулом Кундагуловым** и **Кутлумбетом Коштаевым** к императрице Анне Иоанновне. Главная цель: военный союз против жунгар. 19 февраля 1731 года императрица подписала грамоту о принятии Младшего жуза в подданство.
-                </p>
+        <!-- Section 2: 1916 Revolt -->
+        <div class="bg-slate-800 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl war-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">✊</div>
+                    <div id="revolt-label" class="text-red-400 font-black text-sm uppercase tracking-[0.3em]">1916 Uprising</div>
+                </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="revolt-title" class="text-3xl font-black tracking-tight uppercase text-red-400">Восстание 1916 года</h3>
+                    <p id="revolt-desc" class="text-xl text-slate-200 font-light leading-relaxed">
+                        Поводом стал указ царя от 25 июня о мобилизации «инородцев» на тыловые работы. Степь вспыхнула: народ требовал земли и освобождения от колониального гнета.
+                    </p>
+                </div>
             </div>
-
-            <!-- 1731 Oath -->
-            <div class="history-card">
-                <span class="term-badge mb-4 inline-block" id="t-oath">Присяга</span>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-red-950">10 октября 1731 года</h3>
-                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed">
-                    В урочище **Майтобе** (ставка хана) российский посол **А.И. Тевкелев** официально принял присягу Абулхаира и 27 старшин родов. Это событие ознаменовало начало вхождения Казахстана в состав России. Основные условия: защита границ, сохранение ханской власти и свободная торговля.
-                </p>
-            </div>
-
-            <!-- Results -->
-            <div class="history-card">
-                <span class="term-badge mb-4 inline-block" id="t-result">Последствия</span>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-red-950">Оренбургский форпост</h3>
-                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed">
-                    Для укрепления влияния в **1734 году** была создана Оренбургская экспедиция (И.К. Кирилов). В 1735 году основана крепость **Ор (Оренбург)**. Началось строительство укрепленных линий, что привело к ограничению кочевых путей, но обеспечило военный щит против жунгарских набегов.
-                </p>
-            </div>
+            <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 pointer-events-none">🐎</div>
         </div>
 
-        <!-- Section 3: Summary Feature -->
-        <div class="bg-red-950 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="space-y-8">
-                    <h3 id="sum-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Геополитический выбор</h3>
-                    <p id="sum-d" class="text-red-100/70 text-xl font-light leading-relaxed">
-                        Принятие подданства было сложным и неоднозначным шагом. Часть султанов и батыров во главе с **Бараком** и **Абильмамбетом** выступила против Абулхаира. Тем не менее, этот акт обеспечил России плацдарм для продвижения вглубь Азии, а Казахскому ханству — шанс на выживание в условиях «Великого бедствия».
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        <span id="tag-1" class="px-6 py-2 bg-white/10 rounded-full border border-white/20 text-xs font-black uppercase tracking-widest">Дипломатия выживания</span>
-                    </div>
-                </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-red-500/20 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-7xl mb-4 grayscale opacity-30">📜</div>
-                            <div id="label-re" class="text-[10px] font-black uppercase text-red-400 tracking-[0.5em]">The Imperial Act</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Section 3: Key Facts -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="industrial-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-700">
+                <div class="text-5xl mb-4">📢</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Указ царя</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">Мобилизация мужчин 19–43 лет на рытье окопов. Это решение во время полевых работ поставило хозяйства на грань гибели.</p>
             </div>
-            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">RUSSIA</div>
+            <div class="industrial-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-slate-700">
+                <div class="text-5xl mb-4">🦅</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Алаш</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">Интеллигенция призывала к компромиссу, опасаясь резни безоружного народа регулярными войсками империи.</p>
+            </div>
+            <div class="industrial-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-orange-700">
+                <div class="text-5xl mb-4">🛡️</div>
+                <h3 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Амангельды</h3>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">Лидер повстанцев в Торгае. Он создал дисциплинированную армию, использовав тактику партизанской войны в степи.</p>
+            </div>
         </div>
 
     </main>
 
-    <footer class="mt-20 py-24 bg-stone-950 text-stone-500 text-center border-t border-red-900/20">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl font-light italic leading-tight text-stone-400">
-                «Присоединение Младшего жуза открыло новую эпоху, где Степь и Империя начали сложный диалог, определивший границы современной Евразии.»
+    <footer class="mt-20 py-20 bg-slate-900 text-slate-400">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Первая мировая война стала катализатором пробуждения национального самосознания казахского народа».
             </p>
-            <div class="mt-12 h-1 w-24 bg-red-800 mx-auto rounded-full"></div>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-slate-600">History of Kazakhstan: 20th Century Threshold</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Присоединение Младшего жуза (XVIII в.)",
-                vizTitle: "Свиток Протектората",
-                vizDesc: "Нажмите на печати дипломатического свитка, чтобы изучить условия и ключевые даты принятия подданства России.",
-                badge: "Анализ акта 1731 года",
-                elementTitleDefault: "Анализ документа",
-                elementDescDefault: "Кликните на восковые печати на холсте справа для расшифровки.",
-                tMission: "Миссия 1730 г.", tOath: "Присяга", tResult: "Последствия",
-                c1T: "Посольство в Петербург", c1D: "Султаны Младшего жуза просили о защите от жунгар и башкир. Абулхаир пошел на этот шаг ради укрепления личной власти и спасения народа от истребления.",
-                c2T: "10 октября 1731 года", c2D: "Тевкелев прибыл в Степь. Присяга состоялась в ставке хана. Основные пункты: верность престолу, безопасность торговли и наследование власти родом Абулхаира.",
-                c3T: "Оренбургский форпост", c3D: "Строительство Орской крепости в 1735 году стало символом колониального продвижения. С этого момента начинается планомерное освоение региона Россией.",
-                sumT: "Геополитический выбор", sumD: "Решение Абулхаира раскололо казахскую элиту. Многие султаны видели в этом угрозу свободе, но внешняя угроза сделала этот союз неизбежным.",
-                footer: "«Присоединение Младшего жуза открыло эпоху сложного диалога между Степью и Империей.»",
-                edicts: {
-                    top: { name: "Указ Анны Иоанновны (февраль 1731)", text: "Официальное согласие на принятие Младшего жуза в российское подданство при условии выплаты ясака (дани) и защиты купеческих караванов." },
-                    mid: { name: "Условия протектората", text: "Россия обязалась защищать казахов от внешних врагов, в то время как казахи обещали прекратить набеги на приграничные территории." },
-                    bot: { name: "Акт присяги (октябрь 1731)", text: "Торжественный момент в ставке хана. Абулхаир и 27 биев поклялись на Коране, закрепив новый статус земель." }
-                }
+                title: "Казахстан 1914-1918",
+                vizTitle: "Тыл для фронта",
+                vizDesc: "Казахстан снабжал империю мясом, шерстью и медью. Более 300 тысяч человек были мобилизованы на тыловые работы.",
+                statusBadge: "Колониальный тыл",
+                revoltTitle: "Восстание 1916 года",
+                revoltDesc: "Национально-освободительное движение охватило весь Казахстан. Центры в Торгае и Семиречье стали самыми мощными очагами сопротивления.",
+                fact1T: "Трагический Указ", fact1D: "Указ от 25 июня 1916 года стал последней каплей народного терпения.",
+                fact2T: "Позиция Алаш", fact2D: "Лидеры Алаш призывали не идти на открытый конфликт, стараясь спасти народ от кровавого подавления.",
+                fact3T: "Армия Свободы", fact3D: "Амангельды Иманов объединил тысячи сарбазов, используя древние традиции степной войны.",
+                footer: "«Первая мировая война стала катализатором пробуждения национального самосознания казахского народа».",
+                chartLabels: ["Поставки скота (голов)", "Медь и уголь", "Зерно (пуды)", "Налоги"],
+                chartTitle: "Экономическая мобилизация (%)"
             },
             kz: {
-                title: "Кіші жүздің Ресейге қосылуы (ХVІІІ ғ.)",
-                vizTitle: "Протекторат шиыршығы",
-                vizDesc: "Ресей бодандығын қабылдау шарттары мен негізгі күндерін білу үшін шиыршықтағы мөрлерді басыңыз.",
-                badge: "1731 жылғы актіні талдау",
-                elementTitleDefault: "Құжатты талдау",
-                elementDescDefault: "Оң жақтағы кенептегі балауыз мөрлерді басыңыз.",
-                tMission: "1730 ж. миссия", tOath: "Ант беру", tResult: "Салдары",
-                c1T: "Петербургке елшілік", c1D: "Кіші жүз сұлтандары жоңғарлар мен башқұрттардан қорғауды сұрады. Әбілқайыр бұл қадамға өз билігін нығайту және халықты жойылудан сақтау үшін барды.",
-                c2T: "1731 жыл 10 қазан", c2D: "Тевкелев Далаға келді. Ант хан ордасында қабылданды. Негізгі шарттар: таққа адалдық, сауда қауіпсіздігі және Әбілқайыр әулетінің билікті мұрагерлікпен иеленуі.",
-                c3T: "Орынбор бекінісі", c3D: "1735 жылы Ор бекінісінің салынуы отаршылдық жылжудың нышаны болды. Осы сәттен бастап Ресейдің аймақты жоспарлы игеруі басталды.",
-                sumT: "Геосаяси таңдау", sumD: "Әбілқайырдың шешімі қазақ ақсүйектерін екіге бөлді. Көптеген сұлтандар бұдан бостандыққа қауіп төнгенін көрді, бірақ сыртқы қауіп бұл одақты қажет етті.",
-                footer: "«Кіші жүздің қосылуы Дала мен Империя арасындағы күрделі диалог дәуірін ашты.»",
-                edicts: {
-                    top: { name: "Анна Иоанновнаның жарлығы (1731 ақпан)", text: "Ясақ (салық) төлеу және көпестер керуендерін қорғау шартымен Кіші жүзді Ресей бодандығына қабылдауға ресми келісім." },
-                    mid: { name: "Протекторат шарттары", text: "Ресей қазақтарды сыртқы жаулардан қорғауға міндеттенді, ал қазақтар шекаралық аймақтарға шабуыл жасауды тоқтатуға уәде берді." },
-                    bot: { name: "Ант беру актісі (1731 қазан)", text: "Хан ордасындағы салтанатты сәт. Әбілқайыр мен 27 би Құран ұстап ант беріп, жердің жаңа мәртебесін бекітті." }
-                }
+                title: "Қазақстан 1914-1918",
+                vizTitle: "Майдан үшін тыл",
+                vizDesc: "Қазақстан империяны етпен, жүнмен және мыспен қамтамасыз етті. 300 мыңнан астам адам тыл жұмыстарына алынды.",
+                statusBadge: "Отарлық тыл",
+                revoltTitle: "1916 жылғы көтеріліс",
+                revoltDesc: "Ұлт-азаттық қозғалыс бүкіл Қазақстанды қамтыды. Торғай мен Жетісу қарсылықтың ең қуатты ошақтарына айналды.",
+                fact1T: "Қасіретті Жарлық", fact1D: "1916 жылғы 25 маусымдағы жарлық халықтың төзімін тауысқан соңғы нүкте болды.",
+                fact2T: "Алаш ұстанымы", fact2D: "Алаш қайраткерлері халықты қантөгістен сақтау үшін ымыраға келуге шақырды.",
+                fact3T: "Бостандық әскері", fact3D: "Амангелді Иманов дала соғысының ежелгі дәстүрлерін қолданып, мыңдаған сарбазды біріктірді.",
+                footer: "«Бірінші дүниежүзілік соғыс қазақ халқының ұлттық сана-сезімінің оянуына түрткі болды».",
+                chartLabels: ["Мал жеткізу (бас)", "Мыс пен көмір", "Астық (пұт)", "Салықтар"],
+                chartTitle: "Экономикалық жұмылдыру (%)"
+            },
+            en: {
+                title: "Kazakhstan 1914-1918",
+                vizTitle: "Home Front for War",
+                vizDesc: "Kazakhstan supplied the empire with meat, wool, and copper. Over 300,000 people were mobilized for rear labor.",
+                statusBadge: "Colonial Rear",
+                revoltTitle: "1916 Uprising",
+                revoltDesc: "The national liberation movement spread across Kazakhstan. Torgay and Semirechye became the centers of resistance.",
+                fact1T: "Tragic Decree", fact1D: "The decree of June 25, 1916, was the breaking point of the people's patience.",
+                fact2T: "Alash Position", fact2D: "Alash leaders urged for a compromise to save the people from brutal suppression by imperial forces.",
+                fact3T: "Army of Freedom", fact3D: "Amangeldy Imanov unified thousands of sarbaz, utilizing ancient traditions of steppe warfare.",
+                footer: "«The First World War served as a catalyst for the awakening of the national identity of the Kazakh people.»",
+                chartLabels: ["Livestock Supply", "Copper & Coal", "Grain Supply", "Taxes"],
+                chartTitle: "Economic Mobilization (%)"
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('scrollCanvas');
-        const ctx = canvas.getContext('2d');
+        let currentChart = null;
 
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 550;
-            drawScroll();
+        function initChart(lang) {
+            const ctx = document.getElementById('resourceChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: translations[lang].chartLabels,
+                    datasets: [{
+                        label: '%',
+                        data: [45, 20, 25, 60],
+                        backgroundColor: ['#1e293b', '#475569', '#64748b', '#94a3b8'],
+                        borderRadius: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    }
+                }
+            });
         }
 
-        function drawScroll() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // Rollers
-            ctx.fillStyle = '#450a03';
-            ctx.fillRect(cx - 180 * scale, 40, 360 * scale, 20);
-            ctx.fillRect(cx - 180 * scale, 480, 360 * scale, 20);
-
-            // Paper
-            ctx.fillStyle = '#fef3c7';
-            ctx.fillRect(cx - 160 * scale, 60, 320 * scale, 420);
-            ctx.strokeStyle = '#d97706';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(cx - 160 * scale, 60, 320 * scale, 420);
-
-            // Seals
-            drawSeal(cx + 100 * scale, 130, '#b91c1c', "Top");
-            drawSeal(cx + 100 * scale, 270, '#b91c1c', "Mid");
-            drawSeal(cx + 100 * scale, 410, '#b91c1c', "Bot");
-
-            // Text lines
-            ctx.strokeStyle = '#451a03';
-            ctx.lineWidth = 1;
-            for(let y=110; y<460; y+=30) {
-                if (Math.abs(y-130)<20 || Math.abs(y-270)<20 || Math.abs(y-410)<20) continue;
-                ctx.beginPath();
-                ctx.moveTo(cx - 120 * scale, y);
-                ctx.lineTo(cx + 50 * scale, y);
-                ctx.setLineDash([5, 15]);
-                ctx.stroke();
-            }
-            ctx.setLineDash([]);
-        }
-
-        function drawSeal(x, y, color, label) {
-            ctx.beginPath();
-            ctx.arc(x, y, 25, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.strokeStyle = '#450a0a';
-            ctx.stroke();
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 8px Inter';
-            ctx.textAlign = 'center';
-            ctx.fillText("SEAL", x, y + 4);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const y = e.clientY - rect.top;
-            let target = null;
-            if (y > 90 && y < 170) target = 'top';
-            else if (y >= 230 && y < 310) target = 'mid';
-            else if (y >= 370 && y < 450) target = 'bot';
-
-            if (target) {
-                const info = translations[currentLang].edicts[target];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#991b1b';
-            }
-        });
-
-        function setLang(lang) {
-            currentLang = lang;
+        function changeLang(lang) {
             const t = translations[lang];
             document.getElementById('main-title').innerText = t.title;
             document.getElementById('viz-title').innerText = t.vizTitle;
             document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('sum-t').innerText = t.sumT;
-            document.getElementById('sum-d').innerText = t.sumD;
-            document.getElementById('footer-text').innerText = t.footer;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('revolt-title').innerText = t.revoltTitle;
+            document.getElementById('revolt-desc').innerText = t.revoltDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
-                if(btn) btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-red-700 hover:bg-white transition-all";
+                btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-slate-700 hover:bg-slate-100 transition-all";
             });
-            resizeCanvas();
+
+            initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
+        window.onload = () => changeLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -575,5 +467,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

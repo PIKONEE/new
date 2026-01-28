@@ -3,451 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хозяйство и быт населения тюркских каганатов</title>
+    <title>Плакат: Индустриализация</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #451a03; }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .felt-gradient {
-            background: linear-gradient(135deg, #f5f5f4 0%, #e7e5e4 100%);
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; padding: 40px 20px; }
+        h1, h2, h3, .poster-title { font-family: 'Montserrat', sans-serif; }
+        
+        .poster-canvas {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            background: #f8fafc;
+            padding: 60px 40px;
+            border: 15px solid #1e293b;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            position: relative;
+            min-height: 1100px;
         }
 
-        .nomad-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            border-radius: 3rem;
-            border: 1px solid #d97706;
-            transition: all 0.4s ease;
-        }
+        .lang-active { background: #1e293b !important; color: white !important; }
 
-        .nomad-panel:hover {
-            border-color: #92400e;
-            box-shadow: 0 25px 50px -12px rgba(146, 64, 14, 0.15);
-        }
-
-        .lang-active {
-            background-color: #78350f;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(120, 53, 15, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            filter: drop-shadow(0 15px 25px rgba(120, 53, 15, 0.15));
-        }
-
-        .info-card {
-            background: white;
-            border-radius: 2.5rem;
-            border: 1px solid #fde68a;
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .info-card:hover {
-            transform: translateY(-8px);
-            border-color: #fbbf24;
-            box-shadow: 0 15px 30px rgba(180, 83, 9, 0.1);
-        }
-
-        .silk-border {
-            border-left: 8px solid #b45309;
-        }
-
-        .term-badge {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 2px 10px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 800;
+        .stamp {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            border: 4px double #1e293b;
+            padding: 5px 15px;
+            color: #1e293b;
+            font-weight: 900;
+            transform: rotate(12deg);
             text-transform: uppercase;
+            font-size: 12px;
+            opacity: 0.6;
         }
+
+        .fade-in { animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="lang-ru">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-slate-900/80 backdrop-blur p-1 rounded-full border border-white/20">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-4 py-1 rounded-full text-xs font-bold text-white transition">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-4 py-1 rounded-full text-xs font-bold text-white transition">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-4 py-1 rounded-full text-xs font-bold text-white transition">EN</button>
+    </div>
 
-
-    <!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-stone-200 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-stone-800">Хозяйство и быт населения тюркских каганатов</h1>
-            <div class="flex bg-stone-100 p-1 rounded-xl border border-stone-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+    <div class="poster-canvas fade-in">
+        <div id="stamp" class="stamp">Рывок: 1926-1941</div>
         
-        <!-- Section 1: Interactive Nomad Life Hub (Canvas) -->
-        <div class="nomad-panel p-8 md:p-12 border-amber-500/20">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-4 space-y-8">
-                    <div id="badge" class="inline-block border border-amber-600 text-amber-600 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Historical Reconstruction</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic">Инфраструктура Степи</h2>
-                    <p id="viz-desc" class="text-lg text-amber-900/60 font-light leading-relaxed">
-                        Быт тюрков — это сложная система мобильности и оседлости. Нажмите на объекты, чтобы изучить их назначение и устройство.
-                    </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-amber-50 border-l-8 border-amber-700 shadow-lg transition-all duration-500">
-                        <h3 id="element-title" class="text-xl font-bold text-amber-900 mb-3 uppercase tracking-tighter">Исследуйте детали</h3>
-                        <p id="element-desc" class="text-amber-800/70 text-sm leading-relaxed italic">Нажмите на юрту, верблюдов или торсык (кожаный сосуд).</p>
+        <div class="border-b-4 border-slate-900 pb-10 mb-10">
+            <h1 id="title" class="poster-title text-5xl md:text-6xl uppercase tracking-tighter leading-none mb-4 text-slate-900">Индустриализация и Пятилетки</h1>
+        </div>
+
+        <div class="space-y-12">
+            <section>
+                <h2 id="sec1T" class="text-2xl font-black uppercase text-slate-900 mb-6">Крупнейшие стройки века</h2>
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="bg-slate-900 text-white p-6 rounded-3xl text-center shadow-lg">
+                        <div class="text-4xl mb-2">🚂</div>
+                        <h4 id="p1" class="text-[10px] font-black uppercase tracking-widest">Турксиб: Стальная магистраль</h4>
+                    </div>
+                    <div class="bg-slate-900 text-white p-6 rounded-3xl text-center shadow-lg">
+                        <div class="text-4xl mb-2">⛏️</div>
+                        <h4 id="p2" class="text-[10px] font-black uppercase tracking-widest">Караганда: Угольная база</h4>
+                    </div>
+                    <div class="bg-slate-900 text-white p-6 rounded-3xl text-center shadow-lg">
+                        <div class="text-4xl mb-2">🛢️</div>
+                        <h4 id="p3" class="text-[10px] font-black uppercase tracking-widest">Эмбанефть: Сердце запада</h4>
                     </div>
                 </div>
-                
-                <div class="lg:col-span-8 bg-stone-100/30 p-4 rounded-[3.5rem] flex items-center justify-center relative min-h-[550px] border border-stone-200">
-                    <canvas id="nomadCanvas"></canvas>
-                    <div class="absolute bottom-8 right-10 text-[10px] text-stone-400 font-mono uppercase tracking-widest">Canvas API Drawing</div>
-                </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- Section 2: Enhanced Info Blocks -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
-            <!-- Block 1: Economy -->
-            <div class="info-card silk-border">
-                <div class="mb-4"><span class="term-badge" id="t-eco">Хозяйство</span></div>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Дуализм экономики</h3>
-                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed">
-                    Тюркская экономика опиралась на скотоводство (90% рациона). Однако в VI–IX вв. выделилась группа **жатаков** — обедневших кочевников, которые оседали в долинах рек Или, Чу и Сырдарья. Они создали систему **арычного орошения**, выращивая просо, пшеницу и виноград, снабжая кочевников зерном.
-                </p>
-                <div class="mt-4 pt-4 border-t border-amber-100 text-[11px] font-bold text-amber-800 italic" id="c1-f">
-                    Факт: В Жетысу найдено более 30 тюркских поселений с зернохранилищами.
-                </div>
-            </div>
+            <section class="bg-red-950 text-red-100 p-10 rounded-[4rem] border-l-[20px] border-red-600 shadow-2xl">
+                <h2 id="sec2T" class="text-3xl font-black uppercase mb-4 text-white">Трагедия Коллективизации</h2>
+                <p id="sec2D" class="text-xl font-light italic leading-relaxed">Форсированный метод «Малого Октября» Ф. Голощекина привел к потере 90% поголовья скота и массовому голоду («Ашаршылық»).</p>
+            </section>
 
-            <!-- Block 2: Urbanization -->
-            <div class="info-card silk-border border-amber-900">
-                <div class="mb-4"><span class="term-badge" id="t-city">Урбанизация</span></div>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Архитектура городов</h3>
-                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed">
-                    Тюркские города (Суяб, Тараз) имели трехчастную структуру: **Цитадель** (дворец кагана), **Шахристан** (дома знати) и **Рабад** (кварталы ремесленников). В Таразе того времени уже существовали общественные бани и система водопровода из глиняных труб (**кубуров**), что доказывает высокий уровень инженерной мысли.
-                </p>
-                <div class="mt-4 pt-4 border-t border-amber-100 text-[11px] font-bold text-amber-800 italic" id="c2-f">
-                    Центр: Испиджаб был «городом купцов», освобожденным от налогов.
-                </div>
-            </div>
-
-            <!-- Block 3: Social & Material -->
-            <div class="info-card silk-border">
-                <div class="mb-4"><span class="term-badge" id="t-soc">Социум</span></div>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Социальные маркеры</h3>
-                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed">
-                    Статус тюрка определялся по его **наборному поясу**. Знатные воины носили пояса с золотыми и серебряными накладками. Одежда шилась из шелка (часто китайского), шерсти и меха. Роль **тудунов** (наместников кагана в городах) заключалась в сборе дани и контроле над международной торговлей по Шелковому пути.
-                </p>
-                <div class="mt-4 pt-4 border-t border-amber-100 text-[11px] font-bold text-amber-800 italic" id="c3-f">
-                    Символ: Балбалы — каменные изваяния предков-воинов с чашами в руках.
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Section 3: Trade Highlight -->
-        <div class="bg-amber-900 p-10 md:p-16 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <section class="flex gap-10 items-center bg-white p-10 rounded-[4rem] shadow-xl border border-slate-100 relative">
+                <div class="text-8xl">💎</div>
                 <div>
-                    <h3 id="tr-t" class="text-3xl font-black mb-6 uppercase italic tracking-tighter">Торговая дипломатия</h3>
-                    <p id="tr-d" class="text-amber-100/70 text-lg font-light leading-relaxed">
-                        Тюрки были монополистами в транзите шелка. Посольство Маниаха в Византию (568 г.) открыло «Великий шелковый путь» для тюркских товаров. Шелк использовался не только как ткань, но и как международная валюта, которой каганы выплачивали жалованье своим гвардейцам.
-                    </p>
+                    <h2 id="sec3T" class="text-2xl font-black uppercase text-slate-900 mb-2">Қаныш Сәтбаев</h2>
+                    <p id="sec3D" class="text-lg font-medium text-slate-600 leading-relaxed">Гений геологии, доказавший богатство недр Жезказгана и открывший путь к промышленному величию края, вопреки мнению центральных скептиков.</p>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white/10 p-6 rounded-3xl border border-white/10">
-                        <div class="text-amber-400 font-black text-xs uppercase mb-1">Экспорт</div>
-                        <div id="tr-e" class="text-sm">Лошади, пушнина, мускус</div>
-                    </div>
-                    <div class="bg-white/10 p-6 rounded-3xl border border-white/10">
-                        <div class="text-amber-400 font-black text-xs uppercase mb-1">Импорт</div>
-                        <div id="tr-i" class="text-sm">Шелк, зеркала, чай, специи</div>
-                    </div>
-                </div>
-            </div>
-            <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 font-black rotate-12 pointer-events-none">TRADE</div>
+                <div class="absolute top-4 right-8 text-xs font-black text-slate-200 uppercase tracking-widest">Progress</div>
+            </section>
         </div>
 
-    </main>
-
-    <footer class="mt-20 py-16 bg-stone-900 text-stone-500 text-center border-t border-amber-900/20">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-xl font-light italic text-stone-300">
-                «Культура каганатов объединила в себе бесконечное движение степи и основательность первых тюркских мегаполисов.»
-            </p>
-            <div class="mt-8 h-1 w-16 bg-amber-700 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="absolute bottom-10 left-10 right-10 flex justify-between items-center pt-6 border-t border-slate-200">
+            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Digital History Museum</span>
+            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Poster No. 04</span>
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Хозяйство и быт населения тюркских каганатов",
-                vizTitle: "Инфраструктура Степи",
-                vizDesc: "Быт тюрков — это сочетание мобильного жилья и транзитной торговли. Нажмите на объекты, чтобы изучить их устройство.",
-                badge: "Историческая реконструкция",
-                elementTitleDefault: "Исследуйте детали",
-                elementDescDefault: "Нажмите на юрту, верблюдов или торсык (кожаный сосуд).",
-                tEco: "Хозяйство", tCity: "Урбанизация", tSoc: "Социум",
-                c1T: "Дуализм экономики", c1D: "Тюркская экономика опиралась на скотоводство. Однако выделилась группа жатаков — обедневших кочевников, которые оседали в долинах рек. Они создали систему арычного орошения, выращивая просо, пшеницу и виноград.",
-                c1F: "Факт: В Жетысу найдено более 30 тюркских поселений с зернохранилищами.",
-                c2T: "Архитектура городов", c2D: "Тюркские города имели структуру: Цитадель, Шахристан и Рабад. В Таразе существовали бани и водопровод из глиняных труб (кубуров), что доказывает высокий уровень инженерной мысли.",
-                c2F: "Центр: Испиджаб был «городом купцов», освобожденным от налогов.",
-                c3T: "Социальные маркеры", c3D: "Статус тюрка определялся по наборному поясу с золотыми накладками. Роль тудунов (наместников) заключалась в сборе дани и контроле над Шелковым путем. Символом предков были балбалы.",
-                c3F: "Символ: Балбалы — каменные изваяния предков-воинов.",
-                trT: "Торговая дипломатия", trD: "Тюрки были монополистами в транзите шелка. Посольство Маниаха в 568 г. открыло прямой путь в Византию. Шелк служил валютой и символом богатства элиты.",
-                trE: "Лошади, пушнина, мускус", trI: "Шелк, зеркала, чай, специи",
-                footer: "«Культура каганатов объединила в себе движение степи и основательность первых тюркских мегаполисов.»",
-                elements: {
-                    yurt: { name: "Тюркская юрта", text: "Сборно-разборное жилище. Кереге (остов), уык (жерди) и шанырак (купол) создавали устойчивую к ветрам конструкцию, которую можно собрать за 2 часа." },
-                    camel: { name: "Двугорбый верблюд", text: "«Корабль пустыни», способный нести 300 кг груза. Тюрки обеспечивали охрану караванов и владели крупнейшими верблюжьими стадами." },
-                    torsyk: { name: "Торсык (Сосуд)", text: "Кожаная фляга для кумыса. Тюрки изобрели способы долгого хранения продуктов: курт и бастурма позволяли армии не зависеть от баз снабжения." }
-                }
+                stamp: 'Рывок: 1926-1941',
+                title: 'Индустриализация и Пятилетки',
+                sec1T: 'Крупнейшие стройки века',
+                p1: 'Турксиб: Стальная магистраль',
+                p2: 'Караганда: Угольная база',
+                p3: 'Эмбанефть: Сердце запада',
+                sec2T: 'Трагедия Коллективизации',
+                sec2D: 'Форсированный метод «Малого Октября» Ф. Голощекина привел к потере 90% поголовья скота и массовому голоду («Ашаршылық»).',
+                sec3T: 'Қаныш Сәтбаев',
+                sec3D: 'Гений геологии, доказавший богатство недр Жезказгана и открывший путь к промышленному величию края, вопреки мнению центральных скептиков.'
             },
             kz: {
-                title: "Түркі қағанаттары халқының шаруашылығы мен тұрмысы",
-                vizTitle: "Дала инфрақұрылымы",
-                vizDesc: "Түркілердің тұрмысы — мобильді баспана мен транзиттік сауданың үйлесімі. Нысандарды басып, оларды зерттеңіз.",
-                badge: "Тарихи реконструкция",
-                elementTitleDefault: "Бөлшектерді зерттеңіз",
-                elementDescDefault: "Киіз үйді, түйелерді немесе торсықты басыңыз.",
-                tEco: "Шаруашылық", tCity: "Урбанизация", tSoc: "Әлеумет",
-                c1T: "Экономика дуализмі", c1D: "Түркі экономикасы мал шаруашылығына негізделді. Бірақ өзен алқаптарына орныққан жатақтар тобы бөлініп шықты. Олар арық жүйелерін жасап, тары, бидай мен жүзім өсірумен айналысты.",
-                c1F: "Факт: Жетісуда астық қоймалары бар 30-дан астам түркі қонысы табылды.",
-                c2T: "Қалалар сәулеті", c2D: "Түркі қалалары: Цитадель, Шахристан және Рабадтан тұрды. Таразда қоғамдық моншалар мен қыш құбырлардан (құбыр) жасалған су құбыры жүйесі болған.",
-                c2F: "Орталық: Испиджаб салықтан босатылған «көпестер қаласы» болды.",
-                c3T: "Әлеуметтік белгілер", c3D: "Түркілердің мәртебесі алтын жапсырмалы белдіктермен анықталды. Тудундар (наместниктер) алым-салық жинауды және Жібек жолын бақылады. Ата-баба нышаны ретінде балбалдар қойылды.",
-                c3F: "Нышан: Балбалдар — батыр бабалардың тас мүсіндері.",
-                trT: "Сауда дипломатиясы", trD: "Түркілер жібек транзитінде монополист болды. 568 жылғы Маниах елшілігі Византияға тікелей жол ашты. Жібек валюта және байлық нышаны ретінде қолданылды.",
-                trE: "Жылқы, аң терісі, мускус", trI: "Жібек, айналар, шай, дәмдеуіштер",
-                footer: "«Қағанаттар мәдениеті даланың шексіз қозғалысы мен алғашқы түркі мегаполистерінің орнықтылығын біріктірді.»",
-                elements: {
-                    yurt: { name: "Түркі киіз үйі", text: "Жиналмалы баспана. Кереге, уық және шаңырақ желге төзімді конструкцияны құрады. Оны 2 сағатта жинап алуға болатын." },
-                    camel: { name: "Айыр түйе", text: "300 кг жүк көтере алатын «шөл кемесі». Түркілер керуендерді қорғауды қамтамасыз етіп, ірі түйе үйірлеріне иелік етті." },
-                    torsyk: { name: "Торсық (Ыдыс)", text: "Қымызға арналған былғары ыдыс. Түркілер тағамды ұзақ сақтау әдістерін (құрт, бастурма) ойлап тапты." }
-                }
+                stamp: 'Серпіліс: 1926-1941',
+                title: 'Индустрияландыру және Бесжылдықтар',
+                sec1T: 'Ғасыр құрылыстары',
+                p1: 'Түрксіб: Болат магистраль',
+                p2: 'Қарағанды: Көмір базасы',
+                p3: 'Ембімұнай: Батыстың жүрегі',
+                sec2T: 'Ұжымдастыру қасіреті',
+                sec2D: 'Ф. Голощекиннің «Кіші Қазан» саясаты мал басының 90%-ын жоғалтуға және жаппай аштыққа («Ашаршылық») әкелді.',
+                sec3T: 'Қаныш Сәтбаев',
+                sec3D: 'Жезқазған қойнауының байлығын орталық скептиктерге қарамастан дәлелдеген және өлкенің өнеркәсіптік дамуына жол ашқан геология генийі.'
             },
             en: {
-                title: "Economy and Life of Turkic Khaganates Population",
-                vizTitle: "Steppe Infrastructure",
-                vizDesc: "Turkic life combined mobile housing with transit trade. Click on objects to explore their design.",
-                badge: "Historical Reconstruction",
-                elementTitleDefault: "Explore details",
-                elementDescDefault: "Click on the yurt, camels, or the torsyk.",
-                tEco: "Economy", tCity: "Urbanization", tSoc: "Society",
-                c1T: "Economic Dualism", c1D: "The economy relied on pastoralism. However, 'Zhataks' (settled nomads) emerged in river valleys. They built irrigation systems to grow millet, wheat, and grapes.",
-                c1F: "Fact: Over 30 Turkic settlements with granaries have been found in Zhetysu.",
-                c2T: "City Architecture", c2D: "Cities had a Citadel, Shahristan, and Rabad. Taraz featured public baths and clay pipe water systems (kuburs), proving advanced engineering.",
-                c2F: "Center: Ispidjab was a 'merchant city' exempt from taxes.",
-                c3T: "Social Markers", c3D: "Status was shown by belt sets with gold plaques. 'Tuduns' (governors) collected taxes and controlled Silk Road trade. Ancestors were honored with balbals.",
-                c3F: "Symbol: Balbals — stone statues of warrior ancestors.",
-                trT: "Trade Diplomacy", trD: "Turks held a silk transit monopoly. Maniakh's 568 AD embassy opened a route to Byzantium. Silk was used as currency and a symbol of power.",
-                trE: "Horses, furs, musk", trI: "Silk, mirrors, tea, spices",
-                footer: "«The khaganate culture merged the motion of the steppe with the foundation of the first Turkic metropolises.»",
-                elements: {
-                    yurt: { name: "Turkic Yurt", text: "A portable dwelling. Kerege, uyk, and shanyrak created a wind-resistant design that could be assembled in just 2 hours." },
-                    camel: { name: "Bactrian Camel", text: "The 'ship of the desert,' carrying 300 kg. Turks provided caravan security and owned massive camel herds." },
-                    torsyk: { name: "Torsyk (Vessel)", text: "Leather bottle for kumis. Turks invented long-term storage foods like kurt and basturma for their armies." }
-                }
+                stamp: 'Leap: 1926-1941',
+                title: 'Industrialization & Five-Year Plans',
+                sec1T: 'Great Projects of the Century',
+                p1: 'Turksib: The Steel Highway',
+                p2: 'Karaganda: Coal Base',
+                p3: 'Embaneft: Heart of the West',
+                sec2T: 'Tragedy of Collectivization',
+                sec2D: 'Goloshchekin\'s "Small October" forced method led to a 90% loss of livestock and mass famine ("Asharshylyk").',
+                sec3T: 'Kanysh Satpayev',
+                sec3D: 'A geological genius who proved the wealth of Jezkazgan\'s subsoil and opened the way to industrial greatness, despite central skeptics.'
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('nomadCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 550;
-            drawWorld();
-        }
-
-        function drawCamel(x, y, scale) {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.scale(scale, scale);
-            ctx.beginPath();
-            ctx.fillStyle = '#b45309';
-            // Legs
-            ctx.fillRect(-35, 20, 5, 25); ctx.fillRect(-25, 20, 5, 25);
-            ctx.fillRect(15, 20, 5, 25); ctx.fillRect(25, 20, 5, 25);
-            // Body
-            ctx.moveTo(-40, 20);
-            ctx.lineTo(40, 20);
-            ctx.lineTo(40, 0);
-            ctx.quadraticCurveTo(25, -45, 10, 0);
-            ctx.quadraticCurveTo(-5, -45, -20, 0);
-            ctx.lineTo(-40, 0);
-            ctx.closePath();
-            ctx.fill();
-            // Neck & Head
-            ctx.beginPath();
-            ctx.moveTo(-40, 10);
-            ctx.quadraticCurveTo(-65, 0, -60, -45);
-            ctx.arc(-55, -50, 9, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
-
-        function drawYurt(x, y, scale) {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.scale(scale, scale);
-            // Cylinder base
-            ctx.fillStyle = '#e5e7eb';
-            ctx.strokeStyle = '#78350f';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.roundRect(-100, 0, 200, 80, [0, 0, 10, 10]);
-            ctx.fill();
-            ctx.stroke();
-            // Lattice detail (Kerege)
-            ctx.strokeStyle = 'rgba(120, 53, 15, 0.15)';
-            ctx.lineWidth = 1;
-            for(let i=-90; i<100; i+=20) {
-                ctx.moveTo(i, 0); ctx.lineTo(i+10, 80);
-                ctx.moveTo(i+10, 0); ctx.lineTo(i, 80);
-            }
-            ctx.stroke();
-            // Door
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(-20, 25, 40, 55);
-            // Dome
-            ctx.fillStyle = '#f9fafb';
-            ctx.strokeStyle = '#78350f';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(-105, 0);
-            ctx.quadraticCurveTo(0, -130, 105, 0);
-            ctx.fill();
-            ctx.stroke();
-            // Shanyrak
-            ctx.beginPath();
-            ctx.ellipse(0, -90, 35, 12, 0, 0, Math.PI*2);
-            ctx.stroke();
-            ctx.restore();
-        }
-
-        function drawTorsyk(x, y, scale) {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.scale(scale, scale);
-            ctx.fillStyle = '#451a03';
-            ctx.beginPath();
-            ctx.moveTo(-18, -45);
-            ctx.lineTo(18, -45);
-            ctx.quadraticCurveTo(45, 0, 0, 45);
-            ctx.quadraticCurveTo(-45, 0, -18, -45);
-            ctx.fill();
-            ctx.strokeStyle = '#451a03';
-            ctx.lineWidth = 5;
-            ctx.beginPath(); ctx.arc(-22, -30, 11, 0, Math.PI*2); ctx.stroke();
-            ctx.beginPath(); ctx.arc(22, -30, 11, 0, Math.PI*2); ctx.stroke();
-            ctx.restore();
-        }
-
-        function drawWorld() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            // Ground
-            ctx.fillStyle = '#fde68a';
-            ctx.beginPath();
-            ctx.ellipse(cx, cy + 180, cx * 1.6, 120, 0, 0, Math.PI*2);
-            ctx.fill();
-
-            drawYurt(cx - 160, cy + 60, 1.1);
-            drawCamel(cx + 130, cy + 160, 1.3);
-            drawCamel(cx + 270, cy + 190, 1);
-            drawTorsyk(cx + 60, cy + 40, 0.9);
-            
-            ctx.fillStyle = 'rgba(0,0,0,0.3)';
-            ctx.font = 'bold 12px Inter';
-            ctx.textAlign = 'center';
-            ctx.fillText("TAP ON OBJECTS", cx, 40);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            let found = null;
-            if (x < cx && y > cy - 100) found = 'yurt';
-            else if (x > cx + 110 && y > cy + 80) found = 'camel';
-            else if (Math.abs(x - (cx + 60)) < 60 && Math.abs(y - (cy + 40)) < 100) found = 'torsyk';
-
-            if (found) {
-                const info = translations[currentLang].elements[found];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#b45309';
-            }
-        });
-
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
+            document.querySelectorAll('.fixed button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
             
-            document.getElementById('t-eco').innerText = t.tEco;
-            document.getElementById('t-city').innerText = t.tCity;
-            document.getElementById('t-soc').innerText = t.tSoc;
-
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c1-f').innerText = t.c1F;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c2-f').innerText = t.c2F;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c3-f').innerText = t.c3F;
-
-            document.getElementById('tr-t').innerText = t.trT; document.getElementById('tr-d').innerText = t.trD;
-            document.getElementById('tr-e').innerText = t.trE; document.getElementById('tr-i').innerText = t.trI;
-
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-stone-500 hover:bg-white transition-all";
-            });
-            drawWorld();
+            const t = content[lang];
+            document.getElementById('stamp').innerText = t.stamp;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('p1').innerText = t.p1;
+            document.getElementById('p2').innerText = t.p2;
+            document.getElementById('p3').innerText = t.p3;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('sec3T').innerText = t.sec3T;
+            document.getElementById('sec3D').innerText = t.sec3D;
         }
 
-        window.onload = () => { resizeCanvas(); setLang('ru'); };
-        window.onresize = resizeCanvas;
+        window.onload = () => setLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -687,5 +396,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

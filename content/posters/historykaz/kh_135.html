@@ -3,386 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кыпчакское ханство (XI в. – 1219 г.)</title>
+    <title>Плакат: Реформы и Соцразвитие (1960-е)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #e7e5e4; }
+        body { font-family: 'Inter', sans-serif; background: #f0fdf4; color: #1e293b; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .kipchak-gradient {
-            background: radial-gradient(circle at top right, #78350f, #0c0a09 80%);
-        }
-
-        .imperial-panel {
-            background: rgba(28, 25, 23, 0.85);
-            backdrop-filter: blur(20px);
-            border-radius: 3rem;
-            border: 1px solid rgba(217, 119, 6, 0.2);
-            transition: all 0.5s ease;
-        }
-
-        .imperial-panel:hover {
-            border-color: #f59e0b;
-            box-shadow: 0 0 50px rgba(245, 158, 11, 0.1);
-        }
-
-        .lang-active {
-            background-color: #d97706;
-            color: white;
-            box-shadow: 0 0 20px rgba(217, 119, 6, 0.4);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: #1c1917;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
-        }
-
-        .fact-card {
-            background: rgba(41, 37, 36, 0.6);
-            border-left: 4px solid #d97706;
-            padding: 2.5rem;
-            border-radius: 2rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .fact-card:hover {
-            transform: translateY(-8px);
-            background: rgba(68, 64, 60, 0.8);
-            border-color: #f59e0b;
-        }
-
-        .term-tag {
-            background: #451a03;
-            color: #fcd34d;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+        .lang-active { background-color: #16a34a !important; color: white !important; font-weight: 900; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(22, 163, 74, 0.1); }
+        .green-grad { background: linear-gradient(135deg, #14532d 0%, #22c55e 100%); }
     </style>
 </head>
-<body class="kipchak-gradient min-h-screen pb-20">
+<body class="pb-20">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-slate-900/80 backdrop-blur p-1 rounded-full border border-white/20">
+        <button onclick="setLang('ru')" id="lang-ru" class="lang-active w-10 h-10 rounded-full text-xs transition-all">RU</button>
+        <button onclick="setLang('kz')" id="lang-kz" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">KZ</button>
+        <button onclick="setLang('en')" id="lang-en" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">EN</button>
+    </div>
 
-
-    <!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-amber-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.3em] text-amber-500">Кыпчакское ханство (начало XI в. – 1219 г.)</h1>
-            <div class="flex bg-zinc-900 p-1 rounded-xl border border-amber-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+    <main class="max-w-6xl mx-auto px-6 mt-12 space-y-10">
+        <header class="p-16 rounded-[4rem] text-white text-center shadow-2xl relative overflow-hidden green-grad">
+            <div class="relative z-10">
+                <span id="period" class="inline-block bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 tracking-widest">1960-е годы</span>
+                <h1 id="title" class="text-4xl md:text-6xl font-black uppercase mb-4 leading-none">Реформы и Соцразвитие</h1>
+                <p id="desc" class="text-xl font-light opacity-90">Попытки преобразований и рост уровня жизни</p>
             </div>
-        </div>
-    </header>
+            <div class="absolute top-0 right-0 text-[15rem] opacity-10 pointer-events-none font-black translate-x-1/4 -translate-y-1/4">🏘️</div>
+        </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Hierarchy & Wings (Custom Canvas) -->
-        <div class="imperial-panel p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-amber-500/50 text-amber-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Political Map & Structure</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Дешт-и-Кыпчак: Великая Система</h2>
-                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
-                        Ханство делилось на два мощных крыла, контролировавших Степь от Дуная до Иртыша. Нажмите на центры влияния на карте, чтобы изучить структуру управления.
-                    </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-amber-950/20 border-l-8 border-amber-600 shadow-2xl transition-all duration-500">
-                        <h3 id="zone-title" class="text-xl font-bold text-amber-400 mb-3 uppercase tracking-tighter">Начните исследование</h3>
-                        <p id="zone-desc" class="text-zinc-300 text-sm leading-relaxed italic">Кликните на Правое крыло, Левое крыло или Центр управления.</p>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="structureCanvas"></canvas>
-                    <div class="absolute bottom-8 right-10 text-[10px] text-amber-900 font-mono uppercase tracking-[0.3em]">Historical Confederation Diagram</div>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-green-800">
+                <h3 id="f1T" class="font-black uppercase mb-4 text-green-900">Реформа 1965</h3>
+                <p id="f1D" class="text-sm leading-relaxed">Попытка внедрения хозрасчета и материального стимулирования рабочих (реформа А. Косыгина).</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-green-800">
+                <h3 id="f2T" class="font-black uppercase mb-4 text-green-900">Жилье</h3>
+                <p id="f2D" class="text-sm leading-relaxed">Массовое строительство «хрущевок». Тысячи семей впервые получили отдельные квартиры с удобствами.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-green-800">
+                <h3 id="f3T" class="font-black uppercase mb-4 text-green-900">Быт</h3>
+                <p id="f3D" class="text-sm leading-relaxed">Развитие сферы бытового обслуживания, открытие новых дворцов культуры и спортивных арен.</p>
             </div>
         </div>
 
-        <!-- Section 2: Deep Historical Content -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-amber-600">Эпоха Половецкого Поля</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
-                <!-- Ethnicity & Dynasty -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-tag" id="tag-1">Династия</span></div>
-                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Род Эль-Бори</h3>
-                    <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
-                        Правящей элитой ханства был род **Эль-бори** (народ волков). Ханы этого рода обладали наследственной властью. Кыпчакское общество было строго иерархичным: Ханы, Беки, воины и «байгулы» (зависимые общинники). К XI веку кыпчаки полностью поглотили остатки кимаков и огузов в Центральном Казахстане.
-                    </p>
-                    <div class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Тотем: Волк</div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl">
+                <h3 id="chartTitle" class="text-2xl font-black mb-6 uppercase text-green-900">Ввод жилья (усл. ед.)</h3>
+                <div class="h-[350px]">
+                    <canvas id="reformsChart"></canvas>
                 </div>
-
-                <!-- Geography & Expansion -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-tag" id="tag-2">Геополитика</span></div>
-                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Границы Державы</h3>
-                    <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
-                        Территория называлась **Дешт-и-Кыпчак**. Западная граница доходила до Днестра и Дуная, восточная — до Алтая. Северной границей были леса Сибири, южной — Каспий и Хорезм. Ханство контролировало важнейшие караванные пути, становясь связующим звеном между Русью, Византией и Востоком.
-                    </p>
-                    <div class="text-[10px] font-black text-amber-500 uppercase tracking-widest">От Алтая до Дуная</div>
-                </div>
-
-                <!-- Military & Culture -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-badge" id="tag-3">Культура</span></div>
-                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Каменные Изваяния</h3>
-                    <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
-                        Кыпчаки оставили после себя тысячи антропоморфных стел — **«балбалов»**. Эти изваяния ставились в честь предков и героев. В отличие от древних тюрков, кыпчакские изваяния отличались высокой детализацией одежды, оружия и украшений, что свидетельствует о развитии ремесла и сложной обрядовой культуре.
-                    </p>
-                    <div class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Культ предков</div>
-                </div>
-
             </div>
-
-            <!-- Full Width Focus: The Fall -->
-            <div class="bg-zinc-900 rounded-[4rem] p-10 md:p-20 border border-amber-950 shadow-2xl relative overflow-hidden">
-                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h3 id="end-t" class="text-3xl font-black text-white mb-8 uppercase italic tracking-widest">Закат перед бурей</h3>
-                        <p id="end-d" class="text-zinc-400 text-xl font-light leading-relaxed mb-8">
-                            В начале XIII века ханство достигло пика, но было ослаблено внутренней борьбой между родами. В **1219 году** началось монгольское вторжение. Несмотря на героическое сопротивление, Дешт-и-Кыпчак стал частью Улуса Джучи (Золотой Орды), при этом кыпчакский язык и культура легли в основу нового государства.
-                        </p>
-                        <div class="flex gap-4">
-                            <div class="px-6 py-2 bg-amber-600/10 rounded-2xl border border-amber-600/30 text-xs font-black text-amber-500 uppercase">1219: Удар Чингисхана</div>
-                            <div class="px-6 py-2 bg-amber-600/10 rounded-2xl border border-amber-600/30 text-xs font-black text-amber-500 uppercase">Золотая Орда</div>
-                        </div>
-                    </div>
-                    <div class="flex justify-center">
-                        <div class="w-72 h-72 border-4 border-dashed border-amber-900/40 rounded-full flex items-center justify-center animate-pulse">
-                            <div class="text-center">
-                                <div class="text-7xl mb-2">⚔️</div>
-                                <div class="text-[10px] font-black uppercase text-amber-600 tracking-widest">End of Era</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 font-black rotate-12 pointer-events-none uppercase">DESHT</div>
+            <div class="p-10 rounded-[3rem] shadow-2xl text-white flex flex-col justify-center relative overflow-hidden bg-slate-900">
+                <h3 id="specialTitle" class="text-3xl font-black mb-6 uppercase text-green-400">Качество жизни</h3>
+                <p id="specialD" class="text-xl font-light leading-relaxed relative z-10">Несмотря на ограниченность реформ, 60-е годы стали временем самого стабильного роста благосостояния граждан.</p>
+                <div class="absolute -bottom-10 -right-10 text-[20rem] opacity-5 pointer-events-none">✨</div>
             </div>
         </div>
-
     </main>
-
-    <footer class="mt-20 py-20 bg-black border-t border-amber-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6 text-zinc-600">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-zinc-500">
-                «Кыпчаки стали океаном Степи, в котором растворились древние племена, чтобы дать рождение современному облику Евразии.»
-            </p>
-            <div class="mt-10 h-1 w-24 bg-amber-900 mx-auto rounded-full"></div>
-        </div>
-    </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Кыпчакское ханство (начало XI в. – 1219 г.)",
-                vizTitle: "Дешт-и-Кыпчак: Великая Система",
-                vizDesc: "Ханство делилось на два мощных крыла, контролировавших Степь. Нажмите на центры влияния на карте для изучения структуры.",
-                badge: "Анализ политической структуры",
-                zoneTitleDefault: "Начните исследование",
-                zoneDescDefault: "Кликните на Правое крыло, Левое крыло или Центр на схеме.",
-                planTitle: "Эпоха Половецкого Поля",
-                tag1: "Династия", tag2: "Геополитика", tag3: "Культура",
-                c1T: "Род Эль-Бори", c1D: "Правящая знать. Ханы считались преемниками власти кимаков. Иерархия общества включала ханов, беков и свободных кочевников-воинов.",
-                c2T: "Границы Державы", c2D: "Крупнейшее государство кочевников до XIII века. Дешт-и-Кыпчак простирался от Алтая на востоке до низовий Дуная на западе.",
-                c3T: "Каменные Изваяния", c3D: "Балбалы кыпчаков — шедевры каменной пластики. Они детально передавали облик воинов, становясь летописью моды и вооружения эпохи.",
-                endT: "Закат перед бурей", endD: "В 1219 году империя Чингисхана нанесла сокрушительный удар. Кыпчаки стали этническим фундаментом Золотой Орды.",
-                footer: "«Кыпчаки стали океаном Степи, в котором растворились древние племена, чтобы дать рождение современному облику Евразии.»",
-                zones: {
-                    right: { name: "Правое крыло (Западное)", text: "Ставка на реке Урал (Жайык), позже в низовьях Волги. Контролировало земли до Дуная. Опора власти на западе." },
-                    left: { name: "Левое крыло (Восточное)", text: "Ставка в городе Сыгнак на Сырдарье. Основное ядро ханства, контролировавшее Центральный и Южный Казахстан." },
-                    center: { name: "Ханская Орда", text: "Верховная власть династии Эль-Бори. Здесь принимались стратегические решения и координировались походы." }
-                }
+                period: "1960-е годы", title: "Реформы и Соцразвитие", desc: "Попытки преобразований и рост уровня жизни",
+                f1T: "Реформа 1965", f1D: "Попытка внедрения хозрасчета и материального стимулирования рабочих (реформа А. Косыгина).",
+                f2T: "Жилье", f2D: "Массовое строительство «хрущевок». Тысячи семей впервые получили отдельные квартиры с удобствами.",
+                f3T: "Быт", f3D: "Развитие сферы бытового обслуживания, открытие новых дворцов культуры и спортивных арен.",
+                chartTitle: "Ввод жилья (усл. ед.)", specialTitle: "Качество жизни",
+                specialD: "Несмотря на ограниченность реформ, 60-е годы стали временем самого стабильного роста благосостояния граждан."
             },
             kz: {
-                title: "Қыпшақ хандығы (ХІ ғ. басы – 1219 ж.)",
-                vizTitle: "Дешті Қыпшақ: Ұлы Жүйе",
-                vizDesc: "Хандық Даланы бақылайтын екі қуатты қанатқа бөлінді. Сызбадағы ықпал ету орталықтарын басып, құрылымын зерттеңіз.",
-                badge: "Саяси құрылымды талдау",
-                zoneTitleDefault: "Зерттеуді бастаңыз",
-                zoneDescDefault: "Оң қанат, Сол қанат немесе Орталықты басыңыз.",
-                planTitle: "Қыпшақ даласының дәуірі",
-                tag1: "Әулет", tag2: "Геосаясат", tag3: "Мәдениет",
-                c1T: "Ел-бөрі руы", c1D: "Билеуші ақсүйектер. Хандар қимақтардың билік мұрагері саналды. Қоғам иерархиясы хандардан, бектерден және еркін жауынгерлерден тұрды.",
-                c2T: "Мемлекет шекарасы", c2D: "ХІІІ ғасырға дейінгі ең ірі көшпелілер мемлекеті. Дешті Қыпшақ шығыста Алтайдан батыста Дунайға дейін созылып жатты.",
-                c3T: "Тас мүсіндер", c3D: "Қыпшақ балбалдары — тас қашау өнерінің жауһары. Олар жауынгерлердің бейнесін дәл беріп, дәуірдің қару-жарақ шежіресіне айналды.",
-                endT: "Дауыл алдындағы тыныштық", endD: "1219 жылы Шыңғыс хан империясы жойқын соққы берді. Қыпшақтар Алтын Орданың этникалық негізіне айналды.",
-                footer: "«Қыпшақтар ежелгі тайпаларды тоғыстырып, Еуразияның заманауи келбетіне жол ашқан Дала мұхиты болды.»",
-                zones: {
-                    right: { name: "Оң қанат (Батыс)", text: "Ордасы Жайық өзенінде, кейін Еділдің төменгі ағысында болды. Дунайға дейінгі жерлерді бақылады." },
-                    left: { name: "Сол қанат (Шығыс)", text: "Ордасы Сырдария бойындағы Сығанақ қаласында болды. Орталық және Оңтүстік Қазақстанды бақылаған негізгі өзек." },
-                    center: { name: "Хан Ордасы", text: "Ел-бөрі әулетінің жоғарғы билігі. Мұнда стратегиялық шешімдер қабылданып, жорықтар үйлестірілді." }
-                }
+                period: "1960-жылдар", title: "Реформалар және Әлеуметтік даму", desc: "Өзгерістер әрекеті және өмір сүру деңгейінің артуы",
+                f1T: "1965 ж. реформасы", f1D: "Шаруашылық есепті және жұмысшыларды материалдық ынталандыруды енгізу әрекеті (Косыгин реформасы).",
+                f2T: "Тұрғын үй", f2D: "«Хрущевкаларды» жаппай салу. Мыңдаған отбасы алғаш рет барлық жағдайы бар жеке пәтерлерге ие болды.",
+                f3T: "Тұрмыс", f3D: "Тұрмыстық қызмет көрсету саласын дамыту, жаңа мәдениет сарайлары мен спорт ареналарын ашу.",
+                chartTitle: "Тұрғын үй салу динамикасы", specialTitle: "Өмір сапасы",
+                specialD: "Реформалардың шектеулілігіне қарамастан, 60-жылдар азаматтардың әл-ауқаты ең тұрақты өскен уақыт болды."
             },
             en: {
-                title: "Kipchak Khanate (early 11th c. – 1219 AD)",
-                vizTitle: "Desht-i-Kipchak: The Great System",
-                vizDesc: "The Khanate was divided into two powerful wings controlling the Steppe. Click on markers to study the administration.",
-                badge: "Political Structure Analysis",
-                zoneTitleDefault: "Start exploration",
-                zoneDescDefault: "Click on Right Wing, Left Wing, or the Center on the diagram.",
-                planTitle: "The Era of the Polovtsian Field",
-                tag1: "Dynasty", tag2: "Geopolitics", tag3: "Culture",
-                c1T: "El-borli Clan", c1D: "The ruling elite. The Khans were seen as successors to Kimak power. Society was strictly organized into nobles, warriors, and commoners.",
-                c2T: "Imperial Borders", c2D: "The largest nomadic state until the 13th century. Desht-i-Kipchak stretched from the Altai to the lower Danube.",
-                c3T: "Stone Statues", c3D: "Kipchak balbals are masterpieces of stone carving. They accurately depicted warrior equipment, serving as a visual chronicle of the era.",
-                endT: "Decline Before the Storm", endD: "In 1219, Genghis Khan's invasion shattered the state. Kipchaks became the ethnic foundation of the Golden Orda.",
-                footer: "«The Kipchaks became the ocean of the Steppe, absorbing ancient tribes to give birth to the modern face of Eurasia.»",
-                zones: {
-                    right: { name: "Right Wing (Western)", text: "HQ on the Ural River, later lower Volga. Controlled lands up to the Danube. The western power base." },
-                    left: { name: "Left Wing (Eastern)", text: "HQ in the city of Sygnak on Syr Darya. The core region controlling Central and Southern Kazakhstan." },
-                    center: { name: "Khan's Headquarters", text: "Supreme authority of the El-borli dynasty. Strategic decisions and campaign coordination happened here." }
-                }
+                period: "1960s", title: "Reforms & Social Development", desc: "Transformation Attempts and Quality of Life",
+                f1T: "1965 Reform", f1D: "An attempt to introduce self-financing and material incentives for workers (Kosygin reform).",
+                f2T: "Housing", f2D: "Mass construction of 'Khrushchyovkas'. Thousands of families received private apartments for the first time.",
+                f3T: "Amenities", f3D: "Development of consumer services, opening of new cultural centers and sports arenas.",
+                chartTitle: "Housing Construction Units", specialTitle: "Quality of Life",
+                specialD: "Despite the limitations of the reforms, the 60s were a time of most stable growth in citizen well-being."
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('structureCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 500;
-            drawStructure();
-        }
-
-        function drawStructure() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Connection lines
-            ctx.strokeStyle = 'rgba(217, 119, 6, 0.2)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([10, 10]);
-            ctx.beginPath();
-            ctx.moveTo(cx - 200 * scale, cy + 50 * scale);
-            ctx.lineTo(cx, cy - 100 * scale);
-            ctx.lineTo(cx + 200 * scale, cy + 50 * scale);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // 2. Right Wing (West)
-            drawNode(cx - 200 * scale, cy + 50 * scale, 70 * scale, '#b45309', "RIGHT WING", "West");
-            
-            // 3. Left Wing (East)
-            drawNode(cx + 200 * scale, cy + 50 * scale, 70 * scale, '#d97706', "LEFT WING", "East");
-
-            // 4. Central Khan Power
-            drawNode(cx, cy - 100 * scale, 90 * scale, '#f59e0b', "KHAN", "El-borli");
-
-            // Interactive hint
-            ctx.fillStyle = 'rgba(245, 158, 11, 0.3)';
-            ctx.font = 'bold 10px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText("TAP ON NODES TO ANALYZE STRUCTURE", cx, 40 * scale);
-        }
-
-        function drawNode(x, y, r, color, label, sublabel) {
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, Math.PI * 2);
-            ctx.fillStyle = color + '22';
-            ctx.fill();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 4;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = `bold ${12 * (r/70)}px Montserrat`;
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x, y);
-            
-            ctx.fillStyle = color;
-            ctx.font = `bold ${10 * (r/70)}px Inter`;
-            ctx.fillText(sublabel, x, y + 20);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            let found = null;
-            if (Math.sqrt((x-cx)**2 + (y-(cy-100*scale))**2) < 90*scale) found = 'center';
-            else if (Math.sqrt((x-(cx-200*scale))**2 + (y-(cy+50*scale))**2) < 70*scale) found = 'right';
-            else if (Math.sqrt((x-(cx+200*scale))**2 + (y-(cy+50*scale))**2) < 70*scale) found = 'left';
-
-            if (found) {
-                const info = translations[currentLang].zones[found];
-                document.getElementById('zone-title').innerText = info.name;
-                document.getElementById('zone-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#f59e0b';
-            }
-        });
+        let activeChart = null;
 
         function setLang(lang) {
-            currentLang = lang;
+            ['ru', 'kz', 'en'].forEach(l => document.getElementById(`lang-${l}`).classList.toggle('lang-active', l === lang));
             const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('zone-title').innerText = t.zoneTitleDefault;
-            document.getElementById('zone-desc').innerText = t.zoneDescDefault;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            
-            document.getElementById('tag-1').innerText = t.tag1;
-            document.getElementById('tag-2').innerText = t.tag2;
-            document.getElementById('tag-3').innerText = t.tag3;
-
-            document.getElementById('end-t').innerText = t.endT;
-            document.getElementById('end-d').innerText = t.endD;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
-            });
-            resizeCanvas();
+            document.getElementById('period').innerText = t.period;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('f1T').innerText = t.f1T; document.getElementById('f1D').innerText = t.f1D;
+            document.getElementById('f2T').innerText = t.f2T; document.getElementById('f2D').innerText = t.f2D;
+            document.getElementById('f3T').innerText = t.f3T; document.getElementById('f3D').innerText = t.f3D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('specialTitle').innerText = t.specialTitle;
+            document.getElementById('specialD').innerText = t.specialD;
+            renderChart();
         }
 
-        window.onload = () => { resizeCanvas(); setLang('ru'); };
-        window.onresize = resizeCanvas;
+        function renderChart() {
+            const ctx = document.getElementById('reformsChart').getContext('2d');
+            if (activeChart) activeChart.destroy();
+            activeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1960', '1962', '1964', '1966', '1968', '1970'],
+                    datasets: [{
+                        label: 'Жилье',
+                        data: [10, 25, 45, 65, 85, 120],
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        window.onload = () => setLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -622,5 +370,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

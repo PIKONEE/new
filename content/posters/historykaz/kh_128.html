@@ -3,332 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карлукский каганат (756–940 гг.)</title>
+    <title>Плакат: Трудности и НЭП</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .karluk-gradient {
-            background: radial-gradient(circle at bottom left, #064e3b, #0f172a 80%);
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; padding: 40px 20px; }
+        h1, h2, h3, .poster-title { font-family: 'Montserrat', sans-serif; }
+        
+        .poster-canvas {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fffbeb;
+            padding: 60px 40px;
+            border: 15px solid #92400e;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            position: relative;
+            min-height: 1100px;
         }
 
-        .city-panel {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(15px);
-            border-radius: 3rem;
-            border: 1px solid rgba(52, 211, 153, 0.2);
-            transition: all 0.4s ease;
+        .lang-active { background: #92400e !important; color: white !important; }
+
+        .stamp {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            border: 4px double #92400e;
+            padding: 5px 15px;
+            color: #92400e;
+            font-weight: 900;
+            transform: rotate(5deg);
+            text-transform: uppercase;
+            font-size: 12px;
+            opacity: 0.6;
         }
 
-        .city-panel:hover {
-            border-color: #34d399;
-            box-shadow: 0 0 40px rgba(52, 211, 153, 0.1);
-        }
-
-        .lang-active {
-            background-color: #34d399;
-            color: #064e3b;
-            box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: rgba(2, 6, 23, 0.5);
-        }
-
-        .fact-card {
-            background: rgba(15, 23, 42, 0.7);
-            border-left: 4px solid #34d399;
-            padding: 1.5rem;
-            border-radius: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .fact-card:hover {
-            transform: translateX(10px);
-            background: rgba(30, 41, 59, 0.8);
-        }
-
-        .highlight-box {
-            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-            border-radius: 2.5rem;
-            padding: 2.5rem;
-        }
+        .fade-in { animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="karluk-gradient min-h-screen pb-20">
+<body class="lang-ru">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-slate-900/80 backdrop-blur p-1 rounded-full border border-white/20">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-4 py-1 rounded-full text-xs font-bold text-white transition">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-4 py-1 rounded-full text-xs font-bold text-white transition">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-4 py-1 rounded-full text-xs font-bold text-white transition">EN</button>
+    </div>
 
-
-    <!-- Header (No emoji) -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-emerald-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-emerald-400">Карлукский каганат (756–940 гг.)</h1>
-            <div class="flex bg-slate-900 p-1 rounded-xl border border-emerald-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+    <div class="poster-canvas fade-in">
+        <div id="stamp" class="stamp">Трудный путь: 1921-1928</div>
         
-        <!-- Section 1: Interactive Tribal Map (The Map replacement) -->
-        <div class="city-panel p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-4 space-y-8">
-                    <div id="badge" class="inline-block border border-emerald-400 text-emerald-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Expansion Analysis</div>
-                    <h2 id="viz-title" class="text-3xl font-black text-white leading-tight uppercase italic">Держава трех племен</h2>
-                    <p id="viz-desc" class="text-slate-400 font-light leading-relaxed text-sm">
-                        Карлуки занимали ключевые земли Семиречья после падения тюргешей. Нажмите на центры влияния на карте справа, чтобы изучить структуру государства.
-                    </p>
-                    
-                    <div id="info-panel" class="p-6 rounded-[2.5rem] bg-emerald-950/20 border-l-8 border-emerald-500 transition-all duration-500">
-                        <h3 id="zone-title" class="text-lg font-bold text-white mb-2 uppercase">Исследование карты</h3>
-                        <p id="zone-desc" class="text-slate-300 text-xs leading-relaxed italic">Кликните на Суяб, Тараз или горы Алтая.</p>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[450px]">
-                    <canvas id="karlukCanvas"></canvas>
-                    <div class="absolute bottom-8 right-10 text-[10px] text-emerald-900 font-mono uppercase tracking-[0.3em]">Geopolitical Sphere of Influence</div>
-                </div>
-            </div>
+        <div class="border-b-4 border-amber-900 pb-10 mb-10">
+            <h1 id="title" class="poster-title text-5xl md:text-6xl uppercase tracking-tighter leading-none mb-4 text-amber-900">Трудности новой жизни и НЭП</h1>
         </div>
 
-        <!-- Section 2: Detailed History (The Plan) -->
         <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-emerald-500">Политическое устройство</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                
-                <!-- Social & Origins -->
-                <div class="space-y-6">
-                    <div class="fact-card">
-                        <h4 id="f1-t" class="text-emerald-400 font-bold uppercase text-sm mb-2">Состав «Уч Карлук»</h4>
-                        <p id="f1-d" class="text-slate-400 text-sm">Объединение трех племен: **Булак**, **Чигиль** и **Ташлык**. К VIII веку они стали мощнейшей силой в Семиречье.</p>
-                    </div>
-                    <div class="fact-card">
-                        <h4 id="f2-t" class="text-emerald-400 font-bold uppercase text-sm mb-2">Титулатура</h4>
-                        <p id="f2-d" class="text-slate-400 text-sm">Глава карлуков носил титул **Джабгу**, а с 840 года (после падения Уйгурского каганата) правитель Бильге Кул Кадыр-хан принял высший титул **Каган**.</p>
-                    </div>
-                    <div class="fact-card">
-                        <h4 id="f3-t" class="text-emerald-400 font-bold uppercase text-sm mb-2">Города и Торговля</h4>
-                        <p id="f3-d" class="text-slate-400 text-sm">В составе каганата было 25 городов. Крупнейшие — Суяб, Тараз, Кулан. Карлуки контролировали караванные пути, что привело к быстрому росту оседлости.</p>
-                    </div>
-                </div>
+            <section class="bg-red-700 text-white p-10 rounded-[4rem] text-center shadow-2xl">
+                 <h2 id="sec1T" class="text-3xl font-black uppercase mb-4">Трагедия Голода 1921-1922</h2>
+                 <p id="sec1D" class="text-2xl font-black">2.3 млн человек пострадали от голода. Засуха и последствия продразверстки поставили край на грань вымирания.</p>
+            </section>
 
-                <!-- Strategic Alliances -->
-                <div class="highlight-box flex flex-col justify-center border border-emerald-500/20">
-                    <h3 id="strat-t" class="text-2xl font-black text-white mb-6 uppercase italic">Борьба за господство</h3>
-                    <p id="strat-d" class="text-emerald-50 text-lg font-light leading-relaxed mb-8">
-                        Карлуки 20 лет воевали с уйгурами за наследство тюрков. В союзе с киргизами они нанесли сокрушительное поражение Уйгурскому каганату в 840 году. Именно в этот период началось формирование фундамента будущей династии Караханидов.
-                    </p>
-                    <div class="flex gap-4">
-                        <div class="px-4 py-1 bg-white/10 rounded-full text-[10px] font-black uppercase text-emerald-300">840 AD Rise</div>
-                        <div class="px-4 py-1 bg-white/10 rounded-full text-[10px] font-black uppercase text-emerald-300">Talas Victory</div>
-                    </div>
+            <section class="bg-white p-10 rounded-[3rem] shadow-sm border border-amber-200">
+                <h2 id="sec2T" class="text-2xl font-black uppercase text-amber-900 mb-8 text-center">Смена Экономического Курса</h2>
+                <div id="table" class="grid grid-cols-2 gap-px bg-amber-200 rounded-2xl overflow-hidden shadow-inner">
+                    <!-- Table via JS -->
                 </div>
+            </section>
 
-            </div>
+            <section class="flex gap-10 items-center p-6">
+                <div class="text-8xl filter drop-shadow-lg">📚</div>
+                <div>
+                    <h2 id="sec3T" class="text-2xl font-black uppercase text-amber-900 mb-2">Ликбез и Культура</h2>
+                    <p id="sec3D" class="text-lg font-medium text-amber-800 leading-relaxed italic">«Красные караваны» несли грамоту и медицину в отдаленные аулы. Создание обществ «Долой неграмотность» по всей стране.</p>
+                </div>
+            </section>
         </div>
 
-    </main>
-
-    <footer class="mt-20 py-24 bg-black border-t border-emerald-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
-                «Карлуки стали связующим звеном между великими тюркскими империями и эпохой исламского Ренессанса в Центральной Азии.»
-            </p>
-        </div>
-    </footer>
+        <footer class="absolute bottom-10 left-10 right-10 flex justify-between items-center pt-6 border-t border-amber-200">
+            <span class="text-[10px] font-black uppercase tracking-widest text-amber-500">Digital History Museum</span>
+            <span class="text-[10px] font-black uppercase tracking-widest text-amber-500">Poster No. 03</span>
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Карлукский каганат (756–940 гг.)",
-                vizTitle: "Держава трех племен",
-                vizDesc: "Карлуки объединили кочевые традиции и городскую культуру Семиречья. Нажмите на точки интереса на карте для изучения регионов.",
-                badge: "Анализ экспансии",
-                zoneDefaultT: "Исследование карты",
-                zoneDefaultD: "Кликните на Суяб, Тараз или горы Алтая.",
-                planTitle: "Политическое устройство",
-                f1T: "Состав «Уч Карлук»", f1D: "Союз трех племен: Булак, Чигиль и Ташлык. В VIII веке они стали наследниками власти тюргешей в Жетысу.",
-                f2T: "Титулатура", f2D: "Первоначально правитель именовался Джабгу. После 840 года правитель Испиджаба принял титул Кагана, заявив о праве на всю Степь.",
-                f3T: "Города и Торговля", f3D: "В каганате насчитывалось 25 городов. Контроль над Шелковым путем сделал карлуков богатейшей силой региона.",
-                stratT: "Борьба за господство", stratD: "После падения Уйгурского каганата в 840 году карлуки стали доминирующей силой. Это время активного проникновения ислама и развития тюркской письменности.",
-                footer: "«Карлуки стали связующим звеном между великими тюркскими империями и эпохой исламского Ренессанса.»",
-                zones: {
-                    altay: { name: "Алтай: Родина", text: "Место первоначального расселения племен до миграции в Семиречье в середине VIII века." },
-                    suyab: { name: "Суяб: Первая столица", text: "Главный политический и торговый центр. Здесь располагалась ставка карлукских джабгу." },
-                    taraz: { name: "Тараз: Город купцов", text: "Важнейший узел Шелкового пути. Центр ремесла, чеканки монет и дипломатических встреч." }
-                }
+                stamp: 'Трудный путь: 1921-1928',
+                title: 'Трудности новой жизни и НЭП',
+                sec1T: 'Трагедия Голода 1921-1922',
+                sec1D: '2.3 млн человек пострадали от голода. Засуха и последствия продразверстки поставили край на грань вымирания.',
+                sec2T: 'Смена Экономического Курса',
+                table: [
+                    ['Военный Коммунизм', 'НЭП (Новая политика)'],
+                    ['Изъятие хлеба (Разверстка)', 'Продовольственный налог'],
+                    ['Запрет торговли', 'Рынок и ярмарки'],
+                    ['Принудительный труд', 'Свободный наем']
+                ],
+                sec3T: 'Ликбез и Культура',
+                sec3D: '«Красные караваны» несли грамоту и медицину в отдаленные аулы. Создание обществ «Долой неграмотность» по всей стране.'
             },
             kz: {
-                title: "Қарлұқ қағанаты (756–940 жж.)",
-                vizTitle: "Үш тайпа мемлекеті",
-                vizDesc: "Қарлұқтар Жетісудың көшпелі дәстүрлері мен қала мәдениетін біріктірді. Картадағы нүктелерді басып, аймақтарды зерттеңіз.",
-                badge: "Экспансия талдауы",
-                zoneDefaultT: "Картаны зерттеу",
-                zoneDefaultD: "Суяб, Тараз немесе Алтай тауларын басыңыз.",
-                planTitle: "Саяси құрылым",
-                f1T: "«Үш қарлұқ» құрамы", f1D: "Бұлақ, Шігіл және Ташлық тайпаларының одағы. VIII ғасырда олар Жетісудағы түргештердің мұрагері болды.",
-                f2T: "Лауазымдар", f2D: "Бастапқыда билеуші Жабғы деп аталды. 840 жылдан кейін Испиджаб билеушісі Қаған лауазымын қабылдады.",
-                f3T: "Қалалар мен Сауда", f3D: "Қағанатта 25 қала болған. Жібек жолын бақылау қарлұқтарды аймақтағы ең бай күшке айналдырды.",
-                stratT: "Үстемдік үшін күрес", stratD: "840 жылы Ұйғыр қағанаты құлағаннан кейін қарлұқтар негізгі күшке айналды. Бұл исламның таралуы мен түркі жазуының даму кезеңі.",
-                footer: "«Қарлұқтар ұлы түркі империялары мен Орталық Азиядағы исламдық Ренессанс дәуірі арасындағы байланыстырушы буын болды.»",
-                zones: {
-                    altay: { name: "Алтай: Отан", text: "VIII ғасырдың ортасында Жетісуға көшкенге дейінгі тайпалардың алғашқы қоныстанған жері." },
-                    suyab: { name: "Суяб: Бірінші астана", text: "Басты саяси және сауда орталығы. Мұнда қарлұқ жабғыларының ордасы орналасты." },
-                    taraz: { name: "Тараз: Көпестер қаласы", text: "Жібек жолының маңызды торабы. Қолөнер, монета соғу және дипломатиялық кездесулер орталығы." }
-                }
+                stamp: 'Қиын жол: 1921-1928',
+                title: 'Жаңа өмірдің қиындықтары мен ЖЭС',
+                sec1T: '1921-1922 жылдардағы Аштық қасіреті',
+                sec1D: '2.3 млн адам аштықтан зардап шекті. Қуаңшылық пен азық-түлік салғырты өлкені құру алдына әкелді.',
+                sec2T: 'Экономикалық бағыттың өзгеруі',
+                table: [
+                    ['Әскери Коммунизм', 'ЖЭС (Жаңа саясат)'],
+                    ['Азық-түлік салғырты', 'Азық-түлік салығы'],
+                    ['Саудаға тыйым салу', 'Нарық пен жәрмеңкелер'],
+                    ['Мәжбүрлі еңбек', 'Еркін жалдау']
+                ],
+                sec3T: 'Сауатсыздықты жою',
+                sec3D: '«Қызыл керуендер» шалғай ауылдарға сауаттылық пен медицина әкелді. «Сауатсыздық жойылсын» қоғамдары құрылды.'
             },
             en: {
-                title: "Karluk Khaganate (756–940 AD)",
-                vizTitle: "Power of Three Tribes",
-                vizDesc: "The Karluks merged nomadic traditions with the urban culture of Zhetysu. Click on map markers to explore regions.",
-                badge: "Expansion Analysis",
-                zoneDefaultT: "Map Research",
-                zoneDefaultD: "Click on Suyab, Taraz, or the Altai Mountains.",
-                planTitle: "Political Structure",
-                f1T: "The 'Uch Karluk' Union", f1D: "A union of Bulak, Chigil, and Tashlyk tribes. In the 8th c., they became heirs to Turgish power in Zhetysu.",
-                f2T: "Titular System", f2D: "Initially, the ruler was Jabgu. After 840 AD, Bilge Kul Qadir-khan adopted the supreme title of Khagan.",
-                f3T: "Cities and Trade", f3D: "There were 25 cities in the state. Control over the Silk Road made the Karluks the wealthiest force in the region.",
-                stratT: "Struggle for Hegemony", stratD: "Following the fall of the Uyghur Khaganate in 840 AD, the Karluks became dominant. This era saw the rise of Islam and Turkic literature.",
-                footer: "«The Karluks served as a link between the great Turkic empires and the era of the Islamic Renaissance.»",
-                zones: {
-                    altay: { name: "Altai: Homeland", text: "The original settlement area before migrating to Semirechye in the mid-8th century." },
-                    suyab: { name: "Suyab: First Capital", text: "The primary political and trade hub, housing the headquarters of the Karluk Jabgus." },
-                    taraz: { name: "Taraz: City of Merchants", text: "A vital Silk Road junction. A center for crafts, minting, and diplomatic meetings." }
-                }
+                stamp: 'Hard Path: 1921-1928',
+                title: 'Hardships of New Life and NEP',
+                sec1T: 'Tragedy of the Famine 1921-1922',
+                sec1D: '2.3 million people suffered from famine. Drought and the surplus-appropriation system put the region at risk.',
+                sec2T: 'Shift in Economic Course',
+                table: [
+                    ['War Communism', 'NEP (New Policy)'],
+                    ['Forced Requisitioning', 'Tax in Kind (fixed)'],
+                    ['Ban on private trade', 'Markets and Fairs'],
+                    ['Forced Labor', 'Free Employment']
+                ],
+                sec3T: 'Literacy Campaign',
+                sec3D: '"Red Caravans" brought literacy and medicine to remote auls. "Down with Illiteracy" societies were created.'
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('karlukCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 450;
-            drawMap();
-        }
-
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // Territory Outline (Abstract)
-            ctx.beginPath();
-            ctx.moveTo(100 * scale, 300 * scale);
-            ctx.lineTo(300 * scale, 150 * scale);
-            ctx.lineTo(600 * scale, 100 * scale);
-            ctx.lineTo(700 * scale, 400 * scale);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(52, 211, 153, 0.05)';
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(52, 211, 153, 0.2)';
-            ctx.setLineDash([5, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Regions
-            drawMarker(150 * scale, 100 * scale, '#34d399', 'Altai');
-            drawMarker(350 * scale, 320 * scale, '#10b981', 'Suyab');
-            drawMarker(280 * scale, 380 * scale, '#059669', 'Taraz');
-
-            // Migration path
-            ctx.beginPath();
-            ctx.moveTo(150 * scale, 120 * scale);
-            ctx.quadraticCurveTo(250 * scale, 200 * scale, 330 * scale, 310 * scale);
-            ctx.strokeStyle = '#34d399';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
-
-        function drawMarker(x, y, color, label) {
-            ctx.beginPath();
-            ctx.arc(x, y, 10 * canvas.width / 800, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.stroke();
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '10px monospace';
-            ctx.fillText(label, x + 15, y + 5);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const scale = canvas.width / 800;
-
-            let found = null;
-            if (Math.sqrt((x - 150*scale)**2 + (y - 100*scale)**2) < 20) found = 'altay';
-            else if (Math.sqrt((x - 350*scale)**2 + (y - 320*scale)**2) < 20) found = 'suyab';
-            else if (Math.sqrt((x - 280*scale)**2 + (y - 380*scale)**2) < 20) found = 'taraz';
-
-            if (found) {
-                const info = translations[currentLang].zones[found];
-                document.getElementById('zone-title').innerText = info.name;
-                document.getElementById('zone-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = (found === 'altay' ? '#34d399' : '#059669');
-            }
-        });
-
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('zone-title').innerText = t.zoneDefaultT;
-            document.getElementById('zone-desc').innerText = t.zoneDefaultD;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('f1-t').innerText = t.f1T; document.getElementById('f1-d').innerText = t.f1D;
-            document.getElementById('f2-t').innerText = t.f2T; document.getElementById('f2-d').innerText = t.f2D;
-            document.getElementById('f3-t').innerText = t.f3T; document.getElementById('f3-d').innerText = t.f3D;
-            document.getElementById('strat-t').innerText = t.stratT;
-            document.getElementById('strat-d').innerText = t.stratD;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('.fixed button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            
+            const t = content[lang];
+            document.getElementById('stamp').innerText = t.stamp;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec3T').innerText = t.sec3T;
+            document.getElementById('sec3D').innerText = t.sec3D;
+            
+            const tableDiv = document.getElementById('table');
+            tableDiv.innerHTML = t.table.map((row, idx) => `
+                <div class="${idx === 0 ? 'bg-amber-900 text-white font-black' : 'bg-amber-50 font-bold'} p-4 border-b border-amber-200">${row[0]}</div>
+                <div class="${idx === 0 ? 'bg-amber-700 text-white font-black' : 'bg-white text-amber-900 font-black'} p-4 border-b border-amber-200">${row[1]}</div>
+            `).join('');
         }
 
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -568,5 +396,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

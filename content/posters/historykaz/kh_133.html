@@ -3,393 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Найманы, кереиты и жалаиры</title>
+    <title>Плакат: Общественно-политическая жизнь Казахстана</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #f5f5f4; }
+        body { font-family: 'Inter', sans-serif; background: #fdf2f8; color: #1e293b; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .parchment-gradient {
-            background: radial-gradient(circle at top right, #451a03, #0c0a09 85%);
-        }
-
-        .gold-panel {
-            background: rgba(28, 25, 23, 0.85);
-            backdrop-filter: blur(20px);
-            border-radius: 3rem;
-            border: 1px solid rgba(217, 119, 6, 0.3);
-            transition: all 0.5s ease;
-        }
-
-        .gold-panel:hover {
-            border-color: #fbbf24;
-            box-shadow: 0 0 50px rgba(251, 191, 36, 0.1);
-        }
-
-        .lang-active {
-            background-color: #fbbf24;
-            color: #451a03;
-            box-shadow: 0 0 25px rgba(251, 191, 36, 0.4);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: #1c1917;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
-        }
-
-        .fact-card {
-            background: rgba(41, 37, 36, 0.6);
-            border-top: 6px solid #d97706;
-            padding: 2.5rem;
-            border-radius: 2.5rem;
-            transition: all 0.4s ease;
-            height: 100%;
-        }
-
-        .fact-card:hover {
-            transform: translateY(-10px);
-            background: rgba(68, 64, 60, 0.8);
-            border-color: #fbbf24;
-        }
-
-        .term-badge {
-            background: #451a03;
-            color: #fcd34d;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .gold-glow {
-            text-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
-        }
+        .lang-active { background-color: #db2777 !important; color: white !important; font-weight: 900; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(190, 24, 93, 0.1); }
+        .social-grad { background: linear-gradient(135deg, #831843 0%, #db2777 100%); }
     </style>
 </head>
-<body class="parchment-gradient min-h-screen pb-20">
+<body class="pb-20">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-slate-900/80 backdrop-blur p-1 rounded-full border border-white/20">
+        <button onclick="setLang('ru')" id="lang-ru" class="lang-active w-10 h-10 rounded-full text-xs transition-all">RU</button>
+        <button onclick="setLang('kz')" id="lang-kz" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">KZ</button>
+        <button onclick="setLang('en')" id="lang-en" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">EN</button>
+    </div>
 
-
-    <!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-amber-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-amber-500">Найманы, кереиты и жалаиры (XII–XIII вв.)</h1>
-            <div class="flex bg-zinc-900 p-1 rounded-xl border border-amber-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+    <main class="max-w-6xl mx-auto px-6 mt-12 space-y-10">
+        <header class="p-16 rounded-[4rem] text-white text-center shadow-2xl relative overflow-hidden social-grad">
+            <div class="relative z-10">
+                <span id="period" class="inline-block bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 tracking-widest">Середина XX века</span>
+                <h1 id="title" class="text-4xl md:text-6xl font-black uppercase mb-4 leading-none">Общественно-политическая жизнь</h1>
+                <p id="desc" class="text-xl font-light opacity-90">Формирование современного облика республики</p>
             </div>
-        </div>
-    </header>
+            <div class="absolute top-0 right-0 text-[15rem] opacity-10 pointer-events-none font-black translate-x-1/4 -translate-y-1/4">👥</div>
+        </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Orda Layout (Custom Canvas) -->
-        <div class="gold-panel p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-amber-500 text-amber-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Orda Infrastructure Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Ставка Хана: Чертеж Государства</h2>
-                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
-                        Найманы, кереиты и жалаиры создали прообраз степной бюрократии. Нажмите на объекты внутри ханской ставки, чтобы узнать о достижениях каждого союза.
-                    </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-amber-950/20 border-l-8 border-amber-600 shadow-2xl transition-all duration-500">
-                        <h3 id="obj-title" class="text-xl font-bold text-amber-400 mb-3 uppercase tracking-tighter">Начните исследование</h3>
-                        <p id="obj-desc" class="text-zinc-300 text-sm leading-relaxed italic font-light">Кликните на шатер канцелярии, посольский зал или арсенал гвардии.</p>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="ordaCanvas"></canvas>
-                    <div class="absolute bottom-12 right-12 text-[10px] text-amber-900 font-mono uppercase tracking-[0.4em]">Strategic Camp Visualization</div>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-pink-800">
+                <h3 id="f1T" class="font-black uppercase mb-4 text-pink-900">Покорители космоса</h3>
+                <p id="f1D" class="text-sm leading-relaxed font-medium">1955 г. — начало строительства Байконура. Казахстан становится космической гаванью планеты.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-pink-800">
+                <h3 id="f2T" class="font-black uppercase mb-4 text-pink-900">Инфраструктура</h3>
+                <p id="f2D" class="text-sm leading-relaxed font-medium">Рост городов-спутников вокруг Караганды и Темиртау. Строительство «Казахстанской Магнитки».</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-pink-800">
+                <h3 id="f3T" class="font-black uppercase mb-4 text-pink-900">Рабочее движение</h3>
+                <p id="f3D" class="text-sm leading-relaxed font-medium">1959 г. — восстание рабочих в Темиртау. Сигнал о социальных проблемах форсированной индустриализации.</p>
             </div>
         </div>
 
-        <!-- Section 2: Comprehensive Regional Insights -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.5em] text-amber-500 gold-glow">Политические гиганты XII века</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                
-                <!-- Naimans Deep Dive -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-badge" id="tag-1">Интеллект</span></div>
-                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Администрация Найманов</h3>
-                    <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
-                        Найманы (от монг. «восемь») доминировали на Алтае. Они были самыми передовыми в плане госуправления: использовали **уйгурское письмо**, имели государственную печать и официальное делопроизводство. Именно найманские писцы (битикши) позже стали основой бюрократического аппарата Чингисхана.
-                    </p>
-                    <div class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Центр: Балыкты на Орхоне</div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl">
+                <h3 id="chartTitle" class="text-2xl font-black mb-6 uppercase text-pink-900">Сферы социального развития</h3>
+                <div class="h-[350px]">
+                    <canvas id="socialChart"></canvas>
                 </div>
-
-                <!-- Kereits Deep Dive -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-badge" id="tag-2">Дипломатия</span></div>
-                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Связи Кереитов</h3>
-                    <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
-                        Кереиты под властью Тогорила (Ван-хана) контролировали Центральную Монголию. Приняв **несторианство** в 1007 году, они установили контакты с Ближним Востоком. Ван-хан был настолько влиятелен, что в Европе возникла легенда о «пресвитере Иоанне» — могущественном христианском короле Востока.
-                    </p>
-                    <div class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Ставка: Хатун-балык</div>
-                </div>
-
-                <!-- Jalairs Deep Dive -->
-                <div class="fact-card">
-                    <div class="mb-4"><span class="term-badge" id="tag-3">Гвардия</span></div>
-                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Меч Жалаиров</h3>
-                    <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed mb-6">
-                        Жалаиры были признанной военной элитой. В иерархии кочевников они занимали посты воспитателей наследников престола. Их племена делились на 10 ответвлений, а лидеры, такие как **Мукали**, становились верховными главнокомандующими, управляя целыми регионами от имени верховного хана.
-                    </p>
-                    <div class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Роль: Личная гвардия (Кешик)</div>
-                </div>
-
             </div>
-
-            <!-- Full Width Focus: The Legacy -->
-            <div class="bg-zinc-900 rounded-[4rem] p-10 md:p-16 border border-amber-950 shadow-2xl relative overflow-hidden">
-                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h3 id="legacy-t" class="text-3xl font-black text-white mb-8 uppercase italic tracking-widest">Преемственность Империй</h3>
-                        <p id="legacy-d" class="text-zinc-400 text-xl font-light leading-relaxed mb-10">
-                            К началу XIII века эти три союза фактически подготовили почву для создания Монгольской империи. Найманы дали ей **письменность**, кереиты — **опыт дипломатии**, а жалаиры — **военный костяк**. После поражения Кучлук-хана (найман) и Ван-хана (кереит) эти племена вошли в состав империи, сохранив свой высокий аристократический статус.
-                        </p>
-                        <div class="flex gap-4">
-                            <div class="px-6 py-2 bg-amber-600/10 rounded-2xl border border-amber-600/30 text-xs font-black text-amber-500 uppercase">Уйгурское наследие</div>
-                            <div id="extra-tag" class="px-6 py-2 bg-amber-600/10 rounded-2xl border border-amber-600/30 text-xs font-black text-amber-500 uppercase">Шелковый путь</div>
-                        </div>
-                    </div>
-                    <div class="flex justify-center relative">
-                        <div class="w-80 h-80 border-4 border-double border-amber-900/40 rounded-full flex items-center justify-center animate-pulse">
-                            <div class="text-center">
-                                <div class="text-7xl mb-4">📜</div>
-                                <div id="sci-label" class="text-[10px] font-black uppercase text-amber-600 tracking-[0.5em]">Statehood</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute -top-20 -left-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">Spirit</div>
+            <div class="p-10 rounded-[3rem] shadow-2xl text-white flex flex-col justify-center relative overflow-hidden bg-slate-900">
+                <h3 id="specialTitle" class="text-3xl font-black mb-6 uppercase text-pink-400">Демографический сдвиг</h3>
+                <p id="specialD" class="text-xl font-light leading-relaxed relative z-10">В результате целины и индустриализации доля коренного населения в республике временно снизилась до 30%, что создало уникальный мультикультурный ландшафт.</p>
+                <div class="absolute -bottom-10 -right-10 text-[20rem] opacity-5 pointer-events-none italic">LIFE</div>
             </div>
         </div>
-
     </main>
-
-    <footer class="mt-20 py-20 bg-black border-t border-amber-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6 text-zinc-600">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-zinc-500">
-                «Найманы, кереиты и жалаиры превратили Степь из собрания племен в организованную силу, готовую управлять миром.»
-            </p>
-            <div class="mt-10 h-1 w-24 bg-amber-800 mx-auto rounded-full"></div>
-        </div>
-    </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Найманы, кереиты и жалаиры (XII–XIII вв.)",
-                vizTitle: "Ставка Хана: Чертеж Государства",
-                vizDesc: "Найманы, кереиты и жалаиры создали прообраз степной бюрократии. Нажмите на объекты ставки, чтобы узнать о достижениях союзов.",
-                badge: "Анализ инфраструктуры Орды",
-                objTitleDefault: "Начните исследование",
-                objDescDefault: "Кликните на шатер канцелярии, посольский зал или арсенал.",
-                planTitle: "Политические гиганты XII века",
-                tag1: "Интеллект", tag2: "Дипломатия", tag3: "Гвардия",
-                c1T: "Администрация Найманов", c1D: "Найманы славились уйгурским письмом и государственными печатями. Их образованность позволила им занять ключевые посты в канцелярии будущей империи Чингисхана.",
-                c2T: "Связи Кереитов", c2D: "Кереитская знать исповедовала несторианство, что давало им широкие дипломатические возможности. Ван-хан Тогорил был одним из самых почитаемых ханов Азии.",
-                c3T: "Меч Жалаиров", c3D: "Жалаиры были профессиональной военной элитой. Они служили доверенными лицами ханов и воспитателями наследников, формируя военную стратегию союзов.",
-                legacyT: "Преемственность Империй", legacyD: "В XII веке эти союзы объединили степные традиции с опытом оседлых цивилизаций. Их административный и военный ресурс стал фундаментом великих завоеваний XIII века.",
-                footer: "«Найманы, кереиты и жалаиры превратили Степь в организованную силу, готовую управлять миром.»",
-                objects: {
-                    archive: { name: "Шатер-Канцелярия (Найманы)", text: "Здесь хранились уйгурские свитки и государственные печати. Найманы внедрили систему официальных указов и учета населения, что было редкостью для кочевников." },
-                    throne: { name: "Посольский зал (Кереиты)", text: "Место приема византийских и китайских послов. Кереиты-христиане выступали культурным мостом между мирами, используя несторианскую письменность." },
-                    arsenal: { name: "Арсенал Гвардии (Жалаиры)", text: "Место хранения знамен и элитного оружия. Жалаиры отвечали за личную безопасность хана и подготовку элитных десятитысячных корпусов." }
-                }
+                period: "Середина XX века", title: "Общественно-политическая жизнь", desc: "Формирование современного облика республики",
+                f1T: "Покорители космоса", f1D: "1955 г. — начало строительства Байконура. Казахстан становится космической гаванью планеты.",
+                f2T: "Инфраструктура", f2D: "Рост городов-спутников вокруг Караганды и Темиртау. Строительство «Казахстанской Магнитки».",
+                f3T: "Рабочее движение", f3D: "1959 г. — восстание рабочих в Темиртау. Сигнал о социальных проблемах форсированной индустриализации.",
+                chartTitle: "Сферы социального развития", specialTitle: "Демографический сдвиг",
+                specialD: "В результате целины и индустриализации доля коренного населения в республике временно снизилась до 30%, что создало уникальный мультикультурный ландшафт.",
+                labels: ['Образование', 'Медицина', 'Жилье', 'Культура', 'Наука']
             },
             kz: {
-                title: "Найман, керейт және жалайырлар (XII–XIII ғғ.)",
-                vizTitle: "Хан Ордасы: Мемлекет жобасы",
-                vizDesc: "Наймандар, керейттер мен жалайырлар дала бюрократиясының үлгісін жасады. Орда нысандарын басып, одақтардың жетістіктерін біліңіз.",
-                badge: "Орда инфрақұрылымын талдау",
-                objTitleDefault: "Зерттеуді бастаңыз",
-                objDescDefault: "Кеңсе шатырын, елшілік залын немесе арсеналды басыңыз.",
-                planTitle: "XII ғасырдың саяси алпауыттары",
-                tag1: "Зерде", tag2: "Дипломатия", tag3: "Гвардия",
-                c1T: "Найман әкімшілігі", c1D: "Наймандар ұйғыр жазуымен және мемлекеттік мөрлерімен танымал болды. Олардың сауаттылығы Шыңғыс хан империясының кеңсесінде маңызды рөл атқарды.",
-                c2T: "Керейттер байланысы", c2D: "Керейт ақсүйектері несториандықты ұстанды, бұл оларға кең дипломатиялық мүмкіндіктер берді. Уаң хан Тоғұрыл Азияның ең сыйлы хандарының бірі болды.",
-                c3T: "Жалайыр семсері", c3D: "Жалайырлар кәсіби әскери элита болды. Олар хандардың сенімді адамдары және мұрагерлердің тәрбиешілері болып, әскери стратегияны қалыптастырды.",
-                legacyT: "Империялар сабақтастығы", legacyD: "XII ғасырда бұл одақтар дала дәстүрлерін отырықшы өркениеттер тәжірибесімен ұштастырды. Олардың ресурстары XIII ғасырдағы ұлы жаулаулардың негізі болды.",
-                footer: "«Найман, керейт және жалайырлар Даланы әлемді басқаруға дайын ұйымдасқан күшке айналдырды.»",
-                objects: {
-                    archive: { name: "Кеңсе-шатыр (Наймандар)", text: "Мұнда ұйғыр жазуындағы шиыршықтар мен мемлекеттік мөрлер сақталған. Наймандар ресми жарлықтар мен халықты есепке алу жүйесін енгізді." },
-                    throne: { name: "Елшілік залы (Керейттер)", text: "Византия мен Қытай елшілерін қабылдау орны. Христиан-керейттер несториан жазуын қолданып, әлемдер арасындағы мәдени көпір болды." },
-                    arsenal: { name: "Гвардия арсеналы (Жалайырлар)", text: "Тулар мен таңдаулы қарулар сақталатын орын. Жалайырлар ханның жеке қауіпсіздігіне және элитті әскерді даярлауға жауапты болды." }
-                }
+                period: "XX ғасырдың ортасы", title: "Қоғамдық-саяси өмір", desc: "Республиканың заманауи бейнесінің қалыптасуы",
+                f1T: "Ғарышкерлер", f1D: "1955 ж. — Байқоңыр құрылысының басталуы. Қазақстан планетаның ғарыш айлағына айналды.",
+                f2T: "Инфрақұрылым", f2D: "Қарағанды және Теміртау маңындағы серіктес қалалардың өсуі. «Қазақстан Магниткасының» құрылысы.",
+                f3T: "Жұмысшылар қозғалысы", f3D: "1959 ж. — Теміртаудағы жұмысшылар көтерілісі. Жедел индустрияландырудың әлеуметтік мәселелерінің белгісі.",
+                chartTitle: "Әлеуметтік даму салалары", specialTitle: "Демографиялық өзгеріс",
+                specialD: "Тың игеру және индустрияландыру нәтижесінде республикадағы жергілікті халықтың үлесі уақытша 30%-ға дейін төмендеді.",
+                labels: ['Білім', 'Медицина', 'Тұрғын үй', 'Мәдениет', 'Ғылым']
             },
             en: {
-                title: "Naimans, Kereits, and Jalairs (12th–13th centuries)",
-                vizTitle: "Khan's Orda: Blueprint of the State",
-                vizDesc: "Naimans, Kereits, and Jalairs created the prototype of steppe bureaucracy. Click on objects to explore their achievements.",
-                badge: "Orda Infrastructure Analysis",
-                objTitleDefault: "Start exploration",
-                objDescDefault: "Click on the chancellery, embassy hall, or armory.",
-                planTitle: "Political Giants of the 12th Century",
-                tag1: "Intelligence", tag2: "Diplomacy", tag3: "Guard",
-                c1T: "Naiman Administration", c1D: "Naimans were famous for their Uighur script and state seals. Their high level of literacy secured them key administrative posts in later empires.",
-                c2T: "Kereit Diplomacy", c2D: "The Kereit elite practiced Nestorianism, providing wide diplomatic reach. Wang Khan Toghrul was one of Asia's most respected leaders.",
-                c3T: "The Jalair Sword", c3D: "Jalairs were a professional military elite. They served as royal confidants and tutors to heirs, shaping the military strategy of the steppe.",
-                legacyT: "Imperial Continuity", legacyD: "In the 12th century, these unions merged steppe traditions with settled civilizations' experience, creating a foundation for the 13th-century world dominance.",
-                footer: "«Naimans, Kereits, and Jalairs transformed the Steppe into an organized force ready to rule the world.»",
-                objects: {
-                    archive: { name: "Chancellery Tent (Naimans)", text: "Housed Uighur scrolls and state seals. Naimans introduced official edicts and census systems, a rarity for nomads." },
-                    throne: { name: "Embassy Hall (Kereits)", text: "A place for receiving Byzantine and Chinese envoys. Christian Kereits acted as a cultural bridge using Nestorian script." },
-                    arsenal: { name: "Guard's Armory (Jalairs)", text: "Stored standards and elite weaponry. Jalairs were responsible for the Khan's personal security and elite corps training." }
-                }
+                period: "Mid-20th Century", title: "Socio-political Life", desc: "Shaping the Modern Face of the Republic",
+                f1T: "Space Pioneers", f1D: "1955 — start of Baikonur construction. Kazakhstan becomes the planet's space harbor.",
+                f2T: "Infrastructure", f2D: "Growth of satellite cities around Karaganda and Temirtau. Construction of the 'Kazakhstan Magnitka'.",
+                f3T: "Labor Movement", f3D: "1959 — workers' uprising in Temirtau. A signal of social issues from forced industrialization.",
+                chartTitle: "Social Development Spheres", specialTitle: "Demographic Shift",
+                specialD: "As a result of Virgin Lands and industrialization, the proportion of the indigenous population temporarily dropped to 30%.",
+                labels: ['Education', 'Medicine', 'Housing', 'Culture', 'Science']
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('ordaCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 500;
-            drawOrda();
-        }
-
-        function drawOrda() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Central Golden Yurt (The Main Court)
-            drawBuilding(cx, cy - 20 * scale, 80 * scale, '#d97706', "MAIN COURT");
-
-            // 2. Left Archive (Naimans)
-            drawBuilding(cx - 200 * scale, cy + 100 * scale, 60 * scale, '#fbbf24', "ARCHIVE");
-
-            // 3. Right Arsenal (Jalairs)
-            drawBuilding(cx + 200 * scale, cy + 100 * scale, 60 * scale, '#92400e', "ARSENAL");
-
-            // 4. Connectors
-            ctx.setLineDash([5, 10]);
-            ctx.strokeStyle = 'rgba(251, 191, 36, 0.2)';
-            ctx.beginPath();
-            ctx.moveTo(cx - 140 * scale, cy + 80 * scale); ctx.lineTo(cx - 50 * scale, cy + 10 * scale);
-            ctx.moveTo(cx + 140 * scale, cy + 80 * scale); ctx.lineTo(cx + 50 * scale, cy + 10 * scale);
-            ctx.stroke();
-
-            // Instructions
-            ctx.setLineDash([]);
-            ctx.fillStyle = 'rgba(251, 191, 36, 0.2)';
-            ctx.font = 'bold 10px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText("TAP ON HEADQUARTERS TO ANALYZE", cx, 40 * scale);
-        }
-
-        function drawBuilding(x, y, r, color, label) {
-            // Isometric Yurt Shape
-            ctx.beginPath();
-            ctx.moveTo(x - r, y + r/2);
-            ctx.lineTo(x, y - r);
-            ctx.lineTo(x + r, y + r/2);
-            ctx.lineTo(x, y + r);
-            ctx.closePath();
-            
-            ctx.fillStyle = color + '33';
-            ctx.fill();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            
-            ctx.fillStyle = color;
-            ctx.font = 'bold 11px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x, y + r + 20);
-            
-            // Internal symbol placeholder
-            ctx.strokeRect(x - 10, y - 10, 20, 20);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const scale = canvas.width / 800;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            let target = null;
-            if (Math.sqrt((x-cx)**2 + (y-(cy-20*scale))**2) < 80*scale) target = 'throne';
-            else if (Math.sqrt((x-(cx-200*scale))**2 + (y-(cy+100*scale))**2) < 60*scale) target = 'archive';
-            else if (Math.sqrt((x-(cx+200*scale))**2 + (y-(cy+100*scale))**2) < 60*scale) target = 'arsenal';
-
-            if (target) {
-                const info = translations[currentLang].objects[target];
-                document.getElementById('obj-title').innerText = info.name;
-                document.getElementById('obj-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#fbbf24';
-            }
-        });
+        let activeChart = null;
 
         function setLang(lang) {
-            currentLang = lang;
+            ['ru', 'kz', 'en'].forEach(l => document.getElementById(`lang-${l}`).classList.toggle('lang-active', l === lang));
             const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('obj-title').innerText = t.objTitleDefault;
-            document.getElementById('obj-desc').innerText = t.objDescDefault;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            
-            document.getElementById('tag-1').innerText = t.tag1;
-            document.getElementById('tag-2').innerText = t.tag2;
-            document.getElementById('tag-3').innerText = t.tag3;
-
-            document.getElementById('legacy-t').innerText = t.legacyT;
-            document.getElementById('legacy-d').innerText = t.legacyD;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
-            });
-            resizeCanvas();
+            document.getElementById('period').innerText = t.period;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('f1T').innerText = t.f1T; document.getElementById('f1D').innerText = t.f1D;
+            document.getElementById('f2T').innerText = t.f2T; document.getElementById('f2D').innerText = t.f2D;
+            document.getElementById('f3T').innerText = t.f3T; document.getElementById('f3D').innerText = t.f3D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('specialTitle').innerText = t.specialTitle;
+            document.getElementById('specialD').innerText = t.specialD;
+            renderChart(t.labels);
         }
 
-        window.onload = () => { resizeCanvas(); setLang('ru'); };
-        window.onresize = resizeCanvas;
+        function renderChart(labels) {
+            const ctx = document.getElementById('socialChart').getContext('2d');
+            if (activeChart) activeChart.destroy();
+            activeChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: [80, 65, 50, 75, 90], backgroundColor: ['#831843', '#9d174d', '#be185d', '#db2777', '#f472b6']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        window.onload = () => setLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -629,5 +368,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

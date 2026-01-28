@@ -105,6 +105,40 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.central_widget)
 
         self.web_view = QWebEngineView()
+
+        # === 1. СОЗДАЕМ КНОПКУ "НАЗАД" ===
+        self.btn_back_overlay = QPushButton("← Артқа", self.central_widget)
+        self.btn_back_overlay.setCursor(Qt.CursorShape.PointingHandCursor)
+        # Стиль кнопки: полупрозрачная, при наведении становится яркой
+        # === Стиль кнопки (яркий, заметный) ===
+        # === Стиль кнопки: полупрозрачная, компактная ===
+        self.btn_back_overlay.setStyleSheet("""
+            QPushButton {
+                /* Цвет фона: Синий, прозрачность 0.4 (40%) */
+                background-color: rgba(102, 126, 234, 0.4); 
+                color: rgba(255, 255, 255, 0.9); /* Текст чуть мягче */
+                
+                /* Тонкая рамка, чтобы кнопку было видно на белом фоне */
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 8px;
+                
+                /* Размер шрифта меньше */
+                font-size: 14px; 
+                font-weight: bold;
+                padding: 4px 10px;
+                z-index: 99999;
+            }
+            QPushButton:hover {
+                /* При наведении становится полностью непрозрачной (яркой) */
+                background-color: rgba(102, 126, 234, 1.0);
+                border: 1px solid white;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            }
+        """)
+        self.btn_back_overlay.clicked.connect(self.go_back)
+        self.btn_back_overlay.hide()  # Скрываем при запуске
+        # ================================
+
         self.layout.addWidget(self.web_view)
         # === Overlay навигация (стрелки поверх плаката) ===
         # === КНОПКИ НАВИГАЦИИ (не перекрывают плакат) ===
@@ -135,26 +169,7 @@ class MainWindow(QMainWindow):
         self.nav_left.hide()
         self.nav_right.hide()
 
-        def _place_nav():
-            g = self.web_view.geometry()
-            h = g.height()
-            y = g.y() + h // 2 - 24
 
-            # левый контейнер — маленький, только под кнопку
-            self.nav_left.setGeometry(g.x(), g.y(), 80, h)
-            self.btn_prev.move(16, h // 2 - 24)
-
-            # правый контейнер — маленький, только под кнопку
-            self.nav_right.setGeometry(g.x() + g.width() - 80, g.y(), 80, h)
-            self.btn_next.move(80 - 16 - 48, h // 2 - 24)
-
-            self.nav_left.raise_()
-            self.nav_right.raise_()
-
-        self._place_nav = _place_nav
-        # ===============================================
-
-        # ================================================
 
         # ВАЖНО: Разрешаем загрузку локальных файлов (для Chart.js и других библиотек)
         settings = self.web_view.settings()
@@ -177,9 +192,44 @@ class MainWindow(QMainWindow):
         self.navigate()
 
     def resizeEvent(self, event):
+        """Обновляем позиции кнопок при изменении размера окна"""
         super().resizeEvent(event)
-        if hasattr(self, "_place_nav"):
-            self._place_nav()
+
+        w = self.width()
+        h = self.height()
+
+        # 1. Браузер на весь экран
+        self.web_view.setGeometry(0, 0, w, h)
+
+        # 2. Позиционируем кнопки внутри навигационных контейнеров по центру
+        # (Так как мы удалили _place_nav, нужно центрировать кнопки здесь)
+        if hasattr(self, 'btn_prev'):
+            self.btn_prev.move(16, h // 2 - 24)
+        if hasattr(self, 'btn_next'):
+            self.btn_next.move(16, h // 2 - 24)  # внутри контейнера 80px
+
+        # 3. Кнопка "НАЗАД" (Левый верхний угол)
+            # 3. Кнопка "НАЗАД"
+        if hasattr(self, 'btn_back_overlay'):
+            # Было: setGeometry(20, 20, 120, 45)
+            # Стало:
+            # x = 60  (сдвинули правее, чтобы не липла к краю)
+            # y = 20  (высота та же)
+            # w = 100 (ширина меньше)
+            # h = 35  (высота меньше)
+            self.btn_back_overlay.setGeometry(20, 20, 100, 35)
+            self.btn_back_overlay.raise_()
+
+        # 4. Стрелка ВЛЕВО (nav_left)
+        # ВАЖНО: Начинается с y=80, чтобы не закрывать кнопку "Назад"
+        if hasattr(self, 'nav_left'):
+            self.nav_left.setGeometry(0, 80, 80, h - 80)
+            self.nav_left.raise_()  # Поднимаем над браузером, но она ниже кнопки (т.к. y=80)
+
+        # 5. Стрелка ВПРАВО (nav_right)
+        if hasattr(self, 'nav_right'):
+            self.nav_right.setGeometry(w - 80, 0, 80, h)
+            self.nav_right.raise_()
 
     def load_all_data(self):
         """Загружаем структуру предметов и переводы"""
@@ -295,6 +345,10 @@ class MainWindow(QMainWindow):
         print(f"\n🖥️ show_subjects_screen()")
         self.current_screen = 'subjects'
         template_path = os.path.join(CONTENT_ROOT, 'templates', 'subjects_screen.html')
+
+
+        if hasattr(self, 'btn_back_overlay'):
+            self.btn_back_overlay.hide()
 
         print(f"   Путь: {template_path}")
         print(f"   Существует: {os.path.exists(template_path)}")
@@ -583,13 +637,21 @@ class MainWindow(QMainWindow):
 
                 self.current_screen = 'poster'
 
+                # === 3. ПОКАЗЫВАЕМ КНОПКУ ===
+                if hasattr(self, 'btn_back_overlay'):
+                    self.btn_back_overlay.show()
+                    self.btn_back_overlay.raise_()
+                # ============================
+
+                # Показываем стрелки
+                if hasattr(self, 'nav_left'): self.nav_left.show()
+                if hasattr(self, 'nav_right'): self.nav_right.show()
+
                 # ✅ показать стрелки
                 if hasattr(self, 'nav_left'):
                     self.nav_left.show()
                 if hasattr(self, 'nav_right'):
                     self.nav_right.show()
-                if hasattr(self, '_place_nav'):
-                    self._place_nav()
 
                 logging.info(
                     f"Открыт плакат: {self.current_subject}/{topic_id} на языке {self.current_lang}"
@@ -621,6 +683,11 @@ class MainWindow(QMainWindow):
                 self.nav_left.hide()
             if hasattr(self, 'nav_right'):
                 self.nav_right.hide()
+
+                # === 4. СКРЫВАЕМ КНОПКУ ===
+                if hasattr(self, 'btn_back_overlay'):
+                    self.btn_back_overlay.hide()
+                # ==========================
 
             self.current_screen = 'topics'
             self.show_topics_screen()

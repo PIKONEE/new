@@ -3,380 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Социально-экономическое и политическое развитие Казахстана в XVIII в.</title>
+    <title>Культурно-духовная жизнь Казахстана</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #f5f5f4; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3ff; color: #4c1d95; transition: all 0.5s ease; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .imperial-gradient {
-            background: radial-gradient(circle at top right, #450a0a, #0c0a09 85%);
-        }
-
-        .premium-card {
-            background: rgba(28, 25, 23, 0.9);
-            backdrop-filter: blur(20px);
-            border-radius: 3rem;
-            border: 1px solid rgba(220, 38, 38, 0.2);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-card:hover {
-            border-color: #ef4444;
-            box-shadow: 0 0 60px rgba(220, 38, 38, 0.1);
-        }
-
-        .lang-active {
-            background-color: #dc2626;
-            color: white;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
-        }
-
-        canvas {
-            cursor: crosshair;
-            border-radius: 2rem;
-            background: #1c1917;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
-        }
-
-        .info-card {
-            background: rgba(41, 37, 36, 0.6);
-            border-bottom: 6px solid #dc2626;
-            padding: 2.5rem;
-            border-radius: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .info-card:hover {
-            transform: translateY(-8px);
-            background: rgba(68, 64, 60, 0.8);
-            border-color: #ef4444;
-        }
-
-        .term-tag {
-            background: #450a0a;
-            color: #fca5a5;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+        .lang-active { background-color: #6d28d9 !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #6d28d9; position: relative; min-height: 1100px; box-shadow: 0 40px 80px rgba(76, 29, 149, 0.2); }
+        .heritage-box { background: #f5f3ff; border: 2px solid #ddd6fe; padding: 2rem; border-radius: 2.5rem; transition: transform 0.3s; }
+        .heritage-box:hover { transform: translateY(-5px); }
     </style>
 </head>
-<body class="imperial-gradient min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-white/10">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">EN</button>
+    </div>
 
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-violet-800 pb-10 mb-12 text-center">
+            <h1 id="title" class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">Духовная Жизнь</h1>
+            <p id="desc" class="text-xl font-medium text-violet-600 italic">Сохранение кода нации и межконфессиональное согласие</p>
+        </header>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-red-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-red-500 text-center">Развитие Казахстана в XVIII веке</h1>
-            <div class="flex bg-zinc-900 p-1 rounded-xl border border-red-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Geopolitical Pressure Radar (Canvas) -->
-        <div class="premium-card p-8 md:p-12 shadow-sm">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-red-500/50 text-red-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">External Pressure Nexus</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Кольцо угроз XVIII века</h2>
-                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
-                        После смерти Тауке-хана единство было утрачено. Ханство оказалось зажато между жунгарами, Россией и среднеазиатскими государствами. Нажмите на векторы на карте для анализа ситуации.
+        <div class="space-y-12">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="heritage-box shadow-md">
+                    <h2 id="sec1T" class="text-2xl font-black uppercase text-violet-800 mb-4 tracking-tight">Медени Мура</h2>
+                    <p id="sec1D" class="text-sm leading-relaxed text-slate-700 font-medium italic">
+                        Программа «Культурное наследие» (2004) позволила восстановить сотни памятников, вернуть архивы и закрепить национальный код в мировой истории.
                     </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-red-950/20 border-l-8 border-red-600 shadow-2xl transition-all duration-500">
-                        <h3 id="element-title" class="text-xl font-bold text-red-400 mb-3 uppercase">Выберите вектор</h3>
-                        <p id="element-desc" class="text-zinc-300 text-sm leading-relaxed italic font-light">Кликните на направления: Джунгария, Россия, Бухара или Хива на холсте справа.</p>
-                    </div>
                 </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="pressureCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-red-900 font-mono uppercase tracking-[0.4em]">Geopolitical Breakdown Projection</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Detailed Textual Data -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            <!-- Political Fragmentation -->
-            <div class="info-card">
-                <div class="mb-4"><span class="term-tag" id="tag-1">Политика</span></div>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Кризис престолонаследия</h3>
-                <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed">
-                    После **1715 года** (смерть хана Тауке) в ханстве начался период раздробленности. Официально ханом был избран Каип, но его власть не признавалась всеми жузами. Султаны Младшего и Среднего жузов стремились к полной автономии. Это ослабило центральную оборону и привело к усилению роли **Биев** как единственных хранителей правопорядка в условиях отсутствия сильного хана.
-                </p>
-                <div class="mt-4 pt-4 border-t border-red-900/50 text-[10px] font-black text-red-500 uppercase tracking-widest italic">Двоевластие: Каип и Болат</div>
-            </div>
-
-            <!-- Socio-Economic -->
-            <div class="info-card">
-                <div class="mb-4"><span class="term-tag" id="tag-2">Экономика</span></div>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Упадок городов</h3>
-                <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed">
-                    Войны с жунгарами привели к разорению южных городов (Сайрам, Туркестан). Караванная торговля практически прекратилась. Кочевое скотоводство осталось единственным источником выживания. Возник острейший земельный голод: жунгары захватили лучшие жайляу в Жетысу и Восточном Казахстане, вытесняя роды в бесплодные пустыни.
-                </p>
-                <div class="mt-4 pt-4 border-t border-red-900/50 text-[10px] font-black text-red-500 uppercase tracking-widest italic">Ресурс: Маточное поголовье</div>
-            </div>
-
-            <!-- Foreign Encirclement -->
-            <div class="info-card">
-                <div class="mb-4"><span class="term-tag" id="tag-3">Внешний фактор</span></div>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Пятистороннее давление</h3>
-                <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed">
-                    Казахское общество XVIII века столкнулось с уникальной угрозой: на севере и западе строились российские пограничные линии, на юге активизировались Хива и Бухара, а с востока надвигалась мощная армия Жунгарского ханства. Смерть Цэван-Рабдана не остановила агрессию, а лишь усилила натиск жунгар на ослабленные казахские жузы.
-                </p>
-                <div class="mt-4 pt-4 border-t border-red-900/50 text-[10px] font-black text-red-500 uppercase tracking-widest italic">1723 — Год черного удара</div>
-            </div>
-        </div>
-
-        <!-- Section 3: Featured Historical Process -->
-        <div class="bg-red-900/10 p-10 md:p-16 rounded-[4rem] border border-red-500/20 shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="space-y-8">
-                    <h3 id="feat-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter text-white">Политический разлом</h3>
-                    <p id="feat-d" class="text-slate-300 text-xl font-light leading-relaxed">
-                        В первой четверти XVIII века казахские ханства формально оставались едиными, но фактически Младший жуз под властью Абулхаира начал самостоятельную игру с Россией, а Средний жуз стал главным плацдармом сопротивления джунгарам. Отсутствие единого военного командования стало причиной трагедии 1723 года.
+                <div class="heritage-box shadow-md">
+                    <h2 id="sec2T" class="text-2xl font-black uppercase text-violet-800 mb-4 tracking-tight">Мир религий</h2>
+                    <p id="sec2D" class="text-sm leading-relaxed text-slate-700 font-medium italic">
+                        Казахстан стал местом проведения Съездов лидеров мировых и традиционных религий. Центр глобального духовного диалога.
                     </p>
-                    <div class="inline-flex items-center gap-4 bg-white/5 px-6 py-2 rounded-full border border-white/10">
-                        <span id="feat-tag" class="text-sm font-bold uppercase tracking-widest text-red-400">Накануне «Великого бедствия»</span>
-                    </div>
                 </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-red-800/40 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-7xl mb-4 grayscale opacity-20">🛡️</div>
-                            <div id="found-label" class="text-[10px] font-black uppercase text-red-600 tracking-[0.5em]">Internal Strife</div>
-                        </div>
-                    </div>
+            </section>
+
+            <section class="bg-slate-900 text-white p-12 rounded-[4rem] relative overflow-hidden shadow-2xl border-l-[15px] border-violet-500">
+                <h2 id="revivalT" class="text-3xl font-black uppercase text-violet-400 mb-6 italic tracking-tight">Возрождение Традиций</h2>
+                <p id="revivalD" class="text-lg font-light leading-relaxed opacity-90">
+                    Возвращение праздника Наурыз, развитие национальных видов спорта и языка. Культура стала фундаментом государственной независимости и единства народа.
+                </p>
+                <div class="absolute top-0 right-0 p-10 text-9xl opacity-5">🏛️</div>
+            </section>
+
+            <section class="bg-violet-50 p-10 rounded-[3rem] border border-violet-100 flex flex-col justify-center shadow-inner">
+                <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-8 text-violet-800 tracking-widest">Объекты культурного наследия</h4>
+                <div class="h-44">
+                    <canvas id="cultureChart"></canvas>
                 </div>
-            </div>
-            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">CRISIS</div>
+            </section>
         </div>
 
-    </main>
-
-    <footer class="mt-20 py-24 bg-black border-t border-red-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl font-light italic leading-tight text-slate-500">
-                «XVIII век начался для казахов с испытания на прочность, когда старый порядок рухнул, а новый рождался в огне бесконечных войн и дипломатических поисков.»
-            </p>
-            <div class="mt-12 h-1 w-24 bg-red-700 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="mt-20 pt-8 border-t border-violet-100 flex justify-between items-center text-[10px] font-black uppercase text-violet-400 tracking-[0.5em]">
+            Spiritual Harmony • National Code
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Развитие Казахстана в XVIII веке",
-                vizTitle: "Кольцо угроз XVIII века",
-                vizDesc: "Ханство оказалось зажато между великими державами. Нажмите на векторы давления на холсте для анализа ситуации.",
-                badge: "Внешнее давление",
-                elementTitleDefault: "Выберите вектор",
-                elementDescDefault: "Кликните на направления: Джунгария, Россия, Бухара или Хива на холсте.",
-                tag1: "Политика", tag2: "Экономика", tag3: "Внешний фактор",
-                c1T: "Кризис престолонаследия", c1D: "После Тауке-хана власть раздробилась. Каип и Болат не смогли удержать единство, что привело к росту сепаратизма султанов в каждом жузе.",
-                c2T: "Упадок городов", c2D: "Туркестан и Сайрам стали мишенями для набегов. Экономика полностью перешла на кочевые рельсы, города перестали быть центрами ремесла.",
-                c3T: "Пятистороннее давление", c3D: "Сочетание жунгарской агрессии, российских укрепленных линий и экспансии среднеазиатских ханств создало критическую ситуацию для Степи.",
-                featT: "Политический разлом", featD: "Отсутствие общего лидера превратило три жуза в самостоятельные образования. Это стало главной причиной неготовности к большой войне.",
-                featTag: "Накануне бедствия",
-                footer: "«XVIII век начался с испытания на прочность: старый порядок рухнул, а новый рождался в огне войн.»",
-                vectors: {
-                    east: { name: "Джунгария (Главная угроза)", text: "С востока надвигалась 70-тысячная армия. Цель: полный захват Жетысу и выход к Сырдарье для контроля Шелкового пути." },
-                    north: { name: "Российская империя", text: "Строительство Иртышской и Яицкой линий крепостей. Начало планомерного колониального продвижения вглубь казахских земель." },
-                    south: { name: "Бухарское и Хивинское ханства", text: "Борьба за присырдарьинские города. Поддержка междоусобиц внутри казахской элиты для ослабления конкурентов." },
-                    west: { name: "Волжские калмыки и башкиры", text: "Постоянные набеги на Младший жуз за скотом. Взаимное ослабление кочевых народов в интересах Российской империи." }
-                }
+                title: "Духовная Жизнь", desc: "Сохранение кода нации и межконфессиональное согласие",
+                sec1T: "Мәдени Мұра", sec1D: "Государственная программа по возвращению и восстановлению культурных ценностей. Реставрация Туркестана, Отырара и других сакральных мест.",
+                sec2T: "Мир религий", sec2D: "Регулярное проведение в столице съездов лидеров мировых религий. Модель межэтнического и межрелигиозного согласия как экспортный продукт.",
+                revivalT: "Возрождение Традиций", revivalD: "Наполнение независимости духовным содержанием. Поддержка литературы, театра и кино. Рост интереса к национальной идентичности.",
+                chartTitle: "Инвестиции в культуру (уровни приоритета)",
+                labels: ['Памятники', 'Язык', 'Музеи', 'Традиции']
             },
             kz: {
-                title: "XVIII ғ. Қазақстанның дамуы",
-                vizTitle: "XVIII ғ. қауіп-қатерлер шеңбері",
-                vizDesc: "Хандық ірі державалардың қыспағында қалды. Жағдайды талдау үшін кенептегі қысым бағыттарын басыңыз.",
-                badge: "Сыртқы қысым",
-                elementTitleDefault: "Бағытты таңдаңыз",
-                elementDescDefault: "Кенептегі Жоңғария, Ресей, Бұқара немесе Хиуа бағыттарын басыңыз.",
-                tag1: "Саясат", tag2: "Экономика", tag3: "Сыртқы фактор",
-                c1T: "Тақ үшін талас", c1D: "Тәуке ханнан кейін билік бөлшектенді. Қайып пен Болат бірлікті сақтай алмады, бұл әр жүздегі сұлтандардың сепаратизміне әкелді.",
-                c2T: "Қалалардың құлдырауы", c2D: "Түркістан мен Сайрам шапқыншылық нысанына айналды. Экономика толықтай көшпелі бағытқа көшті, қалалар қолөнер орталығы ретінде маңызын жойды.",
-                c3T: "Бес жақты қысым", c3D: "Жоңғар агрессиясы, Ресейдің бекініс шептері және Орта Азия хандықтарының экспансиясы Дала үшін қатерлі жағдай туғызды.",
-                featT: "Саяси жіктелу", featD: "Ортақ көсемнің болмауы үш жүзді дербес құрылымдарға айналдырды. Бұл үлкен соғысқа дайын болмаудың басты себебі еді.",
-                featTag: "Қасірет қарсаңында",
-                footer: "«XVIII ғасыр қазақтар үшін төзімділік сынағынан басталды: ескі тәртіп құлап, жаңасы соғыс отында туды.»",
-                vectors: {
-                    east: { name: "Жоңғария (Басты қауіп)", text: "Шығыстан 70 мыңдық әскер қаптады. Мақсаты: Жетісуды толық басып алу және Жібек жолын бақылау үшін Сырдарияға шығу." },
-                    north: { name: "Ресей империясы", text: "Ертіс және Жайық бекініс шептерінің салынуы. Қазақ жерлеріне жоспарлы отаршылдық жылжудың басталуы." },
-                    south: { name: "Бұқар және Хиуа хандықтары", text: "Сырдария бойындағы қалалар үшін күрес. Қазақ ақсүйектері арасындағы алауыздықты қолдау." },
-                    west: { name: "Еділ қалмақтары мен башқұрттар", text: "Кіші жүзге мал үшін жиі жасалатын шапқыншылықтар. Көшпелі халықтардың өзара әлсіреуі." }
-                }
+                title: "Рухани Өмір", desc: "Ұлттық кодты сақтау және конфессияаралық келісім",
+                sec1T: "Мәдени Мұра", sec1D: "Мәдени құндылықтарды қайтару және қалпына келтіру бойынша мемлекеттік бағдарлама. Түркістанды, Отырарды және басқа да киелі жерлерді қалпына келтіру.",
+                sec2T: "Діндер әлемі", sec2D: "Елордада әлемдік дін лидерлері съездерін тұрақты өткізу. Этносаралық және діни келісім үлгісін қалыптастыру.",
+                revivalT: "Дәстүрлердің жаңғыруы", revivalD: "Тәуелсіздікті рухани мазмұнмен толтыру. Әдебиетті, театр мен киноны қолдау. Ұлттық бірегейлікке қызығушылықтың артуы.",
+                chartTitle: "Мәдениетке инвестициялар (басымдық деңгейлері)",
+                labels: ['Ескерткіштер', 'Тіл', 'Мұражайлар', 'Дәстүрлер']
             },
             en: {
-                title: "Kazakhstan's Development in the 18th Century",
-                vizTitle: "Circle of Threats: 18th c.",
-                vizDesc: "The Khanate was squeezed between great powers. Click on the pressure vectors on the canvas to analyze the situation.",
-                badge: "External Pressure",
-                elementTitleDefault: "Select a Vector",
-                elementDescDefault: "Click on the directions: Jungaria, Russia, Bukhara, or Khiva on the canvas.",
-                tag1: "Politics", tag2: "Economy", tag3: "External Factor",
-                c1T: "Succession Crisis", c1D: "After Tauke Khan, authority fragmented. Kaip and Bolat couldn't maintain unity, leading to increased sultan separatism in each Zhuz.",
-                c2T: "Urban Decline", c2D: "Turkestan and Sairam became targets for raids. The economy shifted entirely to nomadic pastoralism as cities ceased to be craft hubs.",
-                c3T: "Five-Sided Pressure", c3D: "The combination of Jungar aggression, Russian fort lines, and Central Asian expansion created a critical state for the Steppe.",
-                featT: "Political Fracture", featD: "The lack of a unified leader turned the three Zhuzes into autonomous entities, the main cause of military unreadiness.",
-                featTag: "On the Eve of Disaster",
-                footer: "«The 18th century began as a test of resilience: the old order fell, and the new one was born in the fire of wars.»",
-                vectors: {
-                    east: { name: "Jungaria (Main Threat)", text: "A 70,000-strong army advanced from the east. Goal: capture Semirechye and reach the Syr Darya for trade control." },
-                    north: { name: "Russian Empire", text: "Construction of the Irtysh and Yaik fortress lines. Beginning of systematic colonial advancement into Kazakh lands." },
-                    south: { name: "Bukhara & Khiva Khanates", text: "Struggle for the Syr Darya cities. Fomenting internal strife among Kazakh elites to weaken competitors." },
-                    west: { name: "Volga Kalmyks & Bashkirs", text: "Constant raids on the Junior Zhuz for livestock. Mutual weakening of nomads in Russia's interest." }
-                }
+                title: "Spiritual Life", desc: "Preserving the national code and interfaith harmony",
+                sec1T: "Madeni Mura", sec1D: "The State Program for the restoration of cultural values. Restoration of Turkestan, Otyrar, and other sacred historical sites.",
+                sec2T: "World of Religions", sec2D: "Regular hosting of Congresses of Leaders of World and Traditional Religions. A model of inter-ethnic and inter-religious harmony.",
+                revivalT: "Tradition Revival", revivalD: "Filling independence with spiritual content. Supporting literature, theater, and cinema. Growth of interest in national identity.",
+                chartTitle: "Investment in Culture (Priority levels)",
+                labels: ['Monuments', 'Language', 'Museums', 'Traditions']
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('pressureCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 500;
-            drawRadar();
-        }
-
-        function drawRadar() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Central Core (Kazakh Lands)
-            ctx.beginPath();
-            ctx.arc(cx, cy, 70 * scale, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(220, 38, 38, 0.05)';
-            ctx.fill();
-            ctx.strokeStyle = '#dc2626';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#fca5a5';
-            ctx.font = 'bold 12px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText("KAZAKH ZHUZES", cx, cy + 5);
-
-            // 2. Convergence Lines
-            const directions = [
-                { id: 'north', x: cx, y: cy - 180 * scale, label: "RUSSIA" },
-                { id: 'south', x: cx, y: cy + 180 * scale, label: "BUKHARA/KHIVA" },
-                { id: 'west', x: cx - 220 * scale, y: cy, label: "KALMYKS" },
-                { id: 'east', x: cx + 220 * scale, y: cy, label: "JUNGARIA" }
-            ];
-
-            directions.forEach(d => {
-                // Vector Arrow
-                ctx.beginPath();
-                ctx.moveTo(d.x, d.y);
-                ctx.lineTo(cx + (cx - d.x > 0 ? 80 : -80) * (d.x === cx ? 0 : 1) * scale, cy + (cy - d.y > 0 ? 80 : -80) * (d.y === cy ? 0 : 1) * scale);
-                ctx.strokeStyle = 'rgba(220, 38, 38, 0.4)';
-                ctx.setLineDash([5, 10]);
-                ctx.stroke();
-                ctx.setLineDash([]);
-
-                // Node
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, 45 * scale, 0, Math.PI * 2);
-                ctx.fillStyle = '#1c1917';
-                ctx.fill();
-                ctx.strokeStyle = '#dc2626';
-                ctx.stroke();
-                
-                ctx.fillStyle = '#fff';
-                ctx.font = 'bold 9px Inter';
-                ctx.fillText(d.label, d.x, d.y + 5);
-            });
-
-            ctx.fillStyle = 'rgba(220, 38, 38, 0.2)';
-            ctx.font = 'bold 10px monospace';
-            ctx.fillText("TAP VECTORS TO ANALYZE PRESSURE", cx, 40 * scale);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            let target = null;
-            if (y < cy - 100 * scale) target = 'north';
-            else if (y > cy + 100 * scale) target = 'south';
-            else if (x < cx - 100 * scale) target = 'west';
-            else if (x > cx + 100 * scale) target = 'east';
-
-            if (target) {
-                const info = translations[currentLang].vectors[target];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#dc2626';
-            }
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('feat-t').innerText = t.featT;
-            document.getElementById('feat-d').innerText = t.featD;
-            document.getElementById('feat-tag').innerText = t.featTag;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('revivalT').innerText = t.revivalT;
+            document.getElementById('revivalD').innerText = t.revivalD;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            renderChart(t.labels);
         }
 
+        function renderChart(labels) {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('cultureChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: [40, 30, 15, 15], backgroundColor: ['#4c1d95', '#6d28d9', '#8b5cf6', '#ddd6fe'], borderWidth: 4, borderColor: '#ffffff' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -616,5 +364,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

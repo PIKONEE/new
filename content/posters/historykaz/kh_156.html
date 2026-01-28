@@ -3,375 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хозяйство и быт казахов в XVI–XVII вв.</title>
+    <title>Политическое развитие суверенного Казахстана</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fdfcf7; color: #451a03; }
+        body { font-family: 'Inter', sans-serif; background: #ecfdf5; color: #064e3b; transition: all 0.5s ease; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .felt-texture {
-            background-color: #f5f5f4;
-            background-image: url("https://www.transparenttextures.com/patterns/sandpaper.png");
-        }
-
-        .premium-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 3rem;
-            border: 1px solid #d97706;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-card:hover {
-            border-color: #92400e;
-            box-shadow: 0 30px 60px -12px rgba(146, 64, 14, 0.15);
-        }
-
-        .lang-active {
-            background-color: #78350f;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(120, 53, 15, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: #fff;
-            box-shadow: inset 0 0 40px rgba(217, 119, 6, 0.05);
-        }
-
-        .info-card {
-            background: white;
-            border-radius: 2.5rem;
-            border-left: 10px solid #d97706;
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .info-card:hover {
-            transform: translateX(10px);
-            border-color: #92400e;
-        }
-
-        .term-badge {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+        .lang-active { background-color: #059669 !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #059669; color: #064e3b; position: relative; min-height: 1100px; box-shadow: 0 40px 80px rgba(6, 78, 59, 0.2); }
+        .emerald-grad { background: linear-gradient(135deg, #059669 0%, #064e3b 100%); }
+        .symbol-card { background: #f0fdf4; border: 2px solid #d1fae5; border-radius: 2rem; padding: 2.5rem; transition: transform 0.3s; }
+        .symbol-card:hover { transform: translateY(-5px); }
     </style>
 </head>
-<body class="felt-texture min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-emerald-200">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">EN</button>
+    </div>
 
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-emerald-800 pb-10 mb-12">
+            <h1 id="title" class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6 text-emerald-900">Политическое развитие</h1>
+            <p id="desc" class="text-xl font-medium text-emerald-600 italic">Строительство основ суверенной государственности и мировое признание</p>
+        </header>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-amber-200 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.15em] text-amber-950">Хозяйство и быт казахов (XVI–XVII вв.)</h1>
-            <div class="flex bg-amber-50 p-1 rounded-2xl border border-amber-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Migration Circle (Canvas) -->
-        <div class="premium-card p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Seasonal Cycle Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight italic uppercase">Ритм вечного движения</h2>
-                    <p id="viz-desc" class="text-lg text-amber-900/60 font-light leading-relaxed">
-                        Кочевание было сложнейшей наукой выживания. Нажмите на секторы годового круга, чтобы изучить специфику каждого сезона и маршрута.
+        <div class="space-y-12">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="symbol-card shadow-md">
+                    <h2 id="sec1T" class="text-2xl font-black uppercase text-emerald-800 mb-4 tracking-tight">Госсимволика</h2>
+                    <p id="sec1D" class="text-sm leading-relaxed text-slate-700 font-medium italic">
+                        4 июня 1992 г. — утверждены Флаг, Герб и Гимн. Авторы: Ш. Ниязбеков, Ж. Малибеков, Ш. Уалиханов. Рождение визуального кода нации.
                     </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[3rem] bg-white border-l-8 border-amber-700 shadow-2xl transition-all duration-500">
-                        <h3 id="element-title" class="text-xl font-bold text-amber-900 mb-3 uppercase tracking-tighter text-nowrap">Выберите сезон</h3>
-                        <p id="element-desc" class="text-amber-800/70 text-sm leading-relaxed italic font-light">Кликните на Жайляу, Кузеу, Кыстау или Коктеу на холсте.</p>
-                    </div>
+                    <div class="mt-6 flex gap-4 text-4xl">🦅 ☀️ 🇰🇿</div>
                 </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
-                    <canvas id="cycleCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.4em]">Nomadic Logistics Blueprint</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Informative Data Blocks -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            
-            <!-- Livestock -->
-            <div class="info-card">
-                <div class="mb-4"><span class="term-badge" id="tag-1">Скотоводство</span></div>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Төрт түлік (Четыре вида)</h3>
-                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                    Основа жизни — **Лошадь** (символ мощи), **Овца** (основа питания и одежды), **Верблюд** (главный транспорт) и **КРС** (в оседлых районах). Кочевники вывели уникальные породы, способные к тебеневке — добыче корма из-под снега.
-                </p>
-                <div class="text-[10px] font-black text-amber-700 uppercase tracking-widest italic">Тебеневка — ключ к зиме</div>
-            </div>
-
-            <!-- Housing -->
-            <div class="info-card">
-                <div class="mb-4"><span class="term-badge" id="tag-2">Быт</span></div>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Кииз уй (Юрта)</h3>
-                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                    Шедевр мобильной архитектуры. Сборный костяной каркас из **кереге** (решетки), **уык** (жерди) и **шанырак** (купол). Покрывалась войлоком, защищавшим от ветра и жары. Делилась на мужскую (**сол жақ**) и женскую (**оң жақ**) половины.
-                </p>
-                <div class="text-[10px] font-black text-amber-700 uppercase tracking-widest italic">Сборка за 2-3 часа</div>
-            </div>
-
-            <!-- Diet -->
-            <div class="info-card">
-                <div class="mb-4"><span class="term-badge" id="tag-3">Питание</span></div>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Технологии хранения</h3>
-                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                    Кочевники изобрели уникальные продукты длительного хранения: **Курт** (сухой творог), **Сур ет** (вяленое мясо), **Талкан** (обжаренное зерно). Эти продукты позволяли совершать переходы в сотни километров без привязки к кухням.
-                </p>
-                <div class="text-[10px] font-black text-amber-700 uppercase tracking-widest italic">Кумыс — священный напиток</div>
-            </div>
-
-        </div>
-
-        <!-- Section 3: Social & Economic Context -->
-        <div class="bg-amber-900 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h3 id="feat-t" class="text-3xl font-black mb-8 uppercase italic tracking-widest">Земледелие и Города</h3>
-                    <p id="feat-d" class="text-amber-100/70 text-xl font-light leading-relaxed mb-10">
-                        Несмотря на доминирование кочевья, юг Казахстана оставался зоной оседлости. В долинах Сырдарьи процветало ирригационное земледелие. Города **Туркестан**, **Сауран** и **Сайрам** были рынками, где «степной» жир и кожа обменивались на ткани, хлеб и металлы.
+                <div class="symbol-card shadow-md">
+                    <h2 id="sec2T" class="text-2xl font-black uppercase text-emerald-800 mb-4 tracking-tight">Конституция</h2>
+                    <p id="sec2D" class="text-sm leading-relaxed text-slate-700 font-medium italic">
+                        30 августа 1995 г. — на всенародном референдуме принята действующая Конституция, закрепившая президентскую форму правления.
                     </p>
-                    <div class="flex gap-4">
-                        <span id="feat-tag" class="px-6 py-2 bg-white/10 rounded-2xl border border-white/20 text-xs font-black text-amber-400 uppercase tracking-widest">Торговый симбиоз</span>
-                    </div>
+                    <div class="mt-6 text-emerald-600 font-black text-xs uppercase tracking-widest">Main Law of the Land</div>
                 </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-amber-500/20 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4 grayscale opacity-30">🌾</div>
-                            <div id="unit-label" class="text-[10px] font-black uppercase text-amber-500 tracking-[0.5em]">Oasis Economy</div>
-                        </div>
-                    </div>
+            </section>
+
+            <section class="bg-slate-900 text-white p-12 rounded-[4rem] relative overflow-hidden shadow-2xl border-l-[15px] border-emerald-500">
+                <h2 id="sec3T" class="text-3xl font-black uppercase text-emerald-400 mb-6 italic tracking-tight">Мировое признание</h2>
+                <p id="sec3D" class="text-lg font-light leading-relaxed opacity-90">
+                    2 марта 1992 г. — Казахстан стал полноправным членом ООН. Это открыло путь к многовекторной внешней политике и признанию границ государством.
+                </p>
+                <div class="absolute top-0 right-0 p-10 text-9xl opacity-5">🌏</div>
+            </section>
+
+            <section class="bg-emerald-50 p-10 rounded-[3rem] border border-emerald-100 flex flex-col justify-center shadow-inner">
+                <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-8 text-emerald-800 tracking-widest">Динамика дипломатического признания</h4>
+                <div class="h-44">
+                    <canvas id="polyChart"></canvas>
                 </div>
-            </div>
-            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">STEPPE</div>
+            </section>
         </div>
 
-    </main>
-
-    <footer class="mt-20 py-24 bg-stone-950 text-stone-500 text-center border-t border-amber-900/20">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl font-light italic leading-tight text-stone-400">
-                «Хозяйство казахов было триумфом адаптации, превратившим суровую Степь в пространство жизни через бесконечный цикл движения.»
-            </p>
-            <div class="mt-12 h-1 w-24 bg-amber-700 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="mt-20 pt-8 border-t border-emerald-100 flex justify-between items-center text-[10px] font-black uppercase text-emerald-400 tracking-[0.5em]">
+            Sovereign State • 1992-1995
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Хозяйство и быт казахов (XVI–XVII вв.)",
-                vizTitle: "Ритм вечного движения",
-                vizDesc: "Кочевание было выверенным циклом. Нажмите на секторы круга, чтобы изучить специфику сезонов (Жайляу, Кыстау и др.).",
-                badge: "Анализ сезонных циклов",
-                elementTitleDefault: "Выберите сезон",
-                elementDescDefault: "Кликните на секторы годового круга на холсте.",
-                tag1: "Скотоводство", tag2: "Быт", tag3: "Питание",
-                c1T: "Төрт түлік (Четыре вида)", c1D: "Лошадь, овца, верблюд и корова составляли экономический фундамент. Животные были адаптированы к тебеневке — зимней добыче корма из-под снега.",
-                c2T: "Кииз уй (Юрта)", c2D: "Переносное жилище, собираемое за пару часов. Состояло из кереге, уыков и шанырака. Летом сохраняло прохладу, зимой — тепло благодаря войлоку.",
-                c3T: "Технологии хранения", c3D: "Изобретение курта, иримшика и вяленого мяса позволило кочевникам иметь запасы калорийной пищи в длительных походах и перекочевках.",
-                featT: "Земледелие и Города", featD: "Южные города Сырдарьи служили центрами обмена. Кочевники поставляли скот и сырье, получая взамен хлеб, ткани и ремесленные изделия.",
-                featTag: "Экономический симбиоз",
-                footer: "«Хозяйство казахов было триумфом адаптации к суровым условиям Степи.»",
-                seasons: {
-                    winter: { name: "Кыстау (Зима)", text: "Зимовки располагались в защищенных от ветра местах: камышовых зарослях Сырдарьи или у подножия гор. Главная задача — тебеневка." },
-                    spring: { name: "Коктеу (Весна)", text: "Время перекочевки на весенние пастбища. Начало приплода скота и стрижки шерсти. Жизнь в легких юртах." },
-                    summer: { name: "Жайляу (Лето)", text: "Высокогорные или северные пастбища. Время пика надоев, народных гуляний, свадеб и советов родов." },
-                    autumn: { name: "Кузеу (Осень)", text: "Подготовка к зиме. Сбор в отару, накопление жира скотом перед холодами и движение обратно к южным зимовкам." }
-                }
+                title: "Политическое развитие", desc: "Строительство основ суверенной государственности и мировое признание",
+                sec1T: "Госсимволика", sec1D: "4 июня 1992 г. — утверждены Флаг, Герб и Гимн. Эти символы объединили народ и закрепили самобытность Казахстана в мире.",
+                sec2T: "Конституция", sec2D: "Принятие Основных законов 1993 и 1995 годов определило правовой фундамент страны и разделение ветвей власти.",
+                sec3T: "Мировое признание", sec3D: "2 марта 1992 г. — вступление в ООН. Признание границ и суверенитета мировым сообществом. Старт глобального партнерства.",
+                chartTitle: "Признание государства миром (количество стран)"
             },
             kz: {
-                title: "Қазақ халқының шаруашылығы мен тұрмысы (XVI–XVII ғғ.)",
-                vizTitle: "Мәңгілік қозғалыс ырғағы",
-                vizDesc: "Көшпелілік — нақты есептелген цикл. Маусымдардың (Жайлау, Қыстау т.б.) ерекшелігін білу үшін шеңбер секторларын басыңыз.",
-                badge: "Маусымдық циклдерді талдау",
-                elementTitleDefault: "Маусымды таңдаңыз",
-                elementDescDefault: "Кенептегі жылдық шеңбер секторларын басыңыз.",
-                tag1: "Мал шаруашылығы", tag2: "Тұрмыс", tag3: "Тамақтану",
-                c1T: "Төрт түлік", c1D: "Жылқы, қой, түйе және сиыр экономикалық негіз болды. Жануарлар тебіндеуге — қар астынан азық табуға бейімделді.",
-                c2T: "Киіз үй", c2D: "Бірнеше сағатта жиналатын тасымалы баспана. Кереге, уық және шаңырақтан тұрды. Киіздің арқасында жазда салқын, қыста жылы болды.",
-                c3T: "Сақтау технологиялары", c3D: "Құрт, ірімшік және сүр етті ойлап табу көшпелілерге ұзақ жорықтарда құнарлы тағам қорын сақтауға мүмкіндік берді.",
-                featT: "Егіншілік пен Қалалар", featD: "Сырдарияның оңтүстік қалалары айырбас орталығы болды. Көшпелілер мал мен шикізат беріп, орнына нан, мата және қолөнер бұйымдарын алды.",
-                featTag: "Экономикалық симбиоз",
-                footer: "«Қазақтардың шаруашылығы Даланың қатал жағдайына бейімделудің шыңы болды.»",
-                seasons: {
-                    winter: { name: "Қыстау (Қыс)", text: "Қыстаулар желден қорғалған жерлерде: Сырдария қамыстарында немесе тау етектерінде болды. Басты міндет — тебіндеу." },
-                    spring: { name: "Көктеу (Көктем)", text: "Көктемгі жайылымдарға көшу уақыты. Малдың төлдеуі және жүн қырқу кезеңі. Жеңіл киіз үйлерде тұру." },
-                    summer: { name: "Жайлау (Жаз)", text: "Биік таулы немесе солтүстік жайылымдар. Сүт өнімдерінің молайған, той-думандар мен рулар кеңесі өтетін уақыт." },
-                    autumn: { name: "Күзеу (Күз)", text: "Қысқа дайындық. Малды отарға жинау, суық түспей тұрып малдың май жинауы және оңтүстік қыстауларға қайту." }
-                }
+                title: "Саяси даму", desc: "Егемен мемлекеттіліктің негіздерін қалау және әлемдік танылу",
+                sec1T: "Мемлекеттік рәміздер", sec1D: "1992 ж. 4 маусым — Ту, Елтаңба және Әнұран бекітілді. Бұл рәміздер халықты біріктіріп, Қазақстанның әлемдегі ерекшелігін бекітті.",
+                sec2T: "Конституция", sec2D: "1993 және 1995 жылдардағы Негізгі заңдар елдің құқықтық іргетасын және билік тармақтарының бөлінісін анықтады.",
+                sec3T: "Әлемдік тану", sec3D: "1992 ж. 2 наурыз — БҰҰ-ға мүше болу. Әлемдік қауымдастықтың шекара мен егемендікті тануы. Жаһандық серіктестіктің басталуы.",
+                chartTitle: "Мемлекеттің әлемде танылуы (елдер саны)"
             },
             en: {
-                title: "Kazakh Economy and Life (16-17th centuries)",
-                vizTitle: "The Rhythm of Eternal Motion",
-                vizDesc: "Nomadism was a calculated cycle. Click on the circle sectors to study seasonal specifics (Zhailau, Kystau, etc.).",
-                badge: "Seasonal Cycles Analysis",
-                elementTitleDefault: "Select a season",
-                elementDescDefault: "Click on the circular cycle elements on the canvas.",
-                tag1: "Livestock", tag2: "Daily Life", tag3: "Diet",
-                c1T: "Four Jewels (Tort Tulik)", c1D: "Horse, sheep, camel, and cattle were the assets. Animals were adapted to 'tebenevka' — grazing through snow during winter.",
-                c2T: "Yurt (Kiiz Ui)", c2D: "A masterpiece of mobile architecture. Composed of kerege, uyk, and shanyrak. Felt covering ensured thermal balance.",
-                c3T: "Storage Technologies", c3D: "Invention of kurt, dried meat, and talkan allowed for calorie-dense rations during long migrations.",
-                featT: "Farming & Cities", featD: "Southern cities served as trade hubs. Nomads supplied meat and hide in exchange for grains, fabrics, and metals.",
-                featTag: "Economic Symbiosis",
-                footer: "«The Kazakh economy was a triumph of adaptation to the harsh Steppe conditions.»",
-                seasons: {
-                    winter: { name: "Kystau (Winter)", text: "Winter quarters in wind-protected areas like river reeds or mountain foothills. Survival focused on tebenevka." },
-                    spring: { name: "Kokteu (Spring)", text: "Moving to spring pastures. Birthing season for livestock and wool shearing period." },
-                    summer: { name: "Zhailau (Summer)", text: "Highland or northern pastures. Peak of dairy production and tribal gatherings/celebrations." },
-                    autumn: { name: "Kyzeu (Autumn)", text: "Preparation for winter. Fattening livestock and moving back to southern winter shelters." }
-                }
+                title: "Political Development", desc: "Building the foundations of a sovereign state and global recognition",
+                sec1T: "State Symbols", sec1D: "June 4, 1992 — Flag, Emblem, and Anthem approved. These symbols united the nation and marked Kazakhstan's identity worldwide.",
+                sec2T: "Constitution", sec2D: "The adoption of the 1993 and 1995 Fundamental Laws defined the legal base and the separation of government branches.",
+                sec3T: "Global Recognition", sec3D: "March 2, 1992 — joining the UN. International recognition of borders and sovereignty. Start of global partnerships.",
+                chartTitle: "Diplomatic Recognition (number of countries)"
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('cycleCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 550;
-            drawCycle();
-        }
-
-        function drawCycle() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-            const r = 200 * scale;
-
-            const sectors = [
-                { id: 'winter', color: '#0ea5e9', label: "KYSTAU" },
-                { id: 'spring', color: '#10b981', label: "KOKTEU" },
-                { id: 'summer', color: '#fbbf24', label: "ZHAILAU" },
-                { id: 'autumn', color: '#f97316', label: "KYZEU" }
-            ];
-
-            sectors.forEach((s, i) => {
-                const start = (i * Math.PI / 2) - Math.PI/2;
-                const end = start + Math.PI / 2;
-                
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, r, start, end);
-                ctx.fillStyle = s.color + '15';
-                ctx.fill();
-                ctx.strokeStyle = s.color;
-                ctx.lineWidth = 4;
-                ctx.stroke();
-
-                // Decorative Icon Position
-                const mid = start + Math.PI / 4;
-                const ix = cx + Math.cos(mid) * (r * 0.7);
-                const iy = cy + Math.sin(mid) * (r * 0.7);
-                ctx.fillStyle = s.color;
-                ctx.font = 'bold 12px Montserrat';
-                ctx.textAlign = 'center';
-                ctx.fillText(s.label, ix, iy);
-            });
-
-            // Center: The Eternal Blue Sky / Yurt
-            ctx.beginPath();
-            ctx.arc(cx, cy, 60 * scale, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff';
-            ctx.fill();
-            ctx.strokeStyle = '#451a03';
-            ctx.stroke();
-            ctx.fillStyle = '#451a03';
-            ctx.font = 'black 14px Montserrat';
-            ctx.fillText("NOMAD", cx, cy - 5);
-            ctx.fillText("LIFE", cx, cy + 15);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            const angle = Math.atan2(y - cy, x - cx) + Math.PI/2;
-            const normAngle = angle < 0 ? angle + 2*Math.PI : angle;
-            const index = Math.floor(normAngle / (Math.PI / 2)) % 4;
-            
-            const ids = ['winter', 'spring', 'summer', 'autumn'];
-            const info = translations[currentLang].seasons[ids[index]];
-            
-            document.getElementById('element-title').innerText = info.name;
-            document.getElementById('element-desc').innerText = info.text;
-            document.getElementById('info-panel').style.borderColor = (index === 0 ? '#0ea5e9' : (index === 1 ? '#10b981' : (index === 2 ? '#fbbf24' : '#f97316')));
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            document.getElementById('tag-1').innerText = t.tag1;
-            document.getElementById('tag-2').innerText = t.tag2;
-            document.getElementById('tag-3').innerText = t.tag3;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('feat-t').innerText = t.featT;
-            document.getElementById('feat-d').innerText = t.featD;
-            document.getElementById('feat-tag').innerText = t.featTag;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-amber-700 hover:bg-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('sec3T').innerText = t.sec3T;
+            document.getElementById('sec3D').innerText = t.sec3D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            renderChart();
         }
 
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('polyChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: ['1991', '1992', '1993', '1994', '1995'], datasets: [{ data: [18, 108, 115, 125, 135], borderColor: '#059669', tension: 0.4, fill: true, backgroundColor: 'rgba(5, 150, 105, 0.1)', borderWidth: 5 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -611,5 +364,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

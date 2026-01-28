@@ -3,249 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Энеолит: Эпоха меди</title>
+    <title>Появление древнейших людей</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .copper-theme {
-            background: linear-gradient(to bottom right, #fffaf0, #ffedd5);
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
         }
 
-        .copper-card {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid #f59e0b;
-            box-shadow: 0 10px 30px -5px rgba(180, 83, 9, 0.1);
-            transition: all 0.3s ease;
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .copper-card:hover {
-            transform: scale(1.01);
-            border-color: #d97706;
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
 
-        .metal-glow {
-            box-shadow: 0 0 20px rgba(217, 119, 6, 0.2);
-        }
-
-        .btn-active {
-            background-color: #b45309;
-            color: white;
-            box-shadow: 0 4px 10px rgba(180, 83, 9, 0.3);
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.8);
         }
 
         canvas {
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+            background: radial-gradient(circle, #ffffff 0%, #f8fafc 100%);
+            border-radius: 1rem;
         }
     </style>
 </head>
-<body class="copper-theme text-amber-950 min-h-screen">
+<body class="bg-slate-50 text-slate-900">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
-
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-amber-200 px-6 py-4">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <span class="text-3xl">🏺</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-amber-900">Энеолит</h1>
-            </div>
-            <div class="flex bg-amber-100/50 p-1 rounded-full border border-amber-200">
-                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
-                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
-                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
+    <!-- Header & Languages -->
+    <header class="sticky-header border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h1 id="title" class="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                Появление древнейших людей
+            </h1>
+            <div class="flex space-x-2 bg-slate-100 p-1 rounded-xl">
+                <button onclick="setLanguage('ru')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-ru">RU</button>
+                <button onclick="setLanguage('kz')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-kz">KZ</button>
+                <button onclick="setLanguage('en')" class="lang-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-white active:scale-95" id="btn-en">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-12">
         
-        <!-- Section 1: The Visualization (Map) -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
-                <div id="status-badge" class="inline-block bg-amber-600 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">The First Metal</div>
-                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight">Прорыв в металлургии</h2>
-                <p id="viz-desc" class="text-lg text-amber-900/70 leading-relaxed font-light">
-                    Энеолит (3000–1800 лет до н.э.) — время появления первых изделий из меди. Камень всё еще преобладал, но металл начал менять мир.
-                </p>
-            </div>
-            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
-                <div class="h-64 md:h-80 w-full">
-                    <canvas id="compositionChart"></canvas>
+        <!-- Section 1: Map (Visual Analytics) -->
+        <section id="map-section" class="space-y-6">
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
+                <div class="flex items-center space-x-3 mb-6">
+                    <span class="text-3xl">⏳</span>
+                    <div>
+                        <h2 id="map-title" class="text-xl font-bold">Хронологическая карта эволюции</h2>
+                        <p id="map-subtitle" class="text-sm text-slate-500">Временные рамки появления видов (в миллионах лет назад)</p>
+                    </div>
+                </div>
+                <!-- Canvas Container -->
+                <div class="h-80 md:h-96 w-full">
+                    <canvas id="evolutionChart"></canvas>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Section 2: Botai Culture (Plan Feature) -->
-        <div class="bg-amber-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl metal-glow">
-            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
-                <div class="md:col-span-4 text-center">
-                    <div class="text-[8rem] leading-none mb-4">🐎</div>
-                    <div id="botai-label" class="text-amber-400 font-black text-sm uppercase tracking-[0.3em]">Botai Culture</div>
-                </div>
-                <div class="md:col-span-8 space-y-6">
-                    <h3 id="botai-title" class="text-3xl font-black tracking-tight">Ботай: Одомашнивание лошади</h3>
-                    <p id="botai-desc" class="text-xl text-amber-100/80 font-light leading-relaxed">
-                        На территории Казахстана люди впервые в мире приручили лошадь. Это дало невероятную мобильность и изменило способ ведения хозяйства и войны.
-                    </p>
-                </div>
+        <!-- Section 2: Plan (Theory & Facts) -->
+        <section id="plan-section" class="space-y-8">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🦴</span>
+                <h2 id="plan-heading" class="text-2xl font-bold">Основные этапы и орудия труда</h2>
             </div>
-            <!-- Decorative element -->
-            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none">🏹</div>
-        </div>
 
-        <!-- Section 3: Key Facts (Grid) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="copper-card p-8 rounded-[2.5rem] text-center">
-                <div class="text-5xl mb-4">⚒️</div>
-                <h4 id="fact1-t" class="font-bold text-lg mb-2">Первая медь</h4>
-                <p id="fact1-d" class="text-sm text-amber-900/60 leading-relaxed">Из меди делали наконечники, ножи и украшения. Однако медь была мягкой и не могла полностью заменить камень.</p>
+            <div id="grid-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Cards will be rendered by JS -->
             </div>
-            <div class="copper-card p-8 rounded-[2.5rem] text-center">
-                <div class="text-5xl mb-4">🏠</div>
-                <h4 id="fact2-t" class="font-bold text-lg mb-2">Поселения</h4>
-                <p id="fact2-d" class="text-sm text-amber-900/60 leading-relaxed">Люди строили большие полуземлянки площадью до 120 кв. метров. Ботайские поселения насчитывали сотни жилищ.</p>
-            </div>
-            <div class="copper-card p-8 rounded-[2.5rem] text-center">
-                <div class="text-5xl mb-4">👨</div>
-                <h4 id="fact3-t" class="font-bold text-lg mb-2">Общество</h4>
-                <p id="fact3-d" class="text-sm text-amber-900/60 leading-relaxed">Укрепление патриархата и начало имущественного неравенства. Труд мужчин стал играть ведущую роль.</p>
-            </div>
-        </div>
+        </section>
 
     </main>
 
-    <footer class="mt-20 py-20 bg-amber-950 text-amber-200/50">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
-                «Энеолит — это мост между каменным прошлым и металлическим будущим человечества.»
+    <footer class="bg-slate-900 text-white py-12 mt-20 border-t-4 border-orange-600">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <p id="footer-text" class="text-lg font-medium italic opacity-90 leading-relaxed">
+                Эволюция орудий и самого человека — это великий путь от простого выживания в природе к осознанному созиданию и культуре.
             </p>
-            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-amber-700">Copper-Stone Age Period</div>
         </div>
     </footer>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Энеолит",
-                vizTitle: "Медь и Камень",
-                vizDesc: "Энеолит (3000–1800 лет до н.э.) — переходный период. Человек открыл медь, но продолжал использовать каменные инструменты.",
-                statusBadge: "Первый металл",
-                botaiTitle: "Ботай: Революция лошади",
-                botaiDesc: "На севере Казахстана была открыта уникальная Ботайская культура. Именно здесь человек впервые одомашнил дикую лошадь.",
-                fact1T: "Мягкий металл", fact1D: "Медь легко обрабатывалась, но из-за мягкости использовалась в основном для украшений и мелких орудий.",
-                fact2T: "Архитектура", fact2D: "Поселения стали постоянными. Жилища соединялись переходами, образуя целые комплексы.",
-                fact3T: "Патриархат", fact3D: "Роль мужчины в скотоводстве и металлургии выросла, что привело к смене матриархата на патриархат.",
-                footer: "«Энеолит — это мост между каменным прошлым и металлическим будущим человечества.»",
-                chartLabels: ["Каменные орудия", "Медные изделия", "Керамика", "Кость/Дерево"],
-                chartTitle: "Инвентарь находок (%)"
+                title: "Появление древнейших людей",
+                mapTitle: "Хронологическая карта эволюции",
+                mapSubtitle: "Временные рамки появления видов (в миллионах лет назад)",
+                planHeading: "Основные этапы и орудия труда",
+                footer: "Эволюция орудий и самого человека — это великий путь от простого выживания в природе к осознанному созиданию и культуре.",
+                chartLabel: "Миллионы лет назад",
+                cards: [
+                    { icon: "🐒", title: "Австралопитек", desc: "Жил 4-2 млн лет назад. Южная и Восточная Африка. Начал ходить на двух ногах." },
+                    { icon: "🛠️", title: "Человек умелый", desc: "Homo Habilis. 2.5-1.8 млн лет назад. Первые искусственные орудия из гальки (чопперы)." },
+                    { icon: "🔥", title: "Питекантроп", desc: "Homo Erectus. 1.8 млн - 300 тыс. лет назад. Овладение огнем. Найден на о. Ява." },
+                    { icon: "🏔️", title: "Синантроп", desc: "Китайский человек. Жил в пещерах, использовал шкуры животных как одежду." },
+                    { icon: "❄️", title: "Неандерталец", desc: "100-35 тыс. лет назад. Жил в ледниковый период. Появились первые захоронения." },
+                    { icon: "👤", title: "Кроманьонец", desc: "Homo Sapiens. 40-35 тыс. лет назад. Человек современного типа. Развитая речь." },
+                    { icon: "🪓", title: "Чоппер и Чоппинг", desc: "Древнейшие каменные орудия. Галька, оббитая с одной или двух сторон." },
+                    { icon: "🏹", title: "Загонная охота", desc: "Первый коллективный способ добычи мяса крупных животных (мамонтов, бизонов)." }
+                ]
             },
             kz: {
-                title: "Энеолит",
-                vizTitle: "Мыс пен Тас",
-                vizDesc: "Энеолит (б.з.б. 3000–1800 жж.) — өтпелі кезең. Адам алғаш рет мысты игерді, бірақ тас құралдарды әлі де қолдана берді.",
-                statusBadge: "Алғашқы металл",
-                botaiTitle: "Ботай: Жылқы революциясы",
-                botaiDesc: "Қазақстанның солтүстігінде Ботай мәдениеті ашылды. Мұнда адамзат тарихында алғаш рет жылқы қолға үйретілді.",
-                fact1T: "Жұмсақ металл", fact1D: "Мыс оңай өңделді, бірақ жұмсақ болғандықтан негізінен әшекейлер мен ұсақ құралдар үшін қолданылды.",
-                fact2T: "Сәулет", fact2D: "Тұрақтар тұрақты бола бастады. Баспаналар бір-бірімен өзара өткелдер арқылы жалғасты.",
-                fact3T: "Патриархат", fact3D: "Мал шаруашылығы мен металлургияда ер адамның рөлі артып, матриархат патриархатқа ауысты.",
-                footer: "«Энеолит — адамзаттың тас дәуірінен металл дәуіріне өткен алтын көпірі.»",
-                chartLabels: ["Тас құралдар", "Мыс бұйымдар", "Керамика", "Сүйек/Ағаш"],
-                chartTitle: "Жәдігерлер құрамы (%)"
+                title: "Ең ежелгі адамдардың пайда болуы",
+                mapTitle: "Эволюцияның хронологиялық картасы",
+                mapSubtitle: "Түрлердің пайда болу уақыты (миллион жыл бұрын)",
+                planHeading: "Негізгі кезеңдер мен еңбек құралдары",
+                footer: "Еңбек құралдары мен адамның дамуы — бұл табиғаттағы жай ғана тіршілік етуден саналы шығармашылық пен мәдениетке дейінгі ұлы жол.",
+                chartLabel: "Миллион жыл бұрын",
+                cards: [
+                    { icon: "🐒", title: "Австралопитек", desc: "4-2 млн жыл бұрын өмір сүрген. Оңтүстік және Шығыс Африка. Екі аяқпен жүре бастады." },
+                    { icon: "🛠️", title: "Епті адам", desc: "Homo Habilis. 2.5-1.8 млн жыл бұрын. Малта тастан жасалған алғашқы құралдар (чоппер)." },
+                    { icon: "🔥", title: "Питекантроп", desc: "Homo Erectus. 1.8 млн - 300 мың жыл бұрын. Отты пайдалануды үйренді. Ява аралынан табылды." },
+                    { icon: "🏔️", title: "Синантроп", desc: "Қытай адамы. Үңгірлерде тұрды, жануар терісін киім ретінде пайдаланды." },
+                    { icon: "❄️", title: "Неандерталь", desc: "100-35 мың жыл бұрын. Мұз дәуірінде өмір сүрді. Алғашқы жерлеу ғұрыптары пайда болды." },
+                    { icon: "👤", title: "Кроманьон", desc: "Homo Sapiens. 40-35 мың жыл бұрын. Қазіргі саналы адам түрі. Сөйлеу қабілеті дамыған." },
+                    { icon: "🪓", title: "Чоппер және Чоппинг", desc: "Ең ежелгі тас құралдары. Бір немесе екі жағынан қайралған малта тас." },
+                    { icon: "🏹", title: "Ұжымдық аң аулау", desc: "Ірі жануарларды (мамонт, бизон) аулаудың алғашқы ұжымдық тәсілі." }
+                ]
             },
             en: {
-                title: "Eneolithic",
-                vizTitle: "Copper and Stone",
-                vizDesc: "The Eneolithic (3000–1800 BC) is a transition period. Man discovered copper but continued to use stone tools.",
-                statusBadge: "First Metal",
-                botaiTitle: "Botai: Horse Revolution",
-                botaiDesc: "The unique Botai culture was discovered in Northern Kazakhstan. This is where humans first domesticated the wild horse.",
-                fact1T: "Soft Metal", fact1D: "Copper was easy to process but too soft for heavy work, so it was used for jewelry and small tools.",
-                fact2T: "Architecture", fact2D: "Settlements became permanent. Dwellings were connected by passages, forming large complexes.",
-                fact3T: "Patriarchy", fact3D: "The role of men in cattle breeding and metallurgy grew, leading to the shift from matriarchy to patriarchy.",
-                footer: "«The Eneolithic is the bridge between the stone past and the metal future of humanity.»",
-                chartLabels: ["Stone Tools", "Copper Items", "Ceramics", "Bone/Wood"],
-                chartTitle: "Inventory Composition (%)"
+                title: "Appearance of Ancient Humans",
+                mapTitle: "Evolutionary Chronology Map",
+                mapSubtitle: "Timeframe of species appearance (millions of years ago)",
+                planHeading: "Main Stages and Labor Tools",
+                footer: "The evolution of tools and man himself is a grand journey from simple survival in nature to conscious creation and culture.",
+                chartLabel: "Millions of years ago",
+                cards: [
+                    { icon: "🐒", title: "Australopithecus", desc: "Lived 4-2 million years ago. South and East Africa. Started walking on two legs." },
+                    { icon: "🛠️", title: "Homo Habilis", desc: "Handy Man. 2.5-1.8 million years ago. First artificial tools made from pebbles (choppers)." },
+                    { icon: "🔥", title: "Pithecanthropus", desc: "Homo Erectus. 1.8M - 300K years ago. Mastery of fire. Found on Java island." },
+                    { icon: "🏔️", title: "Sinanthropus", desc: "Chinese man. Lived in caves, used animal skins as clothing." },
+                    { icon: "❄️", title: "Neanderthal", desc: "100-35 thousand years ago. Lived during the Ice Age. First burials appeared." },
+                    { icon: "👤", title: "Cro-Magnon", desc: "Homo Sapiens. 40-35 thousand years ago. Modern human type. Developed speech." },
+                    { icon: "🪓", title: "Chopper & Chopping", desc: "The oldest stone tools. Pebbles flaked on one or both sides." },
+                    { icon: "🏹", title: "Collective Hunt", desc: "The first collective way of hunting large animals (mammoths, bisons)." }
+                ]
             }
         };
 
-        let currentChart = null;
+        let currentLang = 'ru';
+        let chartInstance = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('compositionChart').getContext('2d');
-            if (currentChart) currentChart.destroy();
+            const ctx = document.getElementById('evolutionChart').getContext('2d');
+            const species = {
+                ru: ["Австралопитек", "Человек умелый", "Питекантроп", "Неандерталец", "Кроманьонец"],
+                kz: ["Австралопитек", "Епті адам", "Питекантроп", "Неандерталь", "Кроманьон"],
+                en: ["Australopithecus", "Homo Habilis", "Pithecanthropus", "Neanderthal", "Cro-Magnon"]
+            };
 
-            currentChart = new Chart(ctx, {
-                type: 'doughnut',
+            const data = [4, 2.5, 1.8, 0.1, 0.04]; // млн лет назад
+
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
                 data: {
-                    labels: translations[lang].chartLabels,
+                    labels: species[lang],
                     datasets: [{
-                        data: [70, 10, 15, 5],
-                        backgroundColor: ['#78350f', '#f59e0b', '#d97706', '#fbbf24'],
-                        hoverOffset: 20,
-                        borderWidth: 0
+                        label: content[lang].chartLabel,
+                        data: data,
+                        backgroundColor: [
+                            '#ea580c', '#f97316', '#fb923c', '#fdba74', '#fed7aa'
+                        ],
+                        borderRadius: 12,
+                        barThickness: 40
                     }]
                 },
                 options: {
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
-                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.raw} ${content[lang].chartLabel}`
+                            }
+                        }
                     },
-                    cutout: '70%'
+                    scales: {
+                        x: {
+                            reverse: true,
+                            grid: { display: false },
+                            title: { display: true, text: content[lang].chartLabel }
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    }
                 }
             });
         }
 
-        function changeLang(lang) {
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('status-badge').innerText = t.statusBadge;
-            document.getElementById('botai-title').innerText = t.botaiTitle;
-            document.getElementById('botai-desc').innerText = t.botaiDesc;
-            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
-            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
-            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
-            document.getElementById('footer-quote').innerText = t.footer;
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            // Update Text
+            document.getElementById('title').innerText = content[lang].title;
+            document.getElementById('map-title').innerText = content[lang].mapTitle;
+            document.getElementById('map-subtitle').innerText = content[lang].mapSubtitle;
+            document.getElementById('plan-heading').innerText = content[lang].planHeading;
+            document.getElementById('footer-text').innerText = content[lang].footer;
 
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
-                    : "px-6 py-2 rounded-full text-sm font-bold text-amber-700 hover:bg-amber-100 transition-all";
+            // Update Buttons Style
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-orange-600');
             });
+            document.getElementById(`btn-${lang}`).classList.add('bg-white', 'shadow-sm', 'text-orange-600');
 
+            // Render Cards
+            const grid = document.getElementById('grid-content');
+            grid.innerHTML = content[lang].cards.map(card => `
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm card-hover">
+                    <div class="text-4xl mb-4">${card.icon}</div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">${card.title}</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">${card.desc}</p>
+                </div>
+            `).join('');
+
+            // Update Chart
             initChart(lang);
         }
 
-        window.onload = () => changeLang('ru');
+        // Initialize on Load
+        window.onload = () => {
+            setLanguage('ru');
+        };
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -485,5 +482,7 @@
   applyScale();
 })();
 </script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>
