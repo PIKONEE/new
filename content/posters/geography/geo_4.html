@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Эволюция Географических Знаний о Земле</title>
+    <title>Мы во Вселенной: Космический Адрес</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,249 +11,379 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #0d1b2a; /* Темно-синий/Космический фон */
+            color: #e0f2f1; /* Светлый текст */
         }
         .gradient-title {
-            background: linear-gradient(to right, #0077b6, #e76f51); /* Синий (мир) и Оранжевый (открытия) */
+            background: linear-gradient(to right, #90e0ef, #4895ef); /* Голубой и синий градиент */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .timeline-container {
-            position: relative;
-            padding-bottom: 50px;
-        }
-        .timeline-line {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            width: 4px;
-            background-color: #0077b6;
-            height: 100%;
-            transform: translateX(-50%);
-        }
-        .timeline-item {
-            position: relative;
-            margin-bottom: 40px;
-        }
-        .timeline-dot {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #e76f51;
-            border: 4px solid #f4a261;
-            border-radius: 50%;
-            top: 0;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-        }
-        .timeline-content {
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            background-color: #ffffff;
+        .address-card {
+            background-color: #1b263b; /* Чуть светлее фон карточки */
+            border-left: 8px solid;
             transition: transform 0.3s ease;
         }
-        .timeline-content:hover {
+        .address-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(231, 111, 81, 0.4);
+            box-shadow: 0 10px 20px rgba(72, 149, 239, 0.4);
         }
-        /* Адаптация для мобильных устройств (перенос на левый край) */
+        .border-level-1 { border-color: #4895ef; } /* Солнечная система */
+        .border-level-2 { border-color: #43aa8b; } /* Галактика */
+        .border-level-3 { border-color: #e76f51; } /* Сверхскопление */
+        .border-level-4 { border-color: #f4a261; } /* Вселенная */
+
+        .hierarchical-flow {
+            position: relative;
+        }
+        .hierarchical-flow::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #4895ef;
+            transform: translateX(-50%);
+        }
+        .flow-item {
+            position: relative;
+        }
+        .flow-item::after {
+            content: '↓';
+            position: absolute;
+            left: 50%;
+            bottom: -20px;
+            transform: translateX(-50%);
+            color: #4895ef;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .flow-item:last-child::after {
+            content: '';
+        }
+
+        /* Убрать линию на мобильных для лучшей читаемости */
         @media (max-width: 767px) {
-            .timeline-line {
-                left: 20px;
+             .hierarchical-flow::before {
+                display: none;
             }
-            .timeline-dot {
-                left: 20px;
-                transform: translateX(-50%);
-            }
-            .timeline-content {
-                margin-left: 40px;
-                width: calc(100% - 40px);
+            .flow-item::after {
+                display: none;
             }
         }
     </style>
     <!--
     Narrative Plan:
-    The infographic uses a vertical timeline to structure the history of geographical knowledge.
+    The infographic is structured around a "Cosmic Address" concept, using hierarchy to convey scale.
     1. Header.
-    2. Section I: Antiquity and Middle Ages (Foundation).
-    3. Section II: Age of Discovery (Mapping the World).
-    4. Section III: Modern Era (Analysis and Technology).
+    2. Block 1: The Local Neighborhood (Solar System).
+    3. Block 2: The City (Milky Way).
+    4. Block 3: The Region (Local Group and Supercluster).
+    5. Block 4: The Entire Home (Observable Universe).
 
     Visualization Choices:
-    - Main Structure: HTML/CSS Timeline. Justification: Best visualization for historical development over time. Confirmed NO SVG.
-    - Icons: Unicode characters for visual cues. Confirmed NO SVG.
+    - Main Structure: Styled HTML/CSS Hierarchical Flow Chart (representing nested scale). Justification: Clearly conveys the concept of "address" and relative scale. Confirmed NO SVG.
+    - Icons: Unicode symbols for celestial bodies. Confirmed NO SVG.
 
-    Color Palette Chosen: "Brilliant Blues" (#0077b6, #00b4d8) for structure and theme, combined with "Energetic Orange/Red" (#e76f51, #f4a261) for timeline dots and accents (representing discoveries/milestones).
+    Color Palette Chosen: Primarily "Brilliant Blues" (#4895ef, #90e0ef) against a dark background, accented with green (#43aa8b) and orange (#e76f51) for diversity and hierarchy levels.
     CRITICAL CONFIRMATION: NEITHER Mermaid JS NOR SVG were used anywhere in this file. All visualizations are structured HTML/CSS with Tailwind.
     -->
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="text-gray-100">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
-
-    <header class="bg-white text-center p-8 shadow-xl border-b-8 border-[#0077b6]">
-        <h1 class="text-5xl md:text-6xl font-black uppercase tracking-wider gradient-title">ЭВОЛЮЦИЯ ЗНАНИЙ О ЗЕМЛЕ</h1>
-        <p class="text-xl md:text-3xl font-extrabold mt-2 text-[#e76f51]">От плоского диска до цифрового двойника</p>
-        <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Как человечество открывало, измеряло и понимало свою планету.</p>
+<header class="bg-[#1b263b] text-center p-8 shadow-2xl border-b-8 border-[#4895ef]">
+        <h1 class="text-5xl md:text-7xl font-black uppercase tracking-wider gradient-title">МЫ ВО ВСЕЛЕННОЙ</h1>
+        <p class="text-2xl md:text-4xl font-extrabold mt-2 text-[#90e0ef]">КОСМИЧЕСКИЙ АДРЕС ЧЕЛОВЕЧЕСТВА</p>
+        <p class="mt-4 max-w-4xl mx-auto text-lg text-gray-400">Путешествие по масштабам мироздания, от нашего дома до границы видимого.</p>
     </header>
 
     <main class="container mx-auto p-4 md:p-10">
 
-        <h2 class="text-3xl font-extrabold text-center mb-12 pb-2 text-[#0077b6]">⏳ Хронология Великих Открытий</h2>
+        <h2 class="text-3xl font-extrabold text-center mb-12 pb-2 text-[#90e0ef]">🌌 Иерархия Космического Адреса</h2>
 
-        <!-- Timeline Container -->
-        <div class="timeline-container max-w-4xl mx-auto">
-            <div class="timeline-line hidden md:block"></div>
+        <div class="hierarchical-flow max-w-4xl mx-auto">
 
-            <!-- 1. АНТИЧНОСТЬ: Фундамент -->
-            <div class="timeline-item grid md:grid-cols-2 gap-6 items-start">
-                <div class="timeline-content md:col-span-1 md:col-start-2 bg-blue-50">
-                    <h3 class="text-xl font-black mb-2 text-[#0077b6]">АНТИЧНОСТЬ И СРЕДНЕВЕКОВЬЕ</h3>
-                    <p class="text-sm font-bold text-[#e76f51]">VI в. до н.э. — XV в. н.э.</p>
-                    <p class="mt-3 text-gray-700">Переход от мифологии к рациональному знанию. **Факт:** Земля не плоский диск, а сфера.</p>
-                    <ul class="list-disc pl-5 mt-3 text-sm">
-                        <li>**Пифагор (VI в. до н.э.):** Впервые предложил идею шарообразности Земли.</li>
-                        <li>**Эратосфен (III в. до н.э.):** Впервые вычислил длину экватора с удивительной точностью.</li>
-                        <li>**Птолемей (II в. н.э.):** Создал "Географию" — систему знаний и карт (хотя и геоцентрическую).</li>
+            <!-- 1. Наш Район: Солнечная Система -->
+            <div class="flow-item mb-10 md:mb-16">
+                <div class="address-card border-level-1 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-3xl font-black mb-3 text-[#4895ef]">1. ПЛАНЕТА ЗЕМЛЯ 🌎</h3>
+                    <p class="text-sm font-bold text-[#90e0ef] mb-3">Наш Дом: Третий камень от Солнца</p>
+                    <p class="text-gray-300">Наш дом, сформированный 4.54 млрд лет назад. Единственная известная планета с жидкой водой на поверхности.</p>
+                    <div class="mt-3 text-sm text-gray-400">
+                        <span class="font-bold">Система:</span> Солнечная
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Наш Город: Млечный Путь -->
+            <div class="flow-item mb-10 md:mb-16">
+                <div class="address-card border-level-2 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-3xl font-black mb-3 text-[#43aa8b]">2. ГАЛАКТИКА МЛЕЧНЫЙ ПУТЬ ⭐</h3>
+                    <p class="text-sm font-bold text-[#90e0ef] mb-3">Наш Город: Спиральный рукав Ориона</p>
+                    <p class="text-gray-300">Гигантская спиральная галактика, содержащая **200-400 миллиардов звёзд**. Наша Солнечная система находится на периферии, в **рукаве Ориона**.</p>
+                    <div class="mt-3 text-sm text-gray-400">
+                        <span class="font-bold">Размер:</span> ~100 000 световых лет в диаметре.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Наш Район: Местная Группа -->
+            <div class="flow-item mb-10 md:mb-16">
+                <div class="address-card border-level-3 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-3xl font-black mb-3 text-[#e76f51]">3. МЕСТНАЯ ГРУППА ГАЛАКТИК 💫</h3>
+                    <p class="text-sm font-bold text-[#90e0ef] mb-3">Наш Регион: Гравитационно связанная группа</p>
+                    <p class="text-gray-300">Скопление примерно из **50 галактик**. Две главные галактики: наш **Млечный Путь** и гигантская **Андромеда** (М31), которые идут на сближение.</p>
+                    <div class="mt-3 text-sm text-gray-400">
+                        <span class="font-bold">Соседи:</span> Андромеда (M31), Галактика Треугольника (M33).
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Наше Сверхскопление -->
+            <div class="flow-item mb-10 md:mb-16">
+                <div class="address-card border-level-4 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-3xl font-black mb-3 text-[#f4a261]">4. СВЕРХСКОПЛЕНИЕ ЛАНИАКЕЯ 🕸️</h3>
+                    <p class="text-sm font-bold text-[#90e0ef] mb-3">Наша Провинция: Структура из тысяч галактик</p>
+                    <p class="text-gray-300">Гигантская структура, объединяющая **более 100 000 галактик**, включая Местную группу. Галактики движутся к общему гравитационному центру — **Великому Аттрактору**.</p>
+                    <div class="mt-3 text-sm text-gray-400">
+                        <span class="font-bold">Размер:</span> Около 520 миллионов световых лет.
+                    </div>
+                </div>
+            </div>
+
+             <!-- 5. Наблюдаемая Вселенная -->
+            <div class="flow-item">
+                <div class="address-card border-l-8 border-[#ffffff] p-6 rounded-xl shadow-lg">
+                    <h3 class="text-3xl font-black mb-3 text-[#ffffff]">5. НАБЛЮДАЕМАЯ ВСЕЛЕННАЯ 🔭</h3>
+                    <p class="text-sm font-bold text-[#90e0ef] mb-3">Наш Общий Дом: Граница видимого</p>
+                    <p class="text-gray-300">Всё, что мы потенциально можем наблюдать, так как свет от этих объектов успел до нас дойти с момента Большого Взрыва.</p>
+                    <ul class="list-disc pl-5 mt-4 text-sm text-gray-300 space-y-1">
+                        <li>**Возраст:** $\sim 13,8$ млрд лет.</li>
+                        <li>**Диаметр:** $\sim 93$ млрд световых лет.</li>
+                        <li>**Состав:** $\sim 5\%$ обычное вещество, $\sim 27\%$ темная материя, $\sim 68\%$ темная энергия.</li>
                     </ul>
                 </div>
-                <div class="timeline-dot"></div>
-                <!-- Дата на мобильном -->
-                <p class="md:hidden text-center text-sm font-bold text-[#e76f51] -mt-6">VI в. до н.э. — XV в. н.э.</p>
             </div>
 
-            <!-- 2. ЭПОХА ВГО: Карта мира -->
-            <div class="timeline-item grid md:grid-cols-2 gap-6 items-start">
-                <div class="timeline-content md:col-span-1 bg-yellow-50">
-                    <h3 class="text-xl font-black mb-2 text-[#e76f51]">ЭПОХА ВЕЛИКИХ ОТКРЫТИЙ</h3>
-                    <p class="text-sm font-bold text-[#0077b6]">XV в. — XVII в.</p>
-                    <p class="mt-3 text-gray-700">Открытие Америки, кругосветные путешествия и нанесение новых континентов на карты. **Результат:** Мировая карта обретает реальные очертания.</p>
-                    <ul class="list-disc pl-5 mt-3 text-sm">
-                        <li>**Колумб (1492):** Открыл Новый Свет.</li>
-                        <li>**Магеллан (1519-1522):** Первое кругосветное плавание, доказавшее шарообразность Земли и её огромный размер.</li>
-                        <li>**Меркатор (1569):** Создал проекцию, которая стала основой для всех морских карт.</li>
-                    </ul>
-                </div>
-                <div class="timeline-dot"></div>
-                <!-- Дата на мобильном -->
-                <p class="md:hidden text-center text-sm font-bold text-[#0077b6] -mt-6">XV в. — XVII в.</p>
-            </div>
+        </div> <!-- End Hierarchical Flow -->
 
-            <!-- 3. НОВОЕ ВРЕМЯ: Анализ и Система -->
-            <div class="timeline-item grid md:grid-cols-2 gap-6 items-start">
-                <div class="timeline-content md:col-span-1 md:col-start-2 bg-blue-50">
-                    <h3 class="text-xl font-black mb-2 text-[#0077b6]">НОВОЕ ВРЕМЯ И СИСТЕМАТИЗАЦИЯ</h3>
-                    <p class="text-sm font-bold text-[#e76f51]">XVIII в. — XIX в.</p>
-                    <p class="mt-3 text-gray-700">Переход от описательной географии к аналитической. **Фокус:** Понимание причинно-следственных связей.</p>
-                    <ul class="list-disc pl-5 mt-3 text-sm">
-                        <li>**Гумбольдт:** Основатель современной физической географии, установил связи между природой и климатом.</li>
-                        <li>**Риттер:** Основатель социально-экономической географии, изучал связь человека и среды.</li>
-                        <li>**Русские экспедиции:** Активное изучение Сибири, Дальнего Востока, Арктики и Антарктиды.</li>
-                    </ul>
-                </div>
-                <div class="timeline-dot"></div>
-                <!-- Дата на мобильном -->
-                <p class="md:hidden text-center text-sm font-bold text-[#e76f51] -mt-6">XVIII в. — XIX в.</p>
-            </div>
-
-            <!-- 4. СОВРЕМЕННОСТЬ: Технологии и Прогнозы -->
-            <div class="timeline-item grid md:grid-cols-2 gap-6 items-start">
-                <div class="timeline-content md:col-span-1 bg-yellow-50">
-                    <h3 class="text-xl font-black mb-2 text-[#e76f51]">СОВРЕМЕННОСТЬ И ЦИФРОВАЯ ЭРА</h3>
-                    <p class="text-sm font-bold text-[#0077b6]">XX в. — Настоящее время</p>
-                    <p class="mt-3 text-gray-700">География становится наукой о прогнозировании и моделировании. **Инструмент:** Космос и Компьютер.</p>
-                    <ul class="list-disc pl-5 mt-3 text-sm">
-                        <li>**Спутниковая съемка:** Открытие глубин Мирового океана и точная картография рельефа.</li>
-                        <li>**ГИС (Геоинформационные системы):** Многослойный анализ данных и планирование развития территорий.</li>
-                        <li>**Устойчивое развитие:** Фокус на решении глобальных экологических проблем.</li>
-                    </ul>
-                </div>
-                <div class="timeline-dot"></div>
-                 <!-- Дата на мобильном -->
-                <p class="md:hidden text-center text-sm font-bold text-[#0077b6] -mt-6">XX в. — Настоящее время</p>
-            </div>
-
-        </div> <!-- End Timeline Container -->
-
-        <section class="mt-12">
-            <h2 class="text-3xl font-extrabold text-center mb-8 pb-2 text-[#0077b6]">💡 Главные Выводы Эволюции</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-[#e76f51]">
-                    <span class="text-5xl block mb-3 text-[#e76f51]">🌍</span>
-                    <p class="font-bold text-xl text-[#0077b6]">Форма</p>
-                    <p class="text-gray-700">От плоского диска к **Геоиду**, измеренному с помощью спутников.</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-[#0077b6]">
-                    <span class="text-5xl block mb-3 text-[#0077b6]">🧭</span>
-                    <p class="font-bold text-xl text-[#0077b6]">Инструмент</p>
-                    <p class="text-gray-700">От компаса и секстанта к **ГИС** и дистанционному зондированию.</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-[#e76f51]">
-                    <span class="text-5xl block mb-3 text-[#e76f51]">🔬</span>
-                    <p class="font-bold text-xl text-[#0077b6]">Цель</p>
-                    <p class="text-gray-700">От простого **описания** территорий к **прогнозированию** и устойчивому развитию.</p>
-                </div>
-            </div>
-        </section>
+        <footer class="text-center p-8 mt-12 bg-[#1b263b] rounded-xl shadow-2xl">
+             <h3 class="text-4xl font-black gradient-title mb-2">ЗНАЧЕНИЕ МАСШТАБА</h3>
+            <p class="text-xl text-[#90e0ef] font-extrabold">Мы — бесконечно малая точка в бесконечно большом пространстве, состоящая из звёздной пыли.</p>
+        </footer>
 
     </main>
 
-    <footer class="text-center p-6 mt-12 bg-[#0077b6] text-gray-200">
-        <p class="text-sm">География — это непрерывное путешествие, которое продолжается до сих пор.</p>
-    </footer>
-
-
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-<script>
-    function goBack() {
-        console.log('goBack() вызвана');
-        if (typeof bridge !== 'undefined' && bridge) {
-            console.log('Bridge найден, вызываю onBackClicked()');
-            bridge.onBackClicked();
-        } else {
-            console.log('Bridge не найден!');
-        }
-    }
 
-    // Инициализация QWebChannel
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Инициализация QWebChannel...');
 
-        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-            try {
-                new QWebChannel(qt.webChannelTransport, function(channel) {
-                    window.bridge = channel.objects.bridge;
-                    console.log('✅ Bridge подключен!');
-                });
-            } catch(e) {
-                console.error('❌ QWebChannel ошибка:', e);
-            }
-        } else {
-            console.warn('⚠️ QWebChannel или qt не найден');
-        }
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
     });
-</script>
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
 
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
 </body>
 </html>

@@ -3,420 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Укрепление Казахского ханства при Касым-хане</title>
+    <title>Плакат: Образование и Наука</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        body { font-family: 'Inter', sans-serif; background: #eef2ff; color: #1e3a8a; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .royal-gradient {
-            background: radial-gradient(circle at top right, #0369a1, #f8fafc 85%);
-        }
-
-        .premium-card {
-            background: white;
-            border-radius: 3rem;
-            border: 1px solid #bae6fd;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 60px -15px rgba(3, 105, 161, 0.15);
-            border-color: #38bdf8;
-        }
-
-        .lang-active {
-            background-color: #0c4a6e;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(12, 74, 110, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: #fff;
-            border: 1px solid #e0f2fe;
-        }
-
-        .info-panel {
-            background: rgba(255, 255, 255, 0.95);
-            border-left: 8px solid #0369a1;
-            padding: 2.5rem;
-            border-radius: 2.5rem;
-            transition: all 0.5s ease;
-        }
-
-        .term-badge {
-            background: #f0f9ff;
-            color: #0369a1;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+        .lang-active { background-color: #1e3a8a !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #1e3a8a; position: relative; min-height: 1200px; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.15); }
+        .feature-card { background: #f1f5f9; border-radius: 2rem; padding: 2rem; border-top: 8px solid #3b82f6; }
     </style>
 </head>
-<body class="royal-gradient min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-white/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-blue-200">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-blue-700">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-blue-700">EN</button>
+    </div>
 
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-blue-900 pb-10 mb-12">
+            <h1 id="title" class="text-5xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">Образование и Наука</h1>
+            <p id="desc" class="text-xl font-medium text-blue-700 italic">От ликвидации неграмотности к высотам фундаментальных знаний</p>
+        </header>
 
-    <!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-sky-100 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-sky-950 text-center">Касым-хан: Собиратель казахских земель</h1>
-            <div class="flex bg-sky-50 p-1 rounded-2xl border border-sky-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Law Code (Canvas) -->
-        <div class="premium-card p-8 md:p-12 shadow-sm">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-sky-600 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-nowrap">Legislative Foundation Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-sky-950 leading-tight uppercase italic">Светлый путь Касым-хана</h2>
-                    <p id="viz-desc" class="text-lg text-sky-900/60 font-light leading-relaxed">
-                        Первый свод законов «Қасқа жолы» заложил правовые основы единства нации. Нажмите на символы пяти разделов закона на чертеже, чтобы изучить их содержание.
+        <div class="space-y-12">
+            <!-- Блок 1: Академия -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="feature-card">
+                    <h2 id="sec1T" class="text-2xl font-black uppercase text-blue-900 mb-4">Академия Наук</h2>
+                    <p id="sec1D" class="text-sm leading-relaxed text-slate-700">
+                        Основана в 1946 году. Каныш Сатпаев стал её первым президентом. АН КазССР стала крупнейшим научным центром в Средней Азии, координируя сотни институтов и экспедиций.
                     </p>
-                    
-                    <div id="info-display" class="info-panel shadow-xl">
-                        <h3 id="law-title" class="text-xl font-bold text-sky-900 mb-3 uppercase">Изучите Кодекс</h3>
-                        <p id="law-desc" class="text-sky-800/70 text-sm leading-relaxed italic font-light">Кликните на элементы рукописи на холсте справа.</p>
+                    <div class="mt-6 flex items-center gap-3">
+                        <span class="text-4xl">🔭</span>
+                        <span id="fact1" class="text-[10px] font-black uppercase text-blue-600">50+ НИИ к 1970г</span>
                     </div>
                 </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="lawCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-sky-300 font-mono uppercase tracking-[0.4em]">Schematic of the first Kazakh Legal Code</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Historical Achievements -->
-        <div id="plan-section" class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-sky-900 uppercase tracking-[0.5em]">Эпоха Расцвета</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                
-                <!-- Territory Expansion -->
-                <div class="premium-card p-10 flex flex-col border-t-8 border-sky-600">
-                    <div class="mb-6"><span class="term-badge" id="t-geo">Территория</span></div>
-                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Собирание земель</h3>
-                    <p id="c1-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
-                        При Касыме границы ханства расширились до небывалых размеров. На западе — до реки Жайык, на юге — берега Сырдарьи, на востоке — Алтай. Он вернул под контроль степных племен важнейшие города: Сауран, Отрар и Сайрам.
-                    </p>
-                    <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c1-f">
-                        Границы «от Жайыка до Иртыша».
+                <div class="bg-blue-50 p-8 rounded-[2rem] border border-blue-100 flex flex-col justify-center">
+                    <h4 id="chartTitle" class="text-center text-xs font-black uppercase mb-6 text-blue-700 tracking-widest">Рост числа студентов (тыс.)</h4>
+                    <div class="h-40">
+                        <canvas id="studentChart"></canvas>
                     </div>
                 </div>
+            </section>
 
-                <!-- Military & Population -->
-                <div class="premium-card p-10 flex flex-col border-t-8 border-sky-400">
-                    <div class="mb-6"><span class="term-badge" id="t-mil">Мощь</span></div>
-                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Миллионная держава</h3>
-                    <p id="c2-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
-                        По сведениям историка Бабура, численность населения достигла 1 миллиона человек, а войско Касыма насчитывало 300 тысяч всадников. Это сделало Казахское ханство самой мощной силой в Центральной Азии того периода.
+            <!-- Блок 2: Высшая школа -->
+            <section class="bg-slate-900 text-white p-12 rounded-[3.5rem] relative overflow-hidden">
+                <h2 id="sec2T" class="text-3xl font-black uppercase mb-8 text-blue-400 italic">Интеллектуальная Кузница</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                    <p id="sec2D1" class="text-sm font-light leading-relaxed">
+                        К середине XX века в республике действовало более 50 вузов. Ведущие — КазГУ и Казахский политехнический институт — готовили кадры для бурно развивающейся промышленности и сельского хозяйства.
                     </p>
-                    <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c2-f">
-                        300 000 всадников.
-                    </div>
-                </div>
-
-                <!-- Diplomacy -->
-                <div class="premium-card p-10 flex flex-col border-t-8 border-sky-600">
-                    <div class="mb-6"><span class="term-badge" id="t-dip">Дипломатия</span></div>
-                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Признание миром</h3>
-                    <p id="c3-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
-                        При Касым-хане о казахах узнали в Европе. Московское государство при Иване III установило первые дипломатические контакты. Казахстан стал восприниматься как самостоятельный и влиятельный субъект мировой политики.
+                    <p id="sec2D2" class="text-sm font-light leading-relaxed italic border-l border-blue-500/30 pl-6">
+                        Введение всеобщего среднего образования в 1970-х годах окончательно закрепило статус Казахстана как высокообразованной республики.
                     </p>
-                    <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c3-f">
-                        Первые посольства в Москву.
-                    </div>
                 </div>
+                <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5 font-black">UNIV</div>
+            </section>
 
-            </div>
+            <!-- Блок 3: Личность -->
+            <section class="flex gap-10 items-center bg-blue-50 p-10 rounded-[3rem] border border-blue-100">
+                <div class="text-7xl">⚛️</div>
+                <div>
+                    <h3 id="heroTitle" class="text-2xl font-black uppercase text-blue-900 mb-2">Каныш Сатпаев</h3>
+                    <p id="heroD" class="text-lg font-medium text-blue-800 leading-tight">Гений мировой геологии, открывший недра Жезказгана. Человек, объединивший культуру и науку в единый национальный код.</p>
+                </div>
+            </section>
         </div>
 
-        <!-- Section 3: Summary (Full Width) -->
-        <div class="bg-sky-900 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="space-y-8">
-                    <h3 id="legacy-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Наследие Касыма</h3>
-                    <p id="legacy-d" class="text-sky-100/70 text-xl font-light leading-relaxed">
-                        Касым-хан превратил племенной союз в монолитное государство. Его правление стало эталоном для всех последующих ханов, а законы «Қасқа жолы» легли в основу казахского обычного права на столетия вперед.
-                    </p>
-                    <div class="inline-flex items-center gap-4 bg-white/10 px-6 py-2 rounded-full border border-white/20">
-                        <span id="legacy-tag" class="text-sm font-bold uppercase tracking-widest">Апогей кочевой государственности</span>
-                    </div>
-                </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-sky-700/50 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-7xl mb-4 grayscale opacity-20">📜</div>
-                            <div id="found-label" class="text-[10px] font-black uppercase text-sky-300 tracking-[0.5em]">The Bright Path</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">KASYM</div>
-        </div>
-
-    </main>
-
-    <footer class="mt-20 py-20 bg-white border-t border-sky-100 text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl font-light italic leading-tight text-sky-900/60">
-                «Правление Касым-хана стало временем, когда Степь обрела единую волю и закон, ставшие нерушимой основой казахской нации.»
-            </p>
-            <div class="mt-10 h-1 w-24 bg-sky-400 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="mt-20 pt-8 border-t border-blue-200 text-center text-[10px] font-black uppercase text-blue-400 tracking-[0.5em]">
+            Science and Enlightenment • Archive 1920-1970
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Касым-хан: Собиратель земель",
-                vizTitle: "Светлый путь Касым-хана",
-                vizDesc: "Первый свод законов «Қасқа жолы» состоял из 5 основных разделов. Нажмите на элементы схемы для изучения правовых основ ханства.",
-                badge: "Анализ законодательства",
-                lawTitleDefault: "Изучите Кодекс",
-                lawDescDefault: "Кликните на элементы рукописи на холсте.",
-                planTitle: "Эпоха Расцвета",
-                tGeo: "Территория", tMil: "Мощь", tDip: "Дипломатия",
-                c1T: "Собирание земель", c1D: "Касым-хан расширил территорию до Жайыка на западе и до Иртыша на востоке, объединив все казахские роды в одну державу.",
-                c1F: "Границы «от Жайыка до Иртыша».",
-                c2T: "Миллионная держава", c2D: "Население достигло 1 миллиона человек. Военная мощь (300 000 всадников) гарантировала стабильность и защиту рубежей.",
-                c2F: "300 000 всадников.",
-                c3T: "Признание миром", c3D: "Первое признание Казахского ханства европейскими государствами. Установление дипломатических связей с Московским княжеством.",
-                c3F: "Дипломатия с Иваном III.",
-                legacyT: "Наследие Касыма", legacyD: "Касым-хан создал административный и правовой фундамент нации. Его законы оставались незыблемыми до времен Тауке-хана.",
-                legacyTag: "Апогей государственности",
-                footer: "«Правление Касым-хана стало временем, когда Степь обрела единую волю и закон.»",
-                laws: {
-                    property: { name: "Имущественный закон", text: "Регулировал споры о пастбищах, скоте и земле. Устанавливал право собственности рода на определенные кочевья." },
-                    criminal: { name: "Уголовный закон", text: "Определял наказания за воровство, убийство и предательство. Система штрафов (кун) и суровых мер наказания." },
-                    military: { name: "Военный закон", text: "Правила формирования ополчения, раздела добычи и обязанности султанов выставлять воинов по первому зову хана." },
-                    ambassador: { name: "Посольский обычай", text: "Дипломатический протокол: правила приема послов и ведения переговоров с соседями." },
-                    public: { name: "Закон общественности", text: "Обязанности по взаимопомощи (асар), правила проведения праздников и обрядов единства." }
-                }
+                title: "Образование и Наука", desc: "От ликвидации неграмотности к высотам фундаментальных знаний",
+                sec1T: "Академия Наук", sec1D: "Основана в 1946 году. Каныш Сатпаев стал её первым президентом. АН КазССР стала крупнейшим научным центром в Средней Азии.",
+                fact1: "50+ НИИ к 1970г", chartTitle: "Рост числа студентов (тыс.)",
+                sec2T: "Интеллектуальная Кузница", sec2D1: "К середине XX века в республике действовало более 50 вузов. КазГУ и КазПТИ готовили кадры для всей страны.",
+                sec2D2: "Введение всеобщего среднего образования в 1970-х годах закрепило статус высокообразованной республики.",
+                heroTitle: "Каныш Сатпаев", heroD: "Гений мировой геологии, открывший недра Жезказгана. Человек, объединивший культуру и науку."
             },
             kz: {
-                title: "Қасым хан: Жерді біріктіруші",
-                vizTitle: "Қасым ханның қасқа жолы",
-                vizDesc: "«Қасқа жолы» атты алғашқы заңдар жинағы 5 негізгі бөлімнен тұрды. Заң негіздерін білу үшін сызба элементтерін басыңыз.",
-                badge: "Заңнамалық талдау",
-                lawTitleDefault: "Кодексті зерттеңіз",
-                lawDescDefault: "Кенептегі қолжазба элементтерін басыңыз.",
-                planTitle: "Дәуірдің өрлеуі",
-                tGeo: "Аумақ", tMil: "Қуат", tDip: "Дипломатия",
-                c1T: "Жерді жинау", c1D: "Қасым хан хандық аумағын батыста Жайыққа, шығыста Ертіске дейін кеңейтіп, барлық қазақ руларын бір мемлекетке біріктірді.",
-                c1F: "Шекара «Жайықтан Ертіске дейін».",
-                c2T: "Миллиондық держава", c2D: "Халық саны 1 миллион адамға жетті. Әскери қуат (300 000 атты әскер) мемлекет тұрақтылығы мен шекара қауіпсіздігіне кепіл болды.",
-                c2F: "300 000 сарбаз.",
-                c3T: "Әлемдік танылу", c3D: "Қазақ хандығының еуропалық мемлекеттермен алғашқы байланыстары. Мәскеу кінәздігімен дипломатиялық қарым-қатынас орнату.",
-                c3F: "Иван ІІІ-мен дипломатия.",
-                legacyT: "Қасым мұрасы", legacyD: "Қасым хан ұлттың әкімшілік және құқықтық негізін қалады. Оның заңдары Тәуке хан заманына дейін өзгеріссіз қалды.",
-                legacyTag: "Мемлекеттіліктің шарықтау шегі",
-                footer: "«Қасым ханның билігі Даланың біртұтас ерік-жігер мен заңға ие болған кезі болды.»",
-                laws: {
-                    property: { name: "Мүлік заңы", text: "Жайылымдар, мал және жер туралы дауларды реттеді. Рудың белгілі бір қоныстарға меншік құқығын бекітті." },
-                    criminal: { name: "Қылмыс заңы", text: "Ұрлық, кісі өлтіру және сатқындық үшін жазаларды анықтады. Құн төлеу және қатаң жазалау жүйесі." },
-                    military: { name: "Әскери заң", text: "Әскер жасақтау, олжа бөлісу және сұлтандардың хан шақыруымен жауынгер шығару міндеттерін реттеді." },
-                    ambassador: { name: "Елшілік жорасы", text: "Дипломатиялық хаттама: елшілерді қабылдау және көршілермен келіссөз жүргізу ережелері." },
-                    public: { name: "Жұртшылық заңы", text: "Өзара көмек (асар), мерекелер өткізу және бірлік жоралғыларының ережелері." }
-                }
+                title: "Білім және Ғылым", desc: "Сауатсыздықты жоюдан іргелі білім шыңына дейін",
+                sec1T: "Ғылым Академиясы", sec1D: "1946 жылы негізі қаланды. Қаныш Сәтбаев оның тұңғыш президенті болды. ҚазКСР ҒА Орта Азиядағы ең ірі ғылыми орталыққа айналды.",
+                fact1: "1970ж қарай 50+ ҒЗИ", chartTitle: "Студенттер санының өсуі (мың)",
+                sec2T: "Интеллектуалды ұстахана", sec2D1: "ХХ ғасырдың ортасына қарай республикада 50-ден астам жоғары оқу орны жұмыс істеді. ҚазМУ мен ҚазПТИ маңызды рөл атқарды.",
+                sec2D2: "1970-жылдары жалпыға бірдей орта білім берудің енгізілуі жоғары білімді республика мәртебесін бекітті.",
+                heroTitle: "Қаныш Сәтбаев", heroD: "Жезқазған қойнауын ашқан әлемдік геология генийі. Мәдениет пен ғылымды біріктірген тұлға."
             },
             en: {
-                title: "Kasym Khan: Unifier of Lands",
-                vizTitle: "Kasym Khan's Bright Path",
-                vizDesc: "The first law code 'Qasqa Zholy' consisted of 5 main sections. Click on the elements of the diagram to study the legal foundations.",
-                badge: "Legal Analysis",
-                lawTitleDefault: "Explore the Code",
-                lawDescDefault: "Click on the elements of the manuscript on the canvas.",
-                planTitle: "Era of Zenith",
-                tGeo: "Territory", tMil: "Power", tDip: "Diplomacy",
-                c1T: "Gathering Lands", c1D: "Kasym Khan expanded the territory to the Yaik in the West and the Irtysh in the East, uniting all Kazakh clans.",
-                c1F: "Borders 'from Yaik to Irtysh'.",
-                c2T: "State of a Million", c2D: "Population reached 1 million. Military power (300,000 riders) ensured stability and border protection.",
-                c2F: "300,000 riders.",
-                c3T: "Global Recognition", c3D: "The first recognition of the Kazakh Khanate by European states. Establishment of ties with the Duchy of Moscow.",
-                c3F: "Diplomacy with Ivan III.",
-                legacyT: "Kasym's Legacy", legacyD: "Kasym Khan created the administrative and legal foundation of the nation. His laws remained a standard until the era of Tauke Khan.",
-                legacyTag: "Apogee of Statehood",
-                footer: "«Kasym Khan's reign was a time when the Steppe found a single will and law.»",
-                laws: {
-                    property: { name: "Property Law", text: "Regulated disputes over pastures, livestock, and land. Established clan rights to specific migration routes." },
-                    criminal: { name: "Criminal Law", text: "Defined punishments for theft, murder, and treason. Included the 'Kun' (fine) system and harsh measures." },
-                    military: { name: "Military Law", text: "Rules for forming the militia, dividing loot, and the sultans' duty to provide soldiers upon the Khan's call." },
-                    ambassador: { name: "Ambassadorial Customs", text: "Diplomatic protocol: rules for receiving envoys and negotiating with neighbors." },
-                    public: { name: "Public Law", text: "Duties for mutual aid (asar), rules for conducting festivals, and rituals of national unity." }
-                }
+                title: "Education & Science", desc: "From basic literacy to the heights of fundamental knowledge",
+                sec1T: "Academy of Sciences", sec1D: "Founded in 1946. Kanysh Satpayev became its first president. The AS of KazSSR became the largest scientific hub in Central Asia.",
+                fact1: "50+ Research Inst by 1970", chartTitle: "Growth of Students (thousands)",
+                sec2T: "Intellectual Forge", sec2D1: "By the mid-20th century, over 50 universities operated in the republic. KazSU and KazPTI trained cadres for the whole country.",
+                sec2D2: "Introduction of universal secondary education in the 1970s finalized the high educational status.",
+                heroTitle: "Kanysh Satpayev", heroD: "A genius of world geology who discovered Jezkazgan's riches. A man who united culture and science."
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('lawCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 500;
-            drawLaws();
-        }
-
-        function drawLaws() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Draw Central Seal (The Law Center)
-            ctx.beginPath();
-            ctx.arc(cx, cy, 60 * scale, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(3, 105, 161, 0.1)';
-            ctx.fill();
-            ctx.strokeStyle = '#0369a1';
-            ctx.lineWidth = 4;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#0369a1';
-            ctx.font = 'bold 14px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText("ҚАСҚА", cx, cy - 5);
-            ctx.fillText("ЖОЛЫ", cx, cy + 15);
-
-            // 2. Draw 5 Petals (The 5 sections)
-            const angles = [0, 72, 144, 216, 288];
-            const ids = ['property', 'criminal', 'military', 'ambassador', 'public'];
-            const labels = ["PROPERTY", "CRIMINAL", "MILITARY", "ENVOYS", "PUBLIC"];
-
-            angles.forEach((angle, i) => {
-                const rad = (angle - 90) * Math.PI / 180;
-                const dist = 150 * scale;
-                const px = cx + Math.cos(rad) * dist;
-                const py = cy + Math.sin(rad) * dist;
-
-                // Connecting lines
-                ctx.beginPath();
-                ctx.moveTo(cx + Math.cos(rad) * 60 * scale, cy + Math.sin(rad) * 60 * scale);
-                ctx.lineTo(px, py);
-                ctx.strokeStyle = 'rgba(3, 105, 161, 0.3)';
-                ctx.stroke();
-
-                // Section circle
-                ctx.beginPath();
-                ctx.arc(px, py, 45 * scale, 0, Math.PI * 2);
-                ctx.fillStyle = '#fff';
-                ctx.fill();
-                ctx.strokeStyle = '#0ea5e9';
-                ctx.stroke();
-                
-                ctx.fillStyle = '#0369a1';
-                ctx.font = 'bold 9px Inter';
-                ctx.fillText(labels[i], px, py + 5);
-            });
-            
-            // Labels for guidance
-            ctx.fillStyle = 'rgba(3, 105, 161, 0.2)';
-            ctx.font = 'bold 10px Inter';
-            ctx.fillText("TAP ON NODES TO ANALYZE LAWS", cx, 40 * scale);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            const angles = [0, 72, 144, 216, 288];
-            const ids = ['property', 'criminal', 'military', 'ambassador', 'public'];
-
-            let target = null;
-            angles.forEach((angle, i) => {
-                const rad = (angle - 90) * Math.PI / 180;
-                const dist = 150 * scale;
-                const px = cx + Math.cos(rad) * dist;
-                const py = cy + Math.sin(rad) * dist;
-                if (Math.sqrt((x - px)**2 + (y - py)**2) < 50 * scale) target = ids[i];
-            });
-
-            if (target) {
-                const info = translations[currentLang].laws[target];
-                document.getElementById('law-title').innerText = info.name;
-                document.getElementById('law-desc').innerText = info.text;
-                document.getElementById('info-display').style.borderColor = '#0284c7';
-            }
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('law-title').innerText = t.lawTitleDefault;
-            document.getElementById('law-desc').innerText = t.lawDescDefault;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            
-            document.getElementById('t-geo').innerText = t.tGeo;
-            document.getElementById('t-mil').innerText = t.tMil;
-            document.getElementById('t-dip').innerText = t.tDip;
-
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c1-f').innerText = t.c1F;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c2-f').innerText = t.c2F;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c3-f').innerText = t.c3F;
-
-            document.getElementById('legacy-t').innerText = t.legacyT;
-            document.getElementById('legacy-d').innerText = t.legacyD;
-            document.getElementById('legacy-tag').innerText = t.legacyTag;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-sky-600 hover:bg-white transition-all";
-            });
-
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('fact1').innerText = t.fact1;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D1').innerText = t.sec2D1;
+            document.getElementById('sec2D2').innerText = t.sec2D2;
+            document.getElementById('heroTitle').innerText = t.heroTitle;
+            document.getElementById('heroD').innerText = t.heroD;
+            renderChart();
         }
 
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('studentChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: ['1950', '1960', '1970', '1980'], datasets: [{ data: [35, 77, 210, 260], backgroundColor: '#1e3a8a', borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -449,5 +171,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

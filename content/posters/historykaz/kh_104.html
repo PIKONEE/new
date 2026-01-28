@@ -3,276 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Изменения в эпоху бронзы</title>
+    <title>Эпоха Мезолита</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Добавляем Montserrat и Inter с расширенной кириллицей для корректного отображения казахских букв -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fdfaf9; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .clay-border {
-            border-left: 8px solid #92400e;
+        .glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(20, 184, 166, 0.2);
         }
 
-        .shadow-soft {
-            box-shadow: 0 10px 40px -10px rgba(146, 64, 14, 0.15);
+        .gradient-bg {
+            background: radial-gradient(circle at top right, #f0fdfa, #f1f5f9);
         }
 
-        .lang-active {
-            background-color: #92400e;
-            color: white;
-            box-shadow: 0 4px 12px rgba(146, 64, 14, 0.3);
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        .feature-block {
-            transition: all 0.4s ease;
+        .feature-card:hover {
+            transform: scale(1.02) translateY(-5px);
         }
 
-        .feature-block:hover {
-            transform: translateY(-5px);
-            background-color: #fff;
+        /* Плавное появление контента */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        canvas {
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.08));
-        }
+        .animate-fade { animation: fadeIn 0.6s ease-out forwards; }
     </style>
 </head>
-<body class="text-stone-900">
+<body class="gradient-bg text-slate-800 min-h-screen">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
-
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-200 px-6 py-4">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 glass border-b border-teal-100 px-6 py-4">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <span class="text-3xl">🏺</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tight text-amber-900">Социум Бронзы</h1>
+                <span class="text-3xl">🏹</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-extrabold text-teal-800 tracking-tight uppercase">Эпоха Мезолита</h1>
             </div>
-            <div class="flex bg-stone-100 p-1 rounded-full border border-stone-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
+            <div class="flex bg-teal-50 p-1 rounded-2xl border border-teal-100">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-5 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-5 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-5 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="max-w-6xl mx-auto px-6 py-12 space-y-16">
+    <main class="max-w-6xl mx-auto px-6 py-10 animate-fade">
         
-        <!-- Section 1: Society Pyramid (Map) -->
-        <div class="bg-stone-900 rounded-[3rem] p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-10 text-9xl opacity-5 pointer-events-none">🤝</div>
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5">
-                    <div id="badge" class="inline-block bg-amber-500 text-stone-900 px-4 py-1 rounded-full text-xs font-black uppercase mb-6 tracking-widest">Social Structure</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black mb-6 leading-tight">Пирамида неравенства</h2>
-                    <p id="viz-desc" class="text-lg text-stone-400 font-light leading-relaxed mb-8">
-                        С развитием хозяйства общество разделилось. Богатство и власть сосредоточились в руках вождей и жрецов, а труд стал специализированным.
+        <!-- Section 1: The Radar Map & Hero -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            <div class="lg:col-span-7 glass p-8 rounded-[2.5rem] shadow-xl shadow-teal-900/5">
+                <h2 id="radar-title" class="text-xl font-bold mb-2 text-teal-700">Прогресс навыков</h2>
+                <p id="radar-desc" class="text-sm text-slate-500 mb-6 font-medium">Сравнение технологий палеолита и мезолита</p>
+                <div class="h-[380px] w-full">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Accent Highlight Block -->
+            <div class="lg:col-span-5 bg-teal-600 rounded-[2.5rem] p-10 text-white flex flex-col justify-center relative overflow-hidden shadow-2xl">
+                <div class="relative z-10">
+                    <div class="inline-block bg-teal-500/50 backdrop-blur-sm px-4 py-1 rounded-full text-xs font-bold mb-6 uppercase tracking-widest">Top Breakthrough</div>
+                    <h2 id="highlight-title" class="text-3xl font-extrabold mb-6 leading-tight">Великое изобретение</h2>
+                    <p id="highlight-text" class="text-teal-50 leading-relaxed text-lg font-light">
+                        Лук и стрелы изменили всё. Охота стала дистанционной, а добыча — более мелкой и быстрой.
                     </p>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-amber-500 text-2xl">👑</span>
-                            <span id="viz-stat1" class="text-sm font-bold uppercase tracking-widest">Выделение элиты</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="text-amber-500 text-2xl">⚒️</span>
-                            <span id="viz-stat2" class="text-sm font-bold uppercase tracking-widest">Разделение труда</span>
-                        </div>
+                    <div class="mt-8 flex items-center space-x-4">
+                        <div class="h-1 w-12 bg-white rounded-full"></div>
+                        <span class="text-4xl">🏹</span>
                     </div>
                 </div>
-                <div class="lg:col-span-7 h-80 md:h-[400px]">
-                    <canvas id="societyChart"></canvas>
-                </div>
+                <!-- Abstract visual element (Emoji pattern) -->
+                <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-10 pointer-events-none rotate-12">🏹</div>
             </div>
         </div>
 
-        <!-- Section 2: Changes in Life (Plan) -->
+        <!-- Section 2: Anatomy of Era (Dynamic Layout) -->
         <div class="space-y-10">
-            <h2 id="plan-title" class="text-2xl font-black text-stone-800 uppercase tracking-widest text-center">Ключевые трансформации</h2>
+            <h2 id="plan-title" class="text-3xl font-extrabold text-slate-800 tracking-tight">Анатомия эпохи</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
-                <!-- Card 1 -->
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-soft clay-border feature-block">
-                    <div class="text-4xl mb-6">⚒️</div>
-                    <h3 id="card1-t" class="text-xl font-bold mb-4">Металлургия и ремесло</h3>
-                    <p id="card1-d" class="text-stone-500 text-sm leading-relaxed">Появление мастеров-профессионалов. Кузнецы и литейщики стали отдельной, уважаемой группой, чьи знания передавались по наследству.</p>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-soft clay-border feature-block">
-                    <div class="text-4xl mb-6">💰</div>
-                    <h3 id="card2-t" class="text-xl font-bold mb-4">Частная собственность</h3>
-                    <p id="card2-d" class="text-stone-500 text-sm leading-relaxed">Излишки продуктов привели к накоплению богатства. Появилось имущественное неравенство, что отражено в богатых и бедных захоронениях.</p>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-soft clay-border feature-block">
-                    <div class="text-4xl mb-6">🧔</div>
-                    <h3 id="card3-t" class="text-xl font-bold mb-4">Усиление патриархата</h3>
-                    <p id="card3-d" class="text-stone-500 text-sm leading-relaxed">Тяжелый физический труд в металлургии и скотоводстве закрепил главенствующую роль мужчины в семье и обществе.</p>
-                </div>
-
-                <!-- Card 4 (Wide) -->
-                <div class="md:col-span-2 lg:col-span-3 bg-amber-50 p-10 rounded-[3rem] border border-amber-200/50 flex flex-col md:flex-row items-center gap-10">
-                    <div class="shrink-0 text-7xl">🔥</div>
-                    <div>
-                        <h3 id="card4-t" class="text-2xl font-bold mb-4">Духовная жизнь и обряды</h3>
-                        <p id="card4-d" class="text-stone-600 leading-relaxed italic">
-                            Усложнение общества привело к усложнению религии. Появились величественные курганы и сложные ритуалы жертвоприношений, отражающие статус умершего.
-                        </p>
+            <div class="grid grid-cols-1 md:grid-cols-11 gap-8">
+                <!-- Large Feature -->
+                <div class="md:col-span-6 glass p-10 rounded-[2.5rem] feature-card border-t-4 border-teal-500">
+                    <div class="flex flex-col space-y-6">
+                        <div class="bg-teal-50 w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🌍</div>
+                        <div>
+                            <h3 id="card1-t" class="text-2xl font-bold mb-4 text-slate-800">Глобальное потепление</h3>
+                            <p id="card1-d" class="text-slate-600 leading-relaxed text-lg">Ледник отступил, сформировались современные реки и озера. Животный мир изменился: на смену мамонтам пришли косули, кабаны и зайцы.</p>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Medium Feature -->
+                <div class="md:col-span-5 glass p-10 rounded-[2.5rem] feature-card border-t-4 border-orange-400">
+                    <div class="flex flex-col space-y-6">
+                        <div class="bg-orange-50 w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🐕</div>
+                        <div>
+                            <h3 id="card2-t" class="text-2xl font-bold mb-4 text-slate-800">Верный друг</h3>
+                            <p id="card2-d" class="text-slate-600 leading-relaxed text-lg">В мезолите произошло важнейшее событие — приручение собаки. Она стала помощником на охоте и первым охранником стоянки.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Width Innovation Card -->
+            <div class="bg-slate-900 rounded-[3rem] p-1 md:p-12 overflow-hidden relative shadow-2xl">
+                <div class="bg-slate-800/50 p-8 md:p-12 rounded-[2.5rem] border border-slate-700/50 flex flex-col md:flex-row items-center gap-12 z-10 relative">
+                    <div class="shrink-0 flex flex-col items-center">
+                        <div class="w-32 h-32 bg-teal-500/20 rounded-full flex items-center justify-center text-7xl shadow-2xl shadow-teal-500/20 animate-pulse">🛶</div>
+                        <div id="badge-tech" class="mt-4 bg-teal-500 text-white px-6 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">Инновация</div>
+                    </div>
+                    <div class="flex-1 text-center md:text-left text-white">
+                        <h3 id="card3-t" class="text-3xl font-extrabold mb-6">Водный транспорт и рыболовство</h3>
+                        <p id="card3-d" class="text-slate-300 text-xl font-light leading-relaxed">Люди изобрели лодку-долбленку, весла и рыболовные сети. Рыба стала постоянным источником пищи, что позволило дольше оставаться на одном месте.</p>
+                    </div>
+                </div>
+                <!-- Abstract decorations -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
+            </div>
+
+            <!-- Fact Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-[2rem] text-center border border-slate-100 shadow-sm feature-card">
+                    <div class="text-4xl mb-4">💎</div>
+                    <h4 id="small1-t" class="font-bold text-slate-800 text-lg uppercase tracking-wide">Микролиты</h4>
+                    <p id="small1-d" class="text-sm text-slate-500 mt-3 font-medium">Миниатюрные каменные пластины для наконечников.</p>
+                </div>
+                <div class="bg-white p-8 rounded-[2rem] text-center border border-slate-100 shadow-sm feature-card">
+                    <div class="text-4xl mb-4">🐚</div>
+                    <h4 id="small2-t" class="font-bold text-slate-800 text-lg uppercase tracking-wide">Искусство</h4>
+                    <p id="small2-d" class="text-sm text-slate-500 mt-3 font-medium">Украшения из ракушек и мелкая пластика.</p>
+                </div>
+                <div class="bg-white p-8 rounded-[2rem] text-center border border-slate-100 shadow-sm feature-card">
+                    <div class="text-4xl mb-4">🛖</div>
+                    <h4 id="small3-t" class="font-bold text-slate-800 text-lg uppercase tracking-wide">Миграции</h4>
+                    <p id="small3-d" class="text-sm text-slate-500 mt-3 font-medium">Сезонные перемещения небольших групп людей.</p>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer class="mt-20 py-24 bg-stone-100 border-t border-stone-200">
+    <footer class="mt-20 py-20 bg-slate-50 border-t border-slate-200">
         <div class="max-w-3xl mx-auto px-6 text-center">
-            <div class="text-amber-800 text-5xl mb-8">“</div>
-            <p id="footer-text" class="text-2xl font-light italic text-stone-800 leading-tight">
-                «Бронзовый век превратил человеческий коллектив в сложный механизм, где каждый занял свою ступень в великой пирамиде жизни.»
+            <div class="text-teal-600 text-4xl mb-8">“</div>
+            <p id="footer-conclusion" class="text-2xl font-semibold text-slate-800 leading-tight italic">
+                Мезолит — это эпоха гибкости. Человек перестал просто следовать за природой и начал подстраивать технологии под её изменения.
             </p>
-            <div class="mt-10 flex justify-center space-x-2">
-                <div class="w-2 h-2 rounded-full bg-amber-800"></div>
-                <div class="w-12 h-2 rounded-full bg-amber-800"></div>
-                <div class="w-2 h-2 rounded-full bg-amber-800"></div>
-            </div>
+            <div class="mt-8 text-slate-400 font-bold uppercase tracking-[0.3em] text-xs">— Mesolithic Age —</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Социум Бронзы",
-                vizTitle: "Пирамида неравенства",
-                vizDesc: "С развитием хозяйства общество разделилось. Богатство и власть сосредоточились в руках вождей, а труд стал специализированным.",
-                vizStat1: "Выделение элиты", vizStat2: "Разделение труда",
-                badge: "Социальная структура",
-                planTitle: "Ключевые трансформации",
-                card1T: "Металлургия и ремесло", card1D: "Появление мастеров-профессионалов. Кузнецы и литейщики стали уважаемой группой, чьи знания передавались по наследству.",
-                card2T: "Частная собственность", card2D: "Излишки продуктов привели к накоплению богатства. Появилось неравенство, заметное в захоронениях.",
-                card3T: "Усиление патриархата", card3D: "Тяжелый труд в металлургии и скотоводстве закрепил главенствующую роль мужчины в семье.",
-                card4T: "Духовная жизнь и обряды", card4D: "Усложнение религии привело к появлению величественных курганов и ритуалов, отражающих статус правителей.",
-                footer: "«Бронзовый век превратил человеческий коллектив в сложный механизм, где каждый занял свою ступень в великой пирамиде жизни.»",
-                chartLabels: ["Вожди / Жрецы", "Воины", "Ремесленники", "Общинники"]
+                title: "Эпоха Мезолита",
+                radarTitle: "Карта способностей",
+                radarDesc: "Сравнение технологий палеолита и мезолита (уровень развития)",
+                highlightTitle: "Великое изобретение",
+                highlightText: "Лук и стрелы изменили всё. Охота стала дистанционной, а добыча — более мелкой и быстрой.",
+                planTitle: "Анатомия эпохи",
+                card1T: "Глобальное потепление",
+                card1D: "Ледник отступил, сформировались современные реки и озера. Животный мир изменился: на смену мамонтам пришли косули, кабаны и зайцы.",
+                card2T: "Верный друг",
+                card2D: "В мезолите произошло важнейшее событие — приручение собаки. Она стала помощником на охоте и первым охранником стоянки.",
+                card3T: "Водный транспорт и рыболовство",
+                card3D: "Люди изобрели лодку-долбленку, весла и рыболовные сети. Рыба стала постоянным источником пищи, что позволило дольше оставаться на одном месте.",
+                badgeTech: "Инновация",
+                small1T: "Микролиты", small1D: "Миниатюрные каменные пластины для наконечников.",
+                small2T: "Искусство", small2D: "Украшения из ракушек и мелкая пластика.",
+                small3T: "Миграции", small3D: "Сезонные перемещения небольших групп людей.",
+                footer: "«Мезолит — это эпоха гибкости. Человек перестал просто следовать за природой и начал подстраивать технологии под её изменения.»",
+                radarLabels: ["Охота", "Рыболовство", "Собирательство", "Инструменты", "Мобильность", "Социальность"],
+                set1: "Палеолит", set2: "Мезолит"
             },
             kz: {
-                title: "Қола әлеуметі",
-                vizTitle: "Теңсіздік пирамидасы",
-                vizDesc: "Шаруашылықтың дамуымен қоғам жіктелді. Байлық пен билік көсемдердің қолына шоғырланды, ал еңбек мамандандырылды.",
-                vizStat1: "Элитаның бөлінуі", vizStat2: "Еңбек бөлінісі",
-                badge: "Әлеуметтік құрылым",
-                planTitle: "Негізгі трансформациялар",
-                card1T: "Металлургия және қолөнер", card1D: "Кәсіби шеберлер пайда болды. Ұсталар мен құюшылар білімі ұрпақтан ұрпаққа берілетін ерекше топқа айналды.",
-                card2T: "Жеке меншік", card2D: "Өнімнің артық мөлшері байлықтың жиналуына әкелді. Мүліктік теңсіздік зираттардан айқын көріне бастады.",
-                card3T: "Патриархаттың күшеюі", card3D: "Металлургия мен мал шаруашылығындағы ауыр еңбек отбасындағы ер адамның рөлін нығайтты.",
-                card4T: "Рухани өмір мен салт-жоралғылар", card4D: "Діннің күрделенуі билеушілердің мәртебесін көрсететін зәулім қорғандар мен жоралғылардың пайда болуына әкелді.",
-                footer: "«Қола дәуірі адамзат ұжымын әркім өз орнын табатын күрделі механизмге айналдырды.»",
-                chartLabels: ["Көсемдер / Абыздар", "Жауынгерлер", "Қолөнершілер", "Қатардағы қауым мүшелері"]
+                title: "Мезолит дәуірі",
+                radarTitle: "Қабілеттер картасы",
+                radarDesc: "Палеолит пен мезолит технологияларын салыстыру (даму деңгейі)",
+                highlightTitle: "Ұлы жаңалық",
+                highlightText: "Садақ пен жебе бәрін өзгертті. Аң аулау қашықтықтан жүргізіліп, олжалар кішірек әрі жылдамырақ болды.",
+                planTitle: "Дәуір анатомиясы",
+                card1T: "Жаһандық жылыну",
+                card1D: "Мұздық шегініп, қазіргі өзендер мен көлдер қалыптасты. Жануарлар әлемі өзгерді: мамонттардың орнына еліктер, қабандар мен қояндар келді.",
+                card2T: "Сенімді дос",
+                card2D: "Мезолитте ең маңызды оқиға орын алды — итті қолға үйрету. Ол аң аулауда көмекші және тұрақтардың алғашқы күзетшісі болды.",
+                card3T: "Су көлігі және балық аулау",
+                card3D: "Адамдар қайықтарды, ескектерді және балық аулау торларын ойлап тапты. Балық тұрақты азық көзіне айналды.",
+                badgeTech: "Инновация",
+                small1T: "Микролиттер", small1D: "Ұсақ тас пластиналардан жасалған құралдар.",
+                small2T: "Өнер", small2D: "Қабыршақтардан жасалған әшекейлер мен суреттер.",
+                small3T: "Миграция", small3D: "Шағын топтардың маусымдық қоныс аударуы.",
+                footer: "«Мезолит — икемділік дәуірі. Адам табиғаттың соңынан еруді қойып, технологияларды өзгерістерге бейімдей бастады.»",
+                radarLabels: ["Аңшылық", "Балық аулау", "Терімшілік", "Құралдар", "Қозғалыс", "Әлеуметтік"],
+                set1: "Палеолит", set2: "Мезолит"
             },
             en: {
-                title: "Bronze Society",
-                vizTitle: "Pyramid of Inequality",
-                vizDesc: "With economic growth, society became stratified. Wealth and power concentrated in the hands of chiefs, and labor became specialized.",
-                vizStat1: "Elite Emergence", vizStat2: "Division of Labor",
-                badge: "Social Structure",
-                planTitle: "Key Transformations",
-                card1T: "Metallurgy and Craft", card1D: "Professional masters appeared. Smiths and founders became a respected group with inherited knowledge.",
-                card2T: "Private Property", card2D: "Surplus products led to wealth accumulation. Property inequality became visible in burials.",
-                card3T: "Rise of Patriarchy", card3D: "Hard labor in metallurgy and cattle breeding solidified the dominant role of men in the family.",
-                card4T: "Spiritual Life and Rites", card4D: "Religious complexity led to grand burial mounds and rituals reflecting the status of the deceased.",
-                footer: "«The Bronze Age turned the human collective into a complex mechanism, where everyone took their place in the great pyramid of life.»",
-                chartLabels: ["Chiefs / Priests", "Warriors", "Artisans", "Commoners"]
+                title: "The Mesolithic Era",
+                radarTitle: "Skill Map",
+                radarDesc: "Comparison between Paleolithic and Mesolithic technologies",
+                highlightTitle: "Great Invention",
+                highlightText: "Bows and arrows changed everything. Hunting became long-distance, and prey became smaller and faster.",
+                planTitle: "Era Anatomy",
+                card1T: "Global Warming",
+                card1D: "The glaciers retreated, forming modern rivers and lakes. The fauna changed: mammoths were replaced by deer, boars, and hares.",
+                card2T: "Faithful Friend",
+                card2D: "A major event occurred in the Mesolithic — the domestication of the dog. It became a hunting assistant and the first guard.",
+                card3T: "Water Transport & Fishing",
+                card3D: "People invented dugout boats, oars, and fishing nets. Fish became a constant food source, allowing for longer settlements.",
+                badgeTech: "Innovation",
+                small1T: "Microliths", small1D: "Miniature stone plates for tool heads.",
+                small2T: "Art", small2D: "Shell jewelry and more detailed rock art.",
+                small3T: "Migrations", small3D: "Seasonal movements of small groups following herds.",
+                footer: "«The Mesolithic is an era of flexibility. Humans stopped just following nature and started adapting technologies to its changes.»",
+                radarLabels: ["Hunting", "Fishing", "Gathering", "Tools", "Mobility", "Social life"],
+                set1: "Paleolithic", set2: "Mesolithic"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('societyChart').getContext('2d');
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'bar',
+                type: 'radar',
                 data: {
-                    labels: translations[lang].chartLabels,
-                    datasets: [{
-                        label: 'Social Weight',
-                        data: [15, 25, 40, 90], // пирамидальное распределение
-                        backgroundColor: ['#92400e', '#b45309', '#d97706', '#f59e0b'],
-                        borderRadius: 20,
-                        borderSkipped: false,
-                        barThickness: 40
-                    }]
+                    labels: translations[lang].radarLabels,
+                    datasets: [
+                        {
+                            label: translations[lang].set1,
+                            data: [90, 10, 80, 40, 30, 40],
+                            backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                            borderColor: '#94a3b8',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: translations[lang].set2,
+                            data: [85, 95, 75, 90, 80, 70],
+                            backgroundColor: 'rgba(20, 184, 166, 0.4)',
+                            borderColor: '#14b8a6',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#14b8a6',
+                            pointRadius: 4
+                        }
+                    ]
                 },
                 options: {
-                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
                     scales: {
-                        x: { display: false },
-                        y: {
-                            grid: { display: false },
-                            ticks: {
-                                color: '#a8a29e',
-                                font: { family: 'Montserrat', weight: 'bold' }
-                            }
+                        r: {
+                            angleLines: { color: 'rgba(0,0,0,0.05)' },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            pointLabels: {
+                                font: {
+                                    size: 13,
+                                    family: 'Inter',
+                                    weight: 'bold'
+                                }
+                            },
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', weight: 'bold' } }
                         }
                     }
                 }
             });
         }
 
-        function setLang(lang) {
+        function changeLang(lang) {
             const t = translations[lang];
+            
             document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('viz-stat1').innerText = t.vizStat1;
-            document.getElementById('viz-stat2').innerText = t.vizStat2;
-            document.getElementById('badge').innerText = t.badge;
+            document.getElementById('radar-title').innerText = t.radarTitle;
+            document.getElementById('radar-desc').innerText = t.radarDesc;
+            document.getElementById('highlight-title').innerText = t.highlightTitle;
+            document.getElementById('highlight-text').innerText = t.highlightText;
             document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('card1-t').innerText = t.card1T; document.getElementById('card1-d').innerText = t.card1D;
-            document.getElementById('card2-t').innerText = t.card2T; document.getElementById('card2-d').innerText = t.card2D;
-            document.getElementById('card3-t').innerText = t.card3T; document.getElementById('card3-d').innerText = t.card3D;
-            document.getElementById('card4-t').innerText = t.card4T; document.getElementById('card4-d').innerText = t.card4D;
-            document.getElementById('footer-text').innerText = t.footer;
+            document.getElementById('footer-conclusion').innerText = t.footer;
 
+            document.getElementById('card1-t').innerText = t.card1T;
+            document.getElementById('card1-d').innerText = t.card1D;
+            document.getElementById('card2-t').innerText = t.card2T;
+            document.getElementById('card2-d').innerText = t.card2D;
+            document.getElementById('card3-t').innerText = t.card3T;
+            document.getElementById('card3-d').innerText = t.card3D;
+            document.getElementById('badge-tech').innerText = t.badgeTech;
+
+            document.getElementById('small1-t').innerText = t.small1T;
+            document.getElementById('small1-d').innerText = t.small1D;
+            document.getElementById('small2-t').innerText = t.small2T;
+            document.getElementById('small2-d').innerText = t.small2D;
+            document.getElementById('small3-t').innerText = t.small3T;
+            document.getElementById('small3-d').innerText = t.small3D;
+
+            // Update button styles
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-full text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-full text-sm font-bold text-stone-600 hover:bg-stone-200 transition-all";
+                if (l === lang) {
+                    btn.className = "px-5 py-2 rounded-xl text-sm font-black bg-teal-600 text-white shadow-xl shadow-teal-200 ring-2 ring-teal-600 ring-offset-2";
+                } else {
+                    btn.className = "px-5 py-2 rounded-xl text-sm font-bold text-teal-600 hover:bg-teal-100 transition-all";
+                }
             });
 
             initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
+        window.onload = () => changeLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -305,5 +362,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

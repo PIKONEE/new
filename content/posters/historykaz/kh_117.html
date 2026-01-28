@@ -3,365 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расселение сарматских племен</title>
+    <title>Заря Советов в Степи</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .silver-gradient {
-            background: radial-gradient(circle at top right, #334155, #0f172a 80%);
-        }
-
-        .interactive-box {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 3rem;
-            overflow: hidden;
-        }
-
-        .info-card {
-            background: rgba(15, 23, 42, 0.7);
-            border-bottom: 4px solid #64748b;
+        .rev-theme { background: linear-gradient(to bottom right, #fecaca, #dc2626); }
+        .hero-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #b91c1c;
+            box-shadow: 0 10px 30px -5px rgba(185, 28, 28, 0.2);
             transition: all 0.3s ease;
         }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-            border-color: #94a3b8;
-            background: rgba(30, 41, 59, 0.8);
-        }
-
-        .lang-active {
-            background-color: #94a3b8;
-            color: #0f172a;
-            box-shadow: 0 0 15px rgba(148, 163, 184, 0.4);
-        }
-
-        canvas {
-            cursor: crosshair;
-            transition: opacity 0.5s;
-        }
-
-        .pulse-silver {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(148, 163, 184, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(148, 163, 184, 0); }
-        }
+        .hero-card:hover { transform: scale(1.02); border-color: #ef4444; }
+        .soviet-glow { box-shadow: 0 0 40px rgba(220, 38, 38, 0.5); }
+        .btn-placeholder { background-color: rgba(153, 27, 27, 0.1); color: #991b1b; cursor: default; }
+        .btn-active-static { background-color: #991b1b; color: white; box-shadow: 0 4px 15px rgba(153, 27, 27, 0.4); }
     </style>
 </head>
-<body class="silver-gradient min-h-screen pb-20">
+<body class="rev-theme text-red-950 min-h-screen">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
-
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-slate-800 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3 text-slate-300">
-                <span class="text-3xl">⚔️</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest italic">Сарматы: Всадники Запада</h1>
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-red-300 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🚩</span>
+                <h1 class="text-xl md:text-2xl font-black uppercase tracking-widest text-red-900">История Казахстана: Октябрь</h1>
             </div>
-            <div class="flex bg-slate-900 p-1 rounded-2xl border border-slate-700">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            <div class="flex bg-red-100/50 p-1 rounded-full border border-red-200">
+                <span class="px-6 py-2 rounded-full text-sm font-bold btn-active-static">RU</span>
+                <span class="px-6 py-2 rounded-full text-sm font-bold btn-placeholder opacity-50">KZ</span>
+                <span class="px-6 py-2 rounded-full text-sm font-bold btn-placeholder opacity-50">EN</span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-20">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: Custom Map Explorer (Canvas) -->
-        <div class="interactive-box shadow-2xl">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
-                <!-- Sidebar Info -->
-                <div class="lg:col-span-4 p-8 md:p-12 space-y-6 bg-slate-900/50">
-                    <div id="badge" class="inline-block px-4 py-1 rounded-full bg-slate-700 text-slate-300 text-[10px] font-black uppercase tracking-[0.2em]">Migration Explorer</div>
-                    <h2 id="map-title" class="text-3xl font-black text-white leading-tight">Интерактивная карта расселения</h2>
-                    <p id="map-desc" class="text-slate-400 font-light leading-relaxed">
-                        Сарматы продвигались с востока на запад, осваивая огромные территории от Южного Урала до Дуная. Нажмите на точки интереса на карте, чтобы узнать о племенах.
-                    </p>
-                    <div id="zone-info" class="p-6 rounded-2xl bg-blue-900/20 border border-blue-500/30 animate-pulse">
-                        <span id="instruction" class="text-blue-400 font-bold italic text-sm">Выберите регион на карте справа...</span>
-                    </div>
-                </div>
-                <!-- Interactive Canvas -->
-                <div class="lg:col-span-8 relative bg-slate-950 flex items-center justify-center p-4">
-                    <canvas id="mapCanvas" class="w-full h-full max-h-[500px]"></canvas>
-                    <div class="absolute bottom-6 left-6 text-[10px] text-slate-600 font-mono uppercase tracking-widest">Ancient World Coordinate System</div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/60 p-10 rounded-[3rem] border-2 border-red-200 flex flex-col justify-center backdrop-blur-sm">
+                <div class="inline-block bg-red-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Хронология Революции</div>
+                <h2 class="text-3xl font-black mb-6 leading-tight uppercase text-red-900">Триумфальное шествие</h2>
+                <p class="text-lg text-red-900/90 leading-relaxed font-medium">
+                    Установление Советской власти в Казахстане длилось с конца 1917 по март 1918 года. Власть переходила к Советам как мирным путем (в местах преобладания рабочих), так и в результате ожесточенных вооруженных столкновений.
+                </p>
+            </div>
+            <div class="bg-white/80 p-8 rounded-[3rem] shadow-xl flex items-center justify-center border border-red-100">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="sovietPowerChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Structure (Plan) -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-slate-300 uppercase tracking-[0.4em]">Летопись племен</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Heavy Cavalry -->
-                <div class="info-card p-10 rounded-[3rem] flex flex-col justify-between">
-                    <div>
-                        <div class="text-5xl mb-6">🐎</div>
-                        <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-slate-200">Тяжелая конница</h3>
-                        <p id="c1-d" class="text-slate-400 text-sm leading-relaxed">Сарматы создали катафрактариев — всадников в железных доспехах. Их мощный натиск не могли сдержать даже римские легионы.</p>
-                    </div>
+        <div class="bg-gradient-to-r from-red-900 to-red-800 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl soviet-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">🐪</div>
+                    <div class="text-red-300 font-black text-sm uppercase tracking-[0.3em]">Легенда Революции</div>
                 </div>
-
-                <!-- Women Warriors -->
-                <div class="info-card p-10 rounded-[3rem] flex flex-col justify-between border-slate-400 bg-slate-800/40">
-                    <div>
-                        <div class="text-5xl mb-6">🏹</div>
-                        <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-slate-100">Женщины-воительницы</h3>
-                        <p id="c2-d" class="text-slate-300 text-sm leading-relaxed">У сарматов женщины занимали высокое положение. Они владели оружием, охотились и участвовали в битвах наравне с мужчинами.</p>
-                    </div>
-                    <div class="mt-8 text-[10px] font-black text-slate-500 tracking-widest uppercase">Amazon Legacy</div>
-                </div>
-
-                <!-- Silver Art -->
-                <div class="info-card p-10 rounded-[3rem] flex flex-col justify-between">
-                    <div>
-                        <div class="text-5xl mb-6">💍</div>
-                        <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-slate-200">Серебряный стиль</h3>
-                        <p id="c3-d" class="text-slate-400 text-sm leading-relaxed">В отличие от сакского золота, сарматы предпочитали серебро. Их украшения отличаются массивностью и суровостью форм.</p>
-                    </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 class="text-3xl font-black tracking-tight uppercase text-red-100">Экспедиция Алиби Джангильдина</h3>
+                    <p class="text-xl text-red-50 font-light leading-relaxed">
+                        «Красный караван». В 1918 году Алиби Джангильдин доставил из Москвы через пустыню оружие и боеприпасы на 68 миллиона рублей для Актюбинского фронта. Этот подвиг стал решающим в укреплении Советской власти в регионе.
+                    </p>
                 </div>
             </div>
+            <div class="absolute -bottom-10 -left-20 text-[20rem] opacity-10 pointer-events-none -rotate-12">⚒️</div>
+        </div>
 
-            <!-- Migration Significance -->
-            <div class="bg-slate-300 p-1 md:p-12 rounded-[4rem] shadow-2xl relative overflow-hidden">
-                <div class="bg-slate-900 p-10 md:p-20 rounded-[3.5rem] flex flex-col md:flex-row items-center gap-12 relative z-10">
-                    <div class="text-8xl shrink-0">🌍</div>
-                    <div>
-                        <h3 id="c4-t" class="text-3xl font-black text-white mb-6 uppercase italic">Значение переселения</h3>
-                        <p id="c4-d" class="text-slate-400 text-xl font-light leading-relaxed">
-                            Движение сарматов на запад в I тысячелетии до н.э. привело к падению Скифии и изменению этнического состава Причерноморья и Подунавья.
-                        </p>
-                    </div>
-                </div>
-                <!-- Decorative pattern -->
-                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="hero-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-600">
+                <div class="text-5xl mb-4">🛤️</div>
+                <h4 class="font-bold text-lg mb-2 uppercase">Вдоль железных дорог</h4>
+                <p class="text-sm text-red-900/70 leading-relaxed font-semibold">Советская власть быстрее всего устанавливалась в городах вдоль Оренбург-Ташкентской железной дороги, где был силен рабочий класс.</p>
+            </div>
+            <div class="hero-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-orange-600">
+                <div class="text-5xl mb-4">📜</div>
+                <h4 class="font-bold text-lg mb-2 uppercase">Первые Декреты</h4>
+                <p class="text-sm text-red-900/70 leading-relaxed font-semibold">Декреты о мире и земле привлекли на сторону большевиков беднейшее крестьянство и шаруа, жаждавших перемен.</p>
+            </div>
+            <div class="hero-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-800">
+                <div class="text-5xl mb-4">🤝</div>
+                <h4 class="font-bold text-lg mb-2 uppercase">Двоевластие</h4>
+                <p class="text-sm text-red-900/70 leading-relaxed font-semibold">После Февраля 1917 года в крае сложилось двоевластие: органы Временного правительства и Советы рабочих и солдатских депутатов.</p>
             </div>
         </div>
 
     </main>
 
-    <footer class="mt-20 py-24 bg-black border-t border-slate-800 text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-slate-500">
-                «Сарматы были стальным мостом между античным миром и бескрайними просторами Евразийской степи.»
+    <footer class="mt-20 py-16 bg-red-950 text-red-200/50 border-t-4 border-red-900">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p class="text-xl font-light italic leading-relaxed">
+                «Вся власть Советам!» — этот лозунг расколол общество, ознаменовав начало новой, драматической эпохи в истории Казахстана.
             </p>
-            <div class="mt-12 flex justify-center space-x-2">
-                <div class="w-12 h-1 bg-slate-800 rounded-full"></div>
-                <div class="w-4 h-1 bg-slate-400 rounded-full"></div>
-            </div>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-red-700">Kazakhstan History: The Soviet Era Begins</div>
         </div>
     </footer>
 
     <script>
-        const translations = {
-            ru: {
-                title: "Сарматы: Всадники Запада",
-                mapTitle: "Карта расселения племен",
-                mapDesc: "Сарматы продвигались с востока на запад, осваивая территории от Южного Урала до Дуная. Нажмите на точки, чтобы узнать больше.",
-                badge: "Навигатор миграций",
-                instruction: "Нажмите на точку на карте...",
-                planTitle: "Летопись племен",
-                c1T: "Тяжелая конница", c1D: "Сарматы создали катафрактариев — всадников в железных доспехах. Их натиск не могли сдержать даже римские легионы.",
-                c2T: "Женщины-воительницы", c2D: "У сарматов женщины занимали высокое положение. Они владели оружием, охотились и участвовали в битвах наравне с мужчинами.",
-                c3T: "Серебряный стиль", c3D: "В отличие от сакского золота, сарматы предпочитали серебро. Их украшения отличаются массивностью и суровостью форм.",
-                c4T: "Значение переселения", c4D: "Движение сарматов изменило карту древнего мира, положив конец доминированию скифов и заложив основы новых этносов.",
-                footer: "«Сарматы были стальным мостом между античным миром и бескрайними просторами Евразийской степи.»",
-                zones: {
-                    ural: { name: "Южное Приуралье", text: "Родина сарматов. Здесь в VIII-V вв. до н.э. начали формироваться первые племенные союзы." },
-                    caspian: { name: "Западный Казахстан", text: "Регион обитания племен даев и аорсов. Важный узел на пути к Каспийскому морю." },
-                    black: { name: "Северное Причерноморье", text: "Зона экспансии роксоланов и аланов. Здесь сарматы вытеснили скифов во II в. до н.э." },
-                    danube: { name: "Подунавье", text: "Крайняя точка миграции язигов. Граница столкновения сарматов с Римской империей." }
-                }
+        // Chart Initialization
+        const ctx = document.getElementById('sovietPowerChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Ноябрь 1917', 'Декабрь 1917', 'Январь 1918', 'Февраль 1918', 'Март 1918'],
+                datasets: [{
+                    label: 'Установлена власть (города/регионы)',
+                    data: [20, 45, 65, 85, 95],
+                    borderColor: '#dc2626',
+                    backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#991b1b',
+                    pointRadius: 6,
+                    fill: true,
+                    tension: 0.3
+                }]
             },
-            kz: {
-                title: "Сарматтар: Батыс Салт аттылары",
-                mapTitle: "Тайпалардың қоныстану картасы",
-                mapDesc: "Сарматтар Оңтүстік Оралдан Дунайға дейінгі аумақтарды игеріп, шығыстан батысқа қарай жылжыды. Көбірек білу үшін нүктелерді басыңыз.",
-                badge: "Миграция навигаторы",
-                instruction: "Картадағы нүктені басыңыз...",
-                planTitle: "Тайпалар шежіресі",
-                c1T: "Ауыр атты әскер", c1D: "Сарматтар катафрактарийлерді — темір сауыт киген атты әскерді құрды. Олардың екпініне тіпті Рим легиондары да төтеп бере алмады.",
-                c2T: "Жауынгер әйелдер", c2D: "Сарматтарда әйелдер жоғары мәртебеге ие болды. Олар қару меңгерген, аң аулаған және ерлермен бірдей шайқастарға қатысқан.",
-                c3T: "Күміс стилі", c3D: "Сақ алтынынан айырмашылығы, сарматтар күмісті артық көрді. Олардың әшекейлері массивтілігімен және қаталдығымен ерекшеленеді.",
-                c4T: "Көшудің маңызы", c4D: "Сарматтардың қозғалысы ежелгі дүние картасын өзгертіп, скифтердің үстемдігін аяқтады және жаңа этностардың негізін қалады.",
-                footer: "«Сарматтар антикалық дүние мен Еуразия даласының шексіз кеңістігі арасындағы болат көпір болды.»",
-                zones: {
-                    ural: { name: "Оңтүстік Орал маңы", text: "Сарматтардың Отаны. Мұнда б.з.б. VIII-V ғғ. алғашқы тайпалық одақтар қалыптаса бастады." },
-                    caspian: { name: "Батыс Қазақстан", text: "Дай және аорс тайпаларының мекені. Каспий теңізіне барар жолдағы маңызды торап." },
-                    black: { name: "Солтүстік Қара теңіз маңы", text: "Роксоландар мен аландардың экспансия аймағы. Сарматтар мұнда б.з.б. II ғ. скифтерді ығыстырды." },
-                    danube: { name: "Дунай маңы", text: "Язигтер миграциясының соңғы нүктесі. Сарматтар мен Рим империясының түйіскен шекарасы." }
-                }
-            },
-            en: {
-                title: "Sarmatians: Riders of the West",
-                mapTitle: "Tribe Settlement Map",
-                mapDesc: "Sarmatians moved from east to west, occupying territories from the Southern Urals to the Danube. Click on markers to learn more.",
-                badge: "Migration Navigator",
-                instruction: "Click on a marker on the map...",
-                planTitle: "Chronicle of Tribes",
-                c1T: "Heavy Cavalry", c1D: "Sarmatians created cataphracts — riders in iron armor. Even Roman legions could not hold back their powerful charge.",
-                c2T: "Women Warriors", c2D: "Sarmatian women held high status. They mastered weapons, hunted, and participated in battles alongside men.",
-                c3T: "Silver Style", c3D: "Unlike Saka gold, Sarmatians preferred silver. Their jewelry is distinguished by massiveness and stern forms.",
-                c4T: "Migration Significance", c4D: "The Sarmatian movement changed the map of the ancient world, ending Scythian dominance and laying foundations for new ethnicities.",
-                footer: "«The Sarmatians were a steel bridge between the ancient world and the vast expanses of the Eurasian steppe.»",
-                zones: {
-                    ural: { name: "Southern Urals", text: "Homeland of the Sarmatians. Here in the 8th-5th centuries BC, first tribal unions were formed." },
-                    caspian: { name: "Western Kazakhstan", text: "Region of Dahae and Aorsi tribes. A key hub on the way to the Caspian Sea." },
-                    black: { name: "Northern Black Sea Region", text: "Expansion zone of Roxolani and Alans. Sarmatians displaced Scythians here in the 2nd century BC." },
-                    danube: { name: "Danube Region", text: "The extreme point of Iazyges migration. The border of confrontation between Sarmatians and the Roman Empire." }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { 
+                        display: true, 
+                        text: 'Динамика установления Советской власти (%)', 
+                        font: { family: 'Montserrat', size: 16, weight: 'bold' },
+                        color: '#991b1b'
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100, grid: { color: 'rgba(153, 27, 27, 0.1)' } },
+                    x: { grid: { display: false } }
                 }
             }
-        };
-
-        let currentLang = 'ru';
-        const canvas = document.getElementById('mapCanvas');
-        const ctx = canvas.getContext('2d');
-        const markers = [
-            { id: 'ural', x: 0.8, y: 0.25, color: '#94a3b8' },
-            { id: 'caspian', x: 0.65, y: 0.5, color: '#64748b' },
-            { id: 'black', x: 0.35, y: 0.55, color: '#475569' },
-            { id: 'danube', x: 0.15, y: 0.45, color: '#334155' }
-        ];
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight || 500;
-            drawMap();
-        }
-
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw abstract land outline
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(148, 163, 184, 0.1)';
-            ctx.lineWidth = 2;
-            ctx.moveTo(0, canvas.height * 0.7);
-            ctx.lineTo(canvas.width * 0.3, canvas.height * 0.5);
-            ctx.lineTo(canvas.width * 0.6, canvas.height * 0.4);
-            ctx.lineTo(canvas.width, canvas.height * 0.1);
-            ctx.stroke();
-
-            // Draw Arrows (Migration flow)
-            markers.forEach((m, i) => {
-                if (i < markers.length - 1) {
-                    const next = markers[i+1];
-                    ctx.beginPath();
-                    ctx.setLineDash([5, 5]);
-                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
-                    ctx.moveTo(markers[i].x * canvas.width, markers[i].y * canvas.height);
-                    ctx.lineTo(markers[i+1].x * canvas.width, markers[i+1].y * canvas.height);
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-                }
-            });
-
-            // Draw Markers
-            markers.forEach(m => {
-                const mx = m.x * canvas.width;
-                const my = m.y * canvas.height;
-
-                // Outer glow
-                const grad = ctx.createRadialGradient(mx, my, 5, mx, my, 25);
-                grad.addColorStop(0, 'rgba(148, 163, 184, 0.3)');
-                grad.addColorStop(1, 'transparent');
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(mx, my, 25, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Core
-                ctx.fillStyle = m.color;
-                ctx.beginPath();
-                ctx.arc(mx, my, 8, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            });
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-
-            markers.forEach(m => {
-                const mx = m.x * canvas.width;
-                const my = m.y * canvas.height;
-                const dist = Math.sqrt((clickX - mx)**2 + (clickY - my)**2);
-
-                if (dist < 30) {
-                    const info = translations[currentLang].zones[m.id];
-                    const box = document.getElementById('zone-info');
-                    box.classList.remove('animate-pulse');
-                    box.innerHTML = `
-                        <h4 class="text-white font-bold mb-2 uppercase text-sm">${info.name}</h4>
-                        <p class="text-slate-300 text-xs leading-relaxed">${info.text}</p>
-                    `;
-                }
-            });
         });
-
-        function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('map-title').innerText = t.mapTitle;
-            document.getElementById('map-desc').innerText = t.mapDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('instruction').innerText = t.instruction;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-300 transition-all";
-            });
-
-            resizeCanvas();
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        window.onload = () => setLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -394,5 +172,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

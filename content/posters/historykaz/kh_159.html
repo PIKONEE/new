@@ -3,330 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Исторические труды XVI–XVII веков</title>
+    <title>Внешняя политика Казахстана</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background: #f0f9ff; color: #075985; transition: all 0.5s ease; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .ink-gradient {
-            background: radial-gradient(circle at top right, #1e1b4b, #020617 80%);
-        }
-
-        .manuscript-card {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(15px);
-            border-radius: 3rem;
-            border: 2px solid rgba(129, 140, 248, 0.2);
-            transition: all 0.5s ease;
-        }
-
-        .manuscript-card:hover {
-            border-color: #818cf8;
-            box-shadow: 0 0 60px rgba(99, 102, 241, 0.15);
-        }
-
-        .lang-active {
-            background-color: #818cf8;
-            color: #020617;
-            box-shadow: 0 0 25px rgba(129, 140, 248, 0.4);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 3rem;
-            background: rgba(0, 0, 0, 0.4);
-        }
-
-        .info-panel {
-            background: rgba(30, 41, 59, 0.6);
-            border-left: 10px solid #818cf8;
-            padding: 2.5rem;
-            border-radius: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        .book-badge {
-            background: #1e1b4b;
-            color: #c7d2fe;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
+        .lang-active { background-color: #0284c7 !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #0284c7; position: relative; min-height: 1100px; box-shadow: 0 40px 80px rgba(7, 89, 133, 0.2); }
+        .globe-grad { background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%); }
     </style>
 </head>
-<body class="ink-gradient min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-white/10">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">EN</button>
+    </div>
 
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-sky-800 pb-10 mb-12">
+            <h1 id="title" class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">Внешняя Политика</h1>
+            <p id="desc" class="text-xl font-medium text-sky-600 italic">Многовекторность, безопасность и мировое признание</p>
+        </header>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-indigo-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-indigo-400 text-center">Исторические труды XVI–XVII веков</h1>
-            <div class="flex bg-slate-900 p-1 rounded-xl border border-indigo-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Manuscript Nexus (Canvas) -->
-        <div class="manuscript-card p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-indigo-500 text-indigo-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Chronicle Archive Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic tracking-tighter">Свод Степных Летописей</h2>
-                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
-                        Труды XVI–XVII веков — это фундамент знаний о Казахском ханстве. Нажмите на фолианты Архива, чтобы раскрыть содержание великих хроник.
+        <div class="space-y-12">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-6">
+                    <h2 id="sec1T" class="text-3xl font-black uppercase text-sky-900 italic">Приоритеты мира</h2>
+                    <p id="sec1D" class="text-sm leading-relaxed text-slate-700 font-bold">
+                        Казахстан зарекомендовал себя как лидер мирового антиядерного движения и инициатор СВМДА. Членство в ООН, ОБСЕ, ШОС и ОДКБ закрепило статус региональной державы.
                     </p>
-                    
-                    <div id="info-panel" class="info-panel transition-all duration-500">
-                        <h3 id="element-title" class="text-2xl font-bold text-indigo-300 mb-3 uppercase tracking-tighter">Выберите фолиант</h3>
-                        <p id="element-desc" class="text-slate-300 text-base leading-relaxed font-light italic">Кликните на «Тарих-и Рашиди», «Жами ат-таварих» или «Шежире-и тюрк» на холсте справа.</p>
+                    <div class="bg-sky-50 p-6 rounded-3xl border-l-8 border-sky-400 text-sky-900 font-medium">
+                        "Мир через диалог — основа нашей дипломатии."
                     </div>
                 </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
-                    <canvas id="manuscriptCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-indigo-900 font-mono uppercase tracking-[0.4em]">Manuscript Nexus Reconstruction</div>
+                <div class="bg-sky-900 text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden flex flex-col justify-center">
+                    <h3 id="sec2T" class="text-2xl font-black uppercase mb-4 tracking-widest text-sky-200">Многовекторность</h3>
+                    <p id="sec2D" class="text-xs font-light leading-relaxed">
+                        Сбалансированные отношения с Россией, Китаем, США, ЕС и странами Исламского мира стали залогом стабильности и притока технологий.
+                    </p>
+                    <div class="absolute -bottom-10 -right-10 text-[10rem] opacity-5">🌏</div>
                 </div>
-            </div>
+            </section>
+
+            <section class="bg-slate-900 text-white p-12 rounded-[4rem] relative overflow-hidden shadow-2xl border-b-[15px] border-sky-500">
+                <h2 id="osceT" class="text-3xl font-black uppercase text-sky-400 mb-4 italic tracking-tight">Председательство в ОБСЕ (2010)</h2>
+                <p id="osceD" class="text-lg font-light leading-relaxed opacity-90">
+                    Первая страна Центральной Азии и СНГ, возглавившая организацию. Саммит в Астане стал историческим событием мирового масштаба.
+                </p>
+            </section>
+
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="h-56">
+                    <canvas id="missionsChart"></canvas>
+                </div>
+                <div class="p-8 bg-sky-50 border border-sky-100 rounded-[3rem]">
+                    <h4 id="statT" class="text-xl font-black uppercase text-sky-900 mb-2">Глобальный охват</h4>
+                    <p id="statD" class="text-sm text-slate-600 font-medium">Установление дипломатических отношений с более чем 180 странами мира. Признание незыблемости границ.</p>
+                </div>
+            </section>
         </div>
 
-        <!-- Section 2: Deep Content Blocks -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            <!-- Dughlat -->
-            <div class="manuscript-card p-10 space-y-6">
-                <span class="book-badge" id="tag-1">Хроника</span>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Тарих-и Рашиди</h3>
-                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed">
-                    Труд **Мухаммада Хайдара Дулати** (написан в 1541–1546 гг. на персидском языке). Это единственный источник, точно зафиксировавший дату образования Казахского ханства (1465 г.). Книга описывает историю Могулистана и раннего Казахского государства, становясь «паспортом» нашей независимости.
-                </p>
-                <div class="pt-4 border-t border-indigo-900/50 text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">Автор: М. Х. Дулати</div>
-            </div>
-
-            <!-- Zhalayiri -->
-            <div class="manuscript-card p-10 space-y-6">
-                <span class="book-badge" id="tag-2">Свод летописей</span>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Жами ат-таварих</h3>
-                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed">
-                    Написан **Кадыргали Жалаири** в 1600–1602 гг. Это первый исторический труд на староказахском языке. Книга посвящена хану Ораз-Мухаммеду и содержит уникальные сведения о родоплеменном составе казахов, обычаях поднятия ханов и генеалогии Чингизидов (Торе).
-                </p>
-                <div class="pt-4 border-t border-indigo-900/50 text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">Автор: Кадыргали Жалаири</div>
-            </div>
-
-            <!-- Abulgazi -->
-            <div class="manuscript-card p-10 space-y-6">
-                <span class="book-badge" id="tag-3">Родословная</span>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Шежире-и тюрк</h3>
-                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed">
-                    «Родословная тюрков» **Абулгазы Бахадур-хана** (XVII в.). Фундаментальный труд, объясняющий происхождение тюркских и монгольских племен. Автор, будучи ханом Хивы, опирался на устные предания и архивы, создав стройную систему этнической истории Евразии.
-                </p>
-                <div class="pt-4 border-t border-indigo-900/50 text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">Автор: Абулгазы хан</div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="mt-20 py-24 bg-black border-t border-indigo-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6 text-slate-500">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
-                «Исторические труды XVI–XVII веков — это голоса великих предков, запечатлевшие право казахского народа на свою землю и великую судьбу.»
-            </p>
-            <div class="mt-12 h-1 w-24 bg-indigo-700 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="mt-20 pt-8 border-t border-sky-100 flex justify-between items-center text-[10px] font-black uppercase text-sky-400 tracking-[0.5em]">
+            Global Kazakhstan • Diplomatic Archive
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Исторические труды XVI–XVII веков",
-                vizTitle: "Свод Степных Летописей",
-                vizDesc: "Труды этой эпохи — фундамент знаний о Казахском ханстве. Нажмите на фолианты Архива для расшифровки содержания.",
-                badge: "Анализ исторического архива",
-                elementTitleDefault: "Выберите фолиант",
-                elementDescDefault: "Кликните на рукописи на холсте справа.",
-                tag1: "Хроника", tag2: "Свод летописей", tag3: "Родословная",
-                c1T: "Тарих-и Рашиди", c1D: "Написан в 1540-х гг. Мухаммадом Хайдаром Дулати. Единственный источник, называющий 1465 год датой рождения Казахского ханства. Охватывает историю Средней Азии и Казахстана.",
-                c2T: "Жами ат-таварих", c2D: "Труд Кадыргали Жалаири (1602 г.). Первая книга по истории Казахстана на тюркском языке. Описана система власти, роль биев и султанов в управлении Степью.",
-                c3T: "Шежире-и тюрк", c3D: "Труд Абулгазы хана. Описывает историю тюркских племен с древности до XVII века. Важный источник по генеалогии и этногенезу казахских родов.",
-                footer: "«Труды XVI–XVII веков — это голоса предков, запечатлевшие право казахского народа на свою землю.»",
-                works: {
-                    rashidi: { name: "Тарих-и Рашиди", text: "Свидетельство о 1465 годе. Описание походов, жизни Керея и Жанибека. Автор — великий ученый-гуманист М. Х. Дулати." },
-                    zhami: { name: "Жами ат-таварих", text: "Энциклопедия степной жизни. Сведения о 92 племенах, обрядах вступления на престол и дипломатии ханов." },
-                    shajara: { name: "Шежире-и тюрк", text: "Генеалогическая энциклопедия. Описание связи между тюркскими народами и их общего культурного корня." }
-                }
+                title: "Внешняя Политика", desc: "Многовекторность, безопасность и мировое признание",
+                sec1T: "Приоритеты мира", sec1D: "Казахстан — лидер глобального антиядерного процесса. Инициатор созыва СВМДА и активный участник ООН, ШОС, ЕАЭС. Проводник стабильности в Евразии.",
+                sec2T: "Многовекторность", sec2D: "Стратегия равновесия: развитие тесных связей с мировыми центрами силы при сохранении национальных интересов и суверенитета.",
+                osceT: "Председательство в ОБСЕ", osceD: "В 2010 году Казахстан стал первой постсоветской страной-председателем ОБСЕ, проведя исторический саммит в столице.",
+                statT: "Глобальный охват", statD: "Признание всеми ведущими державами. Укрепление позиций как медиатора в международных конфликтах (Астанинский процесс).",
+                labels: ['ООН (1992)', 'ОБСЕ (2010)', 'ШОС (2001)', 'СВМДА (1992)']
             },
             kz: {
-                title: "XVI–XVII ғғ. тарихи еңбектер",
-                vizTitle: "Дала шежірелерінің жинағы",
-                vizDesc: "Бұл дәуірдің еңбектері — Қазақ хандығы туралы білімнің негізі. Мазмұнын ашу үшін Мұрағат қолжазбаларын басыңыз.",
-                badge: "Тарихи мұрағатты талдау",
-                elementTitleDefault: "Қолжазбаны таңдаңыз",
-                elementDescDefault: "Оң жақтағы кенептегі қолжазбаларды басыңыз.",
-                tag1: "Шежіре", tag2: "Жылнамалар жинағы", tag3: "Ататегі",
-                c1T: "Тарих-и Рашиди", c1D: "1540 жылдары Мұхаммед Хайдар Дулати жазған. Қазақ хандығының құрылған жылын (1465 ж.) көрсеткен жалғыз дереккөз. Орта Азия мен Қазақстан тарихын қамтиды.",
-                c2T: "Жами ат-таварих", c2D: "Қадырғали Жалаиридің еңбегі (1602 ж.). Қазақстан тарихы бойынша түркі тілінде жазылған алғашқы кітап. Даланы басқарудағы билер мен сұлтандардың рөлі сипатталған.",
-                c3T: "Шежіре-и түрк", c3D: "Әбілғазы ханның еңбегі. Түркі тайпаларының ежелгі дәуірден XVII ғасырға дейінгі тарихын баяндайды. Қазақ руларының этногенезі бойынша маңызды дерек.",
-                footer: "«XVI–XVII ғасырлардағы еңбектер — қазақ халқының өз жеріне құқығын айғақтайтын ата-баба дауысы.»",
-                works: {
-                    rashidi: { name: "Тарих-и Рашиди", text: "1465 жыл туралы куәлік. Керей мен Жәнібектің өмірі мен жорықтарының сипаттамасы. Авторы — М. Х. Дулати." },
-                    zhami: { name: "Жами ат-таварих", text: "Дала өмірінің энциклопедиясы. 92 тайпа, хандарды таққа отырғызу ғұрыптары мен дипломатия туралы мәліметтер." },
-                    shajara: { name: "Шежіре-и түрк", text: "Генеалогиялық энциклопедия. Түркі халықтарының өзара байланысы мен ортақ мәдени тамырының сипаттамасы." }
-                }
+                title: "Сыртқы Саясат", desc: "Көпвекторлық, қауіпсіздік және әлемдік танылу",
+                sec1T: "Бейбітшілік басымдығы", sec1D: "Қазақстан — жаһандық ядроға қарсы процестің көшбасшысы. АӨСШК бастамашысы және БҰҰ, ШЫҰ, ЕАЭО белсенді мүшесі. Еуразиядағы тұрақтылықтың кепілі.",
+                sec2T: "Көпвекторлық", sec2D: "Тепе-теңдік стратегиясы: ұлттық мүдделер мен егемендікті сақтай отырып, әлемдік күш орталықтарымен тығыз байланысты дамыту.",
+                osceT: "ЕҚЫҰ-ға төрағалық ету", osceD: "2010 жылы Қазақстан ЕҚЫҰ-ға төрағалық еткен және елордада тарихи саммит өткізген алғашқы посткеңестік ел болды.",
+                statT: "Жаһандық қамту", statD: "Барлық жетекші державалардың тануы. Халықаралық қақтығыстарда медиатор ретіндегі ұстанымын нығайту (Астана процесі).",
+                labels: ['БҰҰ (1992)', 'ЕҚЫҰ (2010)', 'ШЫҰ (2001)', 'АӨСШК (1992)']
             },
             en: {
-                title: "Historical Works of the 16th–17th Centuries",
-                vizTitle: "Steppe Chronicles Collection",
-                vizDesc: "The works of this era are the foundation of knowledge about the Kazakh Khanate. Click on the manuscripts to reveal the content.",
-                badge: "Historical Archive Analysis",
-                elementTitleDefault: "Select a Folio",
-                elementDescDefault: "Click on the manuscripts on the canvas to the right.",
-                tag1: "Chronicle", tag2: "Compendium", tag3: "Genealogy",
-                c1T: "Tarikh-i-Rashidi", c1D: "Written in the 1540s by Muhammad Haidar Dughlat. The only source providing 1465 AD as the formation date of the Kazakh Khanate.",
-                c2T: "Zhami at-Tavarikh", c2D: "The work of Kadyrgali Zhalayiri (1602). The first history of Kazakhstan written in the Turkic language. Describes power systems and diplomacy.",
-                c3T: "Shajara-i-Turk", c3D: "The work of Abulgazi Khan. It details the history of Turkic tribes from ancient times to the 17th century. Essential for ethnographic research.",
-                footer: "«The works of the 16th–17th centuries are the voices of ancestors, recording the Kazakh people's right to their land.»",
-                works: {
-                    rashidi: { name: "Tarikh-i-Rashidi", text: "Testimony of 1465 AD. Description of campaigns, the lives of Kerey and Janybek. Author: the scholar M. H. Dughlat." },
-                    zhami: { name: "Zhami at-Tavarikh", text: "Encyclopedia of steppe life. Information on 92 tribes, khan inauguration rituals, and diplomacy." },
-                    shajara: { name: "Shajara-i-Turk", text: "Genealogical encyclopedia. Description of the links between Turkic peoples and their common cultural roots." }
-                }
+                title: "Foreign Policy", desc: "Multi-vectorism, security, and global recognition",
+                sec1T: "Peace Priorities", sec1D: "Kazakhstan is a leader in the global anti-nuclear process. Initiator of CICA and an active member of the UN, SCO, and EAEU. A broker of stability in Eurasia.",
+                sec2T: "Multi-vector Policy", sec2D: "Balance strategy: developing close ties with global power centers while maintaining national interests and sovereignty.",
+                osceT: "OSCE Chairmanship", osceD: "In 2010, Kazakhstan became the first post-Soviet country to chair the OSCE, holding a historic summit in the capital.",
+                statT: "Global Reach", statD: "Recognition by all major powers. Strengthening its position as a mediator in international conflicts (Astana Process).",
+                labels: ['UN (1992)', 'OSCE (2010)', 'SCO (2001)', 'CICA (1992)']
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('manuscriptCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 550;
-            drawArchive();
-        }
-
-        function drawArchive() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.height / 500;
-
-            // Manuscript positions
-            const folios = [
-                { id: 'rashidi', x: cx - 180 * scale, y: cy - 80 * scale, label: "TARIKH-I-RASHIDI", color: "#818cf8" },
-                { id: 'zhami', x: cx + 180 * scale, y: cy - 80 * scale, label: "ZHAMI AT-TAVARIKH", color: "#6366f1" },
-                { id: 'shajara', x: cx, y: cy + 120 * scale, label: "SHAJARA-I-TURK", color: "#4f46e5" }
-            ];
-
-            folios.forEach(f => {
-                ctx.save();
-                ctx.translate(f.x, f.y);
-                // Rect for book
-                ctx.beginPath();
-                ctx.roundRect(-80 * scale, -100 * scale, 160 * scale, 200 * scale, 10 * scale);
-                ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
-                ctx.fill();
-                ctx.strokeStyle = f.color;
-                ctx.lineWidth = 3;
-                ctx.stroke();
-                
-                // Spine lines
-                ctx.beginPath();
-                ctx.moveTo(-60 * scale, -80 * scale);
-                ctx.lineTo(-60 * scale, 80 * scale);
-                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-                ctx.stroke();
-
-                ctx.fillStyle = '#fff';
-                ctx.font = `bold ${10 * scale}px Montserrat`;
-                ctx.textAlign = 'center';
-                ctx.fillText(f.label, 0, 10 * scale);
-                
-                ctx.restore();
-            });
-
-            // Center glow connection
-            ctx.beginPath();
-            ctx.arc(cx, cy, 50 * scale, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(129, 140, 248, 0.05)';
-            ctx.fill();
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.height / 500;
-
-            let target = null;
-            if (Math.abs(x - (cx - 180 * scale)) < 80 * scale && Math.abs(y - (cy - 80 * scale)) < 100 * scale) target = 'rashidi';
-            else if (Math.abs(x - (cx + 180 * scale)) < 80 * scale && Math.abs(y - (cy - 80 * scale)) < 100 * scale) target = 'zhami';
-            else if (Math.abs(x - cx) < 80 * scale && Math.abs(y - (cy + 120 * scale)) < 100 * scale) target = 'shajara';
-
-            if (target) {
-                const info = translations[currentLang].works[target];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#818cf8';
-            }
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            
-            document.getElementById('tag-1').innerText = t.tag1;
-            document.getElementById('tag-2').innerText = t.tag2;
-            document.getElementById('tag-3').innerText = t.tag3;
-
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-indigo-400 hover:text-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('osceT').innerText = t.osceT;
+            document.getElementById('osceD').innerText = t.osceD;
+            document.getElementById('statT').innerText = t.statT;
+            document.getElementById('statD').innerText = t.statD;
+            renderChart(t.labels);
         }
 
+        function renderChart(labels) {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('missionsChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'polarArea',
+                data: { labels: labels, datasets: [{ data: [100, 95, 80, 85], backgroundColor: ['#0c4a6eCC', '#0284c7CC', '#0369a1CC', '#38bdf8CC'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { display: false } } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -359,5 +163,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

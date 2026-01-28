@@ -3,379 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Развитие культуры Казахстана в XIV-XV веках</title>
+    <title>Плакат: Литература и Искусство (1964-1986)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fcfaf7; color: #1c1917; }
+        body { font-family: 'Inter', sans-serif; background: #fff7ed; color: #7c2d12; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .manuscript-gradient {
-            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #fde68a 100%);
-        }
-
-        .premium-panel {
-            background: white;
-            border-radius: 3rem;
-            border: 1px solid #d6d3d1;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-panel:hover {
-            border-color: #a8a29e;
-            box-shadow: 0 30px 60px -15px rgba(28, 25, 23, 0.1);
-        }
-
-        .lang-active {
-            background-color: #451a03;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(69, 26, 3, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2rem;
-            background: #fff;
-            border: 1px solid #e7e5e4;
-        }
-
-        .fact-card {
-            background: white;
-            border-radius: 2.5rem;
-            border-left: 8px solid #78350f;
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .fact-card:hover {
-            transform: translateY(-8px);
-            border-color: #451a03;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-        }
-
-        .term-tag {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+        .lang-active { background-color: #7c2d12 !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #7c2d12; position: relative; min-height: 1200px; box-shadow: 0 40px 80px rgba(0,0,0,0.1); }
+        .accent-box { border-left: 10px solid #ea580c; background: #fffcf2; padding: 2rem; }
     </style>
 </head>
-<body class="manuscript-gradient min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-white/10">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-orange-200">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-orange-200">EN</button>
+    </div>
 
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-orange-950 pb-10 mb-12">
+            <h1 id="title" class="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none mb-6">Литература и Искусство</h1>
+            <p id="desc" class="text-xl font-medium text-orange-700 italic">Эпоха «Застоя»: между идеологией и национальным поиском</p>
+        </header>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-amber-200 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-amber-950">Развитие культуры Казахстана в XIV-XV веках</h1>
-            <div class="flex bg-amber-50 p-1 rounded-2xl border border-amber-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
+        <div class="space-y-12">
+            <!-- Блок 1: Сопротивление в слове -->
+            <section class="accent-box">
+                <h2 id="sec1T" class="text-2xl font-black uppercase text-orange-900 mb-6 tracking-widest">Духовный Код</h2>
+                <p id="sec1D" class="text-lg leading-relaxed text-slate-800 font-medium italic">
+                    Несмотря на жесткую цензуру, 70-е годы стали временем расцвета национального самосознания. Книга Олжаса Сулейменова «Аз и Я» (1975) стала манифестом, разрушившим советские догмы в истории.
+                </p>
+                <div class="mt-8 p-4 bg-orange-100 rounded-xl inline-block text-xs font-black uppercase tracking-widest">Manifesto of Identity</div>
+            </section>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Heritage Circle (Canvas) -->
-        <div class="premium-panel p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Spiritual Heritage Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic">Свод духовного наследия</h2>
-                    <p id="viz-desc" class="text-lg text-amber-900/60 font-light leading-relaxed">
-                        В XIV-XV веках завершился процесс формирования казахского языка и мировоззрения. Нажмите на сегменты диаграммы, чтобы изучить основы культуры этой эпохи.
+            <!-- Блок 2: Кино и Театр -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div class="space-y-6">
+                    <h2 id="sec2T" class="text-2xl font-black uppercase text-orange-900 leading-tight">«Казахфильм» и Театр</h2>
+                    <p id="sec2D" class="text-sm leading-relaxed text-slate-600">
+                        Шакен Айманов создает фильмы, ставшие классикой. Рождение профессионального балета и оперы в Алма-Ате. Театр становится местом «тихого» разговора со зрителем о самом важном.
                     </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-amber-50 border-l-8 border-amber-700 shadow-xl transition-all duration-500">
-                        <h3 id="element-title" class="text-xl font-bold text-amber-900 mb-3 uppercase">Выберите раздел</h3>
-                        <p id="element-desc" class="text-amber-800/70 text-sm leading-relaxed italic font-light">Кликните на элементы «Колеса знаний» на холсте справа.</p>
+                </div>
+                <div class="bg-orange-50 p-6 rounded-[2.5rem] border border-orange-100 shadow-inner">
+                    <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-4 text-orange-700 tracking-widest">Сферы влияния (Индекс)</h4>
+                    <div class="h-48">
+                        <canvas id="cultureChart"></canvas>
                     </div>
                 </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="cultureCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.4em]">Schematic of Cultural Evolution</div>
-                </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- Section 2: Detailed Information Blocks -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            
-            <!-- Language and Script -->
-            <div class="fact-card">
-                <div class="mb-4"><span class="term-tag" id="t-lang">Язык</span></div>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-amber-950">Формирование языка</h3>
-                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                    К XIV веку на территории Казахстана окончательно сложился **кыпчакский язык**, ставший основой казахского. Письменная традиция развивалась на базе чагатайского языка. В этот период были созданы такие памятники, как «Кодекс Куманикус» и произведения суфийской литературы.
-                </p>
-                <div class="mt-auto pt-4 border-t border-amber-100 text-[10px] font-black text-amber-700 uppercase tracking-widest">Основа: Кыпчакские диалекты</div>
-            </div>
-
-            <!-- Folklore and Epics -->
-            <div class="fact-card">
-                <div class="mb-4"><span class="term-tag" id="t-folk">Фольклор</span></div>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-amber-950">Героический эпос</h3>
-                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                    Это время расцвета устного народного творчества. Складываются великие эпосы: **«Алпамыс-батыр»**, **«Ер-Таргын»**, **«Кобланды-батыр»**. Жирау (сказители), такие как легендарный **Асан Кайгы**, становились не только поэтами, но и политическими советниками ханов.
-                </p>
-                <div class="mt-auto pt-4 border-t border-amber-100 text-[10px] font-black text-amber-700 uppercase tracking-widest">Асан Кайгы: Степной философ</div>
-            </div>
-
-            <!-- Religion and Science -->
-            <div class="fact-card">
-                <div class="mb-4"><span class="term-tag" id="t-rel">Духовность</span></div>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-amber-950">Суфизм и Знания</h3>
-                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed mb-6">
-                    Ислам окончательно утвердился как государственная религия. Огромное влияние имел орден **Ясавия**. Города Туркестан, Отрар и Сауран стали центрами богословия и науки. Здесь работали медресе, где изучали логику, астрономию и право.
-                </p>
-                <div class="mt-auto pt-4 border-t border-amber-100 text-[10px] font-black text-amber-700 uppercase tracking-widest">Центр: Хазрет Султан</div>
-            </div>
-
-        </div>
-
-        <!-- Section 3: Key Figure Highlight -->
-        <div class="bg-amber-900 p-10 md:p-16 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h3 id="special-t" class="text-3xl font-black mb-8 uppercase italic tracking-widest">Асан Кайгы: Пророк единства</h3>
-                    <p id="special-d" class="text-amber-100/70 text-xl font-light leading-relaxed mb-10">
-                        Философ и поэт XV века, ставший идеологом объединения казахских родов. Его поиски «Жеруйык» (Земли обетованной) — это метафора стремления народа к мирной жизни, достатку и независимости. Его мудрость стала моральным кодексом эпохи.
-                    </p>
-                    <div class="inline-flex items-center gap-4 bg-white/10 px-6 py-2 rounded-full border border-white/20">
-                        <span id="special-tag" class="text-sm font-bold uppercase tracking-widest">Идеолог Казахского ханства</span>
+            <!-- Блок 3: Личности -->
+            <section class="bg-orange-950 text-white p-12 rounded-[4rem] relative overflow-hidden">
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 id="hero1" class="text-2xl font-black uppercase mb-2 text-orange-400">О. Сулейменов</h4>
+                        <p id="hero1D" class="text-sm font-light opacity-80 leading-relaxed">Поэт и мыслитель, вернувший казахам историческую память через поэзию и научный поиск.</p>
+                    </div>
+                    <div>
+                        <h4 id="hero2" class="text-2xl font-black uppercase mb-2 text-orange-400">Ш. Айманов</h4>
+                        <p id="hero2D" class="text-sm font-light opacity-80 leading-relaxed">Основатель национальной киношколы, мастер, воплотивший на экране душу казахского народа.</p>
                     </div>
                 </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-amber-700/50 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4 grayscale opacity-30">📜</div>
-                            <div id="found-label" class="text-[10px] font-black uppercase text-amber-500 tracking-[0.5em]">Spiritual Wisdom</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 font-black rotate-12 pointer-events-none uppercase">WISDOM</div>
+                <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5 font-black">ART</div>
+            </section>
         </div>
 
-    </main>
-
-    <footer class="mt-20 py-20 bg-amber-950 text-amber-100/30 text-center border-t border-amber-900/20">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
-                «Культура XIV-XV веков стала тем фундаментом, на котором выросло здание казахской нации, объединив суфийскую мудрость и степную волю.»
-            </p>
-            <div class="mt-10 h-1 w-24 bg-amber-700 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="mt-20 pt-8 border-t border-orange-200 text-center text-[10px] font-black uppercase text-orange-800 tracking-[0.5em]">
+            Stagnation Period Culture • Archive 1964-1986
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Развитие культуры Казахстана в XIV-XV веках",
-                vizTitle: "Свод духовного наследия",
-                vizDesc: "Нажмите на сегменты диаграммы, чтобы изучить основы культуры этой эпохи: язык, философию и музыку.",
-                badge: "Анализ духовного наследия",
-                elementTitleDefault: "Выберите раздел",
-                elementDescDefault: "Кликните на сегменты «Колеса знаний» на чертеже.",
-                tLang: "Язык", tFolk: "Фольклор", tRel: "Духовность",
-                c1T: "Формирование языка", c1D: "Процесс обособления казахского языка из кыпчакского ядра. Использование чагатайского письма в официальной переписке и трудах ученых.",
-                c2T: "Героический эпос", c2D: "Создание классических поэм о батырах. Формирование института жирау — носителей народной памяти и политических мыслителей.",
-                c3T: "Суфизм и Знания", c3D: "Распространение учения Ахмета Ясави. Туркестан становится духовной столицей Степи, местом паломничества и образования.",
-                specialT: "Асан Кайгы: Пророк единства", specialD: "Легендарный философ, искавший благодатную землю (Жеруйык) для своего народа. Символ мудрости и консолидации племен в канун создания ханства.",
-                specialTag: "Идеолог ханства",
-                footer: "«Культура XIV-XV веков стала фундаментом казахской нации, объединив мудрость и волю.»",
-                sections: {
-                    lit: { name: "Письменность", text: "Переход на арабскую графику. Появление трудов на тюрки, ставших основой для классической литературы Востока." },
-                    phil: { name: "Философия", text: "Господство исламской мысли и суфизма. Учение о самосовершенствовании и гармонии человека с Творцом и природой." },
-                    music: { name: "Музыка и Кюи", text: "Формирование жанра кюя. Использование домбры и кобыза для передачи истории и эмоций народа через звуки." },
-                    law: { name: "Обычное право", text: "Зарождение основ 'Жеты Жаргы'. Регулирование жизни общины через советы биев и авторитет старейшин." }
-                }
+                title: "Литература и Искусство", desc: "Эпоха «Застоя»: между идеологией и национальным поиском",
+                sec1T: "Духовный Код", sec1D: "Несмотря на цензуру, 70-е годы стали временем расцвета самосознания. Книга Олжаса Сулейменова «Аз и Я» (1975) стала манифестом, разрушившим догмы.",
+                sec2T: "«Казахфильм» и Театр", sec2D: "Шакен Айманов создает классику. Театр становится местом «тихого» разговора со зрителем о самом важном. Развитие оперы и балета.",
+                chartTitle: "Сферы влияния (Индекс)", hero1: "О. Сулейменов", hero1D: "Поэт и мыслитель, вернувший казахам историческую память через поэзию.",
+                hero2: "Ш. Айманов", hero2D: "Основатель киношколы, воплотивший на экране душу народа.",
+                labels: ['Литература', 'Кино', 'Театр', 'Музыка']
             },
             kz: {
-                title: "XIV-XV ғғ. Қазақстан мәдениетінің дамуы",
-                vizTitle: "Рухани мұра жинағы",
-                vizDesc: "Диаграмма сегменттерін басып, сол дәуірдің мәдениет негіздерін зерттеңіз: тіл, философия және музыка.",
-                badge: "Рухани мұраны талдау",
-                elementTitleDefault: "Бөлімді таңдаңыз",
-                elementDescDefault: "Кенептегі «Білім дөңгелегі» элементтерін басыңыз.",
-                tLang: "Тіл", tFolk: "Фольклор", tRel: "Руханият",
-                c1T: "Тілдің қалыптасуы", c1D: "Қазақ тілінің қыпшақ негізінен оқшаулану процесі. Ресми хат-хабарлар мен ғалымдардың еңбектерінде шағатай жазуын қолдану.",
-                c2T: "Батырлар жыры", c2D: "Батырлар туралы классикалық жырлардың жасалуы. Халық жадының иелері — жыраулар институтының қалыптасуы.",
-                c3T: "Суфизм және Білім", c3D: "Ахмет Ясауи ілімінің таралуы. Түркістанның Даланың рухани астанасына, зиярат пен білім орталығына айналуы.",
-                specialT: "Асан Қайғы: Бірлік насихатшысы", specialD: "Өз халқы үшін құтты қоныс — Жерұйықты іздеген аңызға айналған философ. Хандық құрылар алдындағы тайпалардың бірлігінің нышаны.",
-                specialTag: "Хандық идеологы",
-                footer: "«XIV-XV ғасырлардағы мәдениет даналық пен ерік-жігерді біріктіріп, қазақ ұлтының іргетасына айналды.»",
-                sections: {
-                    lit: { name: "Жазу мәдениеті", text: "Араб графикасына көшу. Шығыстың классикалық әдебиетінің негізі болған түркі тіліндегі еңбектердің пайда болуы." },
-                    phil: { name: "Философия", text: "Исламдық ой мен сопылықтың үстемдігі. Адамның Жаратушымен және табиғатпен үйлесімі туралы ілім." },
-                    music: { name: "Музыка мен Күй", text: "Күй жанрының қалыптасуы. Халықтың тарихы мен эмоциясын дыбыс арқылы жеткізу үшін домбыра мен қобызды қолдану." },
-                    law: { name: "Әдет-ғұрып құқығы", text: "«Жеті жарғы» негіздерінің пайда болуы. Билер кеңесі мен ақсақалдар беделі арқылы қауым өмірін реттеу." }
-                }
+                title: "Әдебиет және Өнер", desc: "«Тоқырау» дәуірі: идеология мен ұлттық ізденіс арасында",
+                sec1T: "Рухани Код", sec1D: "Цензураға қарамастан, 70-жылдар ұлттық сана-сезімнің гүлденген уақыты болды. Олжас Сүлейменовтің «Аз и Я» (1975) кітабы догмаларды бұзған манифестке айналды.",
+                sec2T: "«Қазақфильм» және Театр", sec2D: "Шәкен Айманов классикалық фильмдер жасады. Театр көрерменмен ең маңызды тақырыптарда «үнсіз» сырласатын орынға айналды.",
+                chartTitle: "Ықпал ету салалары", hero1: "О. Сүлейменов", hero1D: "Поэзия мен ғылыми ізденіс арқылы қазақтардың тарихи жадын қайтарған ақын және ойшыл.",
+                hero2: "Ш. Айманов", hero2D: "Қазақ халқының жанын экранда бейнелеген ұлттық кино мектебінің негізін қалаушы.",
+                labels: ['Әдебиет', 'Кино', 'Театр', 'Музыка']
             },
             en: {
-                title: "Development of Kazakhstan's Culture in the 14-15th Centuries",
-                vizTitle: "Spiritual Heritage Core",
-                vizDesc: "Click on the diagram segments to study the foundations of the culture: language, philosophy, and music.",
-                badge: "Spiritual Heritage Analysis",
-                elementTitleDefault: "Select a Section",
-                elementDescDefault: "Click on the segments of the 'Knowledge Wheel' on the canvas.",
-                tLang: "Language", tFolk: "Folklore", tRel: "Spirituality",
-                c1T: "Language Formation", c1D: "The process of the Kazakh language isolating from the Kipchak core. Using the Chaghatai script in official documents and scientific works.",
-                c2T: "Heroic Epics", c2D: "The creation of classical poems about batyrs. Formation of the 'Zhyrau' institute — keepers of national memory.",
-                c3T: "Sufism & Knowledge", c3D: "Spread of Ahmed Yasawi's teachings. Turkestan becomes the spiritual capital of the Steppe, a center for pilgrimage and education.",
-                specialT: "Asan Kaigy: Prophet of Unity", specialD: "A legendary philosopher who sought the promised land (Zheruyuk) for his people. A symbol of wisdom and tribal consolidation.",
-                specialTag: "Khanate Ideologue",
-                footer: "«The culture of the 14-15th centuries became the foundation of the Kazakh nation, merging wisdom and will.»",
-                sections: {
-                    lit: { name: "Written Tradition", text: "Transition to Arabic graphics. The emergence of works in Turkic that laid the basis for Eastern classical literature." },
-                    phil: { name: "Philosophy", text: "Dominance of Islamic thought and Sufism. Teachings on self-perfection and harmony with the Creator and nature." },
-                    music: { name: "Music and Kuys", text: "Formation of the Kuy genre. Using the dombra and kobyz to convey history and emotions through sound." },
-                    law: { name: "Common Law", text: "The roots of 'Zheti Zhargy'. Regulating community life through councils of biys and the authority of elders." }
-                }
+                title: "Literature and Art", desc: "Stagnation Era: Between Ideology and National Search",
+                sec1T: "Spiritual Code", sec1D: "Despite censorship, the 70s saw a rise in national identity. Olzhas Suleimenov's 'Az i Ya' (1975) became a manifesto that shattered Soviet dogmas.",
+                sec2T: "'Kazakhfilm' and Theater", sec2D: "Shaken Aimanov creates timeless classics. The theater becomes a place for 'quiet' conversations with the audience about identity.",
+                chartTitle: "Fields of Influence (Index)", hero1: "O. Suleimenov", hero1D: "Poet and thinker who restored historical memory through poetry and research.",
+                hero2: "Sh. Aimanov", hero2D: "Founder of the national film school, portraying the soul of the Kazakh people on screen.",
+                labels: ['Literature', 'Cinema', 'Theater', 'Music']
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('cultureCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 500;
-            drawWheel();
-        }
-
-        function drawWheel() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const radius = 180 * (canvas.width / 800);
-
-            const parts = ['lit', 'phil', 'music', 'law'];
-            const colors = ['#78350f', '#92400e', '#b45309', '#d97706'];
-            const labels = ["SCRIPT", "PHILOSOPHY", "MUSIC", "LAW"];
-
-            parts.forEach((p, i) => {
-                const startAngle = (i * Math.PI) / 2;
-                const endAngle = ((i + 1) * Math.PI) / 2;
-                
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, radius, startAngle, endAngle);
-                ctx.closePath();
-                ctx.fillStyle = colors[i] + '22';
-                ctx.fill();
-                ctx.strokeStyle = colors[i];
-                ctx.lineWidth = 3;
-                ctx.stroke();
-
-                // Text
-                const midAngle = startAngle + Math.PI / 4;
-                const tx = cx + Math.cos(midAngle) * (radius * 0.7);
-                const ty = cy + Math.sin(midAngle) * (radius * 0.7);
-                ctx.fillStyle = colors[i];
-                ctx.font = 'bold 10px Montserrat';
-                ctx.textAlign = 'center';
-                ctx.fillText(labels[i], tx, ty);
-            });
-
-            // Center
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius * 0.3, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff';
-            ctx.fill();
-            ctx.strokeStyle = '#451a03';
-            ctx.stroke();
-            ctx.fillStyle = '#451a03';
-            ctx.font = 'bold 14px Montserrat';
-            ctx.fillText("HERITAGE", cx, cy + 5);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            const angle = Math.atan2(y - cy, x - cx);
-            const normAngle = angle < 0 ? angle + 2 * Math.PI : angle;
-            
-            const index = Math.floor(normAngle / (Math.PI / 2));
-            const parts = ['music', 'law', 'lit', 'phil']; // Adjusting to canvas coordinates
-            const key = parts[index];
-
-            if (key) {
-                const info = translations[currentLang].sections[key];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#451a03';
-            }
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            
-            document.getElementById('t-lang').innerText = t.tLang;
-            document.getElementById('t-folk').innerText = t.tFolk;
-            document.getElementById('t-rel').innerText = t.tRel;
-
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            
-            document.getElementById('special-t').innerText = t.specialT;
-            document.getElementById('special-d').innerText = t.specialD;
-            document.getElementById('special-tag').innerText = t.specialTag;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-amber-800 hover:bg-white transition-all";
-            });
-
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('hero1').innerText = t.hero1;
+            document.getElementById('hero1D').innerText = t.hero1D;
+            document.getElementById('hero2').innerText = t.hero2;
+            document.getElementById('hero2D').innerText = t.hero2D;
+            renderChart(t.labels);
         }
 
+        function renderChart(labels) {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('cultureChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'radar',
+                data: { labels: labels, datasets: [{ label: 'Impact', data: [95, 80, 85, 75], backgroundColor: 'rgba(124, 45, 18, 0.2)', borderColor: '#7c2d12', borderWidth: 3 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { ticks: { display: false } } }, plugins: { legend: { display: false } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -408,5 +168,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

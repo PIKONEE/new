@@ -3,283 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хан Тауекел: Военная экспансия</title>
+    <title>Плакат: Решающий шаг к независимости (1991)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #f5f5f4; }
+        body { font-family: 'Inter', sans-serif; background: #fffbeb; color: #78350f; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .war-gradient {
-            background: radial-gradient(circle at top right, #450a0a, #0c0a09 85%);
-        }
-
-        .premium-card {
-            background: rgba(28, 25, 23, 0.85);
-            backdrop-filter: blur(20px);
-            border-radius: 3rem;
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-card:hover {
-            border-color: #ef4444;
-            box-shadow: 0 0 60px rgba(220, 38, 38, 0.15);
-        }
-
-        .lang-active {
-            background-color: #ef4444;
-            color: white;
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: #1c1917;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
-        }
-
-        .fact-card {
-            background: rgba(41, 37, 36, 0.6);
-            border-left: 6px solid #b91c1c;
-            padding: 2.5rem;
-            border-radius: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .fact-card:hover {
-            transform: translateY(-10px);
-            border-color: #ef4444;
-        }
-
-        .term-badge {
-            background: #450a0a;
-            color: #fca5a5;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
+        .lang-active { background-color: #d97706 !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #d97706; position: relative; min-height: 1100px; box-shadow: 0 40px 80px rgba(180, 83, 9, 0.3); }
+        .gold-grad { background: linear-gradient(135deg, #d97706 0%, #78350f 100%); }
+        .quote-box { border-left: 10px solid #fbbf24; background: #fffaf0; padding: 2rem; border-radius: 0 2rem 2rem 0; font-style: italic; }
     </style>
 </head>
-<body class="war-gradient min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-amber-200">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">EN</button>
+    </div>
 
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-amber-600 pb-10 mb-12 text-center">
+            <h1 id="title" class="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-tight mb-4 text-amber-900 italic">Решающий Шаг</h1>
+            <p id="desc" class="text-xl font-bold text-amber-600 uppercase tracking-widest">1991: Год рождения Свободы</p>
+        </header>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-red-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-red-500">Хан Тауекел (1582–1598 гг.)</h1>
-            <div class="flex bg-zinc-900 p-1 rounded-xl border border-red-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Military Vector Analysis (Canvas) -->
-        <div class="premium-card p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-red-500/50 text-red-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Strategic Conquest Compass</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Векторы военного триумфа</h2>
-                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
-                        Тауекел-хан превратил армию в инструмент глобальной экспансии. Нажмите на направления походов, чтобы изучить захват Ташкента и Самарканда.
+        <div class="space-y-12">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-6">
+                    <h2 id="sec1T" class="text-3xl font-black uppercase text-amber-800">Закрытие полигона</h2>
+                    <p id="sec1D" class="text-sm leading-relaxed text-slate-700 font-bold">
+                        29 августа 1991 г. — Указом Президента Н. Назарбаева закрыт Семипалатинский ядерный полигон. Мир впервые увидел Казахстан как страну мира.
                     </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-red-950/20 border-l-8 border-red-600 shadow-2xl transition-all duration-500">
-                        <h3 id="element-title" class="text-xl font-bold text-red-400 mb-3 uppercase tracking-tighter">План наступления</h3>
-                        <p id="element-desc" class="text-zinc-300 text-sm leading-relaxed italic font-light">Выберите вектор удара: Мавераннахр, Москва или Степные рубежи.</p>
+                    <div class="quote-box text-amber-900">
+                        "Мы сделали выбор в пользу жизни, а не смерти."
                     </div>
                 </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="warCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-red-900 font-mono uppercase tracking-[0.4em]">Tactical Military Simulation</div>
+                <div class="bg-amber-50 p-8 rounded-[3rem] border border-amber-100 flex flex-col justify-center shadow-inner">
+                    <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-6 text-amber-800">Приоритеты 1991 года</h4>
+                    <div class="h-44">
+                        <canvas id="stepChart"></canvas>
+                    </div>
                 </div>
-            </div>
+            </section>
+
+            <section class="bg-slate-900 text-white p-12 rounded-[4rem] relative overflow-hidden shadow-2xl border-b-[15px] border-amber-500">
+                <h2 id="sec2T" class="text-3xl font-black uppercase text-amber-400 mb-6 italic tracking-tight">16 декабря 1991</h2>
+                <p id="sec2D" class="text-lg font-light leading-relaxed opacity-90">
+                    Верховный Совет принял Конституционный закон «О государственной независимости Республики Казахстан». Эпоха зависимости завершилась, началась история новой державы.
+                </p>
+                <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5">☀️</div>
+            </section>
+
+            <section class="flex gap-10 items-center p-8 bg-amber-50 rounded-[3rem]">
+                <div class="text-7xl">🗳️</div>
+                <div>
+                    <h3 id="subTitle" class="text-2xl font-black uppercase text-amber-900 mb-2">Всенародные выборы</h3>
+                    <p id="subD" class="text-sm font-medium text-amber-800 italic">1 декабря 1991 г. — первый всенародный мандат доверия, определивший будущее лидерство страны.</p>
+                </div>
+            </section>
         </div>
 
-        <!-- Section 2: Deep Historical Content -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div class="fact-card">
-                <div class="mb-4"><span class="term-badge" id="t-war">Борьба за города</span></div>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Разгром Шайбанидов</h3>
-                <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed">В 1598 году Тауекел нанес финальный удар по государству Абдулла-хана II. Он захватил крупнейшие города Средней Азии: **Ташкент**, **Самарканд**, **Ходжент** и **Андижан**. Это был период максимального политического веса ханства в регионе.</p>
-            </div>
-            <div class="fact-card">
-                <div class="mb-4"><span class="term-badge" id="t-dip">Дипломатия</span></div>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Миссия Кул-Мухаммеда</h3>
-                <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed">В **1594 году** хан отправил посольство в Москву во главе с Кул-Мухаммедом. Целью был союз против хана Кучума (Сибирь) и Бухары. В ответ Россия отправила посла Степанова, признав суверенитет Казахского ханства.</p>
-            </div>
-            <div class="fact-card">
-                <div class="mb-4"><span class="term-badge" id="t-end">Финал</span></div>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Осада Бухары</h3>
-                <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed">Последним походом Тауекела стала осада Бухары. Несмотря на успех в начале, хан был тяжело ранен и скончался в Ташкенте в **1598 году**. Его правление закрепило за казахами роль главных наследников империи Чингисхана в Дешт-и-Кыпчаке.</p>
-            </div>
-        </div>
-    </main>
+        <footer class="mt-20 pt-8 border-t border-amber-100 flex justify-between items-center text-[10px] font-black uppercase text-amber-400 tracking-[0.5em]">
+            Independence Day • Section 1991
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Хан Тауекел (1582–1598 гг.)",
-                vizTitle: "Векторы военного триумфа",
-                vizDesc: "Тауекел-хан превратил армию в инструмент глобальной экспансии. Нажмите на векторы походов для анализа стратегии.",
-                badge: "Анализ стратегии наступления",
-                elementTitleDefault: "План наступления",
-                elementDescDefault: "Выберите вектор удара: Мавераннахр, Москва или Степные рубежи на холсте.",
-                tWar: "Борьба за города", tDip: "Дипломатия", tEnd: "Финал",
-                c1T: "Разгром Шайбанидов", c1D: "Захват Ташкента и Самарканда в 1598 г. вернул казахам контроль над ключевыми городами Сырдарьи и торговыми путями Мавераннахра.",
-                c2T: "Миссия Кул-Мухаммеда", c2D: "Посольство 1594 года в Россию стало прорывом. Тауекел искал огнестрельное оружие и военный союз против Бухарского ханства.",
-                c3T: "Осада Бухары", c3D: "Героический и трагический финал правления. Смерть хана в Ташкенте после ранения под Бухарой завершила эпоху великой экспансии.",
-                vectors: {
-                    south: { name: "Южный поход (Бухара)", text: "Цель: Полный разгром Шайбанидов. Результат: Взятие Самарканда и превращение ханства в гегемона Средней Азии." },
-                    north: { name: "Северный союз (Россия)", text: "Дипломатический прорыв 1594-1595 гг. Установление регулярных связей с царем Федором Ивановичем." },
-                    west: { name: "Западный фланг (Ногаи)", text: "Присоединение части ногайских родов и укрепление влияния в междуречье Волги и Жайыка." }
-                }
+                title: "Решающий Шаг", desc: "1991: Год рождения Свободы",
+                sec1T: "Закрытие полигона", sec1D: "29 августа 1991 г. — исторический указ о закрытии Семипалатинского полигона. Казахстан стал мировым лидером антиядерного движения.",
+                chartTitle: "Ключевые векторы 1991 (%)", sec2T: "16 декабря 1991",
+                sec2D: "Принятие Закона о Независимости. Казахстан последним из республик СССР официально провозгласил свой суверенитет, открыв новую главу истории.",
+                subTitle: "Всенародные выборы", subD: "1 декабря 1991 г. — Нурсултан Назарбаев избран первым Президентом независимого Казахстана."
             },
             kz: {
-                title: "Тәуекел хан (1582–1598 жж.)",
-                vizTitle: "Әскери жеңіс бағыттары",
-                vizDesc: "Тәуекел хан әскерді жаһандық экспансия құралына айналдырды. Жорық бағыттарын басып, стратегияны талдаңыз.",
-                badge: "Шабуыл стратегиясын талдау",
-                elementTitleDefault: "Шабуыл жоспары",
-                elementDescDefault: "Кенептегі соққы бағытын таңдаңыз: Мәуереннахр, Мәскеу немесе Дала шептері.",
-                tWar: "Қалалар үшін күрес", tDip: "Дипломатия", tEnd: "Қорытынды",
-                c1T: "Шайбанилерді талқандау", c1D: "1598 ж. Ташкент пен Самарқандты басып алу қазақтарға Сырдария қалалары мен Мәуереннахр сауда жолдарын қайтарды.",
-                c2T: "Құл-Мұхаммед миссиясы", c2D: "1594 жылғы Ресейге елшілік үлкен жетістік болды. Тәуекел Бұқар хандығына қарсы отты қару мен әскери одақ іздеді.",
-                c3T: "Бұқара қоршауы", c3D: "Биліктің ерлікке толы әрі қайғылы соңы. Бұқара түбінде жараланып, Ташкентте қайтыс болуы ұлы экспансия дәуірін аяқтады.",
-                vectors: {
-                    south: { name: "Оңтүстік жорық (Бұқара)", text: "Мақсаты: Шайбанилерді толық талқандау. Нәтиже: Самарқандты алу және Орта Азияда гегемонға айналу." },
-                    north: { name: "Солтүстік одақ (Ресей)", text: "1594-1595 жж. дипломатиялық серпіліс. Федор Иванович патшамен тұрақты байланыс орнату." },
-                    west: { name: "Батыс қанат (Ноғайлар)", text: "Ноғай руларының бір бөлігін қосып алу және Еділ мен Жайық арасындағы ықпалды нығайту." }
-                }
+                title: "Шешуші қадам", desc: "1991: Бостандықтың туған жылы",
+                sec1T: "Полигонның жабылуы", sec1D: "1991 ж. 29 тамыз — Семей ядролық полигонын жабу туралы тарихи жарлық. Қазақстан ядроға қарсы әлемдік қозғалыстың көшбасшысы болды.",
+                chartTitle: "1991 жылғы басымдықтар (%)", sec2T: "1991 жылғы 16 желтоқсан",
+                sec2D: "Тәуелсіздік туралы Заңның қабылдануы. Қазақстан КСРО республикаларының ішінде ең соңғы болып өз егемендігін жариялады.",
+                subTitle: "Бүкілхалықтық сайлау", subD: "1991 ж. 1 желтоқсан — Нұрсұлтан Назарбаев тәуелсіз Қазақстанның тұңғыш Президенті болып сайланды."
+            },
+            en: {
+                title: "The Decisive Step", desc: "1991: The Year Freedom was Born",
+                sec1T: "Closing the Polygon", sec1D: "August 29, 1991 — the historic decree closing the Semipalatinsk test site. Kazakhstan emerged as a global leader in anti-nuclear advocacy.",
+                chartTitle: "Key Vectors of 1991 (%)", sec2T: "December 16, 1991",
+                sec2D: "Adoption of the Independence Law. Kazakhstan was the last USSR republic to officially proclaim its sovereignty, opening a new chapter.",
+                subTitle: "National Elections", subD: "December 1, 1991 — Nursultan Nazarbayev was elected as the first President of independent Kazakhstan."
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('warCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 500;
-            drawVectors();
-        }
-
-        function drawVectors() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // Base Map Lines
-            ctx.strokeStyle = 'rgba(239, 68, 68, 0.1)';
-            ctx.setLineDash([10, 10]);
-            ctx.beginPath();
-            ctx.arc(cx, cy, 200 * scale, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Central Hub
-            ctx.beginPath();
-            ctx.arc(cx, cy, 40 * scale, 0, Math.PI * 2);
-            ctx.fillStyle = '#ef4444';
-            ctx.fill();
-            ctx.fillStyle = '#000';
-            ctx.font = 'bold 10px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText("ORDA", cx, cy + 5);
-
-            // Vector: South
-            drawArrow(cx, cy, cx, cy + 180 * scale, '#dc2626', "SOUTH: BUKHARA");
-            // Vector: North
-            drawArrow(cx, cy, cx, cy - 180 * scale, '#3b82f6', "NORTH: RUSSIA");
-            // Vector: West
-            drawArrow(cx, cy, cx - 180 * scale, cy, '#f59e0b', "WEST: NOGAI");
-        }
-
-        function drawArrow(fx, fy, tx, ty, color, label) {
-            ctx.beginPath();
-            ctx.moveTo(fx, fy);
-            ctx.lineTo(tx, ty);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 4;
-            ctx.stroke();
-            
-            ctx.fillStyle = color;
-            ctx.font = 'bold 10px Inter';
-            ctx.fillText(label, tx, ty + (ty > fy ? 20 : -10));
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const x = e.clientX - rect.left;
-
-            let target = null;
-            if (y > cy + 100) target = 'south';
-            else if (y < cy - 100) target = 'north';
-            else if (x < cx - 100) target = 'west';
-
-            if (target) {
-                const info = translations[currentLang].vectors[target];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#ef4444';
-            }
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('subTitle').innerText = t.subTitle;
+            document.getElementById('subD').innerText = t.subD;
+            renderChart();
         }
 
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('stepChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['Мир', 'Независимость', 'Политика', 'Реформы'], datasets: [{ data: [40, 30, 20, 10], backgroundColor: ['#d97706', '#78350f', '#fbbf24', '#451a03'], borderWidth: 5, borderColor: '#ffffff' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -312,5 +158,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

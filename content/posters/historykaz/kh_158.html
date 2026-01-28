@@ -3,339 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Обычаи казахского народа (XVI–XVII вв.)</title>
+    <title>Провозглашение независимости и СНГ</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #332b26; }
+        body { font-family: 'Inter', sans-serif; background: #faf5ff; color: #581c87; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .tradition-gradient {
-            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #fde68a 100%);
-        }
-
-        .premium-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 3rem;
-            border: 2px solid #d97706;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-card:hover {
-            border-color: #92400e;
-            box-shadow: 0 40px 80px -20px rgba(146, 64, 14, 0.2);
-        }
-
-        .lang-active {
-            background-color: #78350f;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(120, 53, 15, 0.3);
-        }
-
-        canvas {
-            cursor: crosshair;
-            border-radius: 3rem;
-            background: #fff;
-            box-shadow: inset 0 0 50px rgba(217, 119, 6, 0.05);
-        }
-
-        .info-panel {
-            background: white;
-            border-radius: 2.5rem;
-            border-left: 12px solid #d97706;
-            padding: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-        }
-
-        .term-badge {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
+        .lang-active { background-color: #7e22ce !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #7e22ce; position: relative; min-height: 1100px; box-shadow: 0 40px 80px rgba(88, 28, 135, 0.2); }
+        .purple-grad { background: linear-gradient(135deg, #7e22ce 0%, #3b0764 100%); }
+        .declaration-box { background: #f3e8ff; border: 2px solid #d8b4fe; padding: 2rem; border-radius: 2rem; font-style: italic; }
     </style>
 </head>
-<body class="tradition-gradient min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-white/10">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">EN</button>
+    </div>
 
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-purple-800 pb-10 mb-12">
+            <h1 id="title" class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6 text-purple-900">Независимость и СНГ</h1>
+            <p id="desc" class="text-xl font-medium text-purple-600 italic">Рождение нового государства и формирование постсоветского пространства</p>
+        </header>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-amber-200 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-amber-950 text-center">Обычаи казахского народа</h1>
-            <div class="flex bg-amber-50 p-1 rounded-2xl border border-amber-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
+        <div class="space-y-12">
+            <section class="bg-purple-900 text-white p-12 rounded-[4rem] relative overflow-hidden shadow-2xl border-l-[20px] border-purple-400">
+                <h2 id="sec1T" class="text-3xl font-black uppercase text-purple-200 mb-6 italic">16 декабря 1991</h2>
+                <p id="sec1D" class="text-xl font-light leading-relaxed opacity-95">
+                    Принятие Конституционного закона «О государственной независимости Республики Казахстан». Страна обрела суверенитет и закрепила свою государственную целостность.
+                </p>
+                <div class="absolute -top-10 -right-10 text-[18rem] opacity-5">🇰🇿</div>
+            </section>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Rites Compass (Canvas) -->
-        <div class="premium-card p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Ritual Culture Compass</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic tracking-tighter">Матрица Степной Этики</h2>
-                    <p id="viz-desc" class="text-lg text-amber-900/60 font-light leading-relaxed">
-                        Обычаи казахов — это неписаный закон, регулировавший жизнь от рождения до смерти. Нажмите на секторы компаса, чтобы изучить категории традиций.
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div class="space-y-6">
+                    <h2 id="sec2T" class="text-2xl font-black uppercase text-purple-800 tracking-tight">Создание СНГ</h2>
+                    <p id="sec2D" class="text-sm leading-relaxed text-slate-700 font-medium">
+                        21 декабря 1991 г. — Алма-Атинская декларация. Казахстан выступил инициатором цивилизованного развода союзных республик и создания нового содружества на принципах равенства.
                     </p>
-                    
-                    <div id="info-panel" class="info-panel transition-all duration-500">
-                        <h3 id="element-title" class="text-2xl font-bold text-amber-900 mb-3 uppercase tracking-tighter">Выберите категорию</h3>
-                        <p id="element-desc" class="text-amber-800/80 text-base leading-relaxed font-light italic">Кликните на Рождение, Семью, Гостеприимство или Этноэтику на холсте.</p>
+                </div>
+                <div class="bg-white p-8 rounded-[3rem] shadow-inner border border-purple-100 flex flex-col justify-center">
+                    <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-6 text-purple-600 tracking-widest">Процесс дипломатического признания</h4>
+                    <div class="h-44">
+                        <canvas id="cisChart"></canvas>
                     </div>
                 </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[550px]">
-                    <canvas id="compassCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.4em]">Interactive Ethnography Model</div>
-                </div>
-            </div>
+            </section>
+
+            <section class="declaration-box text-center">
+                <p id="quote" class="text-lg font-bold text-purple-900 px-10">«Алма-Атинская встреча подвела черту под историей СССР и дала старт Содружеству Независимых Государств»</p>
+            </section>
         </div>
 
-        <!-- Section 2: Detailed Textual Data -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <!-- Guesting Customs -->
-            <div class="premium-card p-10 space-y-6">
-                <span class="term-badge" id="t-guest">Кодекс Гостя</span>
-                <h3 id="c1-t" class="text-2xl font-black text-amber-950 uppercase">Конакжайлылык</h3>
-                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed">
-                    Гостеприимство было священным долгом. Существовал закон **«Конакасы»** — хозяин обязан предоставить лучший угощение путнику. Нарушение этого правила влекло за собой общественное порицание и даже штраф. Обычай **«Ерулик»** подразумевал приглашение новых соседей на обед для их скорейшей адаптации в общине.
-                </p>
-                <ul class="text-[11px] font-bold text-amber-700 space-y-1 uppercase tracking-wider">
-                    <li>— Конакасы: Долг угощения</li>
-                    <li>— Конак-каде: Подарок гостю</li>
-                </ul>
-            </div>
-
-            <!-- Family and Upbringing -->
-            <div class="premium-card p-10 space-y-6">
-                <span class="term-badge" id="t-family">Семья</span>
-                <h3 id="c2-t" class="text-2xl font-black text-amber-950 uppercase">Жизненный цикл</h3>
-                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed">
-                    Воспитание начиналось с обрядов **Шилдехана** (праздник рождения) и **Бесикке салу** (укладывание в колыбель). Важнейшим этапом был **Тусау кесу** (разрезание пут), чтобы ребенок твердо стоял на ногах. Свадебный цикл включал **Куда тусу** (сватовство) и сложную систему взаимных подарков между родами.
-                </p>
-                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-[10px] font-bold text-amber-800 italic">
-                    Закон Аменгерства (Левират) защищал вдов и сирот, не оставляя их без покровительства рода.
-                </div>
-            </div>
-
-            <!-- Social Solidarity -->
-            <div class="premium-card p-10 space-y-6">
-                <span class="term-badge" id="t-social">Социум</span>
-                <h3 id="c3-t" class="text-2xl font-black text-amber-950 uppercase">Взаимопомощь</h3>
-                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed">
-                    Выживание в степи обеспечивалось обычаем **«Асар»** — коллективная безвозмездная помощь сородичу (при строительстве дома или стрижке шерсти). Обычай **«Жылу»** подразумевал материальную помощь семье, пострадавшей от стихийного бедствия или джута, что демонстрировало высочайший уровень социальной солидарности.
-                </p>
-                <ul class="text-[11px] font-bold text-amber-700 space-y-1 uppercase tracking-wider">
-                    <li>— Асар: Совместный труд</li>
-                    <li>— Жылу: Милосердие и поддержка</li>
-                </ul>
-            </div>
-        </div>
-    </main>
-
-    <footer class="mt-20 py-24 bg-stone-950 text-stone-500 text-center border-t border-amber-900/20">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl font-light italic leading-tight text-stone-400">
-                «Обычаи казахского народа — это духовный панцирь нации, сохранивший её идентичность сквозь века испытаний.»
-            </p>
-            <div class="mt-12 h-1 w-24 bg-amber-700 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="mt-20 pt-8 border-t border-purple-100 flex justify-between items-center text-[10px] font-black uppercase text-purple-400 tracking-[0.5em]">
+            History of Sovereignty • CIS Section
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Обычаи казахского народа",
-                vizTitle: "Матрица Степной Этики",
-                vizDesc: "Традиции казахов — это система ценностей, объединяющая поколения. Нажмите на секторы компаса для анализа категорий обычаев.",
-                badge: "Анализ обрядовой культуры",
-                elementTitleDefault: "Выберите категорию",
-                elementDescDefault: "Кликните на Рождение, Семью, Гостеприимство или Этноэтику на холсте.",
-                tGuest: "Кодекс Гостя", tFamily: "Семья", tSocial: "Социум",
-                c1T: "Конакжайлылык", c1D: "Основа степной дипломатии. Гость делится на три типа: 'арнайы конак' (специальный), 'кудайы конак' (случайный путник) и 'кыдырма конак' (родственник). Каждому гарантирован почет и 'конакасы'.",
-                c2T: "Жизненный цикл", c2D: "Система воспитания через ритуалы. Знание 'Жеті ата' (семи предков) и соблюдение обрядов перехода (Сундет той, Мушел жас) формировали ответственного члена общины.",
-                c3T: "Взаимопомощь", c3D: "Институты солидарности: 'Асар' — совместное решение крупных задач, 'Суюнши' — плата за благую весть, 'Байгазы' — подарок за обновку. Эти мелочи укрепляли связи внутри рода.",
-                footer: "«Обычаи казахского народа — это духовный панцирь нации, сохранивший её идентичность.»",
-                rites: {
-                    birth: { name: "Обряды Рождения", text: "Шилдехана, Калжа (питание матери), Бесикке салу. Направлены на защиту младенца и укрепление здоровья матери." },
-                    marriage: { name: "Семейно-брачные", text: "Куда тусу (сватовство), Калын мал (выкуп), Беташар (открытие лица невесты). Основа межродовых союзов." },
-                    guest: { name: "Гостеприимство", text: "Конакасы, Бата беру (благословение), Конаккаде (песня или стих гостя). Культура взаимного уважения и безопасности." },
-                    ethics: { name: "Этноэтика", text: "Улкенге курмет (уважение к старшим), Аманат (верность слову), Жылу (помощь пострадавшим). Моральный кодекс казаха." }
-                }
+                title: "Независимость и СНГ", desc: "Рождение нового государства и формирование постсоветского пространства",
+                sec1T: "16 декабря 1991", sec1D: "День, когда Казахстан официально провозгласил себя независимым. Это стало завершающим этапом юридического оформления суверенитета республики.",
+                sec2T: "Алма-Атинская встреча", sec2D: "Подписание протокола о создании СНГ 11-ю республиками. Казахстан стал центром важнейших геополитических решений того времени.",
+                chartTitle: "Признание миром (количество стран)", quote: "«Алма-Атинская встреча подвела черту под историей СССР и дала старт Содружеству Независимых Государств»"
             },
             kz: {
-                title: "Қазақ халқының әдет-ғұрыптары",
-                vizTitle: "Дала этикасының матрицасы",
-                vizDesc: "Қазақ дәстүрлері — ұрпақтарды біріктіретін құндылықтар жүйесі. Санаттарды зерттеу үшін компас секторларын басыңыз.",
-                badge: "Салт-дәстүр мәдениетін талдау",
-                elementTitleDefault: "Санатты таңдаңыз",
-                elementDescDefault: "Кенептегі Дүниеге келу, Отбасы, Қонақжайлылық немесе Этноэтиканы басыңыз.",
-                tGuest: "Қонақ кодексі", tFamily: "Отбасы", tSocial: "Әлеумет",
-                c1T: "Қонақжайлылық", c1D: "Дала дипломатиясының негізі. Қонақ үш түрге бөлінеді: «арнайы қонақ», «құдайы қонақ» және «қыдырма қонақ». Әрқайсысына құрмет пен «қонақасы» тиесілі.",
-                c2T: "Өмірлік цикл", c2D: "Тәрбие жүйесі жоралғылар арқылы өткен. «Жеті атаны» білу және өту белестерін (Сүндет той, Мүшел жас) сақтау қауымның жауапты мүшесін қалыптастырды.",
-                c3T: "Өзара көмек", c3D: "Ынтымақтастық институттары: «Асар» — ірі істерді бірге бітіру, «Сүйінші» — жақсы хабар үшін сый, «Байғазы» — жаңа киім үшін сыйлық.",
-                footer: "«Қазақ халқының әдет-ғұрыптары — ұлттың болмысын ғасырлар бойы сақтап келген рухани сауыты.»",
-                rites: {
-                    birth: { name: "Дүниеге келу ғұрыптары", text: "Шілдехана, Қалжа, Бесікке салу. Сәбиді қорғауға және ананың денсаулығын нығайтуға бағытталған." },
-                    marriage: { name: "Отбасылық-некелік", text: "Құда түсу, Қалың мал, Беташар. Руаралық одақтардың негізі саналған." },
-                    guest: { name: "Қонақжайлылық", text: "Қонақасы, Бата беру, Қонақкәде. Өзара құрмет пен қауіпсіздік мәдениеті." },
-                    ethics: { name: "Этноэтика", text: "Үлкенге құрмет, Аманатқа адалдық, Жылу жинау. Қазақтың адамгершілік кодексі." }
-                }
+                title: "Тәуелсіздік және ТМД", desc: "Жаңа мемлекеттің тууы және посткеңестік кеңістіктің қалыптасуы",
+                sec1T: "1991 жылғы 16 желтоқсан", sec1D: "Қазақстанның өз тәуелсіздігін ресми түрде жариялаған күні. Бұл республика егемендігін құқықтық ресімдеудің соңғы кезеңі болды.",
+                sec2T: "Алматы кездесуі", sec2D: "11 республиканың ТМД-ны құру туралы хаттамаға қол қоюы. Қазақстан сол кездегі маңызды геосаяси шешімдердің орталығына айналды.",
+                chartTitle: "Әлемнің тануы (елдер саны)", quote: "«Алматы кездесуі КСРО тарихына нүкте қойып, Тәуелсіз Мемлекеттер Достастығына жол ашты»"
             },
             en: {
-                title: "Customs of the Kazakh People",
-                vizTitle: "Steppe Ethics Matrix",
-                vizDesc: "Kazakh traditions are a values system linking generations. Click on the compass sectors to explore the categories of customs.",
-                badge: "Customary Culture Analysis",
-                elementTitleDefault: "Select a Category",
-                elementDescDefault: "Click on Birth, Family, Hospitality, or Ethno-ethics on the canvas.",
-                tGuest: "Guest Code", tFamily: "Family", tSocial: "Society",
-                c1T: "Konakzhailylyk", c1D: "The core of steppe diplomacy. Guests are specialized, accidental, or visiting relatives. Each is guaranteed honor and 'Konakasy' (host's meal).",
-                c2T: "Life Cycle", c2D: "An upbringing system via rituals. Knowing 'Zheti Ata' and observing transition rites (Sundet Toy, Mushel Zhas) shaped responsible community members.",
-                c3T: "Mutual Aid", c3D: "Solidarity institutions: 'Asar' (joint labor), 'Suyunshi' (gift for good news), and 'Bayghazy' (gift for something new). These ties bonded the clan.",
-                footer: "«Kazakh customs served as a spiritual armor, preserving the nation's identity through centuries of trials.»",
-                rites: {
-                    birth: { name: "Birth Rites", text: "Shildekhana, Kalzha, Besikke Salu. Aimed at protecting the newborn and supporting the mother's health." },
-                    marriage: { name: "Family & Marriage", text: "Kuda Tusu, Kalyn Mal (dowry), Betashar. The foundation of inter-tribal alliances." },
-                    guest: { name: "Hospitality", text: "Konakasy, Bata Beru (blessing), Konakkade (guest's performance). A culture of mutual respect." },
-                    ethics: { name: "Ethno-ethics", text: "Respect for elders (Ulkenge Kurmet), Amanat (trust), Zhylu (charity for the affected). The Kazakh moral code." }
-                }
+                title: "Independence & CIS", desc: "Birth of a new state and shaping the post-Soviet space",
+                sec1T: "December 16, 1991", sec1D: "The day Kazakhstan officially proclaimed its independence. It was the final step in the legal formalization of the republic's sovereignty.",
+                sec2T: "The Alma-Ata Protocol", sec2D: "The signing of the CIS agreement by 11 republics. Kazakhstan emerged as a hub for the most important geopolitical decisions of the era.",
+                chartTitle: "World Recognition (number of countries)", quote: "«The Alma-Ata meeting closed the chapter on USSR history and launched the Commonwealth of Independent States»"
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('compassCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 550;
-            drawCompass();
-        }
-
-        function drawCompass() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-            const r = 200 * scale;
-
-            const sectors = [
-                { id: 'birth', color: '#10b981', label: "BIRTH" },
-                { id: 'marriage', color: '#f59e0b', label: "FAMILY" },
-                { id: 'guest', color: '#ef4444', label: "HOSPITALITY" },
-                { id: 'ethics', color: '#3b82f6', label: "ETHICS" }
-            ];
-
-            sectors.forEach((s, i) => {
-                const start = (i * Math.PI / 2) - Math.PI/2;
-                const end = start + Math.PI / 2;
-                
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, r, start, end);
-                ctx.fillStyle = s.color + '15';
-                ctx.fill();
-                ctx.strokeStyle = s.color;
-                ctx.lineWidth = 4;
-                ctx.stroke();
-
-                const mid = start + Math.PI / 4;
-                const ix = cx + Math.cos(mid) * (r * 0.7);
-                const iy = cy + Math.sin(mid) * (r * 0.7);
-                ctx.fillStyle = s.color;
-                ctx.font = 'bold 12px Montserrat';
-                ctx.textAlign = 'center';
-                ctx.fillText(s.label, ix, iy);
-            });
-
-            // Center
-            ctx.beginPath();
-            ctx.arc(cx, cy, 60 * scale, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff';
-            ctx.fill();
-            ctx.strokeStyle = '#78350f';
-            ctx.stroke();
-            ctx.fillStyle = '#451a03';
-            ctx.font = '900 14px Montserrat';
-            ctx.fillText("ADAT", cx, cy + 5);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            const angle = Math.atan2(y - cy, x - cx) + Math.PI/2;
-            const normAngle = angle < 0 ? angle + 2*Math.PI : angle;
-            const index = Math.floor(normAngle / (Math.PI / 2)) % 4;
-            
-            const ids = ['birth', 'marriage', 'guest', 'ethics'];
-            const info = translations[currentLang].rites[ids[index]];
-            
-            document.getElementById('element-title').innerText = info.name;
-            document.getElementById('element-desc').innerText = info.text;
-            document.getElementById('info-panel').style.borderColor = (index === 0 ? '#10b981' : (index === 1 ? '#f59e0b' : (index === 2 ? '#ef4444' : '#3b82f6')));
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            
-            document.getElementById('t-guest').innerText = t.tGuest;
-            document.getElementById('t-family').innerText = t.tFamily;
-            document.getElementById('t-social').innerText = t.tSocial;
-
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-amber-700 hover:bg-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('quote').innerText = t.quote;
+            renderChart();
         }
 
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('cisChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: ['16 дек', '20 дек', '25 дек', '31 дек'], datasets: [{ data: [1, 10, 50, 105], borderColor: '#7e22ce', tension: 0.4, fill: true, backgroundColor: 'rgba(126, 34, 206, 0.1)', borderWidth: 5 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -368,5 +147,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

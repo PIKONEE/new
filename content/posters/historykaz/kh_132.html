@@ -3,411 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Государство Караханидов (942–1212 гг.)</title>
+    <title>Плакат: Казахстан в 1940-1960 годах</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #451a03; }
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .terracotta-gradient {
-            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%);
-        }
-
-        .islamic-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border-radius: 3rem;
-            border: 2px solid #92400e;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .islamic-panel:hover {
-            border-color: #b45309;
-            box-shadow: 0 25px 60px -15px rgba(146, 64, 14, 0.2);
-        }
-
-        .lang-active {
-            background-color: #92400e;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(146, 64, 14, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            filter: drop-shadow(0 15px 30px rgba(146, 64, 14, 0.1));
-            border-radius: 2rem;
-        }
-
-        .info-card {
-            background: white;
-            border-radius: 2.5rem;
-            border: 1px solid #fed7aa;
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .info-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 6px;
-            background: #92400e;
-        }
-
-        .info-card:hover {
-            transform: translateY(-8px);
-            border-color: #d97706;
-        }
-
-        .ornament-bg {
-            background-image: url("https://www.transparenttextures.com/patterns/arabesque.png");
-        }
-
-        .term-badge {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
+        .lang-active { background-color: #3b82f6 !important; color: white !important; font-weight: 900; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(30, 64, 175, 0.1); }
+        .poly-grad { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
     </style>
 </head>
-<body class="terracotta-gradient min-h-screen pb-20 ornament-bg">
+<body class="pb-20">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-slate-900/80 backdrop-blur p-1 rounded-full border border-white/20">
+        <button onclick="setLang('ru')" id="lang-ru" class="lang-active w-10 h-10 rounded-full text-xs transition-all">RU</button>
+        <button onclick="setLang('kz')" id="lang-kz" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">KZ</button>
+        <button onclick="setLang('en')" id="lang-en" class="w-10 h-10 rounded-full text-xs transition-all opacity-60 text-white hover:opacity-100">EN</button>
+    </div>
 
-
-    <!-- Header (No emoji) -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-orange-200 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-orange-900 text-center">Государство Караханидов (942–1212 гг.)</h1>
-            <div class="flex bg-orange-100 p-1 rounded-xl border border-orange-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+    <main class="max-w-6xl mx-auto px-6 mt-12 space-y-10">
+        <header class="p-16 rounded-[4rem] text-white text-center shadow-2xl relative overflow-hidden poly-grad">
+            <div class="relative z-10">
+                <span id="period" class="inline-block bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 tracking-widest">1940 — 1960 гг.</span>
+                <h1 id="title" class="text-4xl md:text-6xl font-black uppercase mb-4 leading-none">Общественно-политическое положение</h1>
+                <p id="desc" class="text-xl font-light opacity-90">От послевоенного сталинизма к «Оттепели»</p>
             </div>
-        </div>
-    </header>
+            <div class="absolute top-0 right-0 text-[15rem] opacity-10 pointer-events-none font-black translate-x-1/4 -translate-y-1/4">⚖️</div>
+        </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Architecture Explorer (Canvas) -->
-        <div class="islamic-panel p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-4 space-y-8">
-                    <div id="badge" class="inline-block bg-amber-800 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Architectural Heritage Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-amber-950 leading-tight uppercase italic">Код Терракоты: Мавзолей</h2>
-                    <p id="viz-desc" class="text-lg text-amber-900/60 font-light leading-relaxed">
-                        Караханиды привнесли в степь культуру кирпичного зодчества и сложного орнамента. Нажмите на части фасада, чтобы раскрыть секреты древних строителей.
-                    </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[2.5rem] bg-amber-50 border-l-8 border-amber-700 shadow-xl transition-all duration-500">
-                        <h3 id="element-title" class="text-xl font-bold text-amber-900 mb-3 uppercase tracking-tighter">Начните анализ</h3>
-                        <p id="element-desc" class="text-amber-800/70 text-sm leading-relaxed italic">Кликните на купол, декоративную плитку или портальную арку.</p>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-8 bg-white/50 p-4 rounded-[4rem] flex items-center justify-center relative min-h-[550px] border border-orange-200">
-                    <canvas id="archCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-amber-800/30 font-mono uppercase tracking-[0.3em]">Karakhanid Architectural Blueprint</div>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-blue-800">
+                <h3 id="f1T" class="font-black uppercase mb-4 text-blue-900">Испытания</h3>
+                <p id="f1D" class="text-sm leading-relaxed font-medium">1949 г. — первый взрыв на Семипалатинском полигоне. Начало ядерной трагедии казахской земли.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-blue-800">
+                <h3 id="f2T" class="font-black uppercase mb-4 text-blue-900">Борьба с наукой</h3>
+                <p id="f2D" class="text-sm leading-relaxed font-medium">Дело Бекмаханова (1952 г.). Преследование историков за «буржуазный национализм» в освещении восстания Кенесары.</p>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] shadow-xl border-t-8 border-blue-800">
+                <h3 id="f3T" class="font-black uppercase mb-4 text-blue-900">Освоение целины</h3>
+                <p id="f3D" class="text-sm leading-relaxed font-medium">1954 г. — начало массовой миграции и распашки земель. Радикальное изменение демографии края.</p>
             </div>
         </div>
 
-        <!-- Section 2: Detailed History Blocks -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
-            <!-- Islam and State -->
-            <div class="info-card">
-                <div class="mb-6"><span class="term-badge" id="t-rel">Религия</span></div>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-amber-900">960 г. Исламская Революция</h3>
-                <p id="c1-d" class="text-stone-600 text-sm leading-relaxed">
-                    В **960 году** при правителе **Муса-кагане** ислам был объявлен государственной религией. Это решение объединило 200 тысяч шатров кочевников и открыло доступ к знаниям Халифата. Основателем династии считается **Сатук Богра-хан**, который первым из тюркских правителей принял ислам.
-                </p>
-                <div class="mt-6 pt-4 border-t border-orange-100 text-[11px] font-bold text-amber-800 uppercase tracking-wider" id="c1-f">
-                    Эффект: Рост городов и письменности.
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl">
+                <h3 id="chartTitle" class="text-2xl font-black mb-6 uppercase text-blue-900">Уровень урбанизации и населения</h3>
+                <div class="h-[350px]">
+                    <canvas id="politicsChart"></canvas>
                 </div>
             </div>
-
-            <!-- Socio-Economic System -->
-            <div class="info-card">
-                <div class="mb-6"><span class="term-badge" id="t-soc">Устройство</span></div>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Система Икта</h3>
-                <p id="c2-d" class="text-stone-600 text-sm leading-relaxed">
-                    Караханиды ввели феодальную систему **Икта** — право сбора налогов с определенной местности, даруемое каганом за военную службу. Держатель икта (**мукта**) был обязан содержать войско. Также существовали **вакфы** — земли мечетей и медресе, доходы с которых шли на образование и благотворительность.
-                </p>
-                <div class="mt-6 pt-4 border-t border-orange-100 text-[11px] font-bold text-amber-800 uppercase tracking-wider" id="c2-f">
-                    Титулы: Тегин, Илек-хан, Арслан-хан.
-                </div>
+            <div class="p-10 rounded-[3rem] shadow-2xl text-white flex flex-col justify-center relative overflow-hidden bg-slate-800">
+                <h3 id="specialTitle" class="text-3xl font-black mb-6 uppercase text-blue-400">Хрущевская «Оттепель»</h3>
+                <p id="specialD" class="text-xl font-light leading-relaxed relative z-10">XX съезд КПСС (1956) и реабилитация жертв репрессий. Возвращение имен деятелей Алаш, хотя и частичное.</p>
+                <div class="absolute -bottom-10 -right-10 text-[20rem] opacity-5 pointer-events-none">☁️</div>
             </div>
-
-            <!-- Literature and Science -->
-            <div class="info-card">
-                <div class="mb-6"><span class="term-badge" id="t-sci">Культура</span></div>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-amber-900">Тюркский Ренессанс</h3>
-                <p id="c3-d" class="text-stone-600 text-sm leading-relaxed">
-                    Эпоха подарила миру двух титанов мысли: **Юсуф Баласагуни** написал трактат «Кутадгу Билиг» (Благодатное знание), а **Махмуд Кашгари** создал «Диван Лугат ат-Турк» — первый словарь тюркских наречий. Эти труды стали фундаментом тюркской самоидентификации и литературы.
-                </p>
-                <div class="mt-6 pt-4 border-t border-orange-100 text-[11px] font-bold text-amber-800 uppercase tracking-wider" id="c3-f">
-                    Столицы: Баласагун и Кашгар.
-                </div>
-            </div>
-
         </div>
-
-        <!-- Section 3: Geopolitics Highlight -->
-        <div class="bg-amber-900 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h3 id="geo-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Раскол и Падение</h3>
-                    <p id="geo-d" class="text-amber-100/70 text-xl font-light leading-relaxed mb-8">
-                        В 1040 году каганат распался на Западный (центр в Самарканде) и Восточный (центр в Баласагуне). В XII веке государство ослабло под ударами **каракитаев**, а окончательно прекратило существование в 1212 году под натиском **хорезмшаха Мухаммеда**.
-                    </p>
-                    <div class="inline-flex items-center gap-4 bg-white/10 px-6 py-2 rounded-full border border-white/20">
-                        <div class="w-3 h-3 bg-amber-500 rounded-full animate-ping"></div>
-                        <span class="text-sm font-bold uppercase tracking-widest">Конец эпохи: 1212 год</span>
-                    </div>
-                </div>
-                <div class="hidden lg:block relative">
-                    <div class="w-full h-1 bg-white/20 absolute top-1/2 -translate-y-1/2 rounded-full"></div>
-                    <div class="flex justify-between relative z-10">
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-amber-600 rounded-2xl flex items-center justify-center text-3xl mb-3 border-2 border-white/50">🏰</div>
-                            <div class="text-[10px] font-black uppercase">942 г.</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-amber-700 rounded-2xl flex items-center justify-center text-3xl mb-3 border-2 border-white/50">⚔️</div>
-                            <div class="text-[10px] font-black uppercase">1040 г.</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-stone-800 rounded-2xl flex items-center justify-center text-3xl mb-3 border-2 border-white/50">🏳️</div>
-                            <div class="text-[10px] font-black uppercase">1212 г.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">Empire</div>
-        </div>
-
     </main>
-
-    <footer class="mt-20 py-24 bg-stone-950 text-stone-500 text-center border-t border-amber-900/20">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl font-light italic text-stone-300">
-                «Государство Караханидов превратило степной дух в вечные памятники из камня и золотые страницы великой литературы.»
-            </p>
-            <div class="mt-12 h-1 w-24 bg-amber-800 mx-auto rounded-full"></div>
-        </div>
-    </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Государство Караханидов (942–1212 гг.)",
-                vizTitle: "Код Терракоты: Мавзолей",
-                vizDesc: "Зодчество Караханидов — это симбиоз математики и искусства. Нажмите на элементы портала для изучения архитектурных инноваций.",
-                badge: "Анализ культурного наследия",
-                elementTitleDefault: "Начните анализ",
-                elementDescDefault: "Кликните на купол, декоративную плитку или портальную арку.",
-                tRel: "Религия", tSoc: "Устройство", tSci: "Культура",
-                c1T: "960 г. Исламская Революция", c1D: "При Муса-кагане ислам стал государственной религией. Это решение объединило кочевников и открыло доступ к наукам Халифата. Сатук Богра-хан заложил основы этой духовной трансформации.",
-                c1F: "Результат: Расцвет городов и грамотности.",
-                c2T: "Система Икта", c2D: "Караханиды внедрили систему икта — пожалование земли за службу. Это укрепило армию и создало новую прослойку землевладельцев (мукта). Существовали и вакфы — благотворительные земли.",
-                c2F: "Титулы: Тегин, Илек-хан, Арслан-хан.",
-                c3T: "Тюркский Ренессанс", c3D: "Юсуф Баласагуни («Благодатное знание») и Махмуд Кашгари («Словарь тюркских наречий») заложили фундамент общетюркской культуры и языка именно в этот период.",
-                c3F: "Центры: Баласагун, Кашгар, Тараз.",
-                geoT: "Раскол и Падение", geoD: "В 1040 году империя разделилась на две части. В XII веке ослабленное государство пало под ударами каракитаев и войск хорезмшаха Мухаммеда в 1212 году.",
-                footer: "«Государство Караханидов превратило степной дух в вечные памятники из камня и золотые страницы великой литературы.»",
-                arch: {
-                    dome: { name: "Кубба (Купол)", text: "Символ небесного свода. Двойные купола караханидских мавзолеев обеспечивали прочность и величественный вид сооружений." },
-                    tiles: { name: "Терракотовый декор", text: "Уникальная плитка с геометрическими и эпиграфическими узорами. Каждая плитка вырезалась вручную и обжигалась для прочности." },
-                    arch: { name: "Пештак", text: "Центральный входной портал. Главный элемент фасада, украшенный аятами из Корана и сложными орнаментами 'ислими'." }
-                }
+                period: "1940 — 1960 гг.", title: "Общественно-политическое положение", desc: "От послевоенного сталинизма к «Оттепели»",
+                f1T: "Испытания", f1D: "1949 г. — первый взрыв на Семипалатинском полигоне. Начало ядерной трагедии казахской земли.",
+                f2T: "Борьба с наукой", f2D: "Дело Бекмаханова (1952 г.). Преследование историков за «буржуазный национализм» в освещении восстания Кенесары.",
+                f3T: "Освоение целины", f3D: "1954 г. — начало массовой миграции и распашки земель. Радикальное изменение демографии края.",
+                chartTitle: "Уровень урбанизации и населения", specialTitle: "Хрущевская «Оттепель»",
+                specialD: "XX съезд КПСС (1956) и реабилитация жертв репрессий. Возвращение имен деятелей Алаш, хотя и частичное.",
+                labels: ['1940', '1945', '1950', '1955', '1960']
             },
             kz: {
-                title: "Қараханид мемлекеті (942–1212 жж.)",
-                vizTitle: "Терракота коды: Кесене",
-                vizDesc: "Қараханидтер сәулеті — математика мен өнердің симбиозы. Сәулет жаңалықтарын зерттеу үшін портал элементтерін басыңыз.",
-                badge: "Мәдени мұраны талдау",
-                elementTitleDefault: "Талдауды бастаңыз",
-                elementDescDefault: "Күмбезді, сәндік плиткаларды немесе портал аркасын басыңыз.",
-                tRel: "Дін", tSoc: "Құрылым", tSci: "Мәдениет",
-                c1T: "960 ж. Ислам төңкерісі", c1D: "Мұса қаған тұсында ислам мемлекеттік дін болып жарияланды. Бұл шешім көшпелілерді біріктіріп, Халифат ғылымдарына жол ашты. Сатұқ Боғра хан осы рухани өзгерістің негізін қалады.",
-                c1F: "Нәтиже: Қалалар мен сауаттылықтың гүлденуі.",
-                c2T: "Иқта жүйесі", c2D: "Қараханидтер иқта жүйесін — қызметі үшін жер телімдерін беруді енгізді. Бұл әскерді нығайтып, жаңа жер иеленушілер (мұқта) тобын қалыптастырды. Сондай-ақ уақфтық жерлер болды.",
-                c2F: "Лауазымдар: Тегін, Илек-хан, Арслан-хан.",
-                c3T: "Түркі Ренессансы", c3D: "Жүсіп Баласағұн («Құтты білік») және Махмұд Қашқари («Диуани лұғат ат-түрк») осы кезеңде бүкілтүркілік мәдениет пен тілдің негізін қалады.",
-                c3F: "Орталықтар: Баласағұн, Қашқар, Тараз.",
-                geoT: "Ыдырау мен Құлдырау", geoD: "1040 жылы империя екіге бөлінді. ХІІ ғасырда әлсіреген мемлекет қарақытайлардың соққысынан және 1212 жылы Хорезмшах Мұхаммедтің қысымынан құлады.",
-                footer: "«Қараханид мемлекеті дала рухын тастан қаланған мәңгілік ескерткіштер мен ұлы әдебиеттің алтын беттеріне айналдырды.»",
-                arch: {
-                    dome: { name: "Күмбез", text: "Аспан әлемінің нышаны. Қараханид кесенелерінің қос қабатты күмбездері беріктік пен зәулім көріністі қамтамасыз етті." },
-                    tiles: { name: "Терракоталық декор", text: "Геометриялық және эпиграфиялық өрнектері бар бірегей плиткалар. Әр плитка қолмен ойылып, беріктік үшін күйдірілген." },
-                    arch: { name: "Пештак (Портал)", text: "Орталық кіреберіс порталы. Құран аяттарымен және күрделі 'ислими' өрнектерімен безендірілген қасбеттің басты элементі." }
-                }
+                period: "1940 — 1960 жж.", title: "Қоғамдық-саяси жағдай", desc: "Соғыстан кейінгі сталинизмнен «Жылымыққа» дейін",
+                f1T: "Сынақтар", f1D: "1949 ж. — Семей полигонындағы алғашқы жарылыс. Қазақ жерінің ядролық қасіретінің басы.",
+                f2T: "Ғылыммен күрес", f2D: "Бекмаханов ісі (1952 ж.). Кенесары көтерілісін зерттегені үшін тарихшыларды «буржуазиялық ұлтшылдықпен» айыптау.",
+                f3T: "Тың игеру", f3D: "1954 ж. — жаппай көші-қон мен жерді жыртудың басталуы. Өлкенің демографиясының түбегейлі өзгеруі.",
+                chartTitle: "Урбанизация және халық саны", specialTitle: "Хрущев «Жылымығы»",
+                specialD: "КОКП XX съезі (1956) және қуғын-сүргін құрбандарын ақтау. Алаш қайраткерлері есімдерінің ішінара қайтарылуы.",
+                labels: ['1940', '1945', '1950', '1955', '1960']
             },
             en: {
-                title: "Karakhanid State (942–1212 AD)",
-                vizTitle: "Terracotta Code: The Mausoleum",
-                vizDesc: "Karakhanid architecture is a symbiosis of math and art. Click on the portal elements to explore architectural innovations.",
-                badge: "Cultural Heritage Analysis",
-                elementTitleDefault: "Start Analysis",
-                elementDescDefault: "Click on the dome, decorative tiles, or the portal arch.",
-                tRel: "Religion", tSoc: "Structure", tSci: "Culture",
-                c1T: "960 AD Islamic Revolution", c1D: "Under Musa Khagan, Islam was declared the state religion, uniting 200,000 nomad tents. Satuq Boghra Khan laid the foundations for this profound spiritual shift.",
-                c1F: "Result: Bloom of cities and literacy.",
-                c2T: "The Iqta System", c2D: "The Karakhanids introduced the Iqta system—granting land tax rights for military service. They also had waqf lands for mosques and education.",
-                c2F: "Titles: Teghin, Ilek-khan, Arslan-khan.",
-                c3T: "Turkic Renaissance", c3D: "Yusuf Balasaguni ('Kutadgu Bilig') and Mahmud al-Kashgari ('Compendium of the Turkic Dialects') founded the basis of Turkic identity here.",
-                c3F: "Centers: Balasagun, Kashgar, Taraz.",
-                geoT: "Split & Collapse", geoD: "In 1040, the empire split in two. In the 12th c., the weakened state fell to the Karakitais and finally Khwarazmian Shah Muhammad in 1212.",
-                footer: "«The Karakhanid State turned the steppe spirit into eternal stone monuments and golden pages of great literature.»",
-                arch: {
-                    dome: { name: "Qubba (Dome)", text: "A symbol of the celestial sphere. Double-layered domes provided structural integrity and a majestic appearance." },
-                    tiles: { name: "Terracotta Decor", text: "Unique tiles with geometric and calligraphic patterns. Each tile was hand-carved and fired for durability." },
-                    arch: { name: "Pishtaq (Portal)", text: "The main entrance portal. The focal point of the facade, decorated with Quranic verses and complex 'islimi' ornaments." }
-                }
+                period: "1940 — 1960", title: "Socio-political Situation", desc: "From Post-War Stalinism to the 'Thaw'",
+                f1T: "Trials", f1D: "1949 — the first explosion at the Semipalatinsk test site. The beginning of the nuclear tragedy.",
+                f2T: "Anti-Science", f2D: "The Bekmakhanov Case (1952). Persecution of historians for 'bourgeois nationalism' regarding the Kenesary revolt.",
+                f3T: "Virgin Lands", f3D: "1954 — the start of mass migration and land plowing. Radical change in the region's demographics.",
+                chartTitle: "Urbanization & Population Level", specialTitle: "Khrushchev Thaw",
+                specialD: "20th CPSU Congress (1956) and rehabilitation of repression victims. Partial return of Alash leaders' names.",
+                labels: ['1940', '1945', '1950', '1955', '1960']
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('archCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 550;
-            drawMausoleum();
-        }
-
-        function drawMausoleum() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const scale = canvas.width / 700;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            // 1. Draw Dome (Qubba)
-            ctx.beginPath();
-            ctx.arc(cx, 130 * scale, 80 * scale, Math.PI, 0);
-            ctx.fillStyle = '#b45309';
-            ctx.fill();
-            ctx.strokeStyle = '#451a03';
-            ctx.lineWidth = 4 * scale;
-            ctx.stroke();
-
-            // 2. Main Portal Structure (Pishtaq)
-            ctx.fillStyle = '#d97706';
-            ctx.fillRect(cx - 150 * scale, 130 * scale, 300 * scale, 350 * scale);
-            ctx.strokeRect(cx - 150 * scale, 130 * scale, 300 * scale, 350 * scale);
-
-            // 3. Portal Arch (The Entrance)
-            ctx.beginPath();
-            ctx.moveTo(cx - 80 * scale, 480 * scale);
-            ctx.lineTo(cx - 80 * scale, 250 * scale);
-            ctx.quadraticCurveTo(cx, 150 * scale, cx + 80 * scale, 250 * scale);
-            ctx.lineTo(cx + 80 * scale, 480 * scale);
-            ctx.fillStyle = '#78350f';
-            ctx.fill();
-            ctx.stroke();
-
-            // 4. Tiles Details (Abstract Pattern)
-            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-            ctx.lineWidth = 1 * scale;
-            for(let i = -140; i < 140; i += 20) {
-                ctx.beginPath();
-                ctx.moveTo((cx + i) * scale, 150 * scale);
-                ctx.lineTo((cx + i) * scale, 460 * scale);
-                ctx.stroke();
-            }
-
-            // Highlighting Instruction
-            ctx.fillStyle = 'rgba(0,0,0,0.4)';
-            ctx.font = 'bold 10px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText("TAP ON ARCH, DOME OR WALLS", cx, 50 * scale);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const scale = canvas.width / 700;
-            const cx = canvas.width / 2;
-
-            let target = null;
-            // Detect Dome
-            if (y < 130 * scale && Math.abs(x - cx) < 80 * scale) target = 'dome';
-            // Detect Arch
-            else if (Math.abs(x - cx) < 80 * scale && y > 150 * scale) target = 'arch';
-            // Detect Tiles/Walls
-            else if (Math.abs(x - cx) < 150 * scale && y > 130 * scale) target = 'tiles';
-
-            if (target) {
-                const info = translations[currentLang].arch[target];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = (target === 'dome' ? '#b45309' : (target === 'tiles' ? '#d97706' : '#78350f'));
-            }
-        });
+        let activeChart = null;
 
         function setLang(lang) {
-            currentLang = lang;
+            ['ru', 'kz', 'en'].forEach(l => document.getElementById(`lang-${l}`).classList.toggle('lang-active', l === lang));
             const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            
-            document.getElementById('t-rel').innerText = t.tRel;
-            document.getElementById('t-soc').innerText = t.tSoc;
-            document.getElementById('t-sci').innerText = t.tSci;
-
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c1-f').innerText = t.c1F;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c2-f').innerText = t.c2F;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c3-f').innerText = t.c3F;
-
-            document.getElementById('geo-t').innerText = t.geoT;
-            document.getElementById('geo-d').innerText = t.geoD;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-orange-700 hover:bg-white transition-all";
-            });
-            drawMausoleum();
+            document.getElementById('period').innerText = t.period;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('f1T').innerText = t.f1T; document.getElementById('f1D').innerText = t.f1D;
+            document.getElementById('f2T').innerText = t.f2T; document.getElementById('f2D').innerText = t.f2D;
+            document.getElementById('f3T').innerText = t.f3T; document.getElementById('f3D').innerText = t.f3D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('specialTitle').innerText = t.specialTitle;
+            document.getElementById('specialD').innerText = t.specialD;
+            renderChart(t.labels);
         }
 
-        window.onload = () => { resizeCanvas(); setLang('ru'); };
-        window.onresize = resizeCanvas;
+        function renderChart(labels) {
+            const ctx = document.getElementById('politicsChart').getContext('2d');
+            if (activeChart) activeChart.destroy();
+            activeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Рост населения (%)', data: [100, 105, 115, 140, 160], borderColor: '#1e3a8a', tension: 0.4, fill: true, backgroundColor: 'rgba(30, 58, 138, 0.1)'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        window.onload = () => setLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -440,5 +161,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

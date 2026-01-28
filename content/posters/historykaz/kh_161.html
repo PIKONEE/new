@@ -3,343 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Борьба казахского народа против джунгарского нашествия</title>
+    <title>Казахстан на стыке веков: Демократизация</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background: #ecfdf5; color: #064e3b; transition: all 0.5s ease; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .war-gradient {
-            background: radial-gradient(circle at top right, #1e293b, #0f172a 90%);
-        }
-
-        .premium-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(20px);
-            border-radius: 3rem;
-            border: 1px solid rgba(249, 115, 22, 0.2);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-card:hover {
-            border-color: #f97316;
-            box-shadow: 0 0 50px rgba(249, 115, 22, 0.1);
-        }
-
-        .lang-active {
-            background-color: #f97316;
-            color: #0f172a;
-            box-shadow: 0 0 25px rgba(249, 115, 22, 0.4);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: rgba(2, 6, 23, 0.5);
-            border: 1px solid rgba(249, 115, 22, 0.1);
-        }
-
-        .battle-card {
-            background: rgba(15, 23, 42, 0.7);
-            border-left: 8px solid #f97316;
-            padding: 2.5rem;
-            border-radius: 2.5rem;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .battle-card:hover {
-            transform: translateX(10px);
-            background: rgba(30, 41, 59, 0.8);
-        }
-
-        .term-badge {
-            background: #431407;
-            color: #fdba74;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
+        .lang-active { background-color: #059669 !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #059669; position: relative; min-height: 1100px; box-shadow: 0 40px 80px rgba(6, 78, 59, 0.2); }
+        .modern-pill { background: #f0fdf4; border: 2px solid #d1fae5; padding: 2rem; border-radius: 2.5rem; transition: all 0.3s; }
+        .modern-pill:hover { border-color: #059669; transform: translateY(-5px); }
     </style>
 </head>
-<body class="war-gradient min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-white/10">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">EN</button>
+    </div>
 
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-emerald-800 pb-10 mb-12 text-center">
+            <h1 id="title" class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">Казахстан на стыке веков</h1>
+            <p id="desc" class="text-xl font-medium text-emerald-600 italic">Стратегия 2030, новая столица и демократические реформы</p>
+        </header>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-orange-900/30 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-orange-500">Освободительная война против джунгар</h1>
-            <div class="flex bg-slate-900 p-1 rounded-xl border border-orange-900/30">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Strategic Resistance Map (Canvas) -->
-        <div class="premium-card p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-4 space-y-8">
-                    <div id="badge" class="inline-block border border-orange-500/50 text-orange-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">National Defense Schematic</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-white leading-tight uppercase italic">Щит нации: Линия обороны</h2>
-                    <p id="viz-desc" class="text-lg text-slate-400 font-light leading-relaxed">
-                        Борьба с джунгарами стала отечественной войной за выживание. Нажмите на точки великих сражений, чтобы изучить тактику и вклад батыров.
+        <div class="space-y-12">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="modern-pill shadow-sm">
+                    <h2 id="sec1T" class="text-2xl font-black uppercase text-emerald-800 mb-4 tracking-tight">Новая Столица</h2>
+                    <p id="sec1D" class="text-sm leading-relaxed text-slate-700 font-medium italic">
+                        1997-1998 гг. — перенос столицы из Алматы в Акмолу (Астану). Геополитическое решение, давшее мощный толчок развитию севера и всей страны.
                     </p>
-                    
-                    <div id="info-panel" class="p-8 rounded-[3rem] bg-orange-950/30 border-l-8 border-orange-500 shadow-2xl transition-all duration-500">
-                        <h3 id="battle-title" class="text-xl font-bold text-orange-300 mb-3 uppercase tracking-tighter">Хроника побед</h3>
-                        <p id="battle-desc" class="text-slate-300 text-sm leading-relaxed italic font-light">Кликните на маркеры Буланты, Анракай или Ордабасы на холсте.</p>
-                    </div>
                 </div>
-                
-                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[550px]">
-                    <canvas id="warCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-orange-900 font-mono uppercase tracking-[0.4em]">Tactical Military Reconstruction</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Deep Historical Content -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <!-- 1723 Disaster -->
-            <div class="battle-card">
-                <span class="term-badge mb-4 inline-block" id="t-trag">Трагедия</span>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-white">Ақтабан шұбырынды</h3>
-                <p id="c1-d" class="text-slate-400 text-sm leading-relaxed mb-6">
-                    В **1723 году** жунгарская армия под предводительством Цеван-Рабдана нанесла внезапный удар. Казахи, не успевшие объединиться, понесли колоссальные потери. Люди бежали на запад, бросая скот и имущество. Эти годы вошли в память народа как «Годы великого бедствия». Погибло около 40% населения.
-                </p>
-                <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest italic">1723–1727: Пик катастрофы</div>
-            </div>
-
-            <!-- Unification -->
-            <div class="battle-card">
-                <span class="term-badge mb-4 inline-block" id="t-unit">Единство</span>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-white">Курултай в Ордабасы</h3>
-                <p id="c2-d" class="text-slate-400 text-sm leading-relaxed mb-6">
-                    В **1726 году** у подножия горы Ордабасы состоялся всеказахский съезд. Ханы Абулхаир, Абулмамбет и Жолбарыс поклялись действовать сообща. Главнокомандующим ополчения был избран хан **Абулхаир**. Началось формирование единых отрядов под руководством легендарных батыров.
-                </p>
-                <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest italic">Девиз: «Бірлік» (Единство)</div>
-            </div>
-
-            <!-- Major Victories -->
-            <div class="battle-card">
-                <span class="term-badge mb-4 inline-block" id="t-vict">Триумф</span>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-white">Победный марш</h3>
-                <p id="c3-d" class="text-slate-400 text-sm leading-relaxed mb-6">
-                    Первой крупной победой стало сражение на реке **Буланты (1726/28 г.)**, названное «Местом гибели калмыков». Финальным аккордом стала **Анракайская битва (1729/30 г.)** в предгорьях Хантау. Объединенные силы трех жузов нанесли жунгарам сокрушительное поражение, освободив Жетысу.
-                </p>
-                <div class="text-[10px] font-black text-orange-500 uppercase tracking-widest italic">Анракай — место стонов врага</div>
-            </div>
-        </div>
-
-        <!-- Section 3: The Batyrs (Full Width) -->
-        <div class="bg-orange-900/10 p-10 md:p-20 rounded-[4rem] border border-orange-500/20 shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="space-y-8">
-                    <h3 id="batyr-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter text-white">Железный кулак: Батыры</h3>
-                    <p id="batyr-d" class="text-slate-300 text-xl font-light leading-relaxed">
-                        Победа была невозможна без военного гения народных предводителей. **Кабанбай**, **Богенбай**, **Наурызбай** и **Райымбек** стали символами несгибаемой воли. Они разработали тактику изматывания врага в степи и внезапных фланговых ударов, которые парализовали тяжелую жунгарскую конницу.
+                <div class="modern-pill shadow-sm">
+                    <h2 id="sec2T" class="text-2xl font-black uppercase text-emerald-800 mb-4 tracking-tight">Стратегия 2030</h2>
+                    <p id="sec2D" class="text-sm leading-relaxed text-slate-700 font-medium italic">
+                        Принятая в 1997 году программа определила долгосрочные цели: национальная безопасность, экономический рост и человеческий капитал.
                     </p>
-                    <div class="inline-flex items-center gap-4 bg-white/5 px-6 py-2 rounded-full border border-white/10">
-                        <span id="batyr-tag" class="text-sm font-bold uppercase tracking-widest text-orange-400">Народная армия</span>
-                    </div>
                 </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-orange-700/50 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-7xl mb-4 grayscale opacity-20">⚔️</div>
-                            <div id="found-label" class="text-[10px] font-black uppercase text-orange-300 tracking-[0.5em]">The Steel Will</div>
-                        </div>
-                    </div>
+            </section>
+
+            <section class="bg-emerald-900 text-white p-12 rounded-[4rem] relative overflow-hidden shadow-2xl border-l-[15px] border-emerald-400">
+                <h2 id="demTitle" class="text-3xl font-black uppercase text-emerald-200 mb-6 italic tracking-tight">Демократизация</h2>
+                <p id="demD" class="text-lg font-light leading-relaxed opacity-95">
+                    Развитие многопартийности, институтов гражданского общества и укрепление правового государства. Создание Ассамблеи народа Казахстана как гаранта единства.
+                </p>
+                <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5">🕊️</div>
+            </section>
+
+            <section class="bg-emerald-50 p-10 rounded-[3rem] border border-emerald-100 flex flex-col justify-center shadow-inner">
+                <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-8 text-emerald-800 tracking-widest">Индекс развития (прогноз vs факт)</h4>
+                <div class="h-44">
+                    <canvas id="modernChart"></canvas>
                 </div>
-            </div>
-            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">VICTORY</div>
+            </section>
         </div>
 
-    </main>
-
-    <footer class="mt-20 py-24 bg-black border-t border-orange-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6 text-slate-600">
-            <p id="footer-text" class="text-2xl font-light italic leading-tight">
-                «Борьба с джунгарами — это не просто война за пастбища, это священный акт рождения единой казахской нации из пламени величайшей трагедии.»
-            </p>
-            <div class="mt-12 h-1 w-24 bg-orange-700 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="mt-20 pt-8 border-t border-emerald-100 flex justify-between items-center text-[10px] font-black uppercase text-emerald-400 tracking-[0.5em]">
+            Future Horizons • Millennium Section
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Освободительная война против джунгар",
-                vizTitle: "Щит нации: Линия обороны",
-                vizDesc: "Борьба с джунгарами стала отечественной войной. Нажмите на точки сражений на холсте для анализа тактики и триумфа.",
-                badge: "Стратегическая карта обороны",
-                battleTitleDefault: "Хроника побед",
-                battleDescDefault: "Кликните на маркеры Буланты, Анракай или Ордабасы на чертеже.",
-                tTrag: "Трагедия", tUnit: "Единство", tVict: "Триумф",
-                c1T: "Ақтабан шұбырынды", c1D: "1723 г. — катастрофический удар жунгар. Потеря Туркестана и Ташкента. Массовая гибель людей и бегство племен в сторону Самарканда и Хивы.",
-                c2T: "Курултай в Ордабасы", c2D: "1726 г. — поворотный момент. Три жуза объединились под началом Абулхаира. Батыры поклялись биться до конца за каждую пядь земли.",
-                c3T: "Победный марш", c3D: "Разгром жунгар при Буланты (1728) и Анракае (1729). Эти битвы доказали, что единство — главный залог суверенитета казахов.",
-                batyrT: "Железный кулак: Батыры", batyrD: "Кабанбай и Богенбай создали мобильные корпуса, способные на молниеносные удары. Их авторитет в народе был выше ханского.",
-                batyrTag: "Народная армия",
-                footer: "«Борьба с джунгарами — это священный акт рождения единой казахской нации из пламени трагедии.»",
-                nodes: {
-                    bulanty: { name: "Битва при Буланты (1728)", text: "Место: Берега реки Буланты. Итог: Первая крупная победа ополчения. Жунгары потеряли более 10 тыс. воинов. Психологический перелом в войне." },
-                    anyrakai: { name: "Анракайская битва (1729)", text: "Место: Предгорья Хантау у озера Балхаш. Итог: Генеральное сражение. Объединенные силы казахов полностью уничтожили гвардию жунгарского хунтайши." },
-                    ordabasy: { name: "Курултай в Ордабасы (1726)", text: "Место: Южный Казахстан. Итог: Формирование единого штаба обороны. Прекращение междоусобиц и выбор Абулхаира главнокомандующим." }
-                }
+                title: "Казахстан на стыке веков", desc: "Стратегия 2030, новая столица и демократические реформы",
+                sec1T: "Новая Столица", sec1D: "1997-1998 гг. — перенос столицы в Астану. Проект века, ставший локомотивом модернизации экономики и символом перемен.",
+                sec2T: "Стратегия 2030", sec2D: "Первый долгосрочный план развития, заложивший основы превращения Казахстана в одно из самых развитых государств региона.",
+                demTitle: "Путь Демократизации", demD: "Укрепление парламентской системы, развитие местного самоуправления и поддержка институтов гражданского общества (НПО).",
+                chartTitle: "Показатели роста за десятилетие",
+                labels: ['Экономика', 'Инфраструктура', 'Соц. сфера', 'Внешние связи']
             },
             kz: {
-                title: "Жоңғар шапқыншылығына қарсы азаттық соғысы",
-                vizTitle: "Ұлт қалқаны: Қорғаныс шебі",
-                vizDesc: "Жоңғарларға қарсы күрес отан соғысына айналды. Тактика мен жеңістерді талдау үшін кенептегі шайқас нүктелерін басыңыз.",
-                badge: "Стратегиялық қорғаныс картасы",
-                battleTitleDefault: "Жеңістер шежіресі",
-                battleDescDefault: "Сызбадағы Бұланты, Аңырақай немесе Ордабасы маркерлерін басыңыз.",
-                tTrag: "Қасірет", tUnit: "Бірлік", tVict: "Жеңіс",
-                c1T: "Ақтабан шұбырынды", c1D: "1723 ж. — жоңғарлардың жойқын соққысы. Түркістан мен Ташкенттің құлауы. Халықтың Самарқанд пен Хиуаға жаппай қашуы.",
-                c2T: "Ордабасыдағы құрылтай", c2D: "1726 ж. — бетбұрыс кезең. Үш жүз Әбілқайырдың астына бірікті. Батырлар жердің әр қарысы үшін соңғы демге дейін соғысуға ант берді.",
-                c3T: "Жеңіс жорығы", c3D: "Бұланты (1728) және Аңырақай (1729) шайқастарында жоңғарларды талқандау. Бұл шайқастар бірліктің маңызын дәлелдеді.",
-                batyrT: "Темір жұдырық: Батырлар", batyrD: "Қабанбай мен Бөгенбай найзағайдай жылдам соққы бере алатын мобильді корпустар құрды. Олардың халық арасындағы беделі ханнан жоғары болды.",
-                batyrTag: "Халық әскері",
-                footer: "«Жоңғар соғысы — қасірет отынан біртұтас қазақ ұлтының тууының қасиетті актісі.»",
-                nodes: {
-                    bulanty: { name: "Бұланты шайқасы (1728)", text: "Орны: Бұланты өзенінің жағасы. Нәтиже: Жасақтың алғашқы ірі жеңісі. Жоңғарлар 10 мыңнан астам сарбазынан айырылды." },
-                    anyrakai: { name: "Аңырақай шайқасы (1729)", text: "Орны: Балқаш көлінің маңындағы Хантау бөктері. Нәтиже: Бас шайқас. Қазақтар жоңғар қонтайшысының гвардиясын толық талқандады." },
-                    ordabasy: { name: "Ордабасы құрылтайы (1726)", text: "Орны: Оңтүстік Қазақстан. Нәтиже: Біртұтас қорғаныс штабының құрылуы. Әбілқайыр хан бас қолбасшы болып сайланды." }
-                }
+                title: "Ғасырлар тоғысындағы Қазақстан", desc: "2030 стратегиясы, жаңа елорда және демократиялық реформалар",
+                sec1T: "Жаңа Елорда", sec1D: "1997-1998 жж. — астананы Астанаға көшіру. Экономиканы жаңғыртудың локомотиві және өзгерістер нышанына айналған ғасыр жобасы.",
+                sec2T: "2030 Стратегиясы", sec2D: "Қазақстанды өңірдегі ең дамыған мемлекеттердің біріне айналдырудың негізін қалаған алғашқы ұзақ мерзімді даму жоспары.",
+                demTitle: "Демократияландыру жолы", demD: "Парламенттік жүйені нығайту, жергілікті өзін-өзі басқаруды дамыту және азаматтық қоғам институттарын (ҮЕҰ) қолдау.",
+                chartTitle: "Онжылдықтағы өсу көрсеткіштері",
+                labels: ['Экономика', 'Инфрақұрылым', 'Әлеуметтік сала', 'Сыртқы байланыстар']
+            },
+            en: {
+                title: "Kazakhstan at the Turn of Centuries", desc: "Strategy 2030, New Capital, and Democratic Reforms",
+                sec1T: "New Capital", sec1D: "1997-1998 — Transfer of the capital to Astana. A project of the century that became a locomotive of modernization and a symbol of change.",
+                sec2T: "Strategy 2030", sec2D: "The first long-term development plan that laid the foundation for Kazakhstan becoming one of the region's most developed states.",
+                demTitle: "Path to Democratization", demD: "Strengthening the parliamentary system, developing local self-government, and supporting civil society institutions (NGOs).",
+                chartTitle: "Growth indicators over a decade",
+                labels: ['Economy', 'Infrastructure', 'Social sphere', 'Foreign relations']
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('warCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 550;
-            drawMap();
-        }
-
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Draw Abstract Map Outline
-            ctx.beginPath();
-            ctx.moveTo(100 * scale, 100 * scale);
-            ctx.lineTo(600 * scale, 50 * scale);
-            ctx.lineTo(750 * scale, 450 * scale);
-            ctx.lineTo(150 * scale, 500 * scale);
-            ctx.closePath();
-            ctx.strokeStyle = 'rgba(249, 115, 22, 0.1)';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // 2. Victory Nodes
-            drawNode(cx - 200 * scale, cy - 50 * scale, '#f97316', "BULANTY (1728)", 18 * scale);
-            drawNode(cx + 100 * scale, cy + 150 * scale, '#ea580c', "ANYRAKAI (1729)", 22 * scale);
-            drawNode(cx, cy + 50 * scale, '#fbbf24', "ORDABASY (1726)", 15 * scale);
-
-            // 3. Attack Lines (Abstract red arrows)
-            ctx.strokeStyle = 'rgba(239, 68, 68, 0.2)';
-            ctx.setLineDash([5, 10]);
-            ctx.beginPath();
-            ctx.moveTo(700 * scale, 100 * scale); ctx.lineTo(cx + 100 * scale, cy + 150 * scale);
-            ctx.stroke();
-            ctx.setLineDash([]);
-        }
-
-        function drawNode(x, y, color, label, size) {
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fillStyle = color + '22';
-            ctx.fill();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 10px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x, y + size + 20);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            let target = null;
-            if (Math.sqrt((x - (cx - 200*scale))**2 + (y - (cy - 50*scale))**2) < 40) target = 'bulanty';
-            else if (Math.sqrt((x - (cx + 100*scale))**2 + (y - (cy + 150*scale))**2) < 40) target = 'anyrakai';
-            else if (Math.sqrt((x - cx)**2 + (y - (cy + 50*scale))**2) < 40) target = 'ordabasy';
-
-            if (target) {
-                const info = translations[currentLang].nodes[target];
-                document.getElementById('battle-title').innerText = info.name;
-                document.getElementById('battle-desc').innerText = info.text;
-                document.getElementById('info-panel').style.borderColor = '#f97316';
-            }
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('battle-title').innerText = t.battleTitleDefault;
-            document.getElementById('battle-desc').innerText = t.battleDescDefault;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('batyr-t').innerText = t.batyrT; document.getElementById('batyr-d').innerText = t.batyrD;
-            document.getElementById('batyr-tag').innerText = t.batyrTag;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('demTitle').innerText = t.demTitle;
+            document.getElementById('demD').innerText = t.demD;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            renderChart(t.labels);
         }
 
+        function renderChart(labels) {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('modernChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'radar',
+                data: { labels: labels, datasets: [{ data: [90, 85, 75, 95], backgroundColor: 'rgba(16, 185, 129, 0.2)', borderColor: '#059669', borderWidth: 3 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { ticks: { display: false } } }, plugins: { legend: { display: false } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -372,5 +157,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

@@ -1,42 +1,37 @@
 <!DOCTYPE html>
-<!-- Бастапқы тіл - Қазақша -->
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Плакат: Биология - наука о жизни</title>
+    <title>Плакат: Биология</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0fdf4; /* green-50 */
-            overflow-x: hidden;
-            color: #14532d; /* green-900 */
+            background-color: #f0fdf4;
+            color: #14532d;
         }
         .container {
             max-width: 1100px;
             margin: auto;
             padding: 20px;
         }
-        /* Тақырып карточкасы - Nature Green Theme */
         .header-card {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); /* green-600 to 700 */
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
             border-radius: 1rem;
             box-shadow: 0 10px 25px -5px rgba(22, 163, 74, 0.4);
             color: white;
             padding: 40px;
         }
-        /* Бөлім тақырыбы */
         .section-heading {
-            color: #166534; /* green-800 */
-            border-bottom: 3px solid #86efac; /* green-300 */
+            color: #166534;
+            border-bottom: 3px solid #86efac;
             display: inline-block;
             padding-bottom: 5px;
             margin-bottom: 25px;
             font-weight: 700;
         }
-        /* Ереже карточкасы */
         .rule-card {
             background-color: #ffffff;
             border-radius: 0.75rem;
@@ -50,28 +45,18 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
-        /* Мысал блогы */
-        .example-block {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 0.5rem;
-            font-size: 0.875rem; /* text-sm */
-        }
-        /* Түйін */
         .footer-card {
             text-align: center;
             margin-top: 40px;
             padding: 24px;
-            background-color: #dcfce7; /* green-100 */
+            background-color: #dcfce7;
             border-radius: 1rem;
-            border-top: 4px solid #16a34a; /* green-600 */
+            border-top: 4px solid #16a34a;
         }
-         .term {
+        .term {
             font-weight: bold;
-            color: #16a34a; /* green-600 */
+            color: #16a34a;
         }
-
-        /* Language switcher */
         .lang-switcher {
             display: flex;
             justify-content: center;
@@ -88,27 +73,27 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .lang-btn:hover {
-            background-color: #f0fdf4;
-        }
-        .lang-btn.active {
-            background-color: #16a34a;
-            color: #ffffff;
+        .lang-btn:hover { background-color: #f0fdf4; }
+        .lang-btn.active { background-color: #16a34a; color: #ffffff; }
+
+        /* --- ИСПРАВЛЕННАЯ ЛОГИКА ЯЗЫКОВ --- */
+        /* По умолчанию скрываем все элементы с классом lang-content */
+        .lang-content {
+            display: none !important;
         }
 
-        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
-        .lang-content {
-            display: none;
-        }
+        /* Показываем ТОЛЬКО нужный язык в зависимости от класса контейнера */
         .lang-kk .lang-content[lang="kk"],
         .lang-en .lang-content[lang="en"],
         .lang-ru .lang-content[lang="ru"] {
-            display: block;
+            display: block !important;
         }
+
+        /* Для строчных элементов (span) используем inline */
         .lang-kk span.lang-content[lang="kk"],
         .lang-en span.lang-content[lang="en"],
         .lang-ru span.lang-content[lang="ru"] {
-            display: inline;
+            display: inline !important;
         }
 
         .illustration-svg {
@@ -119,115 +104,61 @@
             border-radius: 0.5rem;
             background-color: #fff;
         }
-        /* Стили для подписей в SVG */
-        .svg-label {
-            font-size: 14px;
-            font-weight: 600;
-            fill: #14532d;
-            text-anchor: middle;
-        }
-        .svg-dna {
-            fill: none;
-            stroke: #22c55e;
-            stroke-width: 3;
-            stroke-linecap: round;
-        }
-        .svg-leaf {
-            fill: #4ade80;
-            stroke: #16a34a;
-            stroke-width: 2;
-        }
-        .svg-cell {
-            fill: #dcfce7;
-            stroke: #15803d;
-            stroke-width: 2;
-        }
-
+        .svg-leaf { fill: #4ade80; stroke: #16a34a; stroke-width: 2; }
+        .svg-dna { fill: none; stroke: #22c55e; stroke-width: 3; stroke-linecap: round; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-green-50">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(74, 222, 128, 0.6)';"
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(74, 222, 128, 0.4)';">
-        ← Назад
-    </button>
-</div>
 
-    <!-- ID-і бар негізгі контейнер -->
+
     <div id="poster-container" class="container lang-kk">
 
-        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
         <div class="lang-switcher">
             <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
             <button class="lang-btn" onclick="switchLang('en')">English</button>
             <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
         </div>
 
-        <!-- БАСТЫ ТАҚЫРЫП -->
         <header class="header-card text-center mb-10">
-            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">БИОЛОГИЯ – ТІРІ ТАБИҒАТ ТУРАЛЫ ҒЫЛЫМ</h1>
-            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">BIOLOGY – THE SCIENCE OF LIFE</h1>
-            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">БИОЛОГИЯ – НАУКА О ЖИВОЙ ПРИРОДЕ</h1>
+            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">БИОЛОГИЯ – ТІРІ ТАБИҒАТ ТУРАЛЫ ҒЫЛЫМ</h1>
+            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">BIOLOGY – THE SCIENCE OF LIFE</h1>
+            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">БИОЛОГИЯ – НАУКА О ЖИВОЙ ПРИРОДЕ</h1>
 
             <p lang="kk" class="lang-content mt-2 text-xl font-medium text-green-100">Тіршіліктің құрылымы мен заңдылықтары.</p>
             <p lang="en" class="lang-content mt-2 text-xl font-medium text-green-100">Structure and laws of life.</p>
             <p lang="ru" class="lang-content mt-2 text-xl font-medium text-green-100">Строение и законы жизни.</p>
         </header>
 
-        <!-- 1. БИОЛОГИЯ ДЕГЕНІМІЗ НЕ? -->
         <section class="mb-12">
             <h2 lang="kk" class="lang-content text-3xl section-heading">1. Биология дегеніміз не?</h2>
             <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Biology?</h2>
             <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое Биология?</h2>
 
             <div class="rule-card border-t-green-500">
-                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="kk">Биология</span> (грекше "bios" - өмір, "logos" - ғылым) – тірі ағзаларды және олардың қоршаған ортамен байланысын зерттейтін ғылым.
+                <p lang="kk" class="lang-content text-lg mb-3">
+                    <span class="term">Биология</span> – тірі ағзаларды зерттейтін ғылым.
                 </p>
-                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="en">Biology</span> (Greek "bios" - life, "logos" - study) is the science that studies living organisms and their interaction with the environment.
+                <p lang="en" class="lang-content text-lg mb-3">
+                    <span class="term">Biology</span> is the science that studies living organisms.
                 </p>
-                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="ru">Биология</span> (греч. "bios" - жизнь, "logos" - наука) – наука, изучающая живые организмы и их взаимодействие с окружающей средой.
+                <p lang="ru" class="lang-content text-lg mb-3">
+                    <span class="term">Биология</span> – наука, изучающая живые организмы.
                 </p>
 
-                <!-- Illustration 1: DNA and Life -->
-                <svg class="illustration-svg" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
-                    <!-- DNA Helix -->
+                <svg class="illustration-svg" viewBox="0 0 400 150">
                     <g transform="translate(100, 20)">
-                        <path d="M 20 0 Q 60 25, 20 50 Q -20 75, 20 100" class="svg-dna" stroke="#22c55e"/>
+                        <path d="M 20 0 Q 60 25, 20 50 Q -20 75, 20 100" class="svg-dna"/>
                         <path d="M 20 0 Q -20 25, 20 50 Q 60 75, 20 100" class="svg-dna" stroke="#15803d" stroke-dasharray="5"/>
-                        <!-- Connecting lines -->
-                        <line x1="10" y1="12" x2="30" y2="12" stroke="#86efac" stroke-width="2"/>
-                        <line x1="0" y1="25" x2="40" y2="25" stroke="#86efac" stroke-width="2"/>
-                        <line x1="0" y1="75" x2="40" y2="75" stroke="#86efac" stroke-width="2"/>
-                        <line x1="10" y1="88" x2="30" y2="88" stroke="#86efac" stroke-width="2"/>
                     </g>
-
-                    <!-- Text: Bios + Logos -->
-                    <text x="250" y="50" font-size="20" font-weight="bold" fill="#15803d" text-anchor="middle">BIOS (Өмір/Life)</text>
+                    <text x="250" y="50" font-size="20" font-weight="bold" fill="#15803d" text-anchor="middle">BIOS (Life)</text>
                     <text x="250" y="80" font-size="20" font-weight="bold" fill="#475569" text-anchor="middle">+</text>
-                    <text x="250" y="110" font-size="20" font-weight="bold" fill="#166534" text-anchor="middle">LOGOS (Ғылым/Study)</text>
+                    <text x="250" y="110" font-size="20" font-weight="bold" fill="#166534" text-anchor="middle">LOGOS (Science)</text>
                 </svg>
             </div>
         </section>
 
-        <!-- 2. БИОЛОГИЯ САЛАЛАРЫ -->
+                <!-- 2. БИОЛОГИЯ САЛАЛАРЫ -->
         <section class="mb-12">
             <h2 lang="kk" class="lang-content text-3xl section-heading">2. Биологияның негізгі салалары</h2>
             <h2 lang="en" class="lang-content text-3xl section-heading">2. Main Branches of Biology</h2>
@@ -241,25 +172,30 @@
                             <path d="M 25 45 Q 25 5, 5 15 Q 10 5, 25 5 Q 40 5, 45 15 Q 25 5, 25 45" class="svg-leaf"/>
                         </svg>
                         <div>
-                            <h4 class="font-bold text-green-900" lang="kk">Ботаника</h4>
-                            <h4 class="font-bold text-green-900" lang="ru">Ботаника</h4>
-                            <p class="text-xs text-gray-600">Өсімдіктер туралы ғылым / Study of Plants.</p>
+                            <h4 lang="kk" class="lang-content font-bold text-green-900">Ботаника</h4>
+                            <h4 lang="en" class="lang-content font-bold text-green-900">Botany</h4>
+                            <h4 lang="ru" class="lang-content font-bold text-green-900">Ботаника</h4>
+                            <p lang="kk" class="lang-content text-xs text-gray-600">Өсімдіктер туралы ғылым</p>
+                            <p lang="en" class="lang-content text-xs text-gray-600">Study of Plants</p>
+                            <p lang="ru" class="lang-content text-xs text-gray-600">Наука о растениях</p>
                         </div>
                     </div>
 
                     <!-- Zoology -->
                     <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200 flex items-center gap-4">
                         <svg viewBox="0 0 50 50" class="w-12 h-12">
-                            <!-- Paw print -->
                             <circle cx="15" cy="20" r="5" fill="#059669"/>
                             <circle cx="25" cy="10" r="5" fill="#059669"/>
                             <circle cx="35" cy="20" r="5" fill="#059669"/>
                             <path d="M 15 35 Q 25 25, 35 35 Q 40 45, 25 45 Q 10 45, 15 35" fill="#059669"/>
                         </svg>
                         <div>
-                            <h4 class="font-bold text-emerald-900" lang="kk">Зоология</h4>
-                            <h4 class="font-bold text-emerald-900" lang="ru">Зоология</h4>
-                            <p class="text-xs text-gray-600">Жануарлар туралы ғылым / Study of Animals.</p>
+                            <h4 lang="kk" class="lang-content font-bold text-emerald-900">Зоология</h4>
+                            <h4 lang="en" class="lang-content font-bold text-emerald-900">Zoology</h4>
+                            <h4 lang="ru" class="lang-content font-bold text-emerald-900">Зоология</h4>
+                            <p lang="kk" class="lang-content text-xs text-gray-600">Жануарлар туралы ғылым</p>
+                            <p lang="en" class="lang-content text-xs text-gray-600">Study of Animals</p>
+                            <p lang="ru" class="lang-content text-xs text-gray-600">Наука о животных</p>
                         </div>
                     </div>
 
@@ -268,121 +204,70 @@
                         <svg viewBox="0 0 50 50" class="w-12 h-12">
                              <circle cx="25" cy="15" r="8" fill="none" stroke="#0d9488" stroke-width="2"/>
                              <path d="M 15 30 L 35 30 L 35 45 L 15 45 Z" fill="none" stroke="#0d9488" stroke-width="2"/>
-                             <path d="M 20 35 L 25 40 L 30 35" fill="none" stroke="#ef4444" stroke-width="2"/> <!-- Heart -->
+                             <path d="M 20 35 L 25 40 L 30 35" fill="none" stroke="#ef4444" stroke-width="2"/>
                         </svg>
                         <div>
-                            <h4 class="font-bold text-teal-900" lang="kk">Анатомия</h4>
-                            <h4 class="font-bold text-teal-900" lang="ru">Анатомия</h4>
-                            <p class="text-xs text-gray-600">Ағзаның құрылысы / Body Structure.</p>
+                            <h4 lang="kk" class="lang-content font-bold text-teal-900">Анатомия</h4>
+                            <h4 lang="en" class="lang-content font-bold text-teal-900">Anatomy</h4>
+                            <h4 lang="ru" class="lang-content font-bold text-teal-900">Анатомия</h4>
+                            <p lang="kk" class="lang-content text-xs text-gray-600">Ағзаның құрылысы</p>
+                            <p lang="en" class="lang-content text-xs text-gray-600">Body Structure</p>
+                            <p lang="ru" class="lang-content text-xs text-gray-600">Строение организма</p>
                         </div>
                     </div>
 
                     <!-- Microbiology -->
                     <div class="bg-lime-50 p-4 rounded-lg border border-lime-200 flex items-center gap-4">
                         <svg viewBox="0 0 50 50" class="w-12 h-12">
-                             <!-- Microscope simplified -->
                              <path d="M 20 40 L 30 40 M 25 40 L 25 10 L 35 20" stroke="#65a30d" stroke-width="2" fill="none"/>
                              <circle cx="15" cy="20" r="2" fill="#65a30d"/>
                              <circle cx="35" cy="10" r="3" fill="#65a30d"/>
                         </svg>
                         <div>
-                            <h4 class="font-bold text-lime-900" lang="kk">Микробиология</h4>
-                            <h4 class="font-bold text-lime-900" lang="ru">Микробиология</h4>
-                            <p class="text-xs text-gray-600">Бактериялар мен вирустар / Microbes.</p>
+                            <h4 lang="kk" class="lang-content font-bold text-lime-900">Микробиология</h4>
+                            <h4 lang="en" class="lang-content font-bold text-lime-900">Microbiology</h4>
+                            <h4 lang="ru" class="lang-content font-bold text-lime-900">Микробиология</h4>
+                            <p lang="kk" class="lang-content text-xs text-gray-600">Микроағзалар туралы ғылым</p>
+                            <p lang="en" class="lang-content text-xs text-gray-600">Study of Microorganisms</p>
+                            <p lang="ru" class="lang-content text-xs text-gray-600">Наука о микроорганизмах</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3. ТІРІ АҒЗАНЫҢ БЕЛГІЛЕРІ -->
         <section class="mb-12">
             <h2 lang="kk" class="lang-content text-3xl section-heading">3. Тірі ағзаның белгілері</h2>
             <h2 lang="en" class="lang-content text-3xl section-heading">3. Characteristics of Living Things</h2>
             <h2 lang="ru" class="lang-content text-3xl section-heading">3. Признаки живого организма</h2>
 
             <div class="rule-card border-t-lime-500">
-                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Тірі табиғат өлі табиғаттан негізгі процестер арқылы ерекшеленеді.
-                </p>
-                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Living nature differs from non-living nature through key processes.
-                </p>
-                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Живая природа отличается от неживой основными процессами жизнедеятельности.
-                </p>
+                <p lang="kk" class="lang-content text-lg text-gray-700">Тірі табиғат өлі табиғаттан негізгі процестер арқылы ерекшеленеді.</p>
+                <p lang="en" class="lang-content text-lg text-gray-700">Living nature differs from non-living nature through key processes.</p>
+                <p lang="ru" class="lang-content text-lg text-gray-700">Живая природа отличается от неживой основными процессами.</p>
 
-                <!-- Illustration 3: Life Cycle -->
-                <svg class="illustration-svg" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Ground -->
+                <svg class="illustration-svg" viewBox="0 0 400 150">
                     <line x1="0" y1="130" x2="400" y2="130" stroke="#78350f" stroke-width="2"/>
-
-                    <!-- 1. Seed -->
-                    <g transform="translate(50, 110)">
-                        <circle cx="0" cy="20" r="5" fill="#a16207"/>
-                        <text x="0" y="-10" font-size="10" text-anchor="middle">Seed</text>
-                    </g>
-
-                    <!-- Arrow -->
-                    <path d="M 70 120 Q 80 110, 90 120" fill="none" stroke="#16a34a" marker-end="url(#arrow-green)"/>
-
-                    <!-- 2. Sprout (Growth) -->
                     <g transform="translate(110, 100)">
                         <path d="M 0 30 Q 0 10, 5 0 Q 5 10, 10 5" fill="none" stroke="#22c55e" stroke-width="2"/>
                         <circle cx="5" cy="0" r="3" fill="#4ade80"/>
-                        <text x="0" y="-15" font-size="10" text-anchor="middle" font-weight="bold">Өсу (Growth)</text>
                     </g>
-
-                    <!-- Arrow -->
-                    <path d="M 140 120 Q 150 110, 160 120" fill="none" stroke="#16a34a" marker-end="url(#arrow-green)"/>
-
-                    <!-- 3. Plant (Metabolism) -->
-                    <g transform="translate(200, 80)">
-                        <line x1="0" y1="50" x2="0" y2="0" stroke="#15803d" stroke-width="3"/>
-                        <path d="M 0 20 Q 20 0, 30 20 Q 10 20, 0 20" fill="#22c55e"/>
-                        <path d="M 0 30 Q -20 10, -30 30 Q -10 30, 0 30" fill="#22c55e"/>
-                        <circle cx="0" cy="-10" r="10" fill="#facc15" stroke="#eab308"/> <!-- Sun -->
-                        <text x="0" y="70" font-size="10" text-anchor="middle" font-weight="bold">Зат алмасу</text>
-                        <text x="0" y="80" font-size="8" text-anchor="middle">Metabolism</text>
-                    </g>
-
-                     <!-- Arrow -->
-                    <path d="M 250 120 Q 260 110, 270 120" fill="none" stroke="#16a34a" marker-end="url(#arrow-green)"/>
-
-                    <!-- 4. Flower (Reproduction) -->
                     <g transform="translate(320, 70)">
                          <line x1="0" y1="60" x2="0" y2="0" stroke="#15803d" stroke-width="3"/>
                          <circle cx="0" cy="0" r="5" fill="#fbbf24"/>
-                         <circle cx="0" cy="-10" r="5" fill="#f472b6"/> <circle cx="10" cy="0" r="5" fill="#f472b6"/>
-                         <circle cx="0" cy="10" r="5" fill="#f472b6"/> <circle cx="-10" cy="0" r="5" fill="#f472b6"/>
-                         <text x="0" y="80" font-size="10" text-anchor="middle" font-weight="bold">Көбею</text>
-                         <text x="0" y="90" font-size="8" text-anchor="middle">Reproduction</text>
                     </g>
-
-                    <defs>
-                        <marker id="arrow-green" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                            <polygon points="0 0, 6 3, 0 6" fill="#16a34a" />
-                        </marker>
-                    </defs>
                 </svg>
             </div>
         </section>
 
-        <!-- ТҮЙІН -->
         <footer class="footer-card">
-            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЕСТЕ САҚТАҢЫЗ</h3>
-            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">REMEMBER</h3>
-            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАПОМНИТЕ</h3>
+            <h3 lang="kk" class="lang-content text-xl font-extrabold text-green-900">ЕСТЕ САҚТАҢЫЗ</h3>
+            <h3 lang="en" class="lang-content text-xl font-extrabold text-green-900">REMEMBER</h3>
+            <h3 lang="ru" class="lang-content text-xl font-extrabold text-green-900">ЗАПОМНИТЕ</h3>
 
-            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-green-800">
-                Биология – өмір туралы ғылым. Тірі ағзалар өседі, қоректенеді, тыныс алады және көбейеді.
-            </p>
-            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-green-800">
-                Biology is the science of life. Living organisms grow, feed, breathe, and reproduce.
-            </p>
-            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-green-800">
-                Биология – это наука о жизни. Живые организмы растут, питаются, дышат и размножаются.
-            </p>
+            <p lang="kk" class="lang-content mt-2 text-green-800">Биология – өмір туралы ғылым.</p>
+            <p lang="en" class="lang-content mt-2 text-green-800">Biology is the science of life.</p>
+            <p lang="ru" class="lang-content mt-2 text-green-800">Биология – это наука о жизни.</p>
         </footer>
 
     </div>
@@ -391,12 +276,14 @@
         function switchLang(lang) {
             const container = document.getElementById('poster-container');
             if (container) {
+                // Сначала удаляем все классы языков
                 container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
+                // Добавляем нужный
                 container.classList.add('lang-' + lang);
             }
 
             document.querySelectorAll('.lang-btn').forEach(btn => {
-                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
+                if (btn.getAttribute('onclick').includes(lang)) {
                     btn.classList.add('active');
                 } else {
                     btn.classList.remove('active');
@@ -404,11 +291,11 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', (event) => {
-            switchLang('kk'); // Default
+        // Запуск по умолчанию
+        document.addEventListener('DOMContentLoaded', () => {
+            switchLang('kk');
         });
 
-        // QWebChannel Integration for Back Button
         function goBack() {
             if (typeof bridge !== 'undefined' && bridge) {
                 bridge.onBackClicked();
@@ -426,6 +313,5 @@
         });
     </script>
     <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
 </body>
 </html>

@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Планета Земля: Факты и Структура</title>
+    <title>Движение Земли и Солнечный Свет</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
@@ -13,217 +12,194 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f8ff; /* Светло-голубой фон */
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
+            color: #1b263b;
         }
         .gradient-title {
-            background: linear-gradient(to right, #0077b6, #43aa8b); /* Сине-зеленый градиент */
+            background: linear-gradient(to right, #e76f51, #0077b6); /* Оранжевый (Солнце) и Синий (Небо/Планета) */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .card-fact {
-            border-top: 5px solid #0077b6;
-            transition: all 0.3s ease;
+        .section-header {
+            color: #0077b6;
+            border-bottom: 4px solid #e76f51;
+            padding-bottom: 5px;
         }
-        .card-fact:hover {
-            box-shadow: 0 10px 20px rgba(0, 119, 182, 0.25);
-            transform: translateY(-3px);
+        .card-motion {
+            background-color: #ffffff;
+            transition: box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .sphere-layer {
-            background-color: #0077b6;
-            color: white;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 6px;
+        .card-motion:hover {
+            box-shadow: 0 10px 20px rgba(231, 111, 81, 0.3);
+        }
+        .highlight-text {
+            color: #e76f51;
             font-weight: bold;
-            transition: background-color 0.3s;
         }
-        .core-layer { background-color: #ca6702; }
-        .mantle-layer { background-color: #ee9b00; }
-        .crust-layer { background-color: #94d2bd; }
-        .outer-sphere { border: 2px solid #00b4d8; color: #0077b6; background-color: white; }
+        /* Стилизация Стрелок для Оси */
+        .axis-arrow {
+            color: #43aa8b;
+            font-weight: 900;
+            font-size: 2rem;
+            line-height: 1;
+        }
+        /* Стилизация схемы Времен Года */
+        .season-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .dot-spring { background-color: #43aa8b; }
+        .dot-summer { background-color: #e76f51; }
+        .dot-autumn { background-color: #ca6702; }
+        .dot-winter { background-color: #0077b6; }
+
     </style>
     <!--
     Narrative Plan:
-    1. Hook (Header).
-    2. Block 1: Cosmic Profile (Key Stats, Water/Land Donut Chart).
-    3. Block 2: Internal and External Structure (Styled HTML/CSS Diagram for layers).
-    4. Block 3: Life's Uniqueness (Factors for Habitability).
+    The infographic explains the two fundamental motions of Earth and their direct consequences.
+    1. Header.
+    2. Block 1: Rotation (Day/Night cycle) - uses stylized text and Unicode/CSS flow.
+    3. Block 2: Revolution (Seasons) - focuses on the tilt (23.5°).
+    4. Block 3: Key Dates (Solstices and Equinoxes) - structured table/list.
 
     Visualization Choices:
-    - Section 1 (Cosmic): Goal: Compare Composition. Chosen Visualization: Donut Chart (Chart.js) for Water vs. Land ratio. Confirmed NO SVG.
-    - Section 2 (Structure): Goal: Organize/Hierarchy. Chosen Visualization: Styled HTML/CSS Diagram showing internal (core, mantle) and external (atmosphere, hydrosphere) layers. Confirmed NO SVG, NO MERMAID JS.
+    - Section 1 (Rotation): Goal: Organize/Process. Chosen: HTML/CSS styled flow diagram (Axis Tilt). Confirmed NO SVG, NO MERMAID JS.
+    - Section 2 (Revolution): Goal: Inform/Organize. Chosen: Key facts and visual representation of the tilt angle (23.5°). Confirmed NO SVG.
 
-    Color Palette Chosen: "Brilliant Blues" (#0077b6, #00b4d8) for water/sky/structure, combined with "Energetic & Playful" (#ee9b00, #ca6702) for the hot internal core and mantle, and green (#43aa8b) for life/land.
-    CRITICAL CONFIRMATION: NEITHER Mermaid JS NOR SVG were used anywhere in this file. All visualizations are rendered using Chart.js on Canvas or structured HTML/CSS with Tailwind.
+    Color Palette Chosen: "Brilliant Blues" (#0077b6, #00b4d8) for structure and cold/winter, combined with "Energetic Orange/Red" (#e76f51, #ca6702) for the Sun/heat/summer, and green (#43aa8b) for spring/life.
+    CRITICAL CONFIRMATION: NEITHER Mermaid JS NOR SVG were used anywhere in this file. All visualizations are structured HTML/CSS with Tailwind.
     -->
 </head>
 <body class="text-gray-800">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
-
-
-    <header class="bg-white text-center p-8 shadow-xl border-b-8 border-[#00b4d8]">
-        <h1 class="text-5xl md:text-7xl font-black uppercase tracking-wider gradient-title">ПЛАНЕТА ЗЕМЛЯ</h1>
-        <p class="text-2xl md:text-4xl font-extrabold mt-2 text-[#0077b6]">НАШ УНИКАЛЬНЫЙ ДОМ</p>
-        <p class="mt-4 max-w-4xl mx-auto text-lg text-gray-600">Единственное место во Вселенной, где мы точно знаем, что есть жизнь. Глубокое погружение в факты.</p>
+<header class="bg-white text-center p-8 shadow-xl border-b-8 border-[#e76f51]">
+        <h1 class="text-5xl md:text-7xl font-black uppercase tracking-wider gradient-title">ДВИЖЕНИЕ ЗЕМЛИ</h1>
+        <p class="text-2xl md:text-4xl font-extrabold mt-2 text-[#0077b6]">ПРИЧИНЫ ДНЯ, НОЧИ И СЕЗОНОВ</p>
+        <p class="mt-4 max-w-4xl mx-auto text-lg text-gray-600">Два главных движения планеты, определяющие нашу жизнь и климат.</p>
     </header>
 
     <main class="container mx-auto p-4 md:p-10">
 
-        <!-- I. Космический Портрет -->
-        <section id="cosmic" class="mb-16">
-            <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#0077b6] border-b-4 border-[#43aa8b]">I. КОСМИЧЕСКИЙ ПОРТРЕТ И ОСНОВНЫЕ ПАРАМЕТРЫ</h2>
-            <p class="text-center text-lg text-gray-600 mb-12 max-w-5xl mx-auto">Земля — третья планета от Солнца, входящая в зону обитаемости. Вот её "паспортные данные".</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-
-                <!-- Fact 1 -->
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center card-fact">
-                    <span class="text-4xl block mb-2 text-[#43aa8b]">⏱️</span>
-                    <h3 class="text-xl font-bold text-[#0077b6]">ВОЗРАСТ</h3>
-                    <p class="text-3xl font-black text-[#ca6702]">4.54</p>
-                    <p class="text-gray-500">Миллиарда лет</p>
-                </div>
-                <!-- Fact 2 -->
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center card-fact">
-                    <span class="text-4xl block mb-2 text-[#43aa8b]">📏</span>
-                    <h3 class="text-xl font-bold text-[#0077b6]">ОКРУЖНОСТЬ</h3>
-                    <p class="text-3xl font-black text-[#ca6702]">40 075</p>
-                    <p class="text-gray-500">Км по экватору</p>
-                </div>
-                <!-- Fact 3 -->
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center card-fact">
-                    <span class="text-4xl block mb-2 text-[#43aa8b]">☀️</span>
-                    <h3 class="text-xl font-bold text-[#0077b6]">РАССТОЯНИЕ ДО СОЛНЦА</h3>
-                    <p class="text-3xl font-black text-[#ca6702]">150</p>
-                    <p class="text-gray-500">Миллионов км (1 А.Е.)</p>
-                </div>
-
-            </div>
-
-             <!-- Chart: Water vs Land -->
-            <div class="bg-white rounded-xl shadow-2xl p-8 flex flex-col md:flex-row items-center justify-between card-fact">
-                <div class="md:w-1/2 p-4">
-                    <h3 class="text-2xl font-bold mb-4 text-[#0077b6]">Площадь Поверхности: Вода и Суша</h3>
-                    <p class="text-gray-600">71% нашей планеты покрыто Мировым океаном. Это ключевой фактор, который делает Землю уникальной.</p>
-                </div>
-                <div class="md:w-1/2 p-4 chart-container h-64 md:h-72">
-                    <canvas id="compositionChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- II. Структура Земли -->
-        <section id="structure" class="mb-16">
-            <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#0077b6] border-b-4 border-[#43aa8b]">II. СТРУКТУРА: ОТ ЯДРА ДО КОСМОСА</h2>
-            <p class="text-center text-lg text-gray-600 mb-12 max-w-5xl mx-auto">Земля — это слоёный пирог, состоящий из внутренних твёрдых оболочек и внешних газовых/жидких сфер, которые взаимодействуют.</p>
+        <!-- I. ВРАЩЕНИЕ ВОКРУГ ОСИ -->
+        <section id="rotation" class="mb-16">
+            <h2 class="text-3xl font-extrabold text-center mb-10 section-header">I. ВРАЩЕНИЕ (СМЕНА ДНЯ И НОЧИ) ☀️🌙</h2>
+            <p class="text-center text-lg text-gray-600 mb-12 max-w-5xl mx-auto">Земля вращается вокруг своей оси, как волчок. Это самое быстрое движение, которое мы ощущаем как смену света и тьмы.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                <!-- Internal Structure (Layers) -->
-                <div class="bg-white rounded-xl shadow-2xl p-6">
-                    <h3 class="text-2xl font-bold mb-4 text-[#ca6702]">Внутреннее Строение</h3>
-
-                    <div class="flex flex-col items-center">
-                        <div class="sphere-layer core-layer w-full text-center">
-                            ВНУТРЕННЕЕ ЯДРО (Твердое, Железо)
-                        </div>
-                        <div class="sphere-layer core-layer w-11/12 text-center opacity-80">
-                            ВНЕШНЕЕ ЯДРО (Жидкое, Создает магнитное поле)
-                        </div>
-                        <div class="sphere-layer mantle-layer w-10/12 text-center opacity-90">
-                            НИЖНЯЯ МАНТИЯ (Твердая)
-                        </div>
-                        <div class="sphere-layer mantle-layer w-9/12 text-center">
-                            ВЕРХНЯЯ МАНТИЯ (Пластичная, Астеносфера)
-                        </div>
-                        <div class="sphere-layer crust-layer w-full text-center py-3 text-black">
-                            КОРА (ЛИШЬ 0.5% МАССЫ)
-                        </div>
-                    </div>
+                <!-- Fact Card -->
+                <div class="card-motion rounded-xl p-6 border-l-8 border-[#e76f51]">
+                    <h3 class="text-2xl font-bold mb-4 text-[#e76f51]">КЛЮЧЕВЫЕ ФАКТЫ О ВРАЩЕНИИ</h3>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                        <li>**Продолжительность:** $24$ часа (средние солнечные сутки).</li>
+                        <li>**Направление:** С <span class="highlight-text">запада на восток</span> (против часовой стрелки).</li>
+                        <li>**Скорость:** На экваторе $\sim 1670$ км/ч. В Астане $\sim 980$ км/ч.</li>
+                        <li>**Следствие:** Образование суточного ритма, приливов и отливов.</li>
+                    </ul>
                 </div>
 
-                <!-- External Structure (Spheres) -->
-                <div class="bg-white rounded-xl shadow-2xl p-6">
-                    <h3 class="text-2xl font-bold mb-4 text-[#0077b6]">Внешние Геосферы</h3>
-
-                    <div class="space-y-4">
-                        <div class="outer-sphere p-3 rounded-lg flex items-center">
-                            <span class="text-4xl mr-3">☁️</span>
-                            <div>
-                                <p class="font-black text-xl">АТМОСФЕРА</p>
-                                <p class="text-sm font-medium text-gray-600">Газовая оболочка: Кислород, Азот, Защита от УФ-лучей.</p>
-                            </div>
+                <!-- Diagram Flow -->
+                <div class="card-motion rounded-xl p-6 border-l-8 border-[#0077b6] flex flex-col justify-between">
+                    <h3 class="text-2xl font-bold mb-4 text-[#0077b6]">ЦИКЛ "ДЕНЬ — НОЧЬ"</h3>
+                    <div class="flex items-center justify-around text-center mt-4">
+                        <div class="flex flex-col items-center">
+                            <span class="text-6xl text-[#e76f51]">🌞</span>
+                            <p class="font-bold mt-2">СТОРОНА К СОЛНЦУ (День)</p>
                         </div>
-                        <div class="outer-sphere p-3 rounded-lg flex items-center">
-                            <span class="text-4xl mr-3">💧</span>
-                            <div>
-                                <p class="font-black text-xl">ГИДРОСФЕРА</p>
-                                <p class="text-sm font-medium text-gray-600">Водная оболочка: Океаны, моря, реки, ледники. 97% - соленая вода.</p>
-                            </div>
-                        </div>
-                        <div class="outer-sphere p-3 rounded-lg flex items-center">
-                            <span class="text-4xl mr-3">🌳</span>
-                            <div>
-                                <p class="font-black text-xl">БИОСФЕРА</p>
-                                <p class="text-sm font-medium text-gray-600">Оболочка жизни: Взаимопроникновение всех сфер, где существуют организмы.</p>
-                            </div>
+                        <div class="text-4xl axis-arrow text-gray-400">➡️</div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-6xl text-[#1b263b]">🌚</span>
+                            <p class="font-bold mt-2">СТОРОНА ОТ СОЛНЦА (Ночь)</p>
                         </div>
                     </div>
+                    <p class="text-sm mt-6 text-gray-600">Линия, разделяющая освещенную и неосвещенную часть, называется **терминатором**.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- II. ОБРАЩЕНИЕ ВОКРУГ СОЛНЦА -->
+        <section id="revolution" class="mb-16">
+            <h2 class="text-3xl font-extrabold text-center mb-10 section-header">II. ОБРАЩЕНИЕ (СМЕНА ВРЕМЕН ГОДА) 🔄</h2>
+            <p class="text-center text-lg text-gray-600 mb-12 max-w-5xl mx-auto">Земля движется вокруг Солнца по эллиптической орбите, а главное — под углом.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Tilt/Axis Card -->
+                <div class="card-motion rounded-xl p-6 border-l-8 border-[#43aa8b]">
+                    <h3 class="text-2xl font-bold mb-4 text-[#43aa8b]">НАКЛОН ЗЕМНОЙ ОСИ (23.5°)</h3>
+                    <p class="text-gray-700 mb-4">Наклон оси вращения относительно плоскости орбиты (эклиптики) на $\mathbf{23,5^\circ}$ — это главная причина смены времен года.</p>
+                    <div class="text-center text-4xl mt-6">
+                        <p class="axis-arrow text-[#e76f51]">⇖</p>
+                        <p class="text-7xl font-black text-[#0077b6]">$$23,5^\circ$$</p>
+                        <p class="axis-arrow text-[#e76f51]">⇙</p>
+                    </div>
+                    <p class="text-sm mt-4 text-gray-600">Если бы ось не была наклонена, времен года не существовало бы, а климат был бы одинаковым круглый год.</p>
+                </div>
+
+                <!-- Revolution Fact Card -->
+                <div class="card-motion rounded-xl p-6 border-l-8 border-[#e76f51]">
+                    <h3 class="text-2xl font-bold mb-4 text-[#e76f51]">КЛЮЧЕВЫЕ ФАКТЫ ОБ ОБРАЩЕНИИ</h3>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                        <li>**Продолжительность:** $365$ дней и $6$ часов (тропический год).</li>
+                        <li>**Орбита:** <span class="highlight-text">Эллиптическая</span> (не идеальный круг).</li>
+                        <li>**Афелий и Перигелий:** Изменение расстояния до Солнца не является причиной смены сезонов.</li>
+                        <li>**Следствие:** Разная длина дня и ночи, разная высота Солнца над горизонтом.</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <!-- III. Факторы Уникальности -->
-        <section id="unique">
-            <h2 class="text-3xl font-extrabold text-center mb-10 pb-2 text-[#0077b6] border-b-4 border-[#43aa8b]">III. ТРИ ФАКТОРА УНИКАЛЬНОСТИ</h2>
-            <p class="text-center text-lg text-gray-600 mb-12 max-w-5xl mx-auto">Жизнь на Земле стала возможна благодаря трем идеальным совпадениям.</p>
+        <!-- III. Ключевые Даты -->
+        <section id="dates">
+            <h2 class="text-3xl font-extrabold text-center mb-10 section-header">III. КЛЮЧЕВЫЕ ТОЧКИ ГОДА</h2>
+            <p class="text-center text-lg text-gray-600 mb-12 max-w-5xl mx-auto">Точки, в которых наклон оси максимально влияет на распределение солнечного света.</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                <div class="bg-white p-6 rounded-xl shadow-2xl border-b-4 border-[#00b4d8] card-fact">
-                    <span class="text-5xl block mb-3 text-[#00b4d8]">🛡️</span>
-                    <h3 class="text-2xl font-black mb-2 text-[#0077b6]">МАГНИТНЫЙ ЩИТ</h3>
-                    <p class="text-gray-700 font-medium">Создан жидким внешним ядром. Защищает от губительного солнечного ветра.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Солнцестояния (Solstices) -->
+                <div class="card-motion rounded-xl p-6 border-l-8 border-[#e76f51]">
+                    <h3 class="text-2xl font-bold mb-4 text-[#e76f51]">СОЛНЦЕСТОЯНИЯ (Максимум)</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <span class="season-dot dot-summer mt-1"></span>
+                            <div>
+                                <p class="font-bold text-lg">Летнее ($\sim 21$ июня)</p>
+                                <p class="text-sm text-gray-600">Самый длинный день в Северном полушарии. Максимальный наклон оси к Солнцу.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="season-dot dot-winter mt-1"></span>
+                            <div>
+                                <p class="font-bold text-lg">Зимнее ($\sim 22$ декабря)</p>
+                                <p class="text-sm text-gray-600">Самая длинная ночь в Северном полушарии. Максимальный наклон оси от Солнца.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-2xl border-b-4 border-[#43aa8b] card-fact">
-                    <span class="text-5xl block mb-3 text-[#43aa8b]">🌡️</span>
-                    <h3 class="text-2xl font-black mb-2 text-[#0077b6]">ЗОНА ОБИТАЕМОСТИ</h3>
-                    <p class="text-gray-700 font-medium">Идеальное расстояние от Солнца, позволяющее воде существовать в жидком виде.</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-2xl border-b-4 border-[#00b4d8] card-fact">
-                    <span class="text-5xl block mb-3 text-[#00b4d8]">🌕</span>
-                    <h3 class="text-2xl font-black mb-2 text-[#0077b6]">БОЛЬШАЯ ЛУНА</h3>
-                    <p class="text-gray-700 font-medium">Стабилизирует наклон земной оси, обеспечивая предсказуемую смену времен года.</p>
+
+                <!-- Равноденствия (Equinoxes) -->
+                <div class="card-motion rounded-xl p-6 border-l-8 border-[#43aa8b]">
+                    <h3 class="text-2xl font-bold mb-4 text-[#43aa8b]">РАВНОДЕНСТВИЯ (Баланс)</h3>
+                     <div class="space-y-4">
+                        <div class="flex items-start">
+                            <span class="season-dot dot-spring mt-1"></span>
+                            <div>
+                                <p class="font-bold text-lg">Весеннее ($\sim 20$ марта)</p>
+                                <p class="text-sm text-gray-600">День и ночь равны по продолжительности. Солнце в зените над экватором.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="season-dot dot-autumn mt-1"></span>
+                            <div>
+                                <p class="font-bold text-lg">Осеннее ($\sim 23$ сентября)</p>
+                                <p class="text-sm text-gray-600">День и ночь снова равны. Солнце движется к Южному полушарию.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -231,95 +207,218 @@
     </main>
 
     <footer class="text-center p-6 mt-12 bg-[#0077b6] text-gray-200">
-        <p class="text-sm">Планета Земля — система в идеальном балансе. Наша задача — сохранить его.</p>
+        <p class="text-sm">Именно благодаря этим двум движениям на Земле существует стабильный климат, благоприятный для жизни.</p>
     </footer>
 
-    <script>
-        const mandatoryTooltipOptions = {
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        title: function(tooltipItems) {
-                            const item = tooltipItems[0];
-                            let label = item.chart.data.labels[item.dataIndex];
-                            if (Array.isArray(label)) {
-                              return label.join(' ');
-                            } else {
-                              return label;
-                            }
-                        }
-                    }
-                }
-            }
-        };
-
-        function renderCompositionChart() {
-            const ctx = document.getElementById('compositionChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Вода (Океаны)', 'Суша (Континенты)'],
-                    datasets: [{
-                        data: [71, 29],
-                        backgroundColor: ['#00b4d8', '#43aa8b'],
-                        borderColor: '#ffffff',
-                        borderWidth: 4
-                    }]
-                },
-                options: {
-                    ...mandatoryTooltipOptions,
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        ...mandatoryTooltipOptions.plugins,
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: {
-                                    size: 14
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCompositionChart();
-        });
-    </script>
-
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-<script>
-    function goBack() {
-        console.log('goBack() вызвана');
-        if (typeof bridge !== 'undefined' && bridge) {
-            console.log('Bridge найден, вызываю onBackClicked()');
-            bridge.onBackClicked();
-        } else {
-            console.log('Bridge не найден!');
-        }
-    }
 
-    // Инициализация QWebChannel
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Инициализация QWebChannel...');
 
-        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-            try {
-                new QWebChannel(qt.webChannelTransport, function(channel) {
-                    window.bridge = channel.objects.bridge;
-                    console.log('✅ Bridge подключен!');
-                });
-            } catch(e) {
-                console.error('❌ QWebChannel ошибка:', e);
-            }
-        } else {
-            console.warn('⚠️ QWebChannel или qt не найден');
-        }
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
     });
-</script>
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
 
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
 </body>
 </html>

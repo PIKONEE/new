@@ -3,391 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ак Орда: Предвестник Казахского ханства</title>
+    <title>Идеология и Идентичность</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f0f9ff; color: #1e293b; }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .sovereign-gradient {
-            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%);
-        }
-
-        .premium-card {
-            background: white;
-            border-radius: 3rem;
-            border: 1px solid #bae6fd;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px -15px rgba(14, 165, 233, 0.15);
-            border-color: #38bdf8;
-        }
-
-        .lang-active {
-            background-color: #0369a1;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(3, 105, 161, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: #fff;
-            border: 1px solid #e0f2fe;
-        }
-
-        .info-panel {
-            background: rgba(255, 255, 255, 0.9);
-            border-left: 8px solid #0ea5e9;
-            padding: 2rem;
-            border-radius: 2.5rem;
-            transition: all 0.5s ease;
-        }
-
-        .term-badge {
-            background: #e0f2fe;
-            color: #0369a1;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
+        body { font-family: 'Inter', sans-serif; background: #fffcf2; color: #252422; }
+        .poster-container { max-width: 850px; margin: 0 auto; background: #fffcf2; border: 12px double #eb5e28; padding: 40px; position: relative; }
+        .ideology-box { background: #eb5e28; color: white; padding: 30px; border-radius: 4px; }
+        .lang-active { background: #eb5e28 !important; color: white !important; font-weight: 900; }
+        .quote-mark { font-size: 80px; color: #eb5e28; opacity: 0.2; position: absolute; }
     </style>
 </head>
-<body class="sovereign-gradient min-h-screen pb-20">
+<body class="p-6">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+    <div class="fixed top-6 right-6 z-50 flex gap-2 bg-white/80 backdrop-blur p-1 rounded-full border border-orange-200">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-4 py-1 rounded-full text-xs">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-4 py-1 rounded-full text-xs hover:bg-orange-50">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-4 py-1 rounded-full text-xs hover:bg-orange-50">EN</button>
+    </div>
 
+    <div class="poster-container shadow-2xl">
+        <header class="text-center mb-12">
+            <h1 id="title" class="text-4xl md:text-5xl font-black uppercase text-slate-900">Идеология и Нацполитика</h1>
+            <div class="h-1 w-32 bg-orange-600 mx-auto mt-4"></div>
+        </header>
 
-    <!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-sky-100 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.25em] text-sky-900">Ак Орда (XIII – начало XV вв.)</h1>
-            <div class="flex bg-sky-50 p-1 rounded-2xl border border-sky-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
+        <div class="space-y-12">
+            <!-- Блок 1: Официальный курс -->
+            <section class="ideology-box shadow-xl relative overflow-hidden">
+                <h2 id="sec1T" class="text-xl font-black uppercase mb-4 tracking-widest">Курс на «Слияние Наций»</h2>
+                <p id="sec1D" class="text-sm leading-relaxed opacity-90 italic">Продвижение концепции «советского народа» как новой исторической общности. На практике — закрытие казахских школ (к 1980-м их осталось крайне мало в городах) и выдавливание языка из госаппарата.</p>
+                <div class="absolute -right-5 -bottom-5 text-8xl opacity-10 font-black italic">CP</div>
+            </section>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Territory Map (Canvas) -->
-        <div class="premium-card p-8 md:p-12 shadow-sm">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-sky-600 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Sovereignty Formation Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-sky-950 leading-tight italic uppercase">Карта консолидации</h2>
-                    <p id="viz-desc" class="text-lg text-sky-900/60 font-light leading-relaxed">
-                        Ак Орда выделилась из Улуса Джучи как самостоятельное владение потомков Орда-Ежена. Нажмите на ключевые центры, чтобы узнать о процессе обретения независимости.
-                    </p>
-                    
-                    <div id="info-display" class="info-panel shadow-xl">
-                        <h3 id="element-title" class="text-xl font-bold text-sky-900 mb-3 uppercase tracking-tighter">Исследуйте регионы</h3>
-                        <p id="element-desc" class="text-sky-800/70 text-sm leading-relaxed italic">Кликните на Сыгнак, Сауран или Улытау на схеме.</p>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="mapCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-sky-300 font-mono uppercase tracking-[0.4em]">Schematic Geopolitics of Ak Orda</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Detailed History Content -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            
-            <!-- Dynastic Origins -->
-            <div class="premium-card p-10 flex flex-col border-t-8 border-sky-600">
-                <div class="mb-6"><span class="term-badge" id="t-dyn">Династия</span></div>
-                <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Потомки Орда-Ежена</h3>
-                <p id="c1-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
-                    Основателем считается старший сын Джучи — **Орда-Ежен**. Первоначально это был левый фланг Улуса Джучи. Государство занимало территорию Восточного, Северного и Центрального Казахстана. К середине XIV века Ак Орда окончательно обособилась от Сарая.
-                </p>
-                <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c1-f">
-                    XIII в.: Автономия в составе Улуса.
-                </div>
-            </div>
-
-            <!-- Political Peak -->
-            <div class="premium-card p-10 flex flex-col border-t-8 border-sky-400">
-                <div class="mb-6"><span class="term-badge" id="t-peak">Расцвет</span></div>
-                <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Эра Урус-хана</h3>
-                <p id="c2-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
-                    В 60–70-е годы XIV века при **Урус-хане** Ак Орда достигла своего пика. Он объединил земли Казахстана, укрепил границы и даже пытался захватить власть в Золотой Орде. Урус-хан считается ключевой фигурой, заложившей фундамент казахской государственности.
-                </p>
-                <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c2-f">
-                    Сыгнак — политический центр.
-                </div>
-            </div>
-
-            <!-- Legacy -->
-            <div class="premium-card p-10 flex flex-col border-t-8 border-sky-600">
-                <div class="mb-6"><span class="term-badge" id="t-legacy">Наследие</span></div>
-                <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-sky-900">Колыбель Казахского ханства</h3>
-                <p id="c3-d" class="text-sky-800/70 text-sm leading-relaxed mb-6">
-                    Керей и Жанибек, основатели Казахского ханства, были потомками Урус-хана. Ак Орда стала тем политическим плавильным котлом, где завершилось формирование казахского этноса. Традиции управления и границы Ак Орды легли в основу нового государства.
-                </p>
-                <div class="mt-auto text-[10px] font-black text-sky-400 uppercase tracking-widest italic" id="c3-f">
-                    Этническое ядро: Кыпчаки.
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Section 3: The Golden Age of Sygnak (Full Width) -->
-        <div class="bg-sky-900 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <!-- Блок 2: Духовное сопротивление -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
-                    <h3 id="sygnak-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Сыгнак: Гавань Степи</h3>
-                    <p id="sygnak-d" class="text-sky-100/70 text-xl font-light leading-relaxed mb-10">
-                        Столица Ак Орды — город **Сыгнак** — был важнейшим торговым и культурным центром на Сырдарье. Здесь чеканилась собственная монета, работали медресе и находились пантеоны великих правителей. Город был связующим звеном между кочевой Степью и оседлыми оазисами.
-                    </p>
-                    <div class="inline-flex items-center gap-4 bg-white/10 px-6 py-2 rounded-full border border-white/20">
-                        <span id="sygnak-tag" class="text-sm font-bold uppercase tracking-widest">Главный монетный двор</span>
+                    <h3 id="sec2T" class="text-2xl font-black text-slate-800 uppercase mb-4 italic">Голос Интеллигенции</h3>
+                    <p id="sec2D" class="text-sm text-slate-600 leading-relaxed font-medium">1975 год. Олжас Сулейменов публикует «Аз и Я». Книга становится интеллектуальным взрывом, подвергая сомнению официальную версию истории. Несмотря на запреты, национальное самосознание растет в кругах писателей и ученых.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-inner border border-orange-100">
+                    <h4 id="chartTitle" class="text-center text-[10px] uppercase font-black mb-4 text-orange-600">Доля казахских школ (%)</h4>
+                    <div class="h-40">
+                        <canvas id="schoolChart"></canvas>
                     </div>
                 </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-sky-700/50 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4 grayscale opacity-30">🏰</div>
-                            <div class="text-[10px] font-black uppercase text-sky-300 tracking-[0.5em]">Capital City</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">ORDA</div>
+            </section>
+
+            <!-- Блок 3: Итог -->
+            <section class="border-t-2 border-orange-600 pt-8">
+                <div class="quote-mark">“</div>
+                <p id="finalQuote" class="text-xl font-bold text-center text-slate-800 px-10 italic mt-4">«Будущее народов виделось через их полное исчезновение в общесоюзном плавильном котле»</p>
+                <div class="text-right mt-2 text-xs font-black text-orange-600">— Идеолог М. Суслов</div>
+            </section>
         </div>
 
-    </main>
-
-    <footer class="mt-20 py-20 bg-white border-t border-sky-100 text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl font-light italic leading-tight text-sky-900/60">
-                «Ак Орда стала мостом, по которому тюркский дух прошел путь от монгольского улуса к независимой казахской государственности.»
-            </p>
-            <div class="mt-10 h-1 w-24 bg-sky-400 mx-auto rounded-full"></div>
-        </div>
-    </footer>
+        <footer class="mt-20 flex justify-between items-end">
+            <span class="text-[8px] font-black uppercase tracking-widest opacity-30">Political Science Archive</span>
+            <div class="text-[8px] font-black uppercase tracking-widest opacity-30">Kazakhstan Section 1970s</div>
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Ак Орда (XIII – начало XV вв.)",
-                vizTitle: "Карта консолидации",
-                vizDesc: "Ак Орда выделилась из Улуса Джучи как самостоятельное владение. Нажмите на ключевые центры на схеме для анализа.",
-                badge: "Анализ политического формирования",
-                elementTitleDefault: "Исследуйте регионы",
-                elementDescDefault: "Кликните на Сыгнак, Сауран или Улытау на чертеже.",
-                tDyn: "Династия", tPeak: "Расцвет", tLegacy: "Наследие",
-                c1T: "Потомки Орда-Ежена", c1D: "Левый фланг Улуса Джучи, ставший основой Ак Орды. С самого начала это владение пользовалось высокой степенью автономии.",
-                c1F: "XIII в.: Автономия в составе Улуса.",
-                c2T: "Эра Урус-хана", c2D: "Урус-хан превратил Ак Орду в мощную державу, объединившую Дешт-и-Кыпчак. Он вел успешную борьбу против Амира Темура и за единство Степи.",
-                c2F: "Сыгнак — политический центр.",
-                c3T: "Колыбель Казахского ханства", c3D: "Ак Орда — фундамент казахского народа. Здесь завершился этногенез, а правящая элита Ак Орды позже основала Казахское ханство.",
-                c3F: "Этническое ядро: Кыпчаки.",
-                sygnakT: "Сыгнак: Гавань Степи", sygnakD: "Столица и богатейший город. Сыгнак был рынком кочевников, где степные товары обменивались на продукцию Мавераннахра.",
-                sygnakTag: "Главный монетный двор",
-                footer: "«Ак Орда стала мостом от монгольского улуса к независимой казахской государственности.»",
-                regions: {
-                    sygnak: { name: "Сыгнак (Столица)", text: "Главный город и ставка ханов. Здесь чеканились монеты и находились захоронения правителей Ак Орды." },
-                    sauran: { name: "Сауран", text: "Важная крепость и торговый узел. Сауран славился своей библиотекой и уникальной системой водоснабжения (каризами)." },
-                    ulytau: { name: "Улытау", text: "Сакральный центр каганата. Место летних ставок и сбора племен для принятия важнейших политических решений." }
-                }
+                title: "Идеология и Нацполитика", sec1T: "Курс на «Слияние Наций»", sec1D: "Продвижение концепции «советского народа». На практике — массовое закрытие казахских школ и доминирование русского языка во всех сферах управления.",
+                sec2T: "Голос Интеллигенции", sec2D: "1975 г. — Олжас Сулейменов и книга «Аз и Я». Манифест национальной гордости против идеологического диктата Москвы. Рождение диссидентской мысли.",
+                chartTitle: "Доля казахских школ в городах (%)", finalQuote: "«Будущее народов виделось через их полное исчезновение в общесоюзном плавильном котле»"
             },
             kz: {
-                title: "Ақ Орда (ХІІІ ғ. – ХV ғ. басы)",
-                vizTitle: "Консолидация Картасы",
-                vizDesc: "Ақ Орда Жошы ұлысынан жеке иелік ретінде бөлініп шықты. Сызбадағы негізгі орталықтарды басып, мемлекеттің қалыптасуын зерттеңіз.",
-                badge: "Саяси қалыптасуды талдау",
-                elementTitleDefault: "Аймақтарды зерттеңіз",
-                elementDescDefault: "Сызбадағы Сығанақ, Сауран немесе Ұлытауды басыңыз.",
-                tDyn: "Әулет", tPeak: "Өрлеу", tLegacy: "Мұра",
-                c1T: "Орда Ежен ұрпақтары", c1D: "Ақ Орданың негізін салған Жошының үлкен ұлы Орда Ежен. Бастапқыда Жошы ұлысының сол қанаты болған бұл иелік жоғары автономияға ие болды.",
-                c1F: "ХІІІ ғ.: Ұлыс құрамындағы автономия.",
-                c2T: "Орыс хан дәуірі", c2D: "ХІV ғасырдың 60-70 жылдары Орыс хан тұсында Ақ Орда гүлденді. Ол қазақ жерлерін біріктіріп, Әмір Темірге қарсы сәтті күрес жүргізді.",
-                c2F: "Сығанақ — саяси орталық.",
-                c3T: "Қазақ хандығының бесігі", c3D: "Ақ Орда — қазақ халқының іргетасы. Мұнда этногенез аяқталып, Ақ Орданың билеуші элитасы кейіннен Қазақ хандығын құрды.",
-                c3F: "Этникалық негіз: Қыпшақтар.",
-                sygnakT: "Сығанақ: Дала айлағы", sygnakD: "Астана және ең бай қала. Сығанақ көшпелілер мен отырықшы мәдениеттің сауда түйіскен жері болды.",
-                sygnakTag: "Басты теңге сарайы",
-                footer: "«Ақ Орда моңғол ұлысынан тәуелсіз қазақ мемлекеттілігіне дейінгі алтын көпір болды.»",
-                regions: {
-                    sygnak: { name: "Сығанақ (Астана)", text: "Басты қала және хандардың ордасы. Мұнда теңге соғылып, Ақ Орда билеушілерінің пантеоны орналасты." },
-                    sauran: { name: "Сауран", text: "Маңызды бекініс және сауда торабы. Сауран өзінің кітапханасымен және кәріз жүйесімен танымал болды." },
-                    ulytau: { name: "Ұлытау", text: "Қағанаттың қасиетті орталығы. Жазғы жайлаулар мен маңызды саяси шешімдер қабылданатын жер." }
-                }
+                title: "Идеология және Ұлттық саясат", sec1T: "«Ұлттардың қосылуы» бағыты", sec1D: "«Кеңес халқы» тұжырымдамасын ілгерілету. Іс жүзінде — қазақ мектептерінің жаппай жабылуы және барлық басқару салаларында орыс тілінің үстемдігі.",
+                sec2T: "Интеллигенция дауысы", sec2D: "1975 ж. — Олжас Сүлейменов және «Аз и Я» кітабы. Мәскеудің идеологиялық диктатына қарсы ұлттық мақтаныш манифесі. Диссиденттік ойлардың тууы.",
+                chartTitle: "Қалалардағы қазақ мектептерінің үлесі (%)", finalQuote: "«Халықтардың болашағы олардың жалпыодақтық балқыту қазанында толық жойылуы арқылы көрінді»"
             },
             en: {
-                title: "Ak Orda (13th – early 15th centuries)",
-                vizTitle: "Consolidation Map",
-                vizDesc: "Ak Orda separated from the Ulus of Jochi as an independent domain. Click on the key centers on the schematic to learn about its formation.",
-                badge: "Political Formation Analysis",
-                elementTitleDefault: "Explore Regions",
-                elementDescDefault: "Click on Sygnak, Sauran, or Ulytau on the diagram.",
-                tDyn: "Dynasty", tPeak: "Zenith", tLegacy: "Legacy",
-                c1T: "Descendants of Orda-Ezhen", c1D: "Founded by Jochi's eldest son, Orda-Ezhen. Originally the Left Wing of the Golden Horde, this domain enjoyed significant autonomy.",
-                c1F: "13th c.: Autonomy within the Ulus.",
-                c2T: "The Era of Urus Khan", c2D: "Under Urus Khan in the 1360s-70s, Ak Orda reached its peak. He unified Kazakh lands and resisted the pressure of Emir Timur.",
-                c2F: "Sygnak — the political hub.",
-                c3T: "Cradle of the Kazakh Khanate", c3D: "Ak Orda provided the political foundation for the Kazakh people. Its ruling elite eventually founded the Kazakh Khanate.",
-                c3F: "Ethnic core: Kipchaks.",
-                sygnakT: "Sygnak: The Steppe Haven", sygnakD: "The capital and wealthiest city. Sygnak was a vital hub where nomadic products were traded for goods from Transoxiana.",
-                sygnakTag: "Primary Minting Center",
-                footer: "«Ak Orda served as a bridge from a Mongol ulus to independent Kazakh statehood.»",
-                regions: {
-                    sygnak: { name: "Sygnak (Capital)", text: "The primary city and Khan's headquarters. Coins were minted here, and the royal pantheon was located here." },
-                    sauran: { name: "Sauran", text: "A key fortress and trade node. Sauran was famous for its library and unique underground water system (qanats)." },
-                    ulytau: { name: "Ulytau", text: "The sacred center of the state. A place for summer camps and gathering tribes for major political decisions." }
-                }
+                title: "Ideology & National Policy", sec1T: "The Merging of Nations", sec1D: "Promotion of the 'Soviet People' concept. In practice — mass closures of Kazakh schools and Russification of all administrative spheres.",
+                sec2T: "Voice of Intelligentsia", sec2D: "1975 — Olzhas Suleimenov's 'Az i Ya'. A manifesto of national pride against Moscow's ideological dictate. The birth of dissident thought.",
+                chartTitle: "Share of Kazakh schools in cities (%)", finalQuote: "«The future of nations was seen through their complete disappearance in the all-Union melting pot»"
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('mapCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 500;
-            drawMap();
-        }
-
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Draw Syrdarya River (Stylized)
-            ctx.beginPath();
-            ctx.moveTo(100 * scale, 450 * scale);
-            ctx.bezierCurveTo(300 * scale, 400 * scale, 500 * scale, 450 * scale, 750 * scale, 400 * scale);
-            ctx.strokeStyle = '#bae6fd';
-            ctx.lineWidth = 10 * scale;
-            ctx.stroke();
-
-            // 2. Territory Outline (Schematic)
-            ctx.beginPath();
-            ctx.moveTo(100 * scale, 100 * scale);
-            ctx.lineTo(600 * scale, 50 * scale);
-            ctx.lineTo(750 * scale, 350 * scale);
-            ctx.lineTo(400 * scale, 480 * scale);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(14, 165, 233, 0.05)';
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(14, 165, 233, 0.2)';
-            ctx.setLineDash([5, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // 3. City Nodes
-            drawNode(350 * scale, 410 * scale, '#0ea5e9', "SYGNAK", 15 * scale);
-            drawNode(250 * scale, 430 * scale, '#38bdf8', "SAURAN", 10 * scale);
-            drawNode(450 * scale, 200 * scale, '#0369a1', "ULYTAU", 10 * scale);
-
-            // Labels
-            ctx.fillStyle = 'rgba(3, 105, 161, 0.2)';
-            ctx.font = 'bold 10px Inter';
-            ctx.textAlign = 'center';
-            ctx.fillText("TAP MARKERS TO ANALYZE", cx, 40 * scale);
-        }
-
-        function drawNode(x, y, color, label, size) {
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#1e293b';
-            ctx.font = 'bold 10px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x, y + size + 15);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const scale = canvas.width / 800;
-
-            let target = null;
-            if (Math.sqrt((x - 350*scale)**2 + (y - 410*scale)**2) < 30) target = 'sygnak';
-            else if (Math.sqrt((x - 250*scale)**2 + (y - 430*scale)**2) < 20) target = 'sauran';
-            else if (Math.sqrt((x - 450*scale)**2 + (y - 200*scale)**2) < 20) target = 'ulytau';
-
-            if (target) {
-                const info = translations[currentLang].regions[target];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-display').style.borderColor = (target === 'sygnak' ? '#0ea5e9' : (target === 'sauran' ? '#38bdf8' : '#0369a1'));
-            }
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            
-            document.getElementById('t-dyn').innerText = t.tDyn;
-            document.getElementById('t-peak').innerText = t.tPeak;
-            document.getElementById('t-legacy').innerText = t.tLegacy;
-
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c1-f').innerText = t.c1F;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c2-f').innerText = t.c2F;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c3-f').innerText = t.c3F;
-
-            document.getElementById('sygnak-t').innerText = t.sygnakT;
-            document.getElementById('sygnak-d').innerText = t.sygnakD;
-            document.getElementById('sygnak-tag').innerText = t.sygnakTag;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-sky-600 hover:bg-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('.fixed button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('finalQuote').innerText = t.finalQuote;
+            renderChart();
         }
 
-        window.onload = () => { resizeCanvas(); setLang('ru'); };
-        window.onresize = resizeCanvas;
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('schoolChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: ['1950', '1965', '1975', '1985'], datasets: [{ data: [65, 30, 12, 5], backgroundColor: '#eb5e28', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+        }
+        window.onload = () => setLang('ru');
     </script>
+<<<<<<< HEAD
 
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script>
@@ -420,5 +144,214 @@
     });
 </script>
 
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
+    });
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
+
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
+=======
+>>>>>>> d9f6adce28b605e35ac9110a002f425d51362c4f
 </body>
 </html>

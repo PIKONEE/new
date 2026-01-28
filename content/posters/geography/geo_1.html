@@ -1,464 +1,509 @@
 <!DOCTYPE html>
-<!-- Бастапқы тіл - Русский -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poster: Introduction to Scratch</title>
+    <title>География: Инфографика Будущего Специалиста</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../libs/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@700&display=swap');
-
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            overflow-x: hidden;
-            color: #1a202c;
         }
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
-        }
-        /* Тақырып карточкасы */
-        .header-card {
-            background-color: #f97316; /* Orange-600 */
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.4);
-            color: white;
-            padding: 40px;
-        }
-        /* Бөлім тақырыбы */
-        .section-heading {
-            color: #ea580c; /* Orange-700 */
-            border-bottom: 3px solid #fdba74; /* Orange-300 */
-            display: inline-block;
-            padding-bottom: 5px;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-        /* Ереже карточкасы */
-        .rule-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            height: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 5px solid;
-        }
-        .rule-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-        /* Мысал блогы */
-        .example-block {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: #fff7ed; /* Өте ашық orange */
-            border-left: 4px solid #fb923c; /* Orange-400 */
-            border-radius: 0.5rem;
-            font-size: 0.875rem; /* text-sm */
-        }
-        /* Түйін */
-        .footer-card {
-            text-align: center;
-            margin-top: 40px;
-            padding: 24px;
-            background-color: #f1f5f9; /* Ашық сұр */
-            border-radius: 1rem;
-            border-top: 4px solid #64748b; /* Сұр */
-        }
-         .term {
-            font-weight: bold;
-            color: #ea580c; /* orange-700 */
-        }
-
-        .scratch-block {
-            font-family: 'Kalam', cursive;
-            padding: 8px 12px;
-            border-radius: 5px;
-            color: white;
-            font-weight: 700;
-            display: inline-block;
-            margin: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            font-size: 0.9rem;
-        }
-        .block-motion { background-color: #4a90e2; } /* Blue */
-        .block-looks { background-color: #9013fe; } /* Purple */
-        .block-events { background-color: #f5a623; } /* Gold */
-        .block-control { background-color: #f8e71c; color: #4a4a4a; } /* Yellow */
-
-        .illustration-svg {
+        .chart-container {
+            position: relative;
             width: 100%;
-            height: 120px;
-            margin-top: 10px;
-            border: 1px solid #fed7aa;
-            border-radius: 0.5rem;
-            background-color: #fff;
+            max-width: 650px; /* Увеличено для лучшей видимости Bar Chart */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
         }
-
-        /* Language switcher */
-        .lang-switcher {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
         }
-        .lang-btn {
-            padding: 8px 16px;
-            border: 2px solid #f97316;
-            background-color: #ffffff;
-            color: #f97316;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+        .gradient-text {
+            background: linear-gradient(to right, #0a9396, #ee9b00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .lang-btn:hover {
-            background-color: #fff7ed;
+        /* Стиль для Flow Chart элементов */
+        .flow-node {
+            border: 2px solid #0a9396;
+            transition: all 0.3s ease-in-out;
         }
-        .lang-btn.active {
-            background-color: #f97316;
-            color: #ffffff;
+        .flow-node:hover {
+            box-shadow: 0 10px 15px rgba(10, 147, 150, 0.3);
+            transform: translateY(-3px);
         }
-
-        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
-        .lang-content {
-            display: none;
-        }
-        .lang-kk .lang-content[lang="kk"],
-        .lang-en .lang-content[lang="en"],
-        .lang-ru .lang-content[lang="ru"] {
+        .arrow-down {
+            content: '';
             display: block;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #94d2bd;
+            margin: 10px auto;
         }
-        .lang-kk span.lang-content[lang="kk"],
-        .lang-en span.lang-content[lang="en"],
-        .lang-ru span.lang-content[lang="ru"] {
-            display: inline;
-        }
-
     </style>
+    <!-- 
+    Narrative Plan:
+    The infographic now emphasizes a dynamic flow.
+    1. The "Why" (Importance): Uses clear stats and a Bar Chart for career comparison.
+    2. The "How" (Process): Replaced the abstract Radar Chart with a concrete, visually engaging HTML/CSS Process Flow Diagram to show the five active learning methods.
+    3. The "What" (Outcome): Clear, iconic cards summarizing the final skills.
+
+    Visualization Choices:
+    - Section 1.1 (Homeland): Goal: Inform. Chosen Visualization: Large text stats and improved HTML/CSS cards for quick consumption. Confirmed NO SVG.
+    - Section 1.2 (Careers): Goal: Compare. Chosen Visualization: Horizontal Bar Chart (Chart.js) for comparing profession demand. Confirmed NO SVG.
+    - Section 2 (Methods): Goal: Organize/Process. Chosen Visualization: HTML/CSS Flow Chart. Justification: This is a direct response to the user's request for more structure and linked illustrations, showing the sequential nature of skill development better than a chart. Confirmed NO SVG, NO MERMAID JS.
+    - Section 3 (Outcome): Goal: Inform. Chosen Visualization: Enhanced Styled HTML/CSS cards with Unicode icons and hover effects. Confirmed NO SVG.
+
+    Color Palette Chosen: "Brilliant Blues" (#005f73, #0a9396, #94d2bd) as primary, with "Energetic & Playful" accents (#ee9b00, #ca6702) for highlights and charts.
+    CRITICAL CONFIRMATION: NEITHER Mermaid JS NOR SVG were used anywhere in this file. All visualizations are rendered using Chart.js on Canvas or structured HTML/CSS with Tailwind.
+    -->
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 text-gray-800">
 
-<!-- КНОПКА НАЗАД -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 10000;">
-    <button onclick="goBack()" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    " onmouseover="this.style.transform='translateX(-5px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';" 
-       onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';">
-        ← Назад
-    </button>
-</div>
+<header class="bg-[#005f73] text-white text-center p-8 shadow-xl">
+        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-wider">🗺️ ГЕОГРАФИЯ:</h1>
+        <p class="text-xl md:text-3xl font-extrabold mt-2 gradient-text">ЗНАЮ. ПОНИМАЮ. ДЕЙСТВУЮ.</p>
+        <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-200">Твой путеводитель к востребованной карьере в современном Казахстане.</p>
+    </header>
 
+    <main class="container mx-auto p-4 md:p-10">
 
-    <!-- ID-і бар негізгі контейнер -->
-    <div id="poster-container" class="container lang-ru">
+        <section id="why" class="mb-16">
+            <h2 class="text-4xl font-extrabold text-center mb-10 text-[#005f73] border-b-4 border-[#ee9b00] pb-2">I. ПОЧЕМУ ЭТО КЛЮЧЕВОЙ ПРЕДМЕТ?</h2>
+            <p class="text-center text-xl text-gray-600 mb-12 max-w-5xl mx-auto">География — это мост между природными ресурсами, технологиями и обществом. Она дает тебе аналитический фундамент для решения реальных проблем.</p>
 
-        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
-        <div class="lang-switcher">
-            <button class="lang-btn" onclick="switchLang('kk')">Қазақша</button>
-            <button class="lang-btn" onclick="switchLang('en')">English</button>
-            <button class="lang-btn active" onclick="switchLang('ru')">Русский</button>
-        </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <!-- Карта и Роль РК -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:shadow-2xl transition duration-300">
+                    <span class="text-5xl block mb-3">⭐</span>
+                    <h3 class="text-xl font-bold text-[#0a9396]">ГЕОПОЛИТИЧЕСКИЙ ЦЕНТР</h3>
+                    <p class="text-4xl font-black text-[#ee9b00]">ЕВРАЗИЯ</p>
+                    <p class="text-gray-500">Понимание стратегической роли Казахстана.</p>
+                </div>
+                <!-- Ресурсы -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:shadow-2xl transition duration-300">
+                    <span class="text-5xl block mb-3">⛏️</span>
+                    <h3 class="text-xl font-bold text-[#0a9396]">АНАЛИЗ РЕСУРСОВ</h3>
+                    <p class="text-4xl font-black text-[#ee9b00]">ВОДА & МИНЕРАЛЫ</p>
+                    <p class="text-gray-500">Управление критически важными запасами.</p>
+                </div>
+                <!-- Мәңгілік Ел -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:shadow-2xl transition duration-300">
+                    <span class="text-5xl block mb-3">🏛️</span>
+                    <h3 class="text-xl font-bold text-[#0a9396]">ГРАЖДАНСКАЯ ПОЗИЦИЯ</h3>
+                    <p class="text-4xl font-black text-[#ee9b00]">МӘҢГІЛІК ЕЛ</p>
+                    <p class="text-gray-500">Знание своего народа и территорий.</p>
+                </div>
+            </div>
 
-        <!-- БАСТЫ ТАҚЫРЫП -->
-        <header class="header-card text-center mb-10">
-            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">SCRATCH-ҚА КІРІСПЕ</h1>
-            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">INTRODUCTION TO SCRATCH</h1>
-            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ВВЕДЕНИЕ В SCRATCH</h1>
-
-            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-gray-100">Блоктар арқылы бағдарламалау.</p>
-            <p lang="en" class="lang-content mt-2 text-xl font-medium text-gray-100">Programming with blocks.</p>
-            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-gray-100">Программирование с помощью блоков.</p>
-        </header>
-
-        <!-- 1. SCRATCH ДЕГЕНІМІЗ НЕ? -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Scratch дегеніміз не?</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Scratch?</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое Scratch?</h2>
-
-            <div class="rule-card border-t-orange-500">
-                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="kk">Scratch</span> – бұл <span class="term" lang="kk">визуалды</span>, блокқа негізделген бағдарламалау тілі. Ол балаларға (және ересектерге) кодты <span class="term" lang="kk">жазбай</span>, оны Lego сияқты <span class="term" lang="kk">құрастыру</span> арқылы интерактивті оқиғалар, ойындар және анимациялар жасауға мүмкіндік береді.
-                </p>
-                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="en">Scratch</span> is a <span class="term" lang="en">visual</span>, block-based programming language. It allows kids (and adults) to create interactive stories, games, and animations by <span class="term" lang="en">snapping blocks together</span> like Lego, instead of <span class="term" lang="en">writing</span> code.
-                </p>
-                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="ru">Scratch</span> — это <span class="term" lang="ru">визуальный</span>, блочный язык программирования. Он позволяет детям (и взрослым) создавать интерактивные истории, игры и анимации, <span class="term" lang="ru">соединяя блоки</span> вместе, как Lego, вместо того, чтобы <span class="term" lang="ru">писать</span> код.
-                </p>
+            <div class="bg-white rounded-xl shadow-2xl p-8 md:col-span-2">
+                 <h3 class="text-3xl font-bold mb-6 text-[#005f73]">📊 Востребованность: Карьера с географией</h3>
+                 <p class="mb-6 text-gray-600 max-w-4xl mx-auto">Географические знания, особенно в сфере ГИС и экологии, — это прямая дорога в перспективные отрасли. Диаграмма демонстрирует индекс спроса на специалистов, использующих географический анализ (на основе условных данных).</p>
+                <div class="chart-container h-96 md:h-[450px]">
+                    <canvas id="professionsChart"></canvas>
+                </div>
             </div>
         </section>
 
-        <!-- 2. НЕГІЗГІ ҰҒЫМДАР -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Негізгі ұғымдар</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">2. Key Concepts</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Ключевые понятия</h2>
+        <section id="how" class="mb-16">
+            <h2 class="text-4xl font-extrabold text-center mb-10 text-[#005f73] border-b-4 border-[#ee9b00] pb-2">II. МЕТОДЫ: ОТ ТЕОРИИ К ДЕЙСТВИЮ</h2>
+            <p class="text-center text-xl text-gray-600 mb-12 max-w-5xl mx-auto">Учебный процесс построен как непрерывный цикл исследования. Мы не просто читаем, мы действуем, используя 5 ключевых современных методов.</p>
+            
+            <div class="bg-white rounded-xl shadow-2xl p-8">
+                 <h3 class="text-3xl font-bold mb-8 text-center text-[#0a9396]">🔄 Цикл исследовательских навыков</h3>
+                 
+                 <!-- Flow Chart / Process Diagram -->
+                 <div class="flex flex-wrap justify-center items-start text-center">
+                    
+                    <!-- 1. Наблюдение -->
+                    <div class="w-1/2 md:w-1/5 p-2 flex flex-col items-center">
+                        <div class="flow-node bg-[#94d2bd] text-white p-4 rounded-full text-4xl mb-3">🔭</div>
+                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
+                            <p class="font-bold text-lg text-[#0a9396]">1. НАБЛЮДЕНИЕ</p>
+                            <p class="text-sm mt-1 text-gray-600">Сбор первичных данных на местности (Полевые работы).</p>
+                        </div>
+                        <div class="arrow-down"></div>
+                    </div>
+
+                    <!-- 2. Картография -->
+                    <div class="w-1/2 md:w-1/5 p-2 flex flex-col items-center">
+                         <div class="flow-node bg-[#94d2bd] text-white p-4 rounded-full text-4xl mb-3">🗺️</div>
+                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
+                            <p class="font-bold text-lg text-[#0a9396]">2. КАРТОГРАФИЯ</p>
+                            <p class="text-sm mt-1 text-gray-600">Чтение "языка" географии, работа с ГИС-сетками.</p>
+                        </div>
+                        <div class="arrow-down"></div>
+                    </div>
+
+                    <!-- 3. Сравнительный анализ -->
+                    <div class="w-1/2 md:w-1/5 p-2 flex flex-col items-center">
+                         <div class="flow-node bg-[#94d2bd] text-white p-4 rounded-full text-4xl mb-3">⚖️</div>
+                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
+                            <p class="font-bold text-lg text-[#0a9396]">3. СРАВНЕНИЕ</p>
+                            <p class="text-sm mt-1 text-gray-600">Сопоставление регионов, климата и экономики.</p>
+                        </div>
+                        <div class="arrow-down"></div>
+                    </div>
+                    
+                    <!-- 4. Исследование -->
+                    <div class="w-1/2 md:w-1/5 p-2 flex flex-col items-center">
+                         <div class="flow-node bg-[#94d2bd] text-white p-4 rounded-full text-4xl mb-3">🔬</div>
+                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
+                            <p class="font-bold text-lg text-[#0a9396]">4. ИССЛЕДОВАНИЕ</p>
+                            <p class="text-sm mt-1 text-gray-600">Создание проектов и обработка статистических данных.</p>
+                        </div>
+                        <div class="arrow-down"></div>
+                    </div>
+                    
+                    <!-- 5. Решение Проблем -->
+                    <div class="w-full md:w-1/5 p-2 flex flex-col items-center">
+                         <div class="flow-node bg-[#ee9b00] text-white p-4 rounded-full text-4xl mb-3">💡</div>
+                        <div class="flow-node bg-gray-50 p-4 rounded-xl shadow-md flex-grow">
+                            <p class="font-bold text-lg text-[#ee9b00]">5. РЕШЕНИЕ</p>
+                            <p class="text-sm mt-1 text-gray-600">Разработка путей преодоления экологических и социальных вызовов.</p>
+                        </div>
+                    </div>
+
+                 </div>
+            </div>
+        </section>
+
+        <section id="result">
+            <h2 class="text-4xl font-extrabold text-center mb-10 text-[#005f73] border-b-4 border-[#ee9b00] pb-2">III. ТВОЙ РЕЗУЛЬТАТ: ГОТОВНОСТЬ К XXI ВЕКУ</h2>
+             <p class="text-center text-xl text-gray-600 mb-12 max-w-4xl mx-auto">Изучение географии трансформирует тебя в профессионала с тремя ключевыми качествами, необходимыми в любой сфере.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-                <!-- 1. Спрайт -->
-                <div class="rule-card border-t-blue-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-3">Спрайт (Sprite)</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-3">Sprite</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-3">Спрайт (Sprite)</h3>
-                    <p lang="kk" class="lang-content text-base text-gray-700">Сіздің жобаңыздағы <strong>кейіпкер</strong> немесе <strong>объект</strong> (мысалы, мысық, доп, ғарыш кемесі).</p>
-                    <p lang="en" class="lang-content text-base text-gray-700">The <strong>character</strong> or <strong>object</strong> in your project (e.g., the cat, a ball, a spaceship).</p>
-                    <p lang="ru" class="lang-content text-base text-gray-700"><strong>Персонаж</strong> или <strong>объект</strong> в вашем проекте (например, кот, мяч, космический корабль).</p>
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Head -->
-                        <circle cx="50" cy="30" r="15" fill="#f97316"/>
-                        <!-- Ears -->
-                        <path d="M 40 15 L 40 25 L 48 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="1"/>
-                        <path d="M 60 15 L 60 25 L 52 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="1"/>
-                        <!-- Eyes -->
-                        <circle cx="45" cy="30" r="3" fill="white"/>
-                        <circle cx="55" cy="30" r="3" fill="white"/>
-                        <circle cx="45" cy="30" r="1" fill="black"/>
-                        <circle cx="55" cy="30" r="1" fill="black"/>
-                        <!-- Nose -->
-                        <path d="M 48 35 Q 50 38, 52 35 Z" fill="black"/>
-                        <!-- Whiskers -->
-                        <line x1="30" y1="33" x2="40" y2="33" stroke="black" stroke-width="1"/>
-                        <line x1="30" y1="36" x2="40" y2="36" stroke="black" stroke-width="1"/>
-                        <line x1="60" y1="33" x2="70" y2="33" stroke="black" stroke-width="1"/>
-                        <line x1="60" y1="36" x2="70" y2="36" stroke="black" stroke-width="1"/>
-                        <!-- Body -->
-                        <rect x="40" y="45" width="20" height="30" fill="#f97316" rx="5"/>
-                        <!-- Legs -->
-                        <rect x="40" y="75" width="8" height="15" fill="#f97316" rx="3"/>
-                        <rect x="52" y="75" width="8" height="15" fill="#f97316" rx="3"/>
-                        <!-- Tail -->
-                        <path d="M 60 50 Q 75 55, 75 70 T 60 85" fill="none" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
-                    </svg>
+                <div class="bg-white rounded-xl shadow-2xl p-8 text-center border-t-4 border-[#0a9396] transform hover:scale-[1.03] transition-transform duration-300">
+                    <span class="text-7xl block mb-4 text-[#0a9396]">🎓</span>
+                    <h3 class="text-2xl font-black mb-2 text-[#0a9396]">ЗНАННЯ</h3>
+                    <p class="text-gray-700 font-medium">Ты понимаешь сложные мировые процессы и роль в них Казахстана.</p>
                 </div>
-
-                <!-- 2. Сцена -->
-                <div class="rule-card border-t-green-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-green-700 mb-3">Сахна (Stage)</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-green-700 mb-3">Stage</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-green-700 mb-3">Сцена (Stage)</h3>
-                    <p lang="kk" class="lang-content text-base text-gray-700">Бұл – іс-әрекет болатын <strong>артқы фон</strong> (мысалы, орман, бөлме, ғарыш).</p>
-                    <p lang="en" class="lang-content text-base text-gray-700">The <strong>background</strong> where the action happens (e.g., a forest, a room, space).</p>
-                    <p lang="ru" class="lang-content text-base text-gray-700"><strong>Задний фон</strong>, на котором происходит действие (например, лес, комната, космос).</p>
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Main UI background -->
-                        <rect x="0" y="0" width="100" height="100" fill="#f0f2f5"/>
-                        <!-- Stage Area -->
-                        <rect x="25" y="10" width="70" height="80" fill="white" stroke="#d1d5db"/>
-                        <!-- Green Flag Icon -->
-                        <rect x="28" y="13" width="10" height="10" fill="#22c55e" rx="2"/>
-                        <polygon points="30,15 30,21 36,18" fill="white"/>
-                        <!-- Stop Icon -->
-                        <rect x="40" y="13" width="10" height="10" fill="#ef4444" rx="2"/>
-                        <rect x="43" y="16" width="4" height="4" fill="white"/>
-                        <!-- Sprite on Stage -->
-                        <g transform="scale(0.3) translate(100, 70)">
-                            <circle cx="50" cy="30" r="15" fill="#f97316"/>
-                            <path d="M 40 15 L 40 25 L 48 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="1"/>
-                            <path d="M 60 15 L 60 25 L 52 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="1"/>
-                            <circle cx="45" cy="30" r="3" fill="white"/><circle cx="55" cy="30" r="3" fill="white"/>
-                            <circle cx="45" cy="30" r="1" fill="black"/><circle cx="55" cy="30" r="1" fill="black"/>
-                            <path d="M 48 35 Q 50 38, 52 35 Z" fill="black"/>
-                            <rect x="40" y="45" width="20" height="30" fill="#f97316" rx="5"/>
-                            <rect x="40" y="75" width="8" height="15" fill="#f97316" rx="3"/>
-                            <rect x="52" y="75" width="8" height="15" fill="#f97316" rx="3"/>
-                        </g>
-                        <!-- Code Area (placeholder) -->
-                        <rect x="5" y="10" width="18" height="80" fill="#eef2ff" stroke="#d1d5db"/>
-                    </svg>
+                <div class="bg-white rounded-xl shadow-2xl p-8 text-center border-t-4 border-[#ee9b00] transform hover:scale-[1.03] transition-transform duration-300">
+                     <span class="text-7xl block mb-4 text-[#ee9b00]">💡</span>
+                    <h3 class="text-2xl font-black mb-2 text-[#ee9b00]">АНАЛИТИКА</h3>
+                    <p class="text-gray-700 font-medium">Ты умеешь работать с цифровыми картами (ГИС) и принимать взвешенные решения.</p>
                 </div>
-
-                <!-- 3. Блоктар -->
-                <div class="rule-card border-t-yellow-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-yellow-700 mb-3">Блоктар (Blocks)</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-yellow-700 mb-3">Blocks</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-yellow-700 mb-3">Блоки (Blocks)</h3>
-                    <p lang="kk" class="lang-content text-base text-gray-700">Скрипт жасау үшін біріктіретін <strong>командалар</strong> (мысалы, "10 қадам жылжыту", "дыбысты ойнату").</p>
-                    <p lang="en" class="lang-content text-base text-gray-700">The <strong>commands</strong> you snap together to make a script (e.g., "move 10 steps", "play sound").</p>
-                    <p lang="ru" class="lang-content text-base text-gray-700"><strong>Команды</strong>, которые вы соединяете для создания скрипта (напр., "идти 10 шагов", "играть звук").</p>
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="height: 140px;">
-                        <!-- Event Block -->
-                        <path d="M 20 10
-                                 C 25 10, 30 5, 35 5
-                                 C 40 5, 45 10, 50 10
-                                 L 80 10 L 80 30 L 20 30 Z"
-                              fill="#f5a623" stroke="#e69500"/>
-                        <text x="50" y="23" font-size="8" fill="white" text-anchor="middle" font-family="Kalam, cursive">When 💚 Clicked</text>
-
-                        <!-- Notch for block below -->
-                        <path d="M 35 30 L 40 35 L 50 35 L 55 30 Z" fill="#f5a623" stroke="#e69500" stroke-linejoin="round" stroke-width="1"/>
-
-                        <!-- Motion Block -->
-                        <path d="M 20 35
-                                 L 35 35 L 40 40
-                                 L 50 40 L 55 35
-                                 L 80 35 L 80 55
-                                 L 55 55 L 50 60
-                                 L 40 60 L 35 55
-                                 L 20 55 Z"
-                              fill="#4a90e2" stroke="#3c7bc2"/>
-                        <text x="50" y="48" font-size="8" fill="white" text-anchor="middle" font-family="Kalam, cursive">move (10) steps</text>
-
-                        <!-- Control Block (C-shape) -->
-                        <path d="M 20 60
-                                 L 35 60 L 40 65
-                                 L 50 65 L 55 60
-                                 L 80 60 L 80 80
-                                 L 30 80 L 35 85
-                                 L 45 85 L 50 80
-                                 L 25 80 L 25 110
-                                 L 80 110 L 80 130
-                                 L 55 130 L 50 135
-                                 L 40 135 L 35 130
-                                 L 20 130 Z"
-                              fill="#f8e71c" stroke="#e9d700"/>
-                        <text x="50" y="73" font-size="8" fill="#4a4a4a" text-anchor="middle" font-family="Kalam, cursive">forever</text>
-                    </svg>
+                <div class="bg-white rounded-xl shadow-2xl p-8 text-center border-t-4 border-[#ca6702] transform hover:scale-[1.03] transition-transform duration-300">
+                     <span class="text-7xl block mb-4 text-[#ca6702]">🌿</span>
+                    <h3 class="text-2xl font-black mb-2 text-[#ca6702]">ДЕЙСТВИЕ</h3>
+                    <p class="text-gray-700 font-medium">Ты готов внедрять решения для сохранения экологии и развития общества.</p>
                 </div>
             </div>
         </section>
 
-        <!-- 3. НЕГІЗГІ БЛОКТАР КАТЕГОРИЯЛАРЫ -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Негізгі блоктар категориялары</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">3. Key Block Categories</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Основные категории блоков</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                <div class="example-block border-l-yellow-500">
-                    <p class="scratch-block block-events" lang="kk">Жасыл жалауша басылғанда</p>
-                    <p class="scratch-block block-events" lang="en">When Green Flag Clicked</p>
-                    <p class="scratch-block block-events" lang="ru">Когда 💚 нажат</p>
-                    <p lang="kk" class="lang-content mt-2"><strong>Оқиғалар (Events):</strong> Скриптіңізді <span class="term" lang="kk">бастайды</span>.</p>
-                    <p lang="en" class="lang-content mt-2"><strong>Events:</strong> <span class="term" lang="en">Starts</span> your script (e.g., clicking the green flag).</p>
-                    <p lang="ru" class="lang-content mt-2"><strong>События (Events):</strong> <span class="term" lang="ru">Запускают</span> ваш скрипт (например, нажатие на флаг).</p>
-                </div>
-
-                <div class="example-block border-l-blue-500">
-                    <p class="scratch-block block-motion" lang="kk">10 қадам жылжыту</p>
-                    <p class="scratch-block block-motion" lang="en">move 10 steps</p>
-                    <p class="scratch-block block-motion" lang="ru">идти 10 шагов</p>
-                    <p lang="kk" class="lang-content mt-2"><strong>Қозғалыс (Motion):</strong> Спрайтты <span class="term" lang="kk">жылжытады</span>.</p>
-                    <p lang="en" class="lang-content mt-2"><strong>Motion:</strong> <span class="term" lang="en">Moves</span> your sprite.</p>
-                    <p lang="ru" class="lang-content mt-2"><strong>Движение (Motion):</strong> <span class="term" lang="ru">Двигает</span> ваш спрайт.</p>
-                </div>
-
-                <div class="example-block border-l-purple-500">
-                    <p class="scratch-block block-looks" lang="kk">"Сәлем!" деп 2 сек айту</p>
-                    <p class="scratch-block block-looks" lang="en">say "Hello!" for 2 secs</p>
-                    <p class="scratch-block block-looks" lang="ru">говорить "Привет!" 2 сек</p>
-                    <p lang="kk" class="lang-content mt-2"><strong>Түр (Looks):</strong> Спрайттың <span class="term" lang="kk">сыртқы түрін</span> немесе сөзін өзгертеді.</p>
-                    <p lang="en" class="lang-content mt-2"><strong>Looks:</strong> Changes your sprite's <span class="term" lang="en">appearance</span> or makes it "talk".</p>
-                    <p lang="ru" class="lang-content mt-2"><strong>Внешность (Looks):</strong> Меняет <span class="term" lang="ru">внешний вид</span> спрайта или заставляет его "говорить".</p>
-                </div>
-
-                <div class="example-block border-l-orange-500">
-                    <p class="scratch-block block-control" lang="kk">әрқашан</p>
-                    <p class="scratch-block block-control" lang="en">forever</p>
-                    <p class="scratch-block block-control" lang="ru">повторять всегда</p>
-                    <p lang="kk" class="lang-content mt-2"><strong>Басқару (Control):</strong> Іс-әрекеттерді <span class="term" lang="kk">қайталайды</span> немесе күтеді.</p>
-                    <p lang="en" class="lang-content mt-2"><strong>Control:</strong> <span class="term" lang="en">Repeats</span> actions (loops) or waits.</p>
-                    <p lang="ru" class="lang-content mt-2"><strong>Управление (Control):</strong> <span class="term" lang="ru">Повторяет</span> действия (циклы) или ждет.</p>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ТҮЙІН -->
-        <footer class="footer-card">
-            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-gray-800">БАСТЫ ОЙ</h3>
-            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-gray-800">SUMMARY</h3>
-            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-gray-800">ГЛАВНАЯ МЫСЛЬ</h3>
-
-            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                <span class="term" lang="kk">Scratch</span> – бұл бағдарламалауды үйренудің оңай жолы. Сіз <span class="term" lang="kk">Спрайтты</span> (кейіпкерді) алып, оған не істеу керектігін айту үшін <span class="term" lang="kk">Блоктарды</span> біріктіресіз.
-            </p>
-            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                <span class="term" lang="en">Scratch</span> is an easy way to learn programming. You take a <span class="term" lang="en">Sprite</span> (character) and snap <span class="term" lang="en">Blocks</span> together to tell it what to do.
-            </p>
-            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                <span class="term" lang="ru">Scratch</span> – это легкий способ научиться программировать. Вы берете <span class="term" lang="ru">Спрайт</span> (персонажа) и соединяете <span class="term" lang="ru">Блоки</span>, чтобы сказать ему, что делать.
-            </p>
-        </footer>
-
-    </div>
+    </main>
+    
+    <footer class="text-center p-6 mt-12 bg-[#005f73] text-gray-300">
+        <p class="text-sm">Инфографика подготовлена для повышения мотивации и демонстрации практической значимости предмета.</p>
+    </footer>
 
     <script>
-        function switchLang(lang) {
-            // 1. Негізгі контейнерге класс орнату
-            const container = document.getElementById('poster-container');
-            if (container) {
-                // Алдымен барлық тіл кластарын алып тастау
-                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
-                // Жаңа тіл класын қосу
-                container.classList.add('lang-' + lang);
+        function wrapLabel(str, maxLen) {
+            if (str.length <= maxLen) {
+                return str;
             }
+            const words = str.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxLen) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        }
 
-            // 2. Батырмалардың 'active' класын жаңарту
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                if (btn.getAttribute('onclick') === `switchLang('${lang}')`) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
+        const mandatoryTooltipOptions = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        function renderProfessionsChart() {
+            const ctx = document.getElementById('professionsChart').getContext('2d');
+            const rawLabels = ['IT (ГИС-технологии)', 'Логистика', 'Экология', 'Градостроительство', 'Туризм', 'Госуправление'];
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: rawLabels.map(label => wrapLabel(label, 16)),
+                    datasets: [{
+                        label: 'Индекс востребованности',
+                        data: [95, 88, 85, 78, 75, 70],
+                        backgroundColor: ['#0a9396', '#94d2bd', '#e9d8a6', '#ee9b00', '#ca6702', '#bb3e03'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    ...mandatoryTooltipOptions,
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%'; 
+                                }
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        ...mandatoryTooltipOptions.plugins,
+                        legend: {
+                            display: false
+                        }
+                    }
                 }
             });
         }
-
-        // 3. Бет жүктелгенде бастапқы тілді орнату
-        document.addEventListener('DOMContentLoaded', (event) => {
-            switchLang('ru'); // Set default language to Russian
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProfessionsChart();
         });
     </script>
 
-
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-<script>
-    function goBack() {
-        console.log('goBack() вызвана');
-        if (typeof bridge !== 'undefined' && bridge) {
-            console.log('Bridge найден, вызываю onBackClicked()');
-            bridge.onBackClicked();
-        } else {
-            console.log('Bridge не найден!');
-        }
-    }
 
-    // Инициализация QWebChannel
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Инициализация QWebChannel...');
 
-        if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-            try {
-                new QWebChannel(qt.webChannelTransport, function(channel) {
-                    window.bridge = channel.objects.bridge;
-                    console.log('✅ Bridge подключен!');
-                });
-            } catch(e) {
-                console.error('❌ QWebChannel ошибка:', e);
-            }
-        } else {
-            console.warn('⚠️ QWebChannel или qt не найден');
-        }
+
+
+
+
+
+
+
+<style data-oi-map-overlay>
+.oi-map-btn{
+  position:fixed; right:16px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.oi-table-btn{
+  position:fixed; right:120px; bottom:16px; z-index:9999;
+  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
+  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.oi-map-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
+  display:none; align-items:center; justify-content:center; padding:18px;
+}
+.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+
+.oi-map-modal{
+  width:min(1200px, 100%); height:min(85vh, 900px);
+  background:#111; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.oi-map-close{
+  position:absolute; top:10px; right:10px; z-index:3;
+  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
+}
+
+.oi-map-viewport{
+  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+  touch-action: pan-x pan-y;
+  background:#000;
+  padding-top:62px; /* место под тулбар */
+}
+
+.oi-map-img{
+  display:block;
+  transform-origin: 0 0;
+  user-select:none; -webkit-user-drag:none;
+}
+
+.oi-map-toolbar{
+  position:absolute; left:12px; top:12px; right:12px; z-index:2;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  pointer-events:none;
+}
+
+.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+
+.oi-map-tab{
+  min-width:36px; height:34px; padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35); color:#fff;
+  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+.oi-map-tab.is-active{
+  background:rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.45);
+}
+
+.oi-map-hint{
+  pointer-events:none;
+  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
+  padding:8px 10px; border-radius:10px;
+}
+</style>
+
+<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
+
+
+<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
+  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
+    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+
+    <div class="oi-map-toolbar">
+      <div class="oi-map-tabs">
+        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="5">5</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="6">6</button>
+<button type="button" class="oi-map-tab" data-oi-map-tab="7">7</button>
+      </div>
+      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
+    </div>
+
+    <div class="oi-map-viewport" data-oi-map-viewport>
+      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="map 1" style="display:block;">
+<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="map 2" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="map 3" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="map 4" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="5" src="../../assets/maps/karta_5.png" alt="map 5" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="6" src="../../assets/maps/karta_6.png" alt="map 6" style="display:none;">
+<img class="oi-map-img" data-oi-map-img data-map="7" src="../../assets/maps/karta_7.png" alt="map 7" style="display:none;">
+    </div>
+  </div>
+</div>
+
+
+
+
+<script data-oi-map-overlay>
+(function(){
+  // ====== MAPS ======
+  const mapBtn = document.querySelector('[data-oi-map-btn]');
+  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
+  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
+  const mapViewport = document.querySelector('[data-oi-map-viewport]');
+  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
+  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+
+  // ====== MENDELEEV ======
+  const tableBtn = document.querySelector('[data-oi-table-btn]');
+  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
+  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
+  const tableViewport = document.querySelector('[data-oi-table-viewport]');
+  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
+  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+
+  let scale = 1;
+
+  function applyScale(){
+    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
+  }
+
+  function openBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBackdrop(backdrop){
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function showMap(n){
+    mapImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
     });
-</script>
+    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
+    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
+  }
 
+  function showTable(n){
+    tableImgs.forEach(img => {
+      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
+    });
+    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
+    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
+  }
+
+  // MAP events
+  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
+    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
+    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
+    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
+    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+
+    mapViewport.addEventListener('wheel', (e)=>{
+      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showMap(1);
+  }
+
+  // TABLE events
+  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
+    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
+    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
+    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
+    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+
+    tableViewport.addEventListener('wheel', (e)=>{
+      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      scale = Math.min(4, Math.max(0.6, scale + delta));
+      applyScale();
+    }, {passive:false});
+
+    showTable(1);
+  }
+
+  applyScale();
+})();
+</script>
 </body>
 </html>
