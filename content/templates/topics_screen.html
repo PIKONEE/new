@@ -122,55 +122,91 @@
         }
 
         .search-wrap{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background: rgba(255,255,255,0.14);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 14px;
-  padding: 10px 12px;
-  backdrop-filter: blur(10px);
-  min-width: 320px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 14px;
+            padding: 10px 12px;
+            backdrop-filter: blur(10px);
+            min-width: 320px;
+        }
+
+        #search-input{
+            width: 340px;
+            max-width: 45vw;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        #search-input::placeholder{
+            color: rgba(255,255,255,0.75);
+        }
+
+        .clear-btn{
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.22);
+            color: #fff;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 700;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .clear-btn:hover{
+            background: rgba(255,255,255,0.26);
+            transform: scale(1.05);
+        }
+
+        .hint{
+            margin: 10px 0 18px;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
 }
 
-#search-input{
-  width: 340px;
-  max-width: 45vw;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #fff;
-  font-size: 15px;
+.scroll-to-top.visible {
+    opacity: 1;
+    visibility: visible;
 }
 
-#search-input::placeholder{
-  color: rgba(255,255,255,0.75);
+.scroll-to-top:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
-.clear-btn{
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.22);
-  color: #fff;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 700;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.clear-btn:hover{
-  background: rgba(255,255,255,0.26);
-  transform: scale(1.05);
-}
-
-.hint{
-  margin: 10px 0 18px;
-  opacity: 0.9;
-  font-size: 14px;
+.scroll-to-top::before {
+    content: '↑';
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
 }
 
     </style>
@@ -179,19 +215,21 @@
 <body>
     <div class="container">
         <header>
-  <div class="header-left">
-    <button class="back-button" id="back-btn" onclick="goBack()">← Назад</button>
-    <h1 id="subject-title">Загрузка...</h1>
-  </div>
+            <div class="header-left">
+                <button class="back-button" id="back-btn" onclick="goBack()">← Назад</button>
+                <h1 id="subject-title">Загрузка...</h1>
+            </div>
 
-  <div class="search-wrap">
-    <input id="search-input" type="text" placeholder="Поиск плаката по названию..." autocomplete="off">
-    <button class="clear-btn" id="clear-btn" title="Очистить">✕</button>
-  </div>
-</header>
+            <div class="search-wrap">
+                <input id="search-input" type="text" placeholder="Поиск плаката по названию..." autocomplete="off">
+                <button class="clear-btn" id="clear-btn" title="Очистить">✕</button>
+            </div>
+        </header>
 
-<div class="hint" id="hint"></div>
+        <!-- Кнопка "Наверх" -->
+        <button class="scroll-to-top" id="scroll-to-top" title="Наверх"></button>
 
+        <div class="hint" id="hint"></div>
 
         <div class="topics-grid" id="topics-grid">
             <!-- Темы будут загружены здесь -->
@@ -257,57 +295,80 @@
             } else {
                 console.error("❌ QWebChannel не найден!");
             }
+
+            // Поиск
             const input = document.getElementById('search-input');
-const clearBtn = document.getElementById('clear-btn');
-const hint = document.getElementById('hint');
+            const clearBtn = document.getElementById('clear-btn');
+            const hint = document.getElementById('hint');
 
-function applyFilter() {
-  const q = (input.value || '').trim().toLowerCase();
-  const filtered = !q
-    ? allTopics
-    : allTopics.filter(t => (t.name || '').toLowerCase().includes(q));
+            function applyFilter() {
+                const q = (input.value || '').trim().toLowerCase();
+                const filtered = !q
+                    ? allTopics
+                    : allTopics.filter(t => (t.name || '').toLowerCase().includes(q));
 
-  // перерисуем список (без потери клика)
-  const grid = document.getElementById('topics-grid');
-  grid.innerHTML = '';
+                // перерисуем список (без потери клика)
+                const grid = document.getElementById('topics-grid');
+                grid.innerHTML = '';
 
-  if (hint) {
-    hint.innerText = q
-      ? `Найдено: ${filtered.length} из ${allTopics.length}`
-      : `Найдено: ${allTopics.length}`;
-  }
+                if (hint) {
+                    hint.innerText = q
+                        ? `Найдено: ${filtered.length} из ${allTopics.length}`
+                        : `Найдено: ${allTopics.length}`;
+                }
 
-  filtered.forEach((topic, index) => {
-    const card = document.createElement('div');
-    card.className = 'topic-card';
-    card.style.animationDelay = `${index * 0.03}s`;
-    card.onclick = () => {
-      if (bridgeReady && bridge) bridge.onTopicClicked(topic.id);
-    };
-    card.innerHTML = `<h3>${topic.name}</h3>`;
-    grid.appendChild(card);
-  });
-}
+                filtered.forEach((topic, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'topic-card';
+                    card.style.animationDelay = `${index * 0.03}s`;
+                    card.onclick = () => {
+                        if (bridgeReady && bridge) bridge.onTopicClicked(topic.id);
+                    };
+                    card.innerHTML = `<h3>${topic.name}</h3>`;
+                    grid.appendChild(card);
+                });
+            }
 
-if (input) {
-  input.addEventListener('input', applyFilter);
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      input.value = '';
-      applyFilter();
-      input.blur();
-    }
-  });
-}
+            if (input) {
+                input.addEventListener('input', applyFilter);
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        input.value = '';
+                        applyFilter();
+                        input.blur();
+                    }
+                });
+            }
 
-if (clearBtn) {
-  clearBtn.addEventListener('click', () => {
-    input.value = '';
-    applyFilter();
-    input.focus();
-  });
-}
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    input.value = '';
+                    applyFilter();
+                    input.focus();
+                });
+            }
 
+            // Кнопка "Наверх"
+            const scrollToTopBtn = document.getElementById('scroll-to-top');
+
+            if (scrollToTopBtn) {
+                // Показываем/скрываем кнопку при скролле
+                window.addEventListener('scroll', () => {
+                    if (window.pageYOffset > 300) {
+                        scrollToTopBtn.classList.add('visible');
+                    } else {
+                        scrollToTopBtn.classList.remove('visible');
+                    }
+                });
+
+                // Плавный скролл наверх
+                scrollToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
         });
     </script>
 </body>

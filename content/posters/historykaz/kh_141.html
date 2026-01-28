@@ -3,527 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Государство Могулистан (XIV–XVI вв.)</title>
+    <title>Индустрия и Экологическая цена</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; color: #064e3b; }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .jade-gradient {
-            background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 50%, #ffffff 100%);
-        }
-
-        .premium-card {
-            background: white;
-            border-radius: 3rem;
-            border: 1px solid #bbf7d0;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .premium-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px -15px rgba(21, 128, 61, 0.15);
-            border-color: #4ade80;
-        }
-
-        .lang-active {
-            background-color: #065f46;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(6, 95, 70, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2.5rem;
-            background: #fff;
-            border: 1px solid #dcfce7;
-        }
-
-        .info-panel {
-            background: rgba(255, 255, 255, 0.9);
-            border-left: 8px solid #10b981;
-            padding: 2.5rem;
-            border-radius: 2.5rem;
-            transition: all 0.5s ease;
-        }
-
-        .term-badge {
-            background: #dcfce7;
-            color: #065f46;
-            padding: 4px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
+        body { font-family: 'Inter', sans-serif; background: #020617; color: #cbd5e1; }
+        .industrial-card { background: #0f172a; border: 1px solid #334155; padding: 40px; border-radius: 40px; position: relative; overflow: hidden; }
+        .lang-active { background: #10b981 !important; color: white !important; font-weight: 900; }
+        .hazard-glow { box-shadow: 0 0 30px rgba(16, 185, 129, 0.2); }
+        .eco-warning { color: #f87171; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; }
     </style>
 </head>
-<body class="jade-gradient min-h-screen pb-20">
+<body class="p-10">
 
-<!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-emerald-100 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.3em] text-emerald-900">Государство Могулистан (XIV – начало XVI вв.)</h1>
-            <div class="flex bg-emerald-50 p-1 rounded-2xl border border-emerald-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
+    <div class="fixed bottom-10 left-10 z-50 flex gap-2 bg-slate-900/90 border border-white/10 p-2 rounded-full shadow-2xl">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-6 py-2 rounded-full text-xs">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-xs text-slate-400">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-xs text-slate-400">EN</button>
+    </div>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Geopolitical Map (Canvas) -->
-        <div class="premium-card p-8 md:p-12 shadow-sm">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-emerald-700 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Territorial Domain Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-emerald-950 leading-tight italic uppercase">Карта Доменов</h2>
-                    <p id="viz-desc" class="text-lg text-emerald-900/60 font-light leading-relaxed">
-                        Могулистан объединял Жетысу и Кашгарию. Государство делилось на кочевые и оседлые зоны под властью ханов-чагатаидов. Нажмите на регионы для анализа.
-                    </p>
-                    
-                    <div id="info-display" class="info-panel shadow-xl">
-                        <h3 id="element-title" class="text-xl font-bold text-emerald-900 mb-3 uppercase tracking-tighter">Исследуйте регионы</h3>
-                        <p id="element-desc" class="text-emerald-800/70 text-sm leading-relaxed italic">Кликните на Жетысу, Кашгарию или столицу Алмалык на схеме.</p>
+    <main class="max-w-5xl mx-auto space-y-12">
+        <header>
+            <h1 id="title" class="text-6xl font-black uppercase text-white leading-none mb-4 italic tracking-tighter">Промышленность и Кризис</h1>
+            <p id="desc" class="text-emerald-500 font-bold uppercase tracking-widest text-sm">Сырьевой гигант на грани эко-катастрофы</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Промышленность -->
+            <div class="lg:col-span-2 industrial-card hazard-glow">
+                <h2 id="indT" class="text-3xl font-black text-white mb-6 uppercase">Сырьевой Придаток</h2>
+                <p id="indD" class="text-lg text-slate-400 mb-8 leading-relaxed">Казахстан стал главной «бензоколонкой» и «кузницей» СССР. Добыча нефти, газа, меди и угля росла рекордными темпами, но 90% продукции уходило в центр. Регион получал лишь экологические последствия.</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-800/50 p-6 rounded-2xl border border-white/5">
+                        <p class="text-3xl font-black text-white">93%</p>
+                        <p id="stat1" class="text-[10px] uppercase text-emerald-400 font-bold">Вывоз сырья</p>
                     </div>
-                </div>
-                
-                <div class="lg:col-span-7 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="mapCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-emerald-300 font-mono uppercase tracking-[0.4em]">Schematic Geopolitics of Moghulistan</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Detailed History Content -->
-        <div id="plan-section" class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-emerald-900 uppercase tracking-[0.5em]">Структура и Религия</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                
-                <!-- Foundation -->
-                <div class="premium-card p-10 flex flex-col border-t-8 border-emerald-600">
-                    <div class="mb-6"><span class="term-badge" id="t-dyn">Династия</span></div>
-                    <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-emerald-900">Тоглук-Тимур хан</h3>
-                    <p id="c1-d" class="text-emerald-800/70 text-sm leading-relaxed mb-6">
-                        Основатель государства (1347 г.). Он стал первым правителем, сумевшим объединить разрозненные племена Чагатайского улуса. Тоглук-Тимур провел административную реформу, укрепив ханскую власть и ограничив влияние знати.
-                    </p>
-                    <div class="mt-auto text-[10px] font-black text-emerald-400 uppercase tracking-widest italic" id="c1-f">
-                        1347 г.: Основание государства.
-                    </div>
-                </div>
-
-                <!-- Islamization -->
-                <div class="premium-card p-10 flex flex-col border-t-8 border-emerald-400">
-                    <div class="mb-6"><span class="term-badge" id="t-rel">Духовность</span></div>
-                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-emerald-900">1354: Принятие Ислама</h3>
-                    <p id="c2-d" class="text-emerald-800/70 text-sm leading-relaxed mb-6">
-                        При Тоглук-Тимуре ислам был объявлен государственной религией. По легенде, в один день ислам приняли 160 тысяч человек. Это укрепило связи с мусульманским миром и ускорило процесс оседания кочевников.
-                    </p>
-                    <div class="mt-auto text-[10px] font-black text-emerald-400 uppercase tracking-widest italic" id="c2-f">
-                        Мавзолей Тоглук-Тимура в Алмалыке.
-                    </div>
-                </div>
-
-                <!-- Social Structure -->
-                <div class="premium-card p-10 flex flex-col border-t-8 border-emerald-600">
-                    <div class="mb-6"><span class="term-badge" id="t-soc">Общество</span></div>
-                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-emerald-900">Племя Дуглат</h3>
-                    <p id="c3-d" class="text-emerald-800/70 text-sm leading-relaxed mb-6">
-                        Ключевую роль в управлении играла знать племени **Дуглат**. Они занимали пост **улусбека** — главного советника и военачальника хана. Государство имело четкое деление на 12 административных округов, что обеспечивало сбор войск.
-                    </p>
-                    <div class="mt-auto text-[10px] font-black text-emerald-400 uppercase tracking-widest italic" id="c3-f">
-                        Улусбек — наследственный титул.
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Section 3: The Capital & Silk Road (Full Width) -->
-        <div class="bg-emerald-900 p-10 md:p-20 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h3 id="almalyk-t" class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Алмалык: Сад Востока</h3>
-                    <p id="almalyk-d" class="text-emerald-100/70 text-xl font-light leading-relaxed mb-10">
-                        Столица **Алмалык** была крупнейшим торговым узлом на Шелковом пути. Город славился своими садами, мастерскими по производству тканей и чеканкой монеты. Он был культурным мостом между кочевниками Жетысу и купцами Кашгарии.
-                    </p>
-                    <div class="inline-flex items-center gap-4 bg-white/10 px-6 py-2 rounded-full border border-white/20">
-                        <span id="almalyk-tag" class="text-sm font-bold uppercase tracking-widest">Центр Чагатайского наследия</span>
-                    </div>
-                </div>
-                <div class="flex justify-center relative">
-                    <div class="w-80 h-80 border-4 border-dashed border-emerald-700/50 rounded-full flex items-center justify-center animate-spin-slow">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4 grayscale opacity-30">🏔️</div>
-                            <div class="text-[10px] font-black uppercase text-emerald-300 tracking-[0.5em]">Jade Empire</div>
-                        </div>
+                    <div class="bg-slate-800/50 p-6 rounded-2xl border border-white/5">
+                        <p class="text-3xl font-black text-white">#1</p>
+                        <p id="stat2" class="text-[10px] uppercase text-emerald-400 font-bold">В мире по хрому</p>
                     </div>
                 </div>
             </div>
-            <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 font-black rotate-45 pointer-events-none uppercase">MOGUL</div>
+
+            <!-- Эко-катастрофа диаграмма -->
+            <div class="industrial-card flex flex-col justify-center">
+                <h3 id="chartTitle" class="text-xs font-black uppercase mb-6 text-slate-500 text-center tracking-widest">Уровень угроз (%)</h3>
+                <div class="h-64">
+                    <canvas id="ecoChart"></canvas>
+                </div>
+            </div>
         </div>
 
+        <!-- Арал и Семей -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="p-10 bg-red-950/20 border border-red-900/50 rounded-[3rem] space-y-4">
+                <span class="eco-warning">Danger Zone A</span>
+                <h3 id="aralT" class="text-2xl font-black text-white uppercase">Аральская Трагедия</h3>
+                <p id="aralD" class="text-sm text-slate-400 italic">Бесконтрольное орошение полей привело к высыханию моря на 14 метров. Соляные бури накрыли тысячи километров вокруг.</p>
+            </div>
+            <div class="p-10 bg-emerald-950/20 border border-emerald-900/50 rounded-[3rem] space-y-4">
+                <span class="eco-warning" style="color: #34d399;">Hazard Zone B</span>
+                <h3 id="polyT" class="text-2xl font-black text-white uppercase">Семипалатинск</h3>
+                <p id="polyD" class="text-sm text-slate-400 italic">456 ядерных взрывов. Казахстан стал заложником гонки вооружений. Миллионы людей подверглись радиации без их ведома.</p>
+            </div>
+        </div>
     </main>
 
-    <footer class="mt-20 py-20 bg-emerald-950 text-center border-t border-emerald-900/30">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl font-light italic leading-tight text-emerald-200/60">
-                «Могулистан стал хранителем чагатайской славы, объединив суровую волю Тянь-Шаня с изяществом исламских оазисов.»
-            </p>
-            <div class="mt-10 h-1 w-24 bg-emerald-500 mx-auto rounded-full"></div>
-        </div>
-    </footer>
-
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Государство Могулистан (XIV–XVI вв.)",
-                vizTitle: "Карта Доменов",
-                vizDesc: "Могулистан объединял Жетысу и Кашгарию. Нажмите на основные зоны влияния на схеме для детального анализа регионов.",
-                badge: "Анализ геополитики",
-                elementTitleDefault: "Исследуйте регионы",
-                elementDescDefault: "Кликните на Жетысу, Кашгарию или Алмалык на чертеже.",
-                planTitle: "Структура и Религия",
-                tDyn: "Династия", tRel: "Духовность", tSoc: "Общество",
-                c1T: "Тоглук-Тимур хан", c1D: "Первый хан Могулистана. Он сумел централизовать власть после распада Чагатайского улуса и заложить основы новой имперской идентичности.",
-                c1F: "1347 г.: Основание государства.",
-                c2T: "Принятие Ислама", c2D: "В 1354 году ислам стал государственной религией. Это решение способствовало культурному расцвету и объединению многочисленных племен.",
-                c2F: "Мавзолей Тоглук-Тимура — памятник эпохи.",
-                c3T: "Племя Дуглат", c3D: "Аристократическая верхушка. Дуглаты владели титулом улусбеков и фактически управляли внутренними делами и армией государства.",
-                c3F: "Улусбек — хранитель традиций.",
-                almalykT: "Алмалык: Сад Востока", almalykD: "Столица и богатейший город. Алмалык был рынком, где товары из Китая обменивались на продукцию кочевников Семиречья.",
-                almalykTag: "Центр Чагатайского наследия",
-                footer: "«Могулистан стал хранителем чагатайской славы, объединив волю Тянь-Шаня с изяществом оазисов.»",
-                regions: {
-                    zhetysu: { name: "Жетысу (Семиречье)", text: "Северная часть государства. Центр кочевого скотоводства и родина основных племен Могулистана." },
-                    kashgar: { name: "Кашгария", text: "Южная часть государства. Край древних оседлых оазисов, центров науки, ремесла и мусульманской культуры." },
-                    almalyk: { name: "Столица Алмалык", text: "Главный политический и торговый хаб. Здесь находилась ставка ханов и чеканилась государственная монета." }
-                }
+                title: "Промышленность и Кризис", indT: "Сырьевой Придаток", indD: "Казахстан стал главной «кузницей» СССР. Добыча нефти, меди и угля росла, но 90% продукции уходило в центр. Регион получал лишь экологические последствия.",
+                stat1: "Вывоз сырья", stat2: "В мире по хрому", chartTitle: "Уровень эко-угроз",
+                aralT: "Аральская Трагедия", aralD: "Бесконтрольное орошение привело к высыханию моря. Соляные бури накрыли тысячи километров.",
+                polyT: "Семипалатинск", polyD: "456 ядерных взрывов. Казахстан — заложник гонки вооружений и радиации.",
+                labels: ['Арал', 'Радиация', 'Воздух', 'Почва']
             },
             kz: {
-                title: "Моғолстан мемлекеті (ХІV–ХVІ ғғ.)",
-                vizTitle: "Домендер Картасы",
-                vizDesc: "Моғолстан Жетісу мен Қашқарияны біріктірді. Аймақтарды талдау үшін сызбадағы негізгі ықпал ету аймақтарын басыңыз.",
-                badge: "Геосаясатты талдау",
-                elementTitleDefault: "Аймақтарды зерттеңіз",
-                elementDescDefault: "Сызбадағы Жетісу, Қашқария немесе Алмалықты басыңыз.",
-                planTitle: "Құрылым мен Дін",
-                tDyn: "Әулет", tRel: "Руханият", tSoc: "Әлеумет",
-                c1T: "Тоғылық Темір хан", c1D: "Моғолстанның алғашқы ханы. Ол Шағатай ұлысы ыдырағаннан кейін билікті орталықтандырып, жаңа империялық бірегейліктің негізін қалады.",
-                c1F: "1347 ж.: Мемлекеттің құрылуы.",
-                c2T: "Исламды қабылдау", c2D: "1354 жылы ислам мемлекеттік дін болып жарияланды. Бұл шешім мәдениеттің өркендеуіне және көптеген тайпалардың бірігуіне ықпал етті.",
-                c2F: "Тоғылық Темір кесенесі — дәуір ескерткіші.",
-                c3T: "Дулат тайпасы", c3D: "Ақсүйектер тобы. Дулаттар улусбек лауазымына ие болып, мемлекеттің ішкі істері мен әскерін басқарды.",
-                c3F: "Ұлысбек — дәстүр сақтаушы.",
-                almalykT: "Алмалық: Шығыс бағы", almalykD: "Астана және ең бай қала. Алмалық Қытай тауарлары Жетісу көшпелілерінің өнімдеріне алмасатын нарық болды.",
-                almalykTag: "Шағатай мұрасының орталығы",
-                footer: "«Моғолстан Тянь-Шаньның ерік-жігері мен шұраттардың әсемдігін біріктіріп, Шағатай даңқын сақтаушы болды.»",
-                regions: {
-                    zhetysu: { name: "Жетісу", text: "Мемлекеттің солтүстік бөлігі. Көшпелі мал шаруашылығының орталығы және Моғолстанның негізгі тайпаларының Отаны." },
-                    kashgar: { name: "Қашқария", text: "Мемлекеттің оңтүстік бөлігі. Ежелгі отырықшы шұраттар, ғылым, қолөнер және мұсылман мәдениетінің орталығы." },
-                    almalyk: { name: "Алмалық астанасы", text: "Басты саяси және сауда торабы. Мұнда хандардың ордасы орналасып, мемлекеттік теңге соғылды." }
-                }
+                title: "Өнеркәсіп және Дағдарыс", indT: "Шикізат Орталығы", indD: "Қазақстан КСРО-ның басты «ұстаханасына» айналды. Мұнай, мыс және көмір өндіру қарқынды өсті, бірақ өнімнің 90%-ы орталыққа кетті.",
+                stat1: "Шикізат тасу", stat2: "Хром бойынша #1", chartTitle: "Эко-қауіп деңгейі",
+                aralT: "Арал қасіреті", aralD: "Бақылаусыз суару теңіздің құрғауына әкелді. Тұзды дауылдар мыңдаған шақырымды жауып тастады.",
+                polyT: "Семей полигоны", polyD: "456 ядролық жарылыс. Қазақстан қарулану жарысы мен радиацияның тұтқынына айналды.",
+                labels: ['Арал', 'Радиация', 'Ауа', 'Топырақ']
             },
             en: {
-                title: "Moghulistan State (14th–16th c.)",
-                vizTitle: "Domain Map",
-                vizDesc: "Moghulistan united Semirechye and Kashgaria. Click on the primary influence zones on the schematic for region analysis.",
-                badge: "Geopolitical Analysis",
-                elementTitleDefault: "Explore Regions",
-                elementDescDefault: "Click on Zhetysu, Kashgaria, or Almalyk on the diagram.",
-                planTitle: "Structure and Religion",
-                tDyn: "Dynasty", tRel: "Spirituality", tSoc: "Society",
-                c1T: "Togluk-Timur Khan", c1D: "The first Khan of Moghulistan. He centralized power after the collapse of the Chaghatai Ulus, founding a new imperial identity.",
-                c1F: "1347 AD: Foundation of the State.",
-                c2T: "Adoption of Islam", c2D: "In 1354, Islam was declared the state religion, promoting cultural growth and the unification of various tribes.",
-                c2F: "Togluk-Timur Mausoleum — monument of the era.",
-                c3T: "The Dughlat Tribe", c3D: "The aristocratic elite. The Dughlats held the title of Ulusbeg and effectively managed internal affairs and the army.",
-                c3F: "Ulusbeg — guardian of tradition.",
-                almalykT: "Almalyk: Garden of the East", almalykD: "The capital and wealthiest city. Almalyk was a market where Chinese goods were traded for nomadic products from Zhetysu.",
-                almalykTag: "Center of Chaghatai Heritage",
-                footer: "«Moghulistan preserved the Chaghatai glory, merging the will of the Tian-Shan with the elegance of the oases.»",
-                regions: {
-                    zhetysu: { name: "Zhetysu (Semirechye)", text: "The northern part of the state. A hub of nomadic pastoralism and the homeland of the main Moghul tribes." },
-                    kashgar: { name: "Kashgaria", text: "The southern part of the state. A land of ancient sedentary oases, centers of science, crafts, and Muslim culture." },
-                    almalyk: { name: "Capital Almalyk", text: "The primary political and trade hub. It housed the Khan's headquarters and the state mint." }
-                }
+                title: "Industry & Crisis", indT: "Resource Backbone", indD: "Kazakhstan became the USSR's main 'forge'. Oil, copper, and coal extraction grew, but 90% of output went to the center.",
+                stat1: "Export of raw materials", stat2: "#1 in Chrome", chartTitle: "Eco-Hazard Levels",
+                aralT: "Aral Sea Tragedy", aralD: "Uncontrolled irrigation led to the sea drying up. Salt storms covered thousands of kilometers.",
+                polyT: "Semipalatinsk", polyD: "456 nuclear tests. Kazakhstan became a hostage to the arms race and radiation.",
+                labels: ['Aral', 'Radiation', 'Air', 'Soil']
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('mapCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 500;
-            drawMap();
-        }
-
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            // 1. Zhetysu (Northern Domain - Greenish)
-            ctx.beginPath();
-            ctx.moveTo(100 * scale, 200 * scale);
-            ctx.lineTo(450 * scale, 50 * scale);
-            ctx.lineTo(600 * scale, 200 * scale);
-            ctx.lineTo(350 * scale, 300 * scale);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.1)';
-            ctx.fill();
-            ctx.strokeStyle = '#059669';
-            ctx.lineWidth = 3 * scale;
-            ctx.stroke();
-
-            // 2. Kashgaria (Southern Domain - Amberish)
-            ctx.beginPath();
-            ctx.moveTo(350 * scale, 310 * scale);
-            ctx.lineTo(600 * scale, 210 * scale);
-            ctx.lineTo(750 * scale, 350 * scale);
-            ctx.lineTo(500 * scale, 450 * scale);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(245, 158, 11, 0.1)';
-            ctx.fill();
-            ctx.strokeStyle = '#d97706';
-            ctx.stroke();
-
-            // 3. Capital Node (Almalyk)
-            drawNode(480 * scale, 250 * scale, '#065f46', "ALMALYK", 18 * scale);
-
-            // Labels
-            ctx.fillStyle = '#064e3b';
-            ctx.font = 'bold 12px Montserrat';
-            ctx.fillText("ZHETYSU", 200 * scale, 150 * scale);
-            ctx.fillText("KASHGARIA", 550 * scale, 350 * scale);
-
-            // Instructions
-            ctx.fillStyle = 'rgba(6, 78, 59, 0.2)';
-            ctx.font = 'bold 10px Inter';
-            ctx.textAlign = 'center';
-            ctx.fillText("TAP ON DOMAINS OR CAPITAL", cx, 40 * scale);
-        }
-
-        function drawNode(x, y, color, label, size) {
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#064e3b';
-            ctx.font = 'bold 10px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x, y + size + 15);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const scale = canvas.width / 800;
-
-            let target = null;
-            // Area check (Simple bbox approach for reliability)
-            if (Math.sqrt((x - 480*scale)**2 + (y - 250*scale)**2) < 30) target = 'almalyk';
-            else if (y < 280 * scale) target = 'zhetysu';
-            else target = 'kashgar';
-
-            if (target) {
-                const info = translations[currentLang].regions[target];
-                document.getElementById('element-title').innerText = info.name;
-                document.getElementById('element-desc').innerText = info.text;
-                document.getElementById('info-display').style.borderColor = (target === 'almalyk' ? '#065f46' : (target === 'zhetysu' ? '#10b981' : '#d97706'));
-            }
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('element-title').innerText = t.elementTitleDefault;
-            document.getElementById('element-desc').innerText = t.elementDescDefault;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            
-            document.getElementById('t-dyn').innerText = t.tDyn;
-            document.getElementById('t-rel').innerText = t.tRel;
-            document.getElementById('t-soc').innerText = t.tSoc;
-
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c1-f').innerText = t.c1F;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c2-f').innerText = t.c2F;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c3-f').innerText = t.c3F;
-
-            document.getElementById('almalyk-t').innerText = t.almalykT;
-            document.getElementById('almalyk-d').innerText = t.almalykD;
-            document.getElementById('almalyk-tag').innerText = t.almalykTag;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-emerald-600 hover:bg-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('indT').innerText = t.indT;
+            document.getElementById('indD').innerText = t.indD;
+            document.getElementById('stat1').innerText = t.stat1;
+            document.getElementById('stat2').innerText = t.stat2;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            document.getElementById('aralT').innerText = t.aralT;
+            document.getElementById('aralD').innerText = t.aralD;
+            document.getElementById('polyT').innerText = t.polyT;
+            document.getElementById('polyD').innerText = t.polyD;
+            renderChart(t.labels);
         }
 
-        window.onload = () => { resizeCanvas(); setLang('ru'); };
-        window.onresize = resizeCanvas;
+        function renderChart(labels) {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('ecoChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'polarArea',
+                data: { labels: labels, datasets: [{ data: [95, 90, 75, 80], backgroundColor: ['#10b981CC', '#f43f5eCC', '#3b82f6CC', '#f59e0bCC'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { grid: { color: '#334155' }, ticks: { display: false } } } }
+            });
+        }
+        window.onload = () => setLang('ru');
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>

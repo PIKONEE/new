@@ -3,517 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Антропологический облик древних жителей Казахстана</title>
+    <title>Гражданская война и интервенция</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8f5f2; color: #2d2a28; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f1f5f9; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .lab-gradient {
-            background: linear-gradient(135deg, #f8f5f2 0%, #e5e0db 100%);
-        }
-
-        .museum-card {
-            background: white;
-            border-radius: 2rem;
-            border: 1px solid #d1ccc0;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-
-        .museum-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 60px -15px rgba(45, 42, 40, 0.1);
-            border-color: #a8a29e;
-        }
-
-        .lang-active {
-            background-color: #2d2a28;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-        }
-
-        .interactive-stage {
-            background: #ffffff;
-            border-radius: 2.5rem;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.03);
-            border: 1px solid #e5e0db;
-        }
-
-        canvas {
-            cursor: pointer;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.05));
-        }
-
-        .process-btn {
-            transition: all 0.3s ease;
-            border: 2px solid #e5e0db;
-        }
-        .process-btn.active {
-            background: #2d2a28;
-            color: white;
-            border-color: #2d2a28;
-        }
-
-        .trait-tag {
-            background: #f1f0ee;
-            padding: 4px 12px;
-            border-radius: 99px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #78716c;
-        }
+        .war-gradient { background: linear-gradient(135deg, #1e1b4b 0%, #450a0a 100%); }
     </style>
 </head>
-<body class="min-h-screen pb-20 lab-gradient">
+<body class="pb-20">
 
-<!-- Header (Strict text, no emoji) -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-stone-200 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-stone-800">Антропологический облик древних жителей Казахстана</h1>
-            <div class="flex bg-stone-100 p-1 rounded-xl border border-stone-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
-            </div>
+    <header class="war-gradient py-20 px-6 text-center shadow-2xl border-b border-red-900/50">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-black uppercase mb-4 tracking-tighter text-red-500">Гражданская война</h1>
+            <p class="text-xl font-light text-slate-300">Противостояние идеологий и иностранное вмешательство (1918–1920)</p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Section 1: Interactive Reconstruction (The Map) -->
-        <div class="interactive-stage p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-stone-800 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-nowrap">Scientific Method: M. Gerasimov</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-stone-900 leading-tight italic">Лицо сквозь время</h2>
-                    <p id="viz-desc" class="text-lg text-stone-600 font-light leading-relaxed">
-                        Узнайте, как ученые восстанавливают облик предков. Метод пластической реконструкции по черепу позволяет с точностью до 90% воссоздать черты лица.
-                    </p>
-                    
-                    <div class="flex flex-wrap gap-3">
-                        <button onclick="drawLayer('skull')" id="step-skull" class="process-btn active px-6 py-2 rounded-full text-xs font-bold uppercase">1. Череп</button>
-                        <button onclick="drawLayer('muscles')" id="step-muscles" class="process-btn px-6 py-2 rounded-full text-xs font-bold uppercase">2. Мышцы</button>
-                        <button onclick="drawLayer('final')" id="step-final" class="process-btn px-6 py-2 rounded-full text-xs font-bold uppercase">3. Облик</button>
-                    </div>
+    <main class="max-w-6xl mx-auto px-6 -mt-10 space-y-12">
+        <!-- Фронты -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-slate-900 p-6 rounded-3xl border border-red-900 shadow-xl">
+                <h4 class="text-red-500 font-bold mb-2 uppercase">Уральский фронт</h4>
+                <p class="text-xs text-slate-400 leading-relaxed font-semibold">Оборона Уральска (80 дней) против казачьих войск генерала Толстова.</p>
+            </div>
+            <div class="bg-slate-900 p-6 rounded-3xl border border-red-900 shadow-xl">
+                <h4 class="text-red-500 font-bold mb-2 uppercase">Актюбинский фронт</h4>
+                <p class="text-xs text-slate-400 leading-relaxed font-semibold">Ключевая артерия для снабжения Туркестана хлебом и топливом.</p>
+            </div>
+            <div class="bg-slate-900 p-6 rounded-3xl border border-red-900 shadow-xl">
+                <h4 class="text-red-500 font-bold mb-2 uppercase">Семиреченский фронт</h4>
+                <p class="text-xs text-slate-400 leading-relaxed font-semibold">Бои с карательными отрядами Анненкова. Черкасская оборона.</p>
+            </div>
+            <div class="bg-slate-900 p-6 rounded-3xl border border-red-900 shadow-xl">
+                <h4 class="text-red-500 font-bold mb-2 uppercase">Интервенция</h4>
+                <p class="text-xs text-slate-400 leading-relaxed font-semibold">Английские войска в Закаспии, Чехословацкий корпус на севере.</p>
+            </div>
+        </div>
 
-                    <div id="info-panel" class="p-8 rounded-[2rem] bg-stone-50 border-l-8 border-stone-800 shadow-sm transition-all duration-500">
-                        <h3 id="layer-title" class="text-xl font-bold text-stone-800 mb-3 uppercase">Основа: Череп</h3>
-                        <p id="layer-desc" class="text-stone-500 text-sm leading-relaxed italic">Череп — это биологический паспорт. Его форма и размеры (краниометрия) определяют посадку глаз, форму носа и ширину скул.</p>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-slate-800 p-10 rounded-[3rem] shadow-2xl border border-slate-700">
+                <h3 class="text-2xl font-black mb-6 uppercase text-white">Интенсивность боевых действий</h3>
+                <div class="h-[400px]">
+                    <canvas id="warIntensityChart"></canvas>
                 </div>
-                
-                <div class="lg:col-span-7 bg-stone-50 p-6 rounded-[3rem] flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="faceCanvas"></canvas>
-                    <div class="absolute top-8 right-10 text-[10px] text-stone-400 font-mono uppercase tracking-widest">Digital Reconstruction Lab</div>
+            </div>
+            <div class="bg-slate-800 p-10 rounded-[3rem] shadow-2xl border border-slate-700">
+                <h3 class="text-2xl font-black mb-6 uppercase text-white">Стороны конфликта (силы)</h3>
+                <div class="h-[400px]">
+                    <canvas id="forcesRadarChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Anthropological Content (The Plan) -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-stone-800 uppercase tracking-[0.4em]">Эволюция типов</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
-                <!-- Bronze Age (Andronovo) -->
-                <div class="museum-card p-10 flex flex-col justify-between border-t-8 border-stone-300">
+        <div class="bg-red-950 p-12 rounded-[4rem] border border-red-800 shadow-2xl relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="text-3xl font-black mb-8 uppercase text-red-400 text-center">Черкасская оборона (1918-1919)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
                     <div>
-                        <div class="flex gap-2 mb-4">
-                            <span class="trait-tag">Европеоидный</span>
-                            <span class="trait-tag">Массивный</span>
-                        </div>
-                        <h3 id="era1-t" class="text-xl font-bold mb-4 uppercase text-stone-800">Эпоха бронзы</h3>
-                        <p id="era1-d" class="text-stone-500 text-sm leading-relaxed">
-                            Жители (андроновцы) обладали ярко выраженными европеоидными чертами: резко профилированное лицо, высокий и широкий нос, глубоко посаженные глаза и долихокефальный (удлиненный) череп. Они были высокого роста и мощного телосложения.
-                        </p>
+                        <div class="text-4xl font-black text-white mb-2">12</div>
+                        <p class="text-xs uppercase font-bold text-red-200">Селений участвовало</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-black text-white mb-2">15 мес.</div>
+                        <p class="text-xs uppercase font-bold text-red-200">Длительность борьбы</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-black text-white mb-2">50 тыс.</div>
+                        <p class="text-xs uppercase font-bold text-red-200">Вражеская группировка</p>
                     </div>
                 </div>
-
-                <!-- Early Iron Age (Saka) -->
-                <div class="museum-card p-10 flex flex-col justify-between border-t-8 border-stone-500">
-                    <div>
-                        <div class="flex gap-2 mb-4">
-                            <span class="trait-tag">Метисный</span>
-                            <span class="trait-tag">Переходный</span>
-                        </div>
-                        <h3 id="era2-t" class="text-xl font-bold mb-4 uppercase text-stone-800">Раннее железо</h3>
-                        <p id="era2-d" class="text-stone-500 text-sm leading-relaxed">
-                            У сакских племен начинают проявляться первые монголоидные признаки (уплощение лица, выступающие скулы), но европеоидная основа сохраняется. Этот процесс смешения (метисации) наиболее заметен в Восточном и Северном Казахстане.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Huns and Sarmatians -->
-                <div class="museum-card p-10 flex flex-col justify-between border-t-8 border-stone-800">
-                    <div>
-                        <div class="flex gap-2 mb-4">
-                            <span class="trait-tag">Монголоидный</span>
-                            <span class="trait-tag">Брахикефалия</span>
-                        </div>
-                        <h3 id="era3-t" class="text-xl font-bold mb-4 uppercase text-stone-800">Эпоха Гуннов</h3>
-                        <p id="era3-d" class="text-stone-500 text-sm leading-relaxed">
-                            С приходом гуннов из Центральной Азии монголоидный компонент становится доминирующим. Лицо становится шире, нос менее выступающим, появляется эпикантус. Форма черепа меняется на брахикефальную (округлую).
-                        </p>
-                    </div>
-                </div>
-
             </div>
-
-            <!-- Full Width Deep Info: Science and Genetics -->
-            <div class="bg-stone-900 rounded-[4rem] p-10 md:p-20 shadow-2xl relative overflow-hidden text-white">
-                <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h3 id="feat-title" class="text-3xl font-black mb-8 uppercase italic tracking-widest text-stone-200">Генетический код нации</h3>
-                        <p id="feat-desc" class="text-stone-400 text-xl font-light leading-relaxed">
-                            Современные ДНК-исследования подтверждают: антропологический облик казахов формировался на стыке двух великих рас. Этот уникальный сплав обеспечил народу высокую биологическую адаптивность к условиям степи. Процесс формирования современного типа завершился к XIV–XV векам.
-                        </p>
-                    </div>
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="p-6 bg-white/5 rounded-3xl border border-white/10">
-                            <div id="sci-1-t" class="text-xs font-black mb-2 uppercase text-stone-500">Краниометрия</div>
-                            <div id="sci-1-d" class="text-sm font-medium text-stone-300 italic">Измерение параметров черепа для классификации популяций.</div>
-                        </div>
-                        <div class="p-6 bg-white/5 rounded-3xl border border-white/10">
-                            <div id="sci-2-t" class="text-xs font-black mb-2 uppercase text-stone-500">Одонтология</div>
-                            <div id="sci-2-d" class="text-sm font-medium text-stone-300 italic">Изучение строения зубов, которое помогает определить родство племен.</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute -bottom-20 -right-20 text-[20rem] opacity-5 font-black rotate-12">GENOME</div>
-            </div>
+            <div class="absolute -top-20 -left-20 text-[20rem] opacity-5 pointer-events-none font-black">⚔️</div>
         </div>
-
     </main>
 
-    <footer class="mt-20 py-24 bg-stone-100 border-t border-stone-200 text-center text-stone-400">
-        <div class="max-w-4xl mx-auto px-6">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight">
-                «Лица древних жителей Казахстана — это открытая книга истории, где каждый штрих скул и изгиб носа рассказывает о великих миграциях и слиянии миров.»
-            </p>
-            <div class="mt-12 text-[10px] uppercase font-bold tracking-[1em]">Anthropology & History Project 2024</div>
-        </div>
-    </footer>
-
     <script>
-        const translations = {
-            ru: {
-                title: "Антропологический облик древних жителей Казахстана",
-                vizTitle: "Лицо сквозь время",
-                vizDesc: "Узнайте, как ученые восстанавливают облик предков по черепу с помощью метода М. Герасимова. Нажмите на этапы, чтобы увидеть прогресс.",
-                badge: "Метод М. Герасимова",
-                layerTitle: { skull: "Основа: Череп", muscles: "Второй этап: Мышцы", final: "Завершение: Облик" },
-                layerDesc: { 
-                    skull: "Череп — это биологический паспорт. Его размеры определяют посадку глаз, форму носа и ширину скул.", 
-                    muscles: "Нанесение мягких тканей по специальным маркерам толщины. Герасимов выявил закономерности связи кости и плоти.", 
-                    final: "Конечный результат: добавление кожи, волос и характерных черт, присущих эпохе и культуре." 
-                },
-                planTitle: "Эволюция типов",
-                era1T: "Эпоха бронзы", era1D: "Яркие европеоидные черты: высокое лицо, сильно выступающий нос, массивное телосложение (Андроновская культура).",
-                era2T: "Раннее железо", era2D: "Начало метисации. У саков появляются монголоидные черты при сохранении европеоидного фундамента.",
-                era3T: "Эпоха Гуннов", era3D: "Приток племен из глубин Азии усиливает монголоидность. Лицо становится более плоским, появляется брахикефалия.",
-                featTitle: "Генетический код нации",
-                featDesc: "Антропологический облик казахов — это уникальный результат тысячелетних встреч Востока и Запада в сердце Евразии.",
-                sci1T: "Краниометрия", sci1D: "Точные измерения черепа для выявления расовых и этнических различий.",
-                sci2T: "Одонтология", sci2D: "Анализ зубов — один из самых надежных способов отследить миграции предков.",
-                footer: "«Лица древних жителей Казахстана — это открытая книга истории, где каждый штрих рассказывает о слиянии миров.»"
+        // График интенсивности (Bar)
+        new Chart(document.getElementById('warIntensityChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Лето 1918', 'Осень 1918', 'Зима 1919', 'Лето 1919', 'Весна 1920'],
+                datasets: [{
+                    label: 'Масштаб столкновений (условные единицы)',
+                    data: [40, 75, 95, 85, 30],
+                    backgroundColor: '#dc2626',
+                    borderRadius: 15
+                }]
             },
-            kz: {
-                title: "Қазақстанның ежелгі тұрғындарының антропологиялық келбеті",
-                vizTitle: "Уақыт бейнесі",
-                vizDesc: "М. Герасимов әдісі арқылы бас сүйек бойынша ежелгі ата-бабалардың келбетін қалпына келтіру жолын зерттеңіз.",
-                badge: "М. Герасимов әдісі",
-                layerTitle: { skull: "Негіз: Бас сүйек", muscles: "Екінші кезең: Бұлшықет", final: "Аяқталу: Келбет" },
-                layerDesc: { 
-                    skull: "Бас сүйек — бұл биологиялық паспорт. Оның өлшемдері көздің орналасуын, мұрын пішінін анықтайды.", 
-                    muscles: "Жұмсақ тіндерді қалыңдық маркерлері бойынша салу. Сүйек пен тіннің байланыс заңдылықтары ескеріледі.", 
-                    final: "Соңғы нәтиже: тері, шаш және дәуірге тән ерекше белгілерді қосу арқылы бейнені қалпына келтіру." 
-                },
-                planTitle: "Типтердің эволюциясы",
-                era1T: "Қола дәуірі", era1D: "Айқын еуропеоидтық белгілер: биік бет, қатты шығыңқы мұрын, ірі дене бітімі (Андронов мәдениеті).",
-                era2T: "Ерте темір", era2D: "Метисацияның басталуы. Сақтарда еуропеоидтық негіз сақтала отырып, монголоидтық белгілер пайда бола бастайды.",
-                era3T: "Ғұндар дәуірі", era3D: "Азия тереңінен келген тайпалар монголоидтық компонентті күшейтеді. Бет жазықталып, брахикефалия дамиды.",
-                featTitle: "Ұлттың генетикалық коды",
-                featDesc: "Қазақтардың антропологиялық келбеті — Еуразия төріндегі Шығыс пен Батыстың мыңжылдық тоғысуының бірегей нәтижесі.",
-                sci1T: "Краниометрия", sci1D: "Нәсілдік және этникалық айырмашылықтарды анықтау үшін бас сүйекті дәл өлшеу.",
-                sci2T: "Одонтология", sci2D: "Тістерді талдау — ата-баба миграциясын қадағалаудың ең сенімді тәсілдерінің бірі.",
-                footer: "«Қазақстанның ежелгі тұрғындарының жүздері — әлемдердің тоғысуын баяндайтын тарихтың ашық кітабы.»"
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: '#334155' } } } }
+        });
+
+        // Радар сил (Radar)
+        new Chart(document.getElementById('forcesRadarChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Численность', 'Вооружение', 'Снабжение', 'Дисциплина', 'Поддержка населения'],
+                datasets: [
+                    {
+                        label: 'Красная Армия',
+                        data: [90, 60, 70, 85, 80],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)'
+                    },
+                    {
+                        label: 'Белое Движение',
+                        data: [70, 95, 90, 65, 30],
+                        borderColor: '#cbd5e1',
+                        backgroundColor: 'rgba(203, 213, 225, 0.2)'
+                    }
+                ]
             },
-            en: {
-                title: "Anthropological Appearance of Ancient Kazakhstan Residents",
-                vizTitle: "Face Through Time",
-                vizDesc: "Discover how scientists restore ancestors' looks using M. Gerasimov's facial reconstruction method. Click stages to see progress.",
-                badge: "M. Gerasimov Method",
-                layerTitle: { skull: "Foundation: Skull", muscles: "Phase Two: Muscles", final: "Completion: Portrait" },
-                layerDesc: { 
-                    skull: "The skull is a biological passport. Its dimensions determine eye placement, nose shape, and cheekbone width.", 
-                    muscles: "Applying soft tissues using thickness markers. Gerasimov identified patterns linking bone and flesh.", 
-                    final: "Final result: adding skin, hair, and specific features characteristic of the era and culture." 
-                },
-                planTitle: "Evolution of Types",
-                era1T: "Bronze Age", era1D: "Clear Caucasoid features: high face, prominent nose, massive build (Andronovo culture).",
-                era2T: "Early Iron Age", era2D: "Start of mestization. Saka tribes show early Mongoloid traits while maintaining a Caucasoid foundation.",
-                era3T: "Hunnic Era", era3D: "Tribes from deep Asia increase the Mongoloid component. Faces flatten, and brachycephaly emerges.",
-                featTitle: "National Genetic Code",
-                featDesc: "The anthropological appearance of Kazakhs is a unique result of a millennia-long encounter between East and West.",
-                sci1T: "Craniometry", sci1D: "Precise skull measurements to identify racial and ethnic differences.",
-                sci2T: "Odontology", sci2D: "Dental analysis is one of the most reliable ways to track ancestral migrations.",
-                footer: "«The faces of ancient Kazakhstan residents are an open book of history, where every trait tells of merging worlds.»"
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: {
+                    r: { grid: { color: '#334155' }, angleLines: { color: '#334155' }, ticks: { display: false } }
+                }
             }
-        };
-
-        let currentLang = 'ru';
-        const canvas = document.getElementById('faceCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = 500;
-            drawLayer('skull');
-        }
-
-        function drawLayer(layer) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.height / 600;
-
-            // Reset buttons
-            ['skull', 'muscles', 'final'].forEach(l => {
-                document.getElementById(`step-${l}`).className = "process-btn px-6 py-2 rounded-full text-xs font-bold uppercase";
-            });
-            document.getElementById(`step-${layer}`).className = "process-btn active px-6 py-2 rounded-full text-xs font-bold uppercase";
-
-            // Update text panel
-            document.getElementById('layer-title').innerText = translations[currentLang].layerTitle[layer];
-            document.getElementById('layer-desc').innerText = translations[currentLang].layerDesc[layer];
-
-            // Canvas Drawing Logic (Abstract representation)
-            ctx.lineWidth = 3;
-            
-            // 1. Skull Layer (Always as base)
-            ctx.beginPath();
-            ctx.ellipse(cx, cy - 20*scale, 100*scale, 130*scale, 0, 0, Math.PI * 2);
-            ctx.strokeStyle = layer === 'skull' ? '#2d2a28' : '#d1ccc0';
-            ctx.stroke();
-            // Jaw
-            ctx.beginPath();
-            ctx.moveTo(cx - 70*scale, cy + 50*scale);
-            ctx.quadraticCurveTo(cx, cy + 150*scale, cx + 70*scale, cy + 50*scale);
-            ctx.stroke();
-
-            if (layer === 'muscles' || layer === 'final') {
-                // 2. Muscles / Flesh outlines
-                ctx.beginPath();
-                ctx.ellipse(cx, cy - 20*scale, 115*scale, 145*scale, 0, 0, Math.PI * 2);
-                ctx.strokeStyle = layer === 'muscles' ? '#2d2a28' : '#d1ccc0';
-                ctx.stroke();
-                // Nose line
-                ctx.beginPath();
-                ctx.moveTo(cx, cy - 40*scale);
-                ctx.lineTo(cx, cy + 20*scale);
-                ctx.stroke();
-            }
-
-            if (layer === 'final') {
-                // 3. Final Skin & Hair
-                ctx.fillStyle = 'rgba(45, 42, 40, 0.1)';
-                ctx.beginPath();
-                ctx.ellipse(cx, cy - 20*scale, 120*scale, 150*scale, 0, 0, Math.PI * 2);
-                ctx.fill();
-                // Hair line
-                ctx.beginPath();
-                ctx.moveTo(cx - 120*scale, cy - 50*scale);
-                ctx.quadraticCurveTo(cx, cy - 200*scale, cx + 120*scale, cy - 50*scale);
-                ctx.strokeStyle = '#2d2a28';
-                ctx.stroke();
-            }
-            
-            // Marker Points (Lab look)
-            ctx.fillStyle = '#ef4444';
-            [ {x:cx, y:cy-20*scale}, {x:cx-60*scale, y:cy}, {x:cx+60*scale, y:cy}, {x:cx, y:cy+100*scale} ].forEach(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
-                ctx.fill();
-            });
-        }
-
-        function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('era1-t').innerText = t.era1T; document.getElementById('era1-d').innerText = t.era1D;
-            document.getElementById('era2-t').innerText = t.era2T; document.getElementById('era2-d').innerText = t.era2D;
-            document.getElementById('era3-t').innerText = t.era3T; document.getElementById('era3-d').innerText = t.era3D;
-            document.getElementById('feat-title').innerText = t.featTitle;
-            document.getElementById('feat-desc').innerText = t.featDesc;
-            document.getElementById('sci-1-t').innerText = t.sci1T; document.getElementById('sci-1-d').innerText = t.sci1D;
-            document.getElementById('sci-2-t').innerText = t.sci2T; document.getElementById('sci-2-d').innerText = t.sci2D;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang ? "px-6 py-2 rounded-lg text-sm font-black lang-active" : "px-6 py-2 rounded-lg text-sm font-bold text-stone-500 hover:text-stone-800 transition-all";
-            });
-
-            drawLayer('skull');
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        window.onload = () => {
-            resizeCanvas();
-            setLang('ru');
-        }
+        });
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>

@@ -3,421 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Государство Кангюй</title>
+    <title>Казахстан в период Октябрьской революции</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fdfcfb; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .oasis-gradient {
-            background: linear-gradient(135deg, #e0f2fe 0%, #fff7ed 100%);
+        .october-theme {
+            background: linear-gradient(to bottom right, #fef2f2, #f1f5f9);
         }
 
-        .citadel-card {
+        .soviet-card {
             background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(8px);
-            border-radius: 2rem;
-            border: 1px solid #0ea5e9;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #991b1b;
+            box-shadow: 0 10px 30px -5px rgba(153, 27, 27, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .citadel-card:hover {
+        .soviet-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.2);
-            border-color: #f59e0b;
+            border-color: #dc2626;
         }
 
-        .lang-active {
-            background-color: #0369a1;
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(3, 105, 161, 0.3);
+        .revolutionary-glow {
+            box-shadow: 0 0 25px rgba(153, 27, 27, 0.2);
         }
 
-        .accent-terracotta {
-            background-color: #9a3412;
+        .btn-active {
+            background-color: #991b1b;
             color: white;
+            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.3);
         }
 
         canvas {
-            filter: drop-shadow(0 10px 20px rgba(3, 105, 161, 0.1));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
     </style>
 </head>
-<body class="oasis-gradient text-slate-900 min-h-screen">
+<body class="october-theme text-slate-900 min-h-screen">
 
-<!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-sky-100 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-red-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <span class="text-4xl"></span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tight text-sky-900">Кангюи: Власть на Сырдарье</h1>
+                <span class="text-3xl">🚩</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-red-900">Октябрь 1917</h1>
             </div>
-            <div class="flex bg-sky-50 p-1 rounded-2xl border border-sky-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            <div class="flex bg-red-100/50 p-1 rounded-full border border-red-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: Map (Strategic Visualization) -->
-        <div class="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl border border-sky-50 relative overflow-hidden">
-            <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-100/50 rounded-full blur-3xl"></div>
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block bg-sky-600 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">Silk Road Hub</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-sky-950 leading-tight italic">Геополитика Кангюев</h2>
-                    <p id="viz-desc" class="text-lg text-slate-600 font-light leading-relaxed">
-                        Кангюи занимали территорию Южного Казахстана. Их могущество основывалось на контроле над городами и 5 зависимыми владениями.
-                    </p>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-sky-600 text-2xl">🏙️</span>
-                            <span id="loc1" class="font-bold">Битянь — столица государства</span>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <span class="text-amber-600 text-2xl">🛣️</span>
-                            <span id="loc2" class="font-bold">Контроль северной ветви Шелкового пути</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="lg:col-span-7 h-80 md:h-[450px]">
-                    <canvas id="influenceChart"></canvas>
+        <!-- Section 1: Detailed Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-red-800 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Great Turning Point</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase text-red-900">Крах старого мира</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    Октябрьский переворот в Петрограде отозвался в Казахстане борьбой за каждый город. Процесс установления советской власти растянулся на 4 месяца, столкнув сторонников «диктатуры пролетариата» и сторонников национальной автономии.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="establishmentChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Plan (Structure Cards) -->
-        <div class="space-y-10">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-sky-900 uppercase tracking-[0.2em]">Устройство Державы</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-11 gap-8">
-                
-                <!-- Card: 5 Principalities -->
-                <div class="lg:col-span-6 accent-terracotta p-10 rounded-[3rem] shadow-xl flex flex-col justify-between relative overflow-hidden">
-                    <div class="relative z-10">
-                        <div class="text-6xl mb-6">🏯</div>
-                        <h3 id="c1-t" class="text-3xl font-black mb-6 uppercase italic">5 владений</h3>
-                        <p id="c1-d" class="text-orange-50/80 text-lg font-light leading-relaxed">
-                            Государство делилось на 5 уделов, управляемых малыми ханами. Это позволяло гибко контролировать как кочевые племена, так и богатые оазисы.
-                        </p>
-                    </div>
-                    <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5 pointer-events-none rotate-12">🖐️</div>
+        <!-- Section 2: Chronology Focus -->
+        <div class="bg-red-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl revolutionary-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">🗓️</div>
+                    <div id="chrono-label" class="text-red-300 font-black text-sm uppercase tracking-[0.3em]">Critical Timeline</div>
                 </div>
-
-                <!-- Card: Population -->
-                <div class="lg:col-span-5 citadel-card p-10 flex flex-col justify-center">
-                    <div class="text-5xl mb-6">👥</div>
-                    <h3 id="c2-t" class="text-2xl font-bold mb-4 uppercase text-sky-900">Численность</h3>
-                    <p id="c2-d" class="text-slate-600 text-sm leading-relaxed">
-                        Китайские источники оценивают население кангюев в 600 тысяч человек. У них была сильная армия из 120 тысяч конных воинов.
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="chrono-title" class="text-3xl font-black tracking-tight uppercase text-red-200">Хроника власти</h3>
+                    <p id="chrono-desc" class="text-xl text-red-50 font-light leading-relaxed">
+                        Октябрь 1917: Перовск (Кызылорда) — первый советский город. Ноябрь 1917: Победа в Ташкенте. Январь 1918: Установление власти в Оренбурге после боев с Дутовым. Март 1918: Советская власть дошла до Верного (Алматы).
                     </p>
                 </div>
+            </div>
+            <div class="absolute -top-10 -right-10 text-[15rem] opacity-5 pointer-events-none rotate-12">⚔️</div>
+        </div>
 
-                <!-- Card: Diplomacy -->
-                <div class="lg:col-span-5 citadel-card p-10 flex flex-col justify-center border-l-8 border-sky-700">
-                    <div class="text-5xl mb-6">🤝</div>
-                    <h3 id="c3-t" class="text-2xl font-bold mb-4 uppercase text-sky-900">Внешняя политика</h3>
-                    <p id="c3-d" class="text-slate-600 text-sm leading-relaxed">
-                        Кангюи были союзниками гуннов и часто выступали против экспансии Китая, защищая свою независимость и торговые интересы.
-                    </p>
-                </div>
-
-                <!-- Card: Capital -->
-                <div class="lg:col-span-6 bg-sky-900 p-10 rounded-[3rem] text-white flex items-center space-x-8">
-                    <div class="text-7xl shrink-0">🏛️</div>
-                    <div>
-                        <h3 id="c4-t" class="text-2xl font-bold mb-4 uppercase italic">Столица Битянь</h3>
-                        <p id="c4-d" class="text-sky-100/70 text-sm leading-relaxed">
-                            Главный город кангюев находился в долине реки Талас. Он был не только политическим, но и культурным центром всей Сырдарьинской долины.
-                        </p>
-                    </div>
-                </div>
-
+        <!-- Section 3: Deep Dive into Forces -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-700">
+                <div class="text-5xl mb-4">⚒️</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Советы и Декреты</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">Большевики опирались на Декрет о мире и Декрет о земле. Это обеспечило им поддержку солдат и безземельных жатаков, уставших от войны и колониализма.</p>
+            </div>
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-900">
+                <div class="text-5xl mb-4">🦅</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Алаш-Орда</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">На декабрьском съезде 1917 года была провозглашена Алашская автономия. Лидеры Алаш не признали СНК Ленина, считая их диктатурой одной партии.</p>
+            </div>
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-slate-800">
+                <div class="text-5xl mb-4">⛓️</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Противостояние</h4>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">Установление власти Советов часто сопровождалось разгоном местных земств и казахских комитетов, что стало прологом к масштабной Гражданской войне.</p>
             </div>
         </div>
 
     </main>
 
-    <footer class="mt-20 py-24 bg-sky-950 text-sky-400/50">
+    <footer class="mt-20 py-20 bg-slate-900 text-slate-400">
         <div class="max-w-4xl mx-auto px-6 text-center">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-white/90">
-                «Кангюи были архитекторами торговой стабильности, превратившими долину Сырдарьи в несокрушимый щит Великого Шелкового пути.»
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Октябрь 1917 года расколол казахское общество на два лагеря: одни искали спасения в мировой революции, другие — в национальной государственности».
             </p>
-            <div class="mt-12 flex justify-center space-x-2">
-                <div class="w-2 h-2 rounded-full bg-sky-500"></div>
-                <div class="w-16 h-2 rounded-full bg-sky-700"></div>
-                <div class="w-2 h-2 rounded-full bg-sky-500"></div>
-            </div>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-red-800">October Revolution Impact on Kazakhstan</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Кангюи: Власть на Сырдарье",
-                vizTitle: "Геополитика Кангюев",
-                vizDesc: "Государство кангюев основывалось на контроле над оазисами Южного Казахстана и управлении пятью полузависимыми владениями.",
-                badge: "Узел Шелкового пути",
-                loc1: "Битянь — столица государства", loc2: "Контроль северной ветви пути",
-                planTitle: "Устройство Державы",
-                c1T: "5 владений", c1D: "Государство делилось на 5 уделов, управляемых малыми ханами. Это позволяло контролировать как города, так и степи.",
-                c2T: "Численность", c2D: "Население достигало 600 тысяч человек. Мощная армия из 120 тысяч воинов была грозной силой в регионе.",
-                c3T: "Внешняя политика", c3D: "Союз с гуннами и успешное противостояние Китаю позволили кангюям сохранить суверенитет на века.",
-                c4T: "Столица Битянь", c4D: "Центральный город в долине Таласа. Был культурным мостом между восточными и западными цивилизациями.",
-                footer: "«Кангюи были архитекторами торговой стабильности, превратившими долину Сырдарьи в щит Великого Шелкового пути.»",
-                chartLabels: ["Торговля", "Армия", "Дипломатия", "Ирригация", "Градостроение"],
-                chartTitle: "Интеграция ресурсов Кангюев"
+                title: "Октябрь 1917",
+                vizTitle: "Крах старого мира",
+                vizDesc: "Установление Советской власти в Казахстане заняло период с октября 1917 г. по март 1918 г. Основными методами стали политическая агитация и вооруженное подавление сопротивления.",
+                statusBadge: "Великий перелом",
+                chronoTitle: "Хроника власти Советов",
+                chronoDesc: "Власть переходила к Советам поэтапно: Перовск (октябрь), Ташкент (ноябрь), Букеевская Орда (декабрь), Оренбург (январь), Верный (март).",
+                fact1T: "Советы и Декреты", fact1D: "Декрет 'О праве народов на самоопределение' стал мощным оружием большевиков, хотя на практике он часто игнорировался местными советами.",
+                fact2T: "Альтернатива Алаш", fact2D: "В декабре 1917 г. в Оренбурге II съезд казахов провозгласил автономию Алаш, чтобы защитить народ от анархии и гражданской войны.",
+                fact3T: "Социальный раскол", fact3D: "Революция разделила аул: часть молодежи и бедноты поддержала красных, в то время как элита и духовенство сплотились вокруг Алаш.",
+                footer: "«Октябрь 1917 года расколол казахское общество на два лагеря: одни искали спасения в мировой революции, другие — в национальной государственности».",
+                chartLabels: ["Октябрь-Ноябрь 1917", "Декабрь 1917", "Январь-Февраль 1918", "Март 1918"],
+                chartTitle: "Темпы установления власти Советов (регионы)"
             },
             kz: {
-                title: "Қаңлылар: Сырдария билігі",
-                vizTitle: "Қаңлылар геосаясаты",
-                vizDesc: "Қаңлы мемлекеті Оңтүстік Қазақстанның шұраттарын бақылауға және бес тәуелді иелікті басқаруға негізделді.",
-                badge: "Жібек жолының торабы",
-                loc1: "Битянь — мемлекет астанасы", loc2: "Жолдың солтүстік тармағын бақылау",
-                planTitle: "Мемлекет құрылымы",
-                c1T: "5 иелік", c1D: "Мемлекет бес иелікке бөлініп, оларды кіші хандар басқарды. Бұл қалалар мен даланы тиімді бақылауға мүмкіндік берді.",
-                c2T: "Халық саны", c2D: "Халық саны 600 мың адамға жеткен. 120 мың жауынгерден тұратын қуатты әскер аймақтағы ірі күш болды.",
-                c3T: "Сыртқы саясат", c3D: "Ғұндармен одақ құру және Қытайға сәтті қарсы тұру қаңлылардың егемендігін ғасырлар бойы сақтады.",
-                c4T: "Битянь астанасы", c4D: "Талас алқабындағы орталық қала. Шығыс пен Батыс өркениеттері арасындағы мәдени көпір болды.",
-                footer: "«Қаңлылар Сырдария алқабын Жібек жолының мызғымас қалқанына айналдырған сауда тұрақтылығының сәулетшілері болды.»",
-                chartLabels: ["Сауда", "Әскер", "Дипломатия", "Суару", "Қала салу"],
-                chartTitle: "Қаңлы ресурстарының интеграциясы"
+                title: "Қазан 1917",
+                vizTitle: "Ескі әлемнің күйреуі",
+                vizDesc: "Қазақстанда Кеңес өкіметінің орнауы 1917 жылдың қазанынан 1918 жылдың наурызына дейінгі кезеңді қамтыды. Негізгі әдістер — саяси үгіт-насихат және қарулы күрес болды.",
+                statusBadge: "Ұлы бетбұрыс",
+                chronoTitle: "Кеңес билігінің хроникасы",
+                chronoDesc: "Билік Кеңестерге кезең-кезеңмен өтті: Перовск (қазан), Ташкент (қараша), Бөкей Ордасы (желтоқсан), Орынбор (қаңтар), Верный (наурыз).",
+                fact1T: "Кеңестер мен Декреттер", fact1D: "«Халықтардың өзін-өзі билеу құқығы» туралы декрет большевиктердің қуатты қаруы болды, бірақ іс жүзінде ол жиі орындалмады.",
+                fact2T: "Алаш баламасы", fact2D: "1917 ж. желтоқсанда Орынборда өткен II съезд халықты азаматтық соғыстан қорғау үшін Алаш автономиясын жариялады.",
+                fact3T: "Әлеуметтік жіктелу", fact3D: "Төңкеріс ауылды екіге бөлді: кедейлер мен жастардың бір бөлігі қызылдарды қолдаса, зиялылар мен дінбасылар Алаш төңірегіне топтасты.",
+                footer: "«1917 жылғы Қазан төңкерісі қазақ қоғамын екіге бөлді: бірі әлемдік революциядан, екіншісі ұлттық мемлекеттіліктен құтқару іздеді».",
+                chartLabels: ["Қазан-Қараша 1917", "Желтоқсан 1917", "Қаңтар-Ақпан 1918", "Наурыз 1918"],
+                chartTitle: "Кеңес өкіметінің орнау қарқыны (аймақтар)"
             },
             en: {
-                title: "Kangju: Power on Syr Darya",
-                vizTitle: "Kangju Geopolitics",
-                vizDesc: "The Kangju state was based on control over the oases of South Kazakhstan and managing five semi-dependent principalities.",
-                badge: "Silk Road Hub",
-                loc1: "Bityan — the state capital", loc2: "Control of the northern route",
-                planTitle: "State Structure",
-                c1T: "5 Principalities", c1D: "The state was divided into 5 regions ruled by lesser khans, allowing control over both cities and the steppes.",
-                c2T: "Population", c2D: "The population reached 600,000. A powerful army of 120,000 warriors was a formidable force in the region.",
-                c3T: "Foreign Policy", c3D: "Alliance with the Huns and successful resistance to China allowed Kangju to maintain sovereignty for centuries.",
-                c4T: "Bityan Capital", c4D: "The central city in the Talas valley. It was a cultural bridge between Eastern and Western civilizations.",
-                footer: "«The Kangju were architects of trade stability, turning the Syr Darya valley into a shield of the Silk Road.»",
-                chartLabels: ["Trade", "Army", "Diplomacy", "Irrigation", "Urbanization"],
-                chartTitle: "Kangju Resource Integration"
+                title: "October 1917",
+                vizTitle: "Collapse of Old World",
+                vizDesc: "The establishment of Soviet power in Kazakhstan lasted from October 1917 to March 1918. The methods included political agitation and the armed suppression of opponents.",
+                statusBadge: "The Great Turning Point",
+                chronoTitle: "Soviet Power Chronology",
+                chronoDesc: "Power shifted to Soviets in stages: Perovsk (October), Tashkent (November), Bukey Horde (December), Orenburg (January), Vernyi (March).",
+                fact1T: "Soviets & Decrees", fact1D: "The 'Decree on the Rights of Peoples' was a potent tool for the Bolsheviks, although often ignored by local councils in practice.",
+                fact2T: "Alash Alternative", fact2D: "In December 1917, the 2nd All-Kazakh Congress proclaimed Alash Autonomy to protect the people from growing anarchy and civil war.",
+                fact3T: "Social Split", fact3D: "The revolution divided the village: part of the youth and poor supported the Reds, while the elite and clergy united around Alash.",
+                footer: "«October 1917 split Kazakh society: some sought salvation in global revolution, others in national statehood.»",
+                chartLabels: ["Oct-Nov 1917", "Dec 1917", "Jan-Feb 1918", "March 1918"],
+                chartTitle: "Soviet Power Establishment Pace (regions)"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('influenceChart').getContext('2d');
+            const ctx = document.getElementById('establishmentChart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'radar',
+                type: 'line',
                 data: {
                     labels: translations[lang].chartLabels,
                     datasets: [{
-                        label: 'Capacity',
-                        data: [100, 90, 85, 80, 75],
-                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
-                        borderColor: '#0284c7',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#0ea5e9',
-                        pointRadius: 5
+                        label: '% of Territory',
+                        data: [15, 40, 85, 100],
+                        borderColor: '#991b1b',
+                        backgroundColor: 'rgba(153, 27, 27, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 5,
+                        pointRadius: 8,
+                        pointBackgroundColor: '#fff'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        r: {
-                            angleLines: { color: 'rgba(14, 165, 233, 0.1)' },
-                            grid: { color: 'rgba(14, 165, 233, 0.1)' },
-                            pointLabels: {
-                                color: '#0369a1',
-                                font: { family: 'Inter', size: 12, weight: 'bold' }
-                            },
-                            ticks: { display: false },
-                            beginAtZero: true,
-                            max: 100
-                        }
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
                     },
                     plugins: {
                         legend: { display: false },
-                        title: { display: true, text: translations[lang].chartTitle, color: '#0369a1', font: { family: 'Montserrat', size: 16 } }
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
                     }
                 }
             });
         }
 
-        function setLang(lang) {
+        function changeLang(lang) {
             const t = translations[lang];
             document.getElementById('main-title').innerText = t.title;
             document.getElementById('viz-title').innerText = t.vizTitle;
             document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('loc1').innerText = t.loc1;
-            document.getElementById('loc2').innerText = t.loc2;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
-            document.getElementById('footer-text').innerText = t.footer;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('chrono-title').innerText = t.chronoTitle;
+            document.getElementById('chrono-desc').innerText = t.chronoDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-xl text-sm font-bold text-sky-600 hover:bg-sky-100 transition-all";
+                if(btn) btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-red-800 hover:bg-red-50 transition-all";
             });
 
             initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
+        window.onload = () => changeLang('ru');
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>

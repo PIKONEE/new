@@ -346,6 +346,10 @@ class MainWindow(QMainWindow):
         self.current_screen = 'subjects'
         template_path = os.path.join(CONTENT_ROOT, 'templates', 'subjects_screen.html')
 
+
+        if hasattr(self, 'btn_back_overlay'):
+            self.btn_back_overlay.hide()
+
         print(f"   Путь: {template_path}")
         print(f"   Существует: {os.path.exists(template_path)}")
 

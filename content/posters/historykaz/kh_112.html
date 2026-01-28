@@ -3,421 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хозяйство и быт уйсунов</title>
+    <title>Казахстан в период Октябрьской революции</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f7f3f0; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .earth-gradient {
-            background: linear-gradient(135deg, #efeae6 0%, #d6d3d1 100%);
+        .october-theme {
+            background: linear-gradient(to bottom right, #fef2f2, #f1f5f9);
         }
 
-        .premium-card {
-            background: white;
-            border-radius: 3rem;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            border: 1px solid rgba(120, 113, 108, 0.1);
+        .soviet-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #991b1b;
+            box-shadow: 0 10px 30px -5px rgba(153, 27, 27, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .premium-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 40px 80px -20px rgba(68, 64, 60, 0.15);
+        .soviet-card:hover {
+            transform: translateY(-5px);
+            border-color: #dc2626;
         }
 
-        .lang-active {
-            background-color: #44403c;
+        .revolutionary-glow {
+            box-shadow: 0 0 25px rgba(153, 27, 27, 0.2);
+        }
+
+        .btn-active {
+            background-color: #991b1b;
             color: white;
-            box-shadow: 0 10px 20px -5px rgba(68, 64, 60, 0.4);
-        }
-
-        .accent-green {
-            background-color: #064e3b;
-            color: white;
+            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.3);
         }
 
         canvas {
-            filter: drop-shadow(0 15px 25px rgba(68, 64, 60, 0.1));
-        }
-
-        /* Анимация появления */
-        .fade-in {
-            animation: fadeIn 0.8s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
     </style>
 </head>
-<body class="earth-gradient text-stone-900 min-h-screen">
+<body class="october-theme text-slate-900 min-h-screen">
 
-<!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-stone-200 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-red-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <span class="text-4xl">🐎</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-stone-800">Уйсуны: Быт и Труд</h1>
+                <span class="text-3xl">🚩</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-red-900">Октябрь 1917</h1>
             </div>
-            <div class="flex bg-stone-200/50 p-1 rounded-2xl border border-stone-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            <div class="flex bg-red-100/50 p-1 rounded-full border border-red-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16 fade-in">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: The Wealth Map (Visual Analytics) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div class="lg:col-span-5 space-y-8">
-                <div id="badge" class="inline-block bg-stone-800 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.2em]">Asset Portfolio</div>
-                <h2 id="viz-title" class="text-4xl md:text-5xl font-black text-stone-900 leading-none">Ресурсы Державы</h2>
-                <p id="viz-desc" class="text-xl text-stone-600 font-light leading-relaxed">
-                    Хозяйство уйсунов базировалось на четырех видах скота, но именно лошади определяли статус и мощь рода. Земледелие в предгорьях обеспечивало стабильность.
+        <!-- Section 1: Visualization (Establishment methods) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-red-800 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Transfer of Power</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase text-red-900">Пути установления власти</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    Установление советской власти в Казахстане (октябрь 1917 — март 1918) проходило по-разному: мирным путем в промышленных центрах и через вооруженную борьбу в казачьих регионах.
                 </p>
-                <div class="flex flex-col space-y-3">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-12 h-1 bg-stone-800 rounded-full"></div>
-                        <span id="viz-stat" class="text-xs uppercase font-black text-stone-400 tracking-widest">Statistical Distribution</span>
-                    </div>
-                </div>
             </div>
-            <div class="lg:col-span-7 h-96 md:h-[500px]">
-                <canvas id="assetChart"></canvas>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="victoryChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <!-- Section 2: Daily Life (The Plan) -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-stone-800 uppercase tracking-[0.3em]">Основы быта</h2>
-            
-            <!-- Featured Large Card: Horses -->
-            <div class="accent-green p-10 md:p-20 rounded-[4rem] shadow-2xl relative overflow-hidden">
-                <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <div class="text-7xl mb-8">🏇</div>
-                        <h3 id="c1-t" class="text-3xl md:text-4xl font-black mb-6 uppercase italic">Аргамаки Уйсунов</h3>
-                        <p id="c1-d" class="text-emerald-50 text-xl font-light leading-relaxed">
-                            Уйсуны владели огромными табунами. Лошади были настолько быстры и выносливы, что китайцы называли их «небесными конями». Богатые семьи владели табунами до 4-5 тысяч голов.
-                        </p>
-                    </div>
-                    <div class="bg-white/10 backdrop-blur-md p-8 rounded-[3rem] border border-white/20">
-                        <ul id="horse-list" class="space-y-4 text-emerald-100 font-medium">
-                            <li class="flex items-center space-x-3"><span>✨</span> <span>Символ богатства</span></li>
-                            <li class="flex items-center space-x-3"><span>🏔️</span> <span>Горная порода</span></li>
-                            <li class="flex items-center space-x-3"><span>🏹</span> <span>Военная сила</span></li>
-                        </ul>
-                    </div>
+        <!-- Section 2: Key Event (Process) -->
+        <div class="bg-red-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl revolutionary-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">📢</div>
+                    <div id="soviet-label" class="text-red-300 font-black text-sm uppercase tracking-[0.3em]">Soviet Proclamation</div>
                 </div>
-                <div class="absolute -bottom-20 -right-20 text-[25rem] opacity-5 rotate-12">🐎</div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="soviet-title" class="text-3xl font-black tracking-tight uppercase text-red-200">Триумфальное шествие Советов</h3>
+                    <p id="soviet-desc" class="text-xl text-red-50 font-light leading-relaxed">
+                        Первым городом, где власть перешла к Советам вооруженным путем, стал Перовск (30 октября). Затем пал Ташкент — ключ к управлению всем Южным Казахстаном.
+                    </p>
+                </div>
             </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none rotate-45">☭</div>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Agriculture -->
-                <div class="premium-card p-10 flex flex-col items-center text-center">
-                    <div class="text-5xl mb-6">🌾</div>
-                    <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase">Оседлые поля</h3>
-                    <p id="c2-d" class="text-stone-500 text-sm leading-relaxed">В долинах рек Или и Чу уйсуны строили оросительные каналы и выращивали просо, пшеницу и ячмень. Это делало их хозяйство устойчивым.</p>
-                </div>
-
-                <!-- Housing -->
-                <div class="premium-card p-10 flex flex-col items-center text-center border-b-8 border-stone-800">
-                    <div class="text-5xl mb-6">🏛️</div>
-                    <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase">Каменные дома</h3>
-                    <p id="c3-d" class="text-stone-500 text-sm leading-relaxed">Зимовки были постоянными поселениями. Дома строили из камня и сырцового кирпича, используя камышовые крыши и теплые полы.</p>
-                </div>
-
-                <!-- Crafts -->
-                <div class="premium-card p-10 flex flex-col items-center text-center">
-                    <div class="text-5xl mb-6">🏺</div>
-                    <h3 id="c4-t" class="text-xl font-bold mb-4 uppercase">Керамика и Металл</h3>
-                    <p id="c4-d" class="text-stone-500 text-sm leading-relaxed">Уйсуны владели гончарным кругом. Они изготавливали качественную посуду, бронзовые зеркала и железные инструменты.</p>
-                </div>
+        <!-- Section 3: Pillars of Revolution -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-700">
+                <div class="text-5xl mb-4">🕊️</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Мирный путь</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">Сырдарьинская и Акмолинская области, Букеевская орда признали власть Советов добровольно благодаря поддержке рабочих.</p>
+            </div>
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-slate-800">
+                <div class="text-5xl mb-4">⚔️</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Вооруженный путь</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">В Уральске, Оренбурге и Верном (Алматы) большевикам пришлось сражаться с силами атамана Дутова и Алаш-Орды.</p>
+            </div>
+            <div class="soviet-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-800">
+                <div class="text-5xl mb-4">🏛️</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Первые декреты</h4>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">Декларация прав народов России провозгласила право наций на самоопределение, что привлекло на сторону Советов часть народа.</p>
             </div>
         </div>
 
     </main>
 
-    <footer class="mt-20 py-24 bg-stone-900 text-stone-400">
+    <footer class="mt-20 py-20 bg-slate-900 text-slate-400">
         <div class="max-w-4xl mx-auto px-6 text-center">
-            <div id="footer-icon" class="text-4xl mb-10 opacity-50">🏺 🌾 🐎</div>
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-stone-200">
-                «Хозяйство уйсунов — это гармония степного движения и оседлого созидания, где каждый росток на поле был так же важен, как каждый жеребенок в табуне.»
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Октябрьская революция поставила народы степи перед выбором между старым колониальным прошлым и новым, неизведанным будущим».
             </p>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-red-800">History of Kazakhstan: 1917-1918 Revolution</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Уйсуны: Быт и Труд",
-                vizTitle: "Ресурсы Державы",
-                vizDesc: "Хозяйство уйсунов базировалось на четырех видах скота, но именно лошади определяли статус рода. Земледелие обеспечивало стабильность.",
-                badge: "Хозяйственный профиль",
-                vizStat: "Распределение активов",
-                planTitle: "Основы быта",
-                c1T: "Аргамаки Уйсунов", c1D: "Уйсуны владели огромными табунами. Лошади были настолько быстры, что китайцы называли их «небесными конями». Богатые семьи владели табунами до 4-5 тысяч голов.",
-                c2T: "Оседлые поля", c2D: "В долинах рек Или и Чу уйсуны строили оросительные каналы и выращивали просо, пшеницу и ячмень.",
-                c3T: "Каменные дома", c3D: "Зимовки были постоянными. Дома строили из камня и сырцового кирпича, создавая целые города и поселения.",
-                c4T: "Керамика и Металл", c4D: "Уйсуны использовали гончарный круг и владели искусством плавки металлов, создавая орудия труда и украшения.",
-                footer: "«Хозяйство уйсунов — это гармония степного движения и оседлого созидания, где каждый росток на поле был так же важен, как каждый жеребенок в табуне.»",
-                chartLabels: ["Коневодство", "Овцеводство", "Земледелие", "КРС", "Верблюды", "Ремесло"],
-                horseList: ["✨ Символ богатства", "🏔️ Горная порода", "🏹 Военная сила"]
+                title: "Октябрь 1917",
+                vizTitle: "Пути установления власти",
+                vizDesc: "Большевики использовали лозунги 'Власть Советам' и 'Земля крестьянам'. К марту 1918 года Советская власть была провозглашена на большей части Казахстана.",
+                statusBadge: "Смена эпох",
+                sovietTitle: "Триумфальное шествие",
+                sovietDesc: "После переворота в Петрограде Советы начали захват власти на местах. Центрами сопротивления стали Оренбург и Семиречье.",
+                fact1T: "Опора Советов", fact1D: "Железнодорожники, солдаты гарнизонов и батраки (жатаки) стали главной силой большевиков в степи.",
+                fact2T: "Оренбургский узел", fact2D: "Здесь развернулась борьба между Атаманом Дутовым и Красной гвардией. Город переходил из рук в руки.",
+                fact3T: "Позиция Алаш", fact3D: "Алаш-Орда не признала Октябрьский переворот, считая его захватом власти, и объявила о создании собственного правительства.",
+                footer: "«Октябрьская революция поставила народы степи перед выбором между старым колониальным прошлым и новым, неизведанным будущим».",
+                chartLabels: ["Мирным путем", "Вооруженным путем"],
+                chartTitle: "Способы установления власти Советов (%)"
             },
             kz: {
-                title: "Үйсіндер: Тұрмыс пен Еңбек",
-                vizTitle: "Мемлекет ресурстары",
-                vizDesc: "Үйсіндердің шаруашылығы малдың төрт түріне негізделді, бірақ жылқы рудың мәртебесін анықтады. Егіншілік тұрақтылықты қамтамасыз етті.",
-                badge: "Шаруашылық профилі",
-                vizStat: "Активтерді бөлу",
-                planTitle: "Тұрмыс негіздері",
-                c1T: "Үйсін сәйгүліктері", c1D: "Үйсіндердің аса үлкен жылқы үйірлері болды. Жылқылар соншалықты жүйрік болғандықтан, қытайлықтар оларды «аспан аттары» деп атаған.",
-                c2T: "Отырықшы егістіктер", c2D: "Іле мен Шу өзендерінің алқаптарында үйсіндер суару каналдарын салып, тары, бидай мен арпа өсірді.",
-                c3T: "Тас үйлер", c3D: "Қыстаулары тұрақты болды. Үйлерді тас пен шикі кірпіштен салып, тұтас қалалар мен қоныстар құрды.",
-                c4T: "Керамика мен Металл", c4D: "Үйсіндер қыш дөңгелегін пайдаланды және металл балқыту өнерін меңгеріп, еңбек құралдары мен әшекейлер жасады.",
-                footer: "«Үйсіндердің шаруашылығы — дала қозғалысы мен отырықшылықтың үйлесімі, мұнда егістіктегі әрбір өскін үйірдегі әр құлын сияқты маңызды болды.»",
-                chartLabels: ["Жылқы шаруашылығы", "Қой шаруашылығы", "Егіншілік", "ІҚМ", "Түйе", "Қолөнер"],
-                horseList: ["✨ Байлық нышаны", "🏔️ Тау тұқымы", "🏹 Әскери күш"]
+                title: "Қазан 1917",
+                vizTitle: "Билік орнату жолдары",
+                vizDesc: "Большевиктер 'Билік Кеңестерге' және 'Жер шаруаларға' ұрандарын пайдаланды. 1918 жылдың наурызына қарай Кеңес өкіметі Қазақстанның басым бөлігінде орнады.",
+                statusBadge: "Дәуірлер ауысуы",
+                sovietTitle: "Кеңестердің салтанатты шеруі",
+                sovietDesc: "Петроградтағы төңкерістен кейін Кеңестер жергілікті жерлерде билікті басып ала бастады. Орынбор мен Жетісу қарсылық орталықтары болды.",
+                fact1T: "Кеңестер тірегі", fact1D: "Теміржолшылар, гарнизон сарбаздары мен жатақтар большевиктердің даладағы басты күшіне айналды.",
+                fact2T: "Орынбор түйіні", fact2D: "Мұнда Атаман Дутов пен Қызыл гвардия арасындағы кескілескен күрес жүрді. Қала бірнеше рет қолдан-қолға өтті.",
+                fact3T: "Алаш ұстанымы", fact3D: "Алашорда Қазан төңкерісін мойындамай, оны заңсыз билікті басып алу деп санады және өз үкіметін құрды.",
+                footer: "«Қазан төңкерісі дала халықтарын ескі отаршылдық пен белгісіз жаңа болашақ арасында таңдау жасауға мәжбүр етті».",
+                chartLabels: ["Бейбіт жолмен", "Қарулы жолмен"],
+                chartTitle: "Кеңес өкіметінің орнау тәсілдері (%)"
             },
             en: {
-                title: "Usun: Life and Labor",
-                vizTitle: "State Resources",
-                vizDesc: "The Usun economy was based on four types of livestock, but horses defined a clan's status. Agriculture provided long-term stability.",
-                badge: "Economic Profile",
-                vizStat: "Asset Distribution",
-                planTitle: "Life Basics",
-                c1T: "Usun Steeds", c1D: "The Usun owned massive herds. Their horses were so fast that the Chinese called them 'heavenly horses'. Wealthy families owned herds of up to 4-5 thousand heads.",
-                c2T: "Settled Fields", c2D: "In the Ili and Chu river valleys, the Usun built irrigation canals and grew millet, wheat, and barley.",
-                c3T: "Stone Houses", c3D: "Winter camps were permanent settlements. Houses were built of stone and mudbricks, creating entire towns.",
-                c4T: "Ceramics & Metal", c4D: "The Usun used the pottery wheel and mastered the art of smelting metals, creating tools and jewelry.",
-                footer: "«The Usun economy is a harmony of steppe movement and settled creation, where every sprout in the field was as vital as every foal in the herd.»",
-                chartLabels: ["Horse breeding", "Sheep breeding", "Agriculture", "Cattle", "Camels", "Crafts"],
-                horseList: ["✨ Symbol of wealth", "🏔️ Mountain breed", "🏹 Military power"]
+                title: "October 1917",
+                vizTitle: "Paths of Establishing Power",
+                vizDesc: "Bolsheviks utilized the slogans 'Power to the Soviets' and 'Land to the Peasants'. By March 1918, Soviet power was proclaimed across most of Kazakhstan.",
+                statusBadge: "Shift of Eras",
+                sovietTitle: "Triumphal Procession",
+                sovietDesc: "After the coup in Petrograd, Soviets began seizing local control. Orenburg and Semirechye became the main hubs of resistance.",
+                fact1T: "Soviet Support", fact1D: "Railway workers, garrison soldiers, and landless peasants (zhataks) were the primary Bolshevik forces in the Steppe.",
+                fact2T: "Orenburg Conflict", fact2D: "A fierce struggle broke out between Ataman Dutov and the Red Guard. The city changed hands multiple times.",
+                fact3T: "Alash Stance", fact3D: "Alash Orda did not recognize the October Revolution, viewing it as an illegal seizure, and declared its own national government.",
+                footer: "«The October Revolution placed the peoples of the Steppe before a choice between the old colonial past and a new, uncharted future.»",
+                chartLabels: ["Peaceful Path", "Armed Struggle"],
+                chartTitle: "Methods of Establishing Soviet Power (%)"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('assetChart').getContext('2d');
+            const ctx = document.getElementById('victoryChart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'radar',
+                type: 'pie',
                 data: {
                     labels: translations[lang].chartLabels,
                     datasets: [{
-                        label: 'Economy',
-                        data: [100, 85, 75, 60, 40, 70],
-                        backgroundColor: 'rgba(68, 64, 60, 0.2)',
-                        borderColor: '#44403c',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#44403c',
-                        pointRadius: 4
+                        data: [70, 30],
+                        backgroundColor: ['#991b1b', '#475569'],
+                        hoverOffset: 10,
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(68, 64, 60, 0.1)' },
-                            grid: { color: 'rgba(68, 64, 60, 0.1)' },
-                            pointLabels: {
-                                color: '#44403c',
-                                font: { family: 'Inter', size: 12, weight: 'bold' }
-                            },
-                            ticks: { display: false },
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    },
-                    plugins: { legend: { display: false } }
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    }
                 }
             });
         }
 
-        function setLang(lang) {
+        function changeLang(lang) {
             const t = translations[lang];
             document.getElementById('main-title').innerText = t.title;
             document.getElementById('viz-title').innerText = t.vizTitle;
             document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('viz-stat').innerText = t.vizStat;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
-            document.getElementById('footer-text').innerText = t.footer;
-
-            // Update horse list
-            const list = document.getElementById('horse-list');
-            list.innerHTML = t.horseList.map(item => `
-                <li class="flex items-center space-x-3">
-                    <span class="w-2 h-2 bg-emerald-300 rounded-full"></span>
-                    <span>${item}</span>
-                </li>
-            `).join('');
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('soviet-title').innerText = t.sovietTitle;
+            document.getElementById('soviet-desc').innerText = t.sovietDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-200 transition-all";
+                if(btn) btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-red-800 hover:bg-red-50 transition-all";
             });
 
             initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
+        window.onload = () => changeLang('ru');
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>

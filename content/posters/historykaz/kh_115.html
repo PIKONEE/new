@@ -3,414 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Гунны: Образование государства</title>
+    <title>Казахстан: Индустриализация и Ашаршылык</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; color: #f4f4f5; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .empire-gradient {
-            background: radial-gradient(circle at top right, #450a0a, #0a0a0a 70%);
+        .soviet-theme {
+            background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
         }
 
-        .hun-card {
-            background: rgba(24, 24, 27, 0.8);
-            border: 1px solid rgba(220, 38, 38, 0.2);
-            border-radius: 2rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .industrial-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #1e293b;
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .hun-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: #ef4444;
-            box-shadow: 0 20px 40px -10px rgba(220, 38, 38, 0.3);
+        .industrial-card:hover {
+            transform: translateY(-5px);
+            border-color: #0f172a;
         }
 
-        .lang-active {
-            background-color: #dc2626;
+        .iron-glow {
+            box-shadow: 0 0 25px rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-active {
+            background-color: #0f172a;
             color: white;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
-        }
-
-        .gold-title {
-            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.3);
         }
 
         canvas {
-            filter: drop-shadow(0 0 25px rgba(220, 38, 38, 0.2));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
     </style>
 </head>
-<body class="empire-gradient min-h-screen">
+<body class="soviet-theme text-slate-900 min-h-screen">
 
-<!-- Header Navigation -->
-    <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-red-900/30 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-slate-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <span class="text-4xl">🐺</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-red-600">Империя Хунну</h1>
+                <span class="text-3xl">🏗️</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-slate-900">20-30-е годы</h1>
             </div>
-            <div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-lg text-sm font-bold transition-all">EN</button>
+            <div class="flex bg-slate-100/50 p-1 rounded-full border border-slate-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-20">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: Rise of Power (Visual Map) -->
-        <div class="hun-card p-8 md:p-16 relative overflow-hidden">
-            <div class="absolute -top-20 -right-20 w-96 h-96 bg-red-600/10 rounded-full blur-3xl"></div>
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5 space-y-8">
-                    <div id="badge" class="inline-block border border-red-500/50 text-red-500 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Great Empire Origin</div>
-                    <h2 id="viz-title" class="text-4xl md:text-5xl font-black text-white leading-tight uppercase italic">Становление Могущества</h2>
-                    <p id="viz-desc" class="text-lg text-zinc-400 font-light leading-relaxed">
-                        В 209 году до н.э. шаньюй Модэ объединил кочевые племена, создав первую в истории Великую кочевую империю, заставившую дрожать Китай.
-                    </p>
-                    <div class="flex items-center space-x-6">
-                        <div class="p-4 bg-red-950/30 rounded-2xl border border-red-900/50">
-                            <div class="text-red-500 font-black text-2xl">209 BC</div>
-                            <div id="date-label" class="text-[10px] uppercase font-bold text-zinc-500">Приход Модэ к власти</div>
-                        </div>
-                        <div class="p-4 bg-zinc-900/50 rounded-2xl border border-zinc-800">
-                            <div class="text-amber-500 font-black text-2xl">24</div>
-                            <div id="clan-label" class="text-[10px] uppercase font-bold text-zinc-500">Основных рода</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="lg:col-span-7 h-80 md:h-[450px]">
-                    <canvas id="expansionChart"></canvas>
+        <!-- Section 1: Economic Transformation (Chart) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-slate-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">The Great Turning Point</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase">Индустриальный рывок</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    Казахстан превратился в мощную индустриальную базу. Разработка Балхаша, Жезказгана и Экибастуза вывела республику в лидеры по добыче меди и угля, но ценой этому стала трагедия народа.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="productionChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Structure and Army (The Plan) -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-center text-3xl font-black text-white uppercase tracking-[0.4em] gold-title">Железный Порядок</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Military Reform -->
-                <div class="hun-card p-10 flex flex-col justify-between border-t-4 border-red-600">
-                    <div>
-                        <div class="text-6xl mb-6">🏹</div>
-                        <h3 id="c1-t" class="text-xl font-bold mb-4 uppercase text-red-500">Десятичная система</h3>
-                        <p id="c1-d" class="text-zinc-400 text-sm leading-relaxed">Модэ ввел строгую дисциплину, разделив армию на десятки, сотни, тысячи и тьмы (10 000). За невыполнение приказа следовала смерть.</p>
-                    </div>
+        <!-- Section 2: Asharshylyk (Tragedy Focus) -->
+        <div class="bg-slate-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl iron-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">🏚️</div>
+                    <div id="tragedy-label" class="text-slate-400 font-black text-sm uppercase tracking-[0.3em]">Great Famine</div>
                 </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="tragedy-title" class="text-3xl font-black tracking-tight uppercase text-red-500">Ашаршылык: Трагедия коллективизации</h3>
+                    <p id="tragedy-desc" class="text-xl text-slate-200 font-light leading-relaxed">
+                        Насильственное оседание и конфискация скота привели к гибели более 1.5 миллионов человек. Традиционный уклад жизни степи был разрушен навсегда, вызвав массовый исход населения.
+                    </p>
+                </div>
+            </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none">📉</div>
+        </div>
 
-                <!-- Political Structure -->
-                <div class="hun-card p-10 flex flex-col justify-between border-t-4 border-amber-600">
-                    <div>
-                        <div class="text-6xl mb-6">👑</div>
-                        <h3 id="c2-t" class="text-xl font-bold mb-4 uppercase text-amber-500">Титул Шаньюй</h3>
-                        <p id="c2-d" class="text-zinc-400 text-sm leading-relaxed">Верховный правитель гуннов. Власть была наследственной. Шаньюй считался «сыном Неба», наделенным божественной силой.</p>
-                    </div>
-                </div>
-
-                <!-- Whistling Arrow -->
-                <div class="hun-card p-10 flex flex-col justify-between border-t-4 border-red-600">
-                    <div>
-                        <div class="text-6xl mb-6">🏹💨</div>
-                        <h3 id="c3-t" class="text-xl font-bold mb-4 uppercase text-red-500">Поющая стрела</h3>
-                        <p id="c3-d" class="text-zinc-400 text-sm leading-relaxed">Изобретение гуннов. Свистящие стрелы использовались для передачи сигналов в бою и психологического давления на врага.</p>
-                    </div>
-                </div>
-
-                <!-- Territorial Growth -->
-                <div class="lg:col-span-3 bg-zinc-900 rounded-[3rem] p-10 md:p-16 border border-red-950 relative overflow-hidden">
-                    <div class="relative z-10 flex flex-col md:flex-row items-center gap-12">
-                        <div class="shrink-0 text-7xl">🐎</div>
-                        <div>
-                            <h3 id="c4-t" class="text-3xl font-black text-white mb-6 uppercase">Земля — основа государства</h3>
-                            <p id="c4-d" class="text-zinc-400 text-xl font-light leading-relaxed">
-                                Модэ произнес легендарные слова: «Земля — это основа государства, как можно её отдавать?». Это стало главным принципом внешней политики гуннов.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-5 rotate-12">🗡️</div>
-                </div>
+        <!-- Section 3: Key Events & People -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="industrial-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-800">
+                <div class="text-5xl mb-4">👷</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Турксиб</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">Легендарная железная дорога, соединившая Сибирь и Среднюю Азию. Строительство века, изменившее экономику региона.</p>
+            </div>
+            <div class="industrial-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-red-700">
+                <div class="text-5xl mb-4">⚒️</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Каныш Сатпаев</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">Великий ученый, доказавший богатство недр Жезказгана. Основатель казахстанской школы геологии.</p>
+            </div>
+            <div class="industrial-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-slate-800">
+                <div class="text-5xl mb-4">📜</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Ликвидация неграмотности</h4>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">Ликбез: массовое открытие школ и введение латиницы (а позже кириллицы) для образования народа.</p>
             </div>
         </div>
 
     </main>
 
-    <footer class="mt-20 py-24 bg-black border-t border-red-900/30 text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <div id="footer-icon" class="text-5xl mb-8 opacity-40">🐺 🏹 🐎</div>
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-zinc-500">
-                «Гунны создали первую великую степную империю, которая заложила основы государственности всех последующих кочевников Евразии.»
+    <footer class="mt-20 py-20 bg-slate-950 text-slate-400">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «История этого периода написана сталью заводов и слезами аулов».
             </p>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-slate-700">Soviet Transformation Period of Kazakhstan</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Империя Хунну",
-                vizTitle: "Становление Могущества",
-                vizDesc: "В 209 году до н.э. Модэ объединил кочевые племена, создав первую в истории Великую кочевую империю.",
-                badge: "Истоки Империи",
-                dateLabel: "Эра Модэ-кагана",
-                clanLabel: "Родовых объединений",
-                planTitle: "Железный Порядок",
-                c1T: "Десятичная система", c1D: "Модэ ввел строгую дисциплину, разделив армию на десятки, сотни и тысячи. Это сделало войско гуннов самым организованным в мире.",
-                c2T: "Титул Шаньюй", c2D: "Верховный титул правителя. Ему помогали «князья» (левый и правый темники), из числа самых знатных родов.",
-                c3T: "Поющая стрела", c3D: "Стрелы с костяными свистками позволяли координировать действия тысяч воинов в пылу сражения по звуковому сигналу.",
-                c4T: "Земля — основа", c4D: "Модэ считал землю высшей ценностью. Его отказ отдать даже бесплодную пустыню соседям стал символом гуннского патриотизма.",
-                footer: "«Гунны создали первую великую степную империю, которая заложила основы государственности всех последующих кочевников Евразии.»",
-                chartLabels: ["До Модэ", "Эра Модэ", "Расцвет", "Закат"],
-                chartTitle: "Динамика влияния и территорий"
+                title: "20-30-е годы",
+                vizTitle: "Индустриальный рывок",
+                vizDesc: "В 30-е годы Казахстан стал 'второй кочегаркой' СССР. Были построены сотни заводов, но деревня заплатила за это страшную цену.",
+                statusBadge: "Великий перелом",
+                tragedyTitle: "Ашаршылык: Трагедия",
+                tragedyDesc: "Ошибки политики Голощекина привели к катастрофическому голоду. Поголовье скота сократилось с 40 млн до 4 млн голов.",
+                fact1T: "Турксиб (1930)", fact1D: "Магистраль стала символом индустриального прогресса, объединив хлопок юга и зерно севера.",
+                fact2T: "Гений Сатпаева", fact2D: "Каныш Сатпаев открыл миру потенциал казахстанских недр, заложив основу будущего процветания.",
+                fact3T: "Культурная революция", fact3D: "Массовое обучение грамоте и создание Академии наук — интеллектуальный прорыв эпохи.",
+                footer: "«История этого периода написана сталью заводов и слезами аулов».",
+                chartLabels: ["Уголь (Караганда)", "Медь (Балхаш)", "Нефть (Эмба)", "Прочие"],
+                chartTitle: "Доля Казахстана в ресурсах СССР (%)"
             },
             kz: {
-                title: "Ғұн Империясы",
-                vizTitle: "Қуаттың қалыптасуы",
-                vizDesc: "Б.з.б. 209 жылы Мөде шаруашылықты біріктіріп, тарихтағы алғашқы Ұлы көшпелілер империясын құрды.",
-                badge: "Империя бастауы",
-                dateLabel: "Мөде қаған дәуірі",
-                clanLabel: "Негізгі рулар",
-                planTitle: "Темірдей Тәртіп",
-                c1T: "Ондық жүйе", c1D: "Мөде әскерді ондықтарға, жүздіктерге және мыңдықтарға бөліп, қатал тәртіп енгізді. Бұл ғұн әскерін әлемдегі ең ұйымшыл етті.",
-                c2T: "Шаньюй лауазымы", c2D: "Мемлекеттің жоғарғы билеушісі. Оған ең ақсүйек рулардан шыққан «түменбасылар» (сол және оң қанат) көмектескен.",
-                c3T: "Ысқыратын жебе", c3D: "Сүйектен жасалған ысқырығы бар жебелер шайқас кезінде мыңдаған жауынгердің қимылын дыбыс арқылы үйлестіруге мүмкіндік берді.",
-                c4T: "Жер — мемлекет негізі", c4D: "Мөде жерді ең жоғарғы құндылық деп санады. Көршілерге тіпті құлазыған шөлді де бермеуі ғұн патриотизмінің символына айналды.",
-                footer: "«Ғұндар Евразиядағы барлық кейінгі көшпелі халықтардың мемлекеттілік негізін қалаған алғашқы ұлы дала империясын құрды.»",
-                chartLabels: ["Мөдеге дейін", "Мөде дәуірі", "Гүлдену", "Құлдырау"],
-                chartTitle: "Ықпал ету және аумақ динамикасы"
+                title: "20-30 жылдар",
+                vizTitle: "Индустриялық серпіліс",
+                vizDesc: "30-жылдары Қазақстан КСРО-ның басты шикізат базасына айналды. Жүздеген зауыттар салынды, бірақ ауыл бұл үшін ауыр құн төледі.",
+                statusBadge: "Ұлы бетбұрыс",
+                tragedyTitle: "Ашаршылық: Қасірет",
+                tragedyDesc: "Голощекин саясатының қателіктері жойқын ашаршылыққа әкелді. Мал саны 40 млн-нан 4 млн-ға дейін азайды.",
+                fact1T: "Түрксіб (1930)", fact1D: "Магистраль индустриялық прогрестің нышанына айналып, оңтүстік мақтасы мен солтүстік астығын біріктірді.",
+                fact2T: "Сәтбаев даналығы", fact2D: "Қаныш Сәтбаев Қазақстан жерінің байлығын әлемге танытып, геология мектебінің негізін қалады.",
+                fact3T: "Мәдени төңкеріс", fact3D: "Сауатсыздықты жою және Ғылым академиясын құру — дәуірдің зияткерлік серпілісі.",
+                footer: "«Бұл кезеңнің тарихы зауыттардың болаттарымен және ауылдардың жасымен жазылған».",
+                chartLabels: ["Көмір (Қарағанды)", "Мыс (Балқаш)", "Мұнай (Ембі)", "Басқалар"],
+                chartTitle: "Қазақстанның КСРО ресурстарындағы үлесі (%)"
             },
             en: {
-                title: "The Hunnic Empire",
-                vizTitle: "The Rise of Power",
-                vizDesc: "In 209 BC, Modu united the nomadic tribes, creating the first Great Nomadic Empire in history.",
-                badge: "Empire Origins",
-                dateLabel: "Era of Modu Khan",
-                clanLabel: "Noble Clans",
-                planTitle: "Iron Discipline",
-                c1T: "Decimal System", c1D: "Modu introduced strict discipline, dividing the army into tens, hundreds, and thousands. This made the Huns the most organized army in the world.",
-                c2T: "Chanyu Title", c2D: "The supreme ruler's title. He was assisted by 'princes' (left and right tumenbashy) from the most noble clans.",
-                c3T: "Whistling Arrow", c3D: "Arrows with bone whistles allowed coordinating thousands of warriors in battle using sound signals.",
-                c4T: "Land is the Foundation", c4D: "Modu considered land the highest value. His refusal to give even a barren desert to neighbors became a symbol of Hunnic patriotism.",
-                footer: "«The Huns created the first great steppe empire, which laid the foundation for the statehood of all subsequent Eurasian nomads.»",
-                chartLabels: ["Before Modu", "Modu Era", "Peak", "Decline"],
-                chartTitle: "Influence and Territory Dynamics"
+                title: "1920-30s Period",
+                vizTitle: "Industrial Leap",
+                vizDesc: "In the 1930s, Kazakhstan became the 'second furnace' of the USSR. Hundreds of plants were built, but at a terrible human cost.",
+                statusBadge: "The Great Turning Point",
+                tragedyTitle: "Asharshylyk: Tragedy",
+                tragedyDesc: "The policy of Goloshchekin led to a catastrophic famine. Livestock numbers plummeted from 40 million to 4 million.",
+                fact1T: "Turksib (1930)", fact1D: "The railway became a symbol of industrial progress, linking southern cotton with northern grain.",
+                fact2T: "Sattpayev's Genius", fact2D: "Kanysh Satpayev unlocked the potential of Kazakhstan's minerals, laying the foundation for future prosperity.",
+                fact3T: "Cultural Revolution", fact3D: "Mass literacy campaigns and the founding of the Academy of Sciences were key intellectual achievements.",
+                footer: "«The history of this period is written in the steel of factories and the tears of the villages.»",
+                chartLabels: ["Coal (Karaganda)", "Copper (Balkhash)", "Oil (Emba)", "Others"],
+                chartTitle: "Kazakhstan's Share in USSR Resources (%)"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('expansionChart').getContext('2d');
+            const ctx = document.getElementById('productionChart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'line',
+                type: 'doughnut',
                 data: {
                     labels: translations[lang].chartLabels,
                     datasets: [{
-                        label: lang === 'ru' ? 'Мощь Империи' : (lang === 'kz' ? 'Империя қуаты' : 'Empire Power'),
-                        data: [10, 85, 100, 40],
-                        borderColor: '#dc2626',
-                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                        borderWidth: 5,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 6,
-                        pointBackgroundColor: '#fff'
+                        data: [45, 30, 15, 10],
+                        backgroundColor: ['#0f172a', '#1e293b', '#334155', '#94a3b8'],
+                        borderWidth: 0,
+                        hoverOffset: 20
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { display: false, min: 0, max: 110 },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#71717a', font: { family: 'Montserrat', weight: 'bold' } }
-                        }
-                    },
                     plugins: {
-                        legend: { display: false },
-                        title: { display: true, text: translations[lang].chartTitle, color: '#dc2626', font: { family: 'Montserrat', size: 16 } }
-                    }
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
+                    },
+                    cutout: '70%'
                 }
             });
         }
 
-        function setLang(lang) {
+        function changeLang(lang) {
             const t = translations[lang];
             document.getElementById('main-title').innerText = t.title;
             document.getElementById('viz-title').innerText = t.vizTitle;
             document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('date-label').innerText = t.dateLabel;
-            document.getElementById('clan-label').innerText = t.clanLabel;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-            document.getElementById('c3-t').innerText = t.c3T; document.getElementById('c3-d').innerText = t.c3D;
-            document.getElementById('c4-t').innerText = t.c4T; document.getElementById('c4-d').innerText = t.c4D;
-            document.getElementById('footer-text').innerText = t.footer;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('tragedy-title').innerText = t.tragedyTitle;
+            document.getElementById('tragedy-desc').innerText = t.tragedyDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-lg text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-lg text-sm font-bold text-zinc-500 hover:text-red-500 transition-all";
+                btn.className = l === lang ? "px-6 py-2 rounded-full text-sm font-black btn-active" : "px-6 py-2 rounded-full text-sm font-bold text-slate-700 hover:bg-slate-200 transition-all";
             });
 
             initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
+        window.onload = () => changeLang('ru');
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>

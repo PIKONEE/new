@@ -3,359 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хан Есим: Справедливый правитель</title>
+    <title>Плакат: Политическое развитие (1992-1995)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: #ecfdf5; color: #064e3b; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-
-        .law-gradient {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        }
-
-        .premium-card {
-            background: white;
-            border-radius: 3.5rem;
-            border: 1px solid #cbd5e1;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .premium-card:hover {
-            border-color: #0f172a;
-            box-shadow: 0 40px 100px -20px rgba(15, 23, 42, 0.15);
-        }
-
-        .lang-active {
-            background-color: #0f172a;
-            color: #ffffff;
-            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.3);
-        }
-
-        canvas {
-            cursor: pointer;
-            border-radius: 2rem;
-            background: #fff;
-            border: 1px solid #e2e8f0;
-        }
-
-        .highlight-box {
-            background: #f8fafc;
-            border-left: 10px solid #0f172a;
-            padding: 2.5rem;
-            border-radius: 2.5rem;
-        }
+        .lang-active { background-color: #059669 !important; color: white !important; font-weight: 900; }
+        .poster-card { background: white; border: 15px solid #059669; position: relative; min-height: 1100px; box-shadow: 0 40px 80px rgba(6, 78, 59, 0.2); }
+        .emerald-grad { background: linear-gradient(135deg, #059669 0%, #064e3b 100%); }
+        .symbol-card { background: #f0fdf4; border: 2px solid #d1fae5; border-radius: 2rem; padding: 2rem; transition: transform 0.3s; }
+        .symbol-card:hover { transform: translateY(-5px); }
     </style>
 </head>
-<body class="law-gradient min-h-screen pb-20">
+<body class="p-6 md:p-12">
 
-<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-slate-900">Хан Есим (1598–1628 гг.)</h1>
-            <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
-            </div>
-        </div>
-    </header>
+    <div class="fixed top-8 right-8 z-50 flex gap-2 bg-slate-900/90 backdrop-blur shadow-2xl p-1.5 rounded-full border border-emerald-200">
+        <button onclick="setLang('ru')" id="btn-ru" class="lang-active px-5 py-2 rounded-full text-xs font-bold transition-all uppercase">RU</button>
+        <button onclick="setLang('kz')" id="btn-kz" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">KZ</button>
+        <button onclick="setLang('en')" id="btn-en" class="px-5 py-2 rounded-full text-xs font-bold transition-all uppercase text-white">EN</button>
+    </div>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        
-        <div class="premium-card p-8 md:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-4 space-y-8">
-                    <div id="badge" class="inline-block bg-slate-900 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Legal Code Analysis</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-slate-900 leading-tight uppercase italic">Древний путь Есим-хана</h2>
-                    <p id="viz-desc" class="text-lg text-slate-500 font-light leading-relaxed">
-                        Есим-хан реформировал систему Касыма, адаптировав законы к условиям XVII века. Нажмите на элементы печати, чтобы изучить основы управления.
+    <div class="max-w-4xl mx-auto poster-card p-12 md:p-16">
+        <header class="border-b-8 border-emerald-800 pb-10 mb-12">
+            <h1 id="title" class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6 text-emerald-900">Политическое развитие</h1>
+            <p id="desc" class="text-xl font-medium text-emerald-600 italic">Строительство основ суверенной государственности</p>
+        </header>
+
+        <div class="space-y-12">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="symbol-card shadow-sm">
+                    <h2 id="sec1T" class="text-2xl font-black uppercase text-emerald-800 mb-4">Госсимволика</h2>
+                    <p id="sec1D" class="text-sm leading-relaxed text-slate-700 font-medium">
+                        4 июня 1992 г. — утверждены Флаг, Герб и Гимн. Авторы: Ш. Ниязбеков, Ж. Малибеков, Ш. Уалиханов. Рождение визуального кода нации.
                     </p>
-                    
-                    <div id="info-panel" class="highlight-box shadow-sm transition-all duration-500">
-                        <h3 id="law-title" class="text-xl font-bold text-slate-900 mb-3 uppercase">Законы Есима</h3>
-                        <p id="law-desc" class="text-slate-500 text-sm leading-relaxed italic">Кликните на разделы центральной диаграммы для расшифровки.</p>
-                    </div>
+                    <div class="mt-6 flex gap-4 text-3xl">🦅 ☀️ 🇰🇿</div>
                 </div>
-                
-                <div class="lg:col-span-8 p-4 flex items-center justify-center relative min-h-[500px]">
-                    <canvas id="lawCanvas"></canvas>
-                    <div class="absolute bottom-8 right-12 text-[10px] text-slate-300 font-mono uppercase tracking-[0.4em]">Administrative Blueprint</div>
+                <div class="symbol-card shadow-sm">
+                    <h2 id="sec2T" class="text-2xl font-black uppercase text-emerald-800 mb-4">Конституция</h2>
+                    <p id="sec2D" class="text-sm leading-relaxed text-slate-700 font-medium">
+                        28 января 1993 г. — первая Конституция. 30 августа 1995 г. — действующая Конституция, закрепившая президентскую форму правления.
+                    </p>
+                    <div class="mt-6 text-emerald-600 font-black text-xs uppercase">Main Law of the Land</div>
                 </div>
-            </div>
+            </section>
+
+            <section class="bg-slate-900 text-white p-12 rounded-[4rem] relative overflow-hidden shadow-2xl border-l-[15px] border-emerald-500">
+                <h2 id="sec3T" class="text-3xl font-black uppercase text-emerald-400 mb-6 italic">Мировое признание</h2>
+                <p id="sec3D" class="text-lg font-light leading-relaxed opacity-90">
+                    2 марта 1992 г. — вступление в ООН. Казахстан стал полноправным субъектом международного права. Начало многовекторной внешней политики.
+                </p>
+                <div class="absolute top-0 right-0 p-10 text-9xl opacity-5">🌏</div>
+            </section>
+
+            <section class="bg-emerald-50 p-8 rounded-[3rem] border border-emerald-100">
+                <h4 id="chartTitle" class="text-center text-[10px] font-black uppercase mb-6 text-emerald-800 tracking-widest">Темпы дипломатического признания</h4>
+                <div class="h-44">
+                    <canvas id="polyChart"></canvas>
+                </div>
+            </section>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div class="premium-card p-10 space-y-6">
-                <h3 id="c1-t" class="text-2xl font-black uppercase text-slate-900">Катаганское побоище</h3>
-                <p id="c1-d" class="text-slate-600 text-sm leading-relaxed">В **1627 году** Есим-хан подавил мятеж ташкентского правителя Турсун-хана. Это событие вошло в историю как «Катаганское побоище». Есим ликвидировал сепаратизм, окончательно объединив ханство и сделав Ташкент своей столицей.</p>
-            </div>
-            <div class="premium-card p-10 space-y-6">
-                <h3 id="c2-t" class="text-2xl font-black uppercase text-slate-900">Есім ханның ескі жолы</h3>
-                <p id="c2-d" class="text-slate-600 text-sm leading-relaxed">«Исконный путь хана Есима» — это правовая реформа, которая укрепила роль **Биев** и ограничила власть султанов. Это позволило создать стабильную систему внутреннего самоуправления, способную противостоять жунгарской угрозе.</p>
-            </div>
-        </div>
-    </main>
+        <footer class="mt-20 pt-8 border-t border-emerald-100 flex justify-between items-center text-[10px] font-black uppercase text-emerald-400 tracking-[0.3em]">
+            Sovereign State • 1992-1995
+        </footer>
+    </div>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Хан Есим (1598–1628 гг.)",
-                vizTitle: "Древний путь Есим-хана",
-                vizDesc: "Правовая реформа «Ескі жолы» стала основой стабильности XVII века. Нажмите на элементы схемы для изучения законов.",
-                badge: "Анализ законодательной базы",
-                lawTitleDefault: "Законы Есима",
-                lawDescDefault: "Кликните на разделы диаграммы для расшифровки на холсте.",
-                c1T: "Катаганское побоище", c1D: "1627 год: Ликвидация двоевластия. Победа над Турсун-ханом закрепила единство государства и статус Ташкента как столицы.",
-                c2T: "Есім ханның ескі жолы", c2D: "Укрепление роли Маслихата и Биев. Законы Есима стали мостом между нормами Касыма и будущим уложением Тауке-хана.",
-                laws: {
-                    council: { name: "Власть Биев", text: "Хан передал решение внутренних споров советам Биев, что сделало суд более доступным и справедливым для народа." },
-                    military: { name: "Военный долг", text: "Узаконена обязанность каждого рода выставлять определенное количество воинов в случае внешней агрессии." },
-                    unity: { name: "Запрет междоусобиц", text: "Введены жесточайшие наказания за попытки султанов объявить независимость своего улуса от центральной власти." }
-                }
+                title: "Политическое развитие", desc: "Строительство основ суверенной государственности",
+                sec1T: "Госсимволика", sec1D: "4 июня 1992 г. — утверждены Флаг, Герб и Гимн. Эти символы объединили народ и закрепили самобытность Казахстана в мире.",
+                sec2T: "Конституция", sec2D: "Принятие Основных законов 1993 и 1995 годов определило правовой фундамент страны и разделение ветвей власти.",
+                sec3T: "Мировое признание", sec3D: "2 марта 1992 г. — вступление в ООН. Признание границ и суверенитета мировым сообществом. Старт глобального партнерства.",
+                chartTitle: "Признание государства миром (количество стран)"
             },
             kz: {
-                title: "Есім хан (1598–1628 жж.)",
-                vizTitle: "Есім ханның ескі жолы",
-                vizDesc: "«Ескі жолы» құқықтық реформасы XVII ғасырдағы тұрақтылықтың негізі болды. Заңдарды зерттеу үшін сызбаны басыңыз.",
-                badge: "Заңнамалық базаны талдау",
-                lawTitleDefault: "Есім заңдары",
-                lawDescDefault: "Кенептегі диаграмма бөлімдерін басыңыз.",
-                c1T: "Қатаған қырғыны", c1D: "1627 жыл: Қос билікті жою. Тұрсын ханды жеңу мемлекет тұтастығы мен Ташкенттің астана мәртебесін бекітті.",
-                c2T: "Есім ханның ескі жолы", c2D: "Мәслихат пен Билер рөлін нығайту. Есім заңдары Қасым ханның заңдары мен Тәуке ханның «Жеті жарғысы» арасындағы алтын көпір болды.",
-                laws: {
-                    council: { name: "Билер билігі", text: "Хан ішкі дауларды шешуді Билер кеңесіне берді, бұл сотты халық үшін қолжетімді әрі әділ етті." },
-                    military: { name: "Әскери міндет", text: "Сыртқы жау шапқанда әр рудың белгілі бір мөлшерде жауынгер шығару міндеті заңдастырылды." },
-                    unity: { name: "Берекесіздікке тыйым", text: "Сұлтандардың өз ұлыстарын орталық биліктен бөліп алу әрекеттері үшін өте қатал жазалар енгізілді." }
-                }
+                title: "Саяси даму", desc: "Егемен мемлекеттіліктің негіздерін қалау",
+                sec1T: "Мемлекеттік рәміздер", sec1D: "1992 ж. 4 маусым — Ту, Елтаңба және Әнұран бекітілді. Бұл рәміздер халықты біріктіріп, Қазақстанның әлемдегі өзіндік ерекшелігін бекітті.",
+                sec2T: "Конституция", sec2D: "1993 және 1995 жылдардағы Негізгі заңдардың қабылдануы елдің құқықтық іргетасын және билік тармақтарының бөлінісін анықтады.",
+                sec3T: "Әлемдік тану", sec3D: "1992 ж. 2 наурыз — БҰҰ-ға мүше болу. Әлемдік қауымдастықтың шекара мен егемендікті тануы. Жаһандық серіктестіктің басталуы.",
+                chartTitle: "Мемлекеттің әлемде танылуы (елдер саны)"
+            },
+            en: {
+                title: "Political Development", desc: "Building the foundations of a sovereign state",
+                sec1T: "State Symbols", sec1D: "June 4, 1992 — Flag, Emblem, and Anthem approved. These symbols united the nation and marked Kazakhstan's identity worldwide.",
+                sec2T: "Constitution", sec2D: "The adoption of the 1993 and 1995 Fundamental Laws defined the legal base and the separation of government branches.",
+                sec3T: "Global Recognition", sec3D: "March 2, 1992 — joining the UN. International recognition of borders and sovereignty. Start of global partnerships.",
+                chartTitle: "Diplomatic Recognition (number of countries)"
             }
         };
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('lawCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 500;
-            drawLaws();
-        }
-
-        function drawLaws() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = canvas.width / 800;
-
-            const sectors = [
-                { id: 'council', label: "BIYS", color: "#0f172a", angle: 0 },
-                { id: 'military', label: "ARMY", color: "#1e293b", angle: (2*Math.PI)/3 },
-                { id: 'unity', label: "UNITY", color: "#334155", angle: (4*Math.PI)/3 }
-            ];
-
-            sectors.forEach(s => {
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, 180 * scale, s.angle, s.angle + (2*Math.PI)/3);
-                ctx.fillStyle = s.color + '11';
-                ctx.fill();
-                ctx.strokeStyle = '#0f172a';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                const tx = cx + Math.cos(s.angle + Math.PI/3) * 120 * scale;
-                const ty = cy + Math.sin(s.angle + Math.PI/3) * 120 * scale;
-                ctx.fillStyle = '#0f172a';
-                ctx.font = 'bold 12px Montserrat';
-                ctx.fillText(s.label, tx, ty);
-            });
-
-            ctx.beginPath();
-            ctx.arc(cx, cy, 50 * scale, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff';
-            ctx.fill();
-            ctx.stroke();
-            ctx.fillStyle = '#0f172a';
-            ctx.font = 'bold 14px Montserrat';
-            ctx.textAlign = 'center';
-            ctx.fillText("ESIM", cx, cy + 5);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const angle = Math.atan2(y - canvas.height/2, x - canvas.width/2);
-            const normAngle = angle < 0 ? angle + 2*Math.PI : angle;
-
-            let zone = normAngle < (2*Math.PI)/3 ? 'council' : (normAngle < (4*Math.PI)/3 ? 'military' : 'unity');
-            const info = translations[currentLang].laws[zone];
-            document.getElementById('law-title').innerText = info.name;
-            document.getElementById('law-desc').innerText = info.text;
-        });
+        let chart = null;
 
         function setLang(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('law-title').innerText = t.lawTitleDefault;
-            document.getElementById('law-desc').innerText = t.lawDescDefault;
-            document.getElementById('c1-t').innerText = t.c1T; document.getElementById('c1-d').innerText = t.c1D;
-            document.getElementById('c2-t').innerText = t.c2T; document.getElementById('c2-d').innerText = t.c2D;
-
-            ['ru', 'kz', 'en'].forEach(l => {
-                document.getElementById(`btn-${l}`).className = l === lang ? "px-6 py-2 rounded-xl text-sm font-black lang-active" : "px-6 py-2 rounded-xl text-sm font-bold text-slate-500 hover:bg-white transition-all";
-            });
-            resizeCanvas();
+            document.querySelectorAll('button').forEach(b => b.classList.remove('lang-active'));
+            document.getElementById(`btn-${lang}`).classList.add('lang-active');
+            const t = content[lang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('sec1T').innerText = t.sec1T;
+            document.getElementById('sec1D').innerText = t.sec1D;
+            document.getElementById('sec2T').innerText = t.sec2T;
+            document.getElementById('sec2D').innerText = t.sec2D;
+            document.getElementById('sec3T').innerText = t.sec3T;
+            document.getElementById('sec3D').innerText = t.sec3D;
+            document.getElementById('chartTitle').innerText = t.chartTitle;
+            renderChart();
         }
 
+        function renderChart() {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('polyChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: ['1991', '1992', '1993', '1994', '1995'], datasets: [{ data: [18, 105, 115, 122, 130], borderColor: '#059669', tension: 0.4, fill: true, backgroundColor: 'rgba(5, 150, 105, 0.1)', borderWidth: 5 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
         window.onload = () => setLang('ru');
-        window.onresize = resizeCanvas;
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>

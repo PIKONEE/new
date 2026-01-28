@@ -3,266 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хозяйство и быт саков</title>
+    <title>Казахская культура начала ХХ века</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #2d0a0a; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .royal-gradient {
-            background: radial-gradient(circle at top left, #4c0519, #2d0a0a);
+        .culture-theme {
+            background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
         }
 
-        .gold-glass {
-            background: rgba(251, 191, 36, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .gold-text {
-            background: linear-gradient(to right, #fde68a, #fbbf24, #d97706);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .lang-btn {
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            color: #fbbf24;
+        .culture-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #0369a1;
+            box-shadow: 0 10px 30px -5px rgba(3, 105, 161, 0.1);
             transition: all 0.3s ease;
         }
 
-        .lang-active {
-            background: #fbbf24;
-            color: #4c0519;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        .culture-card:hover {
+            transform: translateY(-5px);
+            border-color: #075985;
         }
 
-        .artifact-card {
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        .intellectual-glow {
+            box-shadow: 0 0 25px rgba(3, 105, 161, 0.2);
         }
 
-        .artifact-card:hover {
-            transform: scale(1.03);
-            border-color: #fbbf24;
-            background: rgba(251, 191, 36, 0.08);
+        .btn-active {
+            background-color: #075985;
+            color: white;
+            box-shadow: 0 4px 10px rgba(3, 105, 161, 0.3);
         }
 
         canvas {
-            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.1));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
     </style>
 </head>
-<body class="royal-gradient text-stone-200 min-h-screen">
+<body class="culture-theme text-sky-950 min-h-screen">
 
-<!-- Header Navigation -->
-    <header class="sticky top-0 z-50 bg-[#2d0a0a]/90 backdrop-blur-md border-b border-amber-900/30 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-4">
-                <span class="text-4xl">🐆</span>
-                <h1 id="main-title" class="text-xl md:text-3xl font-black uppercase tracking-tighter gold-text">Золото и Степь</h1>
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-md border-b border-sky-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">📚</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-sky-900">Культура ХХ века</h1>
             </div>
-            <div class="flex space-x-2 bg-black/40 p-1 rounded-2xl">
-                <button onclick="changeLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-xl text-sm font-bold">RU</button>
-                <button onclick="changeLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-xl text-sm font-bold">KZ</button>
-                <button onclick="changeLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-xl text-sm font-bold">EN</button>
+            <div class="flex bg-sky-100/50 p-1 rounded-full border border-sky-200">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-20">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: Economic Balance (Interactive Map) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <div class="lg:col-span-5 space-y-8">
-                <div id="badge" class="inline-block border border-amber-500 text-amber-500 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Economic Balance</div>
-                <h2 id="viz-title" class="text-4xl md:text-5xl font-black leading-tight text-white">Ритм жизни саков</h2>
-                <p id="viz-desc" class="text-lg text-stone-400 font-light leading-relaxed">
-                    Хозяйство саков было комплексным: от кочевого скотоводства на западе до оседлого земледелия в долинах Сырдарьи и Семиречья.
+        <!-- Section 1: Education & Press -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-sky-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">Enlightenment Era</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase">Взлет Просвещения</h2>
+                <p id="viz-desc" class="text-lg text-sky-800 leading-relaxed font-light">
+                    Начало ХХ века ознаменовалось бурным ростом казахской периодики и реформой образования. Духовная энергия народа нашла выход в издании сотен книг и газет.
                 </p>
-                <div class="flex items-center space-x-6">
-                    <div class="text-center p-4 gold-glass rounded-3xl min-w-[120px]">
-                        <div class="text-3xl mb-2">🐎</div>
-                        <div id="stat1" class="text-[10px] uppercase font-bold text-amber-500">Скотоводство</div>
-                    </div>
-                    <div class="text-center p-4 gold-glass rounded-3xl min-w-[120px]">
-                        <div class="text-3xl mb-2">🌾</div>
-                        <div id="stat2" class="text-[10px] uppercase font-bold text-amber-500">Земледелие</div>
-                    </div>
-                </div>
             </div>
-            <div class="lg:col-span-7 bg-black/30 p-8 rounded-[4rem] border border-amber-900/20 h-96 md:h-[500px]">
-                <canvas id="economyChart"></canvas>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="pressChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <!-- Section 2: Artifact Showcase (Plan) -->
-        <div class="space-y-12">
-            <h2 id="plan-title" class="text-3xl font-black text-center gold-text uppercase tracking-widest italic">Мастерство и Быт</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-11 gap-8">
-                
-                <!-- Animal Style: Large Accent -->
-                <div class="lg:col-span-6 gold-glass p-10 rounded-[3.5rem] artifact-card flex flex-col justify-center relative overflow-hidden">
-                    <div class="relative z-10">
-                        <div class="text-6xl mb-8">🦌</div>
-                        <h3 id="art-title" class="text-3xl font-black mb-6 text-white leading-tight uppercase">Звериный стиль</h3>
-                        <p id="art-desc" class="text-stone-400 text-lg leading-relaxed">
-                            Уникальное искусство изображения животных в динамике. Олень, барс и горный козел — священные символы, украшавшие оружие, одежду и конскую сбрую.
-                        </p>
-                    </div>
-                    <!-- Abstract golden motif -->
-                    <div class="absolute -bottom-10 -right-10 text-[18rem] opacity-5 pointer-events-none rotate-12">🔱</div>
+        <!-- Section 2: Baitursynov Reform -->
+        <div class="bg-sky-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl intellectual-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">✒️</div>
+                    <div id="reform-label" class="text-sky-300 font-black text-sm uppercase tracking-[0.3em]">Writing Reform</div>
                 </div>
-
-                <!-- Iron metallurgy -->
-                <div class="lg:col-span-5 bg-stone-900/80 p-10 rounded-[3.5rem] border border-stone-800 artifact-card">
-                    <div class="text-5xl mb-6">🗡️</div>
-                    <h3 id="iron-title" class="text-2xl font-bold mb-4 text-amber-500 uppercase">Эпоха Железа</h3>
-                    <p id="iron-desc" class="text-stone-400 leading-relaxed">
-                        Саки в совершенстве овладели плавкой железа. Короткий меч (акинак), бронзовые зеркала и наконечники стрел сделали их армию одной из сильнейших в мире.
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="reform-title" class="text-3xl font-black tracking-tight uppercase text-sky-200">Ахмет Байтурсынов: «Төте жазу»</h3>
+                    <p id="reform-desc" class="text-xl text-sky-50 font-light leading-relaxed">
+                        «Учитель нации» реформировал арабскую графику, адаптировав её к фонетике казахского языка. Его букварь стал основой для ликвидации безграмотности в степи.
                     </p>
                 </div>
-
-                <!-- Housing -->
-                <div class="lg:col-span-5 gold-glass p-10 rounded-[3.5rem] artifact-card flex items-center space-x-8">
-                    <div class="text-6xl shrink-0">🛖</div>
-                    <div>
-                        <h3 id="house-title" class="text-xl font-bold mb-2 text-white uppercase tracking-wide">Переносные дома</h3>
-                        <p id="house-desc" class="text-stone-400 text-sm">Юрты и повозки-куйме позволяли сакам быть мобильными, сохраняя уют даже во время долгих переходов.</p>
-                    </div>
-                </div>
-
-                <!-- Diet -->
-                <div class="lg:col-span-6 bg-amber-600/10 p-10 rounded-[3.5rem] border border-amber-600/30 artifact-card flex items-center space-x-8">
-                    <div class="text-6xl shrink-0">🍶</div>
-                    <div>
-                        <h3 id="food-title" class="text-xl font-bold mb-2 text-amber-500 uppercase tracking-wide">Рацион воинов</h3>
-                        <p id="food-desc" class="text-stone-400 text-sm">Питание состояло из мяса и кисломолочных продуктов. Саки особенно ценили кумыс и шубат за их целебные свойства.</p>
-                    </div>
-                </div>
-
             </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none">📖</div>
         </div>
 
-        <!-- Section 3: The Golden Man (Special Feature) -->
-        <div class="bg-[#4c0519] rounded-[4rem] p-10 md:p-20 text-center relative overflow-hidden shadow-2xl border-y-4 border-amber-500/20">
-            <div class="relative z-10 max-w-3xl mx-auto space-y-8">
-                <div class="text-7xl">👤</div>
-                <h2 id="goldman-title" class="text-3xl md:text-4xl font-black gold-text uppercase">Золотой человек</h2>
-                <p id="goldman-desc" class="text-xl text-stone-300 font-light leading-relaxed">
-                    Находка в кургане Иссык стала символом мастерства саков. Более 4000 золотых украшений, инкрустированных камнями, демонстрируют высочайший уровень ювелирного дела.
-                </p>
-                <div class="flex justify-center space-x-1">
-                    <div class="w-16 h-1 bg-amber-500"></div>
-                    <div class="w-4 h-1 bg-amber-500"></div>
-                </div>
+        <!-- Section 3: Key Cultural Elements -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="culture-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-sky-800">
+                <div class="text-5xl mb-4">📰</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Газета «Қазақ»</h4>
+                <p id="fact1-d" class="text-sm text-sky-700/70 leading-relaxed">Главное издание нации (1913–1918), ставшее политической и культурной трибуной для идей Алаш-Орды.</p>
             </div>
-            <!-- Abstract crown shape -->
-            <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none flex items-center justify-center">
-                <div class="text-[30rem]">👑</div>
+            <div class="culture-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-amber-500">
+                <div class="text-5xl mb-4">🕊️</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Литература</h4>
+                <p id="fact2-d" class="text-sm text-sky-700/70 leading-relaxed">Творчество Шакарима Кудайбердиева, Магжана Жумабаева и Султанмахмута Торайгырова — расцвет философской поэзии.</p>
+            </div>
+            <div class="culture-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-sky-600">
+                <div class="text-5xl mb-4">🎭</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Театр и Музыка</h4>
+                <p id="fact3-d" class="text-sm text-sky-700/70 leading-relaxed">Зарождение профессионального театрального искусства и запись первых образцов казахского фольклора.</p>
             </div>
         </div>
 
     </main>
 
-    <footer class="py-24 bg-black border-t border-amber-900/30">
+    <footer class="mt-20 py-20 bg-sky-950 text-sky-200/50">
         <div class="max-w-4xl mx-auto px-6 text-center">
-            <div class="text-amber-500 text-4xl mb-8">“</div>
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-stone-400">
-                «Быт саков был отражением их духа: свободным как степной ветер и благородным как чистое золото.»
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Чтобы быть самостоятельной нацией, нам нужны собственная культура, язык и литература».
             </p>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-sky-700">Kazakh Renaissance: Early 20th Century</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Золото и Степь",
-                vizTitle: "Ритм жизни саков",
-                vizDesc: "Хозяйство саков было комплексным: от кочевого скотоводства на западе до оседлого земледелия в долинах Сырдарьи и Семиречья.",
-                badge: "Экономический профиль",
-                stat1: "Скотоводство", stat2: "Земледелие",
-                planTitle: "Мастерство и Быт",
-                artTitle: "Звериный стиль", artDesc: "Уникальное искусство изображения животных в динамике. Олень и барс — священные символы, украшавшие всё: от оружия до одежды.",
-                ironTitle: "Эпоха Железа", ironDesc: "Саки в совершенстве овладели плавкой железа. Короткий меч (акинак) и железные доспехи сделали их армию непобедимой.",
-                houseTitle: "Переносные дома", houseDesc: "Юрты и повозки-куйме позволяли сакам быть мобильными, сохраняя комфорт во время долгих сезонных кочевок.",
-                foodTitle: "Рацион воинов", foodDesc: "Питание состояло из конины, баранины и кисломолочных продуктов. Кумыс был главным священным напитком.",
-                goldmanTitle: "Золотой человек", goldmanDesc: "Символ сакской культуры. Более 4000 золотых бляшек на одежде царевича показывают невероятный уровень ювелиров степи.",
-                footer: "«Быт саков был отражением их духа: свободным как степной ветер и благородным как чистое золото.»",
-                chartLabels: ["Лошади", "Овцы", "КРС", "Верблюды", "Зерновые", "Ремесло"]
+                title: "Культура ХХ века",
+                vizTitle: "Взлет Просвещения",
+                vizDesc: "Начало ХХ века — время формирования профессиональной казахской литературы, журналистики и реформы национального алфавита.",
+                statusBadge: "Эпоха Просвещения",
+                reformTitle: "Ахмет Байтурсынов: Реформа",
+                reformDesc: "Создание 'Төте жазу' (Ясного письма) позволило миллионам казахов быстро освоить грамоту и приобщиться к мировым знаниям.",
+                fact1T: "Газета «Қазақ»", fact1D: "Основанная А. Букейхановым, А. Байтурсыновым и М. Дулатовым, газета стала 'мозговым центром' казахского общества.",
+                fact2T: "Слово поэта", fact2D: "Темы свободы, знания и любви к родине стали главными в творчестве новой плеяды казахских писателей.",
+                fact3T: "Первые ростки", fact3D: "В 1910-х годах появились первые казахские романы (например, 'Бакытсыз Жамал' М. Дулатова) и театральные постановки.",
+                footer: "«Чтобы быть самостоятельной нацией, нам нужны собственная культура, язык и литература». — Ахмет Байтурсынов",
+                chartLabels: ["Газета 'Қазақ'", "Журнал 'Айқап'", "Издания на латинице", "Другая периодика"],
+                chartTitle: "Структура казахской прессы (1913-1917)"
             },
             kz: {
-                title: "Алтын мен Дала",
-                vizTitle: "Сақтардың өмір ырғағы",
-                vizDesc: "Сақтардың шаруашылығы кешенді болды: батыстағы көшпелі мал шаруашылығынан бастап, Сырдария мен Жетісу алқаптарындағы отырықшы егіншілікке дейін.",
-                badge: "Экономикалық профиль",
-                stat1: "Мал шаруашылығы", stat2: "Егіншілік",
-                planTitle: "Шеберлік пен Тұрмыс",
-                artTitle: "Аң стилі", artDesc: "Жануарларды динамикада бейнелеудің бірегей өнері. Бұғы мен барыс — қару-жарақ пен киімді безендірген қасиетті нышандар.",
-                ironTitle: "Темір дәуірі", ironDesc: "Сақтар темір балқытуды жетік меңгерген. Қысқа семсер (ақинақ) және темір сауыттар олардың әскерін жеңілмес етті.",
-                houseTitle: "Көшпелі баспана", houseDesc: "Киіз үйлер мен күймелер сақтарға маусымдық көш кезінде жайлылықты сақтай отырып, мобильді болуға мүмкіндік берді.",
-                foodTitle: "Жауынгерлер ас мәзірі", foodDesc: "Тағамдары жылқы, қой етінен және сүт өнімдерінен тұрды. Қымыз ең басты қасиетті сусын саналды.",
-                goldmanTitle: "Алтын адам", goldmanDesc: "Сақ мәдениетінің символы. Ханзада киіміндегі 4000-нан астам алтын әшекей дала зергерлерінің керемет деңгейін көрсетеді.",
-                footer: "«Сақтардың тұрмысы олардың рухының аййнасы болды: дала желіндей еркін және таза алтындай текті.»",
-                chartLabels: ["Жылқы", "Қой", "ІҚМ", "Түйе", "Дәнді дақылдар", "Қолөнер"]
+                title: "XX ғ. мәдениеті",
+                vizTitle: "Ағартушылықтың өрлеуі",
+                vizDesc: "ХХ ғасырдың басы — кәсіби қазақ әдебиетінің, журналистикасының қалыптасуы және ұлттық әліпбидің реформалану кезеңі.",
+                statusBadge: "Ағартушылық дәуірі",
+                reformTitle: "Ахмет Байтұрсынов: Реформа",
+                reformDesc: "«Төте жазу» әліпбиінің жасалуы миллиондаған қазақтың сауатын ашып, әлемдік білімге ұмтылуына жол ашты.",
+                fact1T: "«Қазақ» газеті", fact1D: "Ә. Бөкейханов, А. Байтұрсынов және М. Дулатов негізін қалаған газет қазақ қоғамының 'ми орталығына' айналды.",
+                fact2T: "Ақын сөзі", fact2D: "Бостандық, білім және отансүйгіштік тақырыптары қазақ жазушыларының жаңа буынының шығармаларында басты орын алды.",
+                fact3T: "Алғашқы қадамдар", fact3D: "1910 жылдары алғашқы қазақ романдары (мысалы, М. Дулатовтың 'Бақытсыз Жамал') және театр қойылымдары пайда болды.",
+                footer: "«Өз алдына ұлт болу үшін бізге өз мәдениетіміз, тіліміз бен әдебиетіміз керек». — Ахмет Байтұрсынов",
+                chartLabels: ["'Қазақ' газеті", "'Айқап' журналы", "Латын басылымдары", "Басқа мерзімді басылымдар"],
+                chartTitle: "Қазақ баспасөзінің құрылымы (1913-1917)"
             },
             en: {
-                title: "Gold and the Steppe",
-                vizTitle: "Rhythm of Saka Life",
-                vizDesc: "The Saka economy was complex: from nomadic pastoralism in the west to sedentary farming in the Syrdarya and Zhetysu valleys.",
-                badge: "Economic Profile",
-                stat1: "Livestock", stat2: "Agriculture",
-                planTitle: "Crafts and Daily Life",
-                artTitle: "Animal Style", artDesc: "A unique art of depicting animals in motion. The deer and leopard were sacred symbols decorating weapons and clothing.",
-                ironTitle: "Iron Age", ironDesc: "The Sakas perfectly mastered iron smelting. The short sword (akinakes) and iron armor made their army invincible.",
-                houseTitle: "Mobile Homes", houseDesc: "Yurts and wheeled carts (kuyme) allowed the Sakas to stay mobile and comfortable during long migrations.",
-                foodTitle: "Warriors' Diet", foodDesc: "Their diet consisted of horse meat, mutton, and dairy. Kumis was the primary sacred drink of the nomads.",
-                goldmanTitle: "The Golden Man", goldmanDesc: "A symbol of Saka culture. More than 4000 gold pieces on the prince's clothing show an incredible level of steppe jewelry.",
-                footer: "«The Saka's daily life reflected their spirit: as free as the steppe wind and as noble as pure gold.»",
-                chartLabels: ["Horses", "Sheep", "Cattle", "Camels", "Grains", "Crafts"]
+                title: "20th C. Culture",
+                vizTitle: "Rise of Enlightenment",
+                vizDesc: "The early 20th century was a formative period for professional Kazakh literature, journalism, and the reform of the national alphabet.",
+                statusBadge: "Enlightenment Era",
+                reformTitle: "Akhmet Baitursynov: Reform",
+                reformDesc: "The creation of 'Tote Jazu' (Clear Writing) allowed millions of Kazakhs to quickly attain literacy and access global knowledge.",
+                fact1T: "The 'Kazakh' Newspaper", fact1D: "Founded by A. Bokeikhanov, A. Baitursynov, and M. Dulatov, it became the 'brain center' of the Kazakh nation.",
+                fact2T: "The Poet's Word", fact2D: "Themes of freedom, education, and patriotism dominated the works of a new generation of Kazakh intellectuals.",
+                fact3T: "First Seeds", fact3D: "The 1910s saw the emergence of the first Kazakh novels (e.g., 'Unhappy Jamal' by M. Dulatov) and professional theatrical plays.",
+                footer: "«To be an independent nation, we need our own culture, language, and literature.» — Akhmet Baitursynov",
+                chartLabels: ["'Kazakh' Newspaper", "'Aikap' Magazine", "Latinized editions", "Other Periodicals"],
+                chartTitle: "Kazakh Press Structure (1913-1917)"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('economyChart').getContext('2d');
+            const ctx = document.getElementById('pressChart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'radar',
+                type: 'doughnut',
                 data: {
                     labels: translations[lang].chartLabels,
                     datasets: [{
-                        label: 'Importance',
-                        data: [95, 85, 60, 40, 50, 90],
-                        backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                        borderColor: '#fbbf24',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#fbbf24',
-                        pointRadius: 4
+                        data: [40, 20, 15, 25],
+                        backgroundColor: ['#075985', '#0369a1', '#0ea5e9', '#7dd3fc'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                        hoverOffset: 15
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(251, 191, 36, 0.1)' },
-                            grid: { color: 'rgba(251, 191, 36, 0.1)' },
-                            pointLabels: {
-                                color: '#a8a29e',
-                                font: { family: 'Montserrat', size: 12, weight: 'bold' }
-                            },
-                            ticks: { display: false },
-                            beginAtZero: true,
-                            max: 100
-                        }
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
+                        title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
                     },
-                    plugins: { legend: { display: false } }
+                    cutout: '70%'
                 }
             });
         }
@@ -272,22 +205,19 @@
             document.getElementById('main-title').innerText = t.title;
             document.getElementById('viz-title').innerText = t.vizTitle;
             document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('stat1').innerText = t.stat1;
-            document.getElementById('stat2').innerText = t.stat2;
-            document.getElementById('plan-title').innerText = t.planTitle;
-            document.getElementById('art-title').innerText = t.artTitle; document.getElementById('art-desc').innerText = t.artDesc;
-            document.getElementById('iron-title').innerText = t.ironTitle; document.getElementById('iron-desc').innerText = t.ironDesc;
-            document.getElementById('house-title').innerText = t.houseTitle; document.getElementById('house-desc').innerText = t.houseDesc;
-            document.getElementById('food-title').innerText = t.foodTitle; document.getElementById('food-desc').innerText = t.foodDesc;
-            document.getElementById('goldman-title').innerText = t.goldmanTitle; document.getElementById('goldman-desc').innerText = t.goldmanDesc;
-            document.getElementById('footer-text').innerText = t.footer;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('reform-title').innerText = t.reformTitle;
+            document.getElementById('reform-desc').innerText = t.reformDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
                 btn.className = l === lang 
-                    ? "lang-btn px-6 py-2 rounded-xl text-sm font-black lang-active" 
-                    : "lang-btn px-6 py-2 rounded-xl text-sm font-bold hover:bg-white/5 transition-all";
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-sky-700 hover:bg-sky-100 transition-all";
             });
 
             initChart(lang);
@@ -295,148 +225,5 @@
 
         window.onload = () => changeLang('ru');
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>

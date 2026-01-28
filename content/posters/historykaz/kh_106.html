@@ -3,408 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Основы жизнеобеспечения кочевников</title>
+    <title>1917: Эпоха Алаш</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fafaf9; }
+        body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .felt-bg {
-            background-color: #f5f5f4;
-            background-image: radial-gradient(circle at center, #fefce8 0%, #f5f5f4 100%);
+        .alash-theme {
+            background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
         }
 
-        .yurt-card {
-            background: white;
-            border-radius: 3.5rem;
-            border: 2px solid #e7e5e4;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .alash-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #334155;
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .yurt-card:hover {
-            transform: scale(1.01);
-            border-color: #d97706;
-            box-shadow: 0 25px 50px -12px rgba(120, 53, 15, 0.1);
+        .alash-card:hover {
+            transform: translateY(-5px);
+            border-color: #0f172a;
         }
 
-        .lang-active {
-            background-color: #78350f;
+        .intellectual-glow {
+            box-shadow: 0 0 25px rgba(30, 58, 138, 0.15);
+        }
+
+        .btn-active {
+            background-color: #1e3a8a;
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(120, 53, 15, 0.3);
-        }
-
-        .wood-accent {
-            background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
         }
 
         canvas {
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
     </style>
 </head>
-<body class="felt-bg text-stone-900 min-h-screen">
+<body class="alash-theme text-slate-900 min-h-screen">
 
-<!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-stone-200 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-slate-300 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <span class="text-4xl">🛖</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tight text-stone-800">Быт Кочевников</h1>
+                <span class="text-3xl">🇰🇿</span>
+                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-widest text-blue-900">Алаш 1917</h1>
             </div>
-            <div class="flex bg-stone-100 p-1 rounded-2xl border border-stone-200">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+            <div class="flex bg-slate-200/50 p-1 rounded-full border border-slate-300">
+                <button onclick="changeLang('ru')" id="btn-ru" class="px-6 py-2 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="changeLang('kz')" id="btn-kz" class="px-6 py-2 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="changeLang('en')" id="btn-en" class="px-6 py-2 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-16">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
         
-        <!-- Section 1: Resource Map (Chart) -->
-        <div class="bg-white rounded-[4rem] p-8 md:p-16 shadow-xl border border-stone-100 relative overflow-hidden">
-            <div class="absolute -top-24 -left-24 w-96 h-96 bg-amber-100/50 rounded-full blur-3xl"></div>
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5">
-                    <div id="badge" class="inline-block bg-amber-700 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 tracking-widest">Life Support System</div>
-                    <h2 id="viz-title" class="text-3xl md:text-4xl font-black text-stone-900 mb-6 leading-tight">Экономика выживания</h2>
-                    <p id="viz-desc" class="text-lg text-stone-500 font-light leading-relaxed mb-8">
-                        Жизнь кочевника — это идеальный баланс между использованием природных ресурсов и их сохранением. Главный капитал степняка — его скот.
-                    </p>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="border-l-4 border-amber-700 pl-4">
-                            <div class="text-2xl font-black text-stone-800">80%</div>
-                            <div id="stat1" class="text-xs uppercase font-bold text-stone-400 text-nowrap">Продуктов от скота</div>
-                        </div>
-                        <div class="border-l-4 border-amber-700 pl-4">
-                            <div class="text-2xl font-black text-stone-800">100%</div>
-                            <div id="stat2" class="text-xs uppercase font-bold text-stone-400 text-nowrap">Безотходное бытие</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="lg:col-span-7 h-80 md:h-[450px]">
-                    <canvas id="resourceChart"></canvas>
+        <!-- Section 1: Political Landscape -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white/40 p-10 rounded-[3rem] border border-white flex flex-col justify-center">
+                <div id="status-badge" class="inline-block bg-blue-800 text-white px-4 py-1 rounded-full text-xs font-black uppercase mb-6 w-fit">National Awakening</div>
+                <h2 id="viz-title" class="text-3xl font-black mb-6 leading-tight uppercase">Борьба за Автономию</h2>
+                <p id="viz-desc" class="text-lg text-slate-700 leading-relaxed font-light">
+                    После Февральской революции 1917 года казахская интеллигенция получила шанс на самоопределение. Была создана партия «Алаш», объединившая народ вокруг идеи национальной республики.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-xl flex items-center justify-center">
+                <div class="h-64 md:h-80 w-full">
+                    <canvas id="politicalChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: The Core Elements (Plan) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <!-- Large Focus: The Yurt -->
-            <div class="yurt-card p-10 md:p-14 flex flex-col justify-between">
-                <div>
-                    <div class="text-6xl mb-8">🏠</div>
-                    <h3 id="card1-t" class="text-3xl font-black mb-6 text-stone-800">Юрта: Мобильный шедевр</h3>
-                    <p id="card1-d" class="text-stone-500 text-lg leading-relaxed mb-8">
-                        Уникальное переносное жилище, идеально приспособленное к климату степи. Состоит из деревянного каркаса (кереге, уык, шанырак) и войлочного покрытия. Собирается за 2-3 часа.
+        <!-- Section 2: Alash Orda -->
+        <div class="bg-blue-900 rounded-[3rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl intellectual-glow">
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-4 text-center">
+                    <div class="text-[8rem] leading-none mb-4">📜</div>
+                    <div id="alash-label" class="text-blue-300 font-black text-sm uppercase tracking-[0.3em]">Alash Autonomy</div>
+                </div>
+                <div class="md:col-span-8 space-y-6">
+                    <h3 id="alash-title" class="text-3xl font-black tracking-tight uppercase text-blue-200">Провозглашение Алаш-Орды</h3>
+                    <p id="alash-desc" class="text-xl text-blue-50 font-light leading-relaxed">
+                        В декабре 1917 года на Общекиргизском съезде в Оренбурге была провозглашена Алашская автономия. Столицей стал город Семипалатинск (Алаш-кала).
                     </p>
                 </div>
-                <div class="flex gap-4">
-                    <span class="px-4 py-2 bg-stone-100 rounded-full text-xs font-bold text-stone-600 uppercase">🛡️ Защита</span>
-                    <span class="px-4 py-2 bg-stone-100 rounded-full text-xs font-bold text-stone-600 uppercase">🔄 Мобильность</span>
-                </div>
             </div>
+            <div class="absolute -bottom-20 -left-20 text-[20rem] opacity-5 pointer-events-none">🏛️</div>
+        </div>
 
-            <!-- Right Column: Food and Clothing -->
-            <div class="space-y-10">
-                <div class="wood-accent rounded-[3.5rem] p-10 text-white shadow-lg">
-                    <div class="flex items-center space-x-6">
-                        <span class="text-5xl">🍶</span>
-                        <div>
-                            <h3 id="card2-t" class="text-2xl font-bold mb-2">Рацион питания</h3>
-                            <p id="card2-d" class="text-amber-100/70 text-sm leading-relaxed">Основу составляли молочные продукты (кумыс, шубат, курт) и мясо. Хлеб и растительная пища были дополнением, получаемым через обмен.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-amber-50 rounded-[3.5rem] p-10 border border-amber-100">
-                    <div class="flex items-center space-x-6">
-                        <span class="text-5xl">🧵</span>
-                        <div>
-                            <h3 id="card3-t" class="text-2xl font-bold mb-2 text-stone-800">Одежда и материалы</h3>
-                            <p id="card3-d" class="text-stone-600 text-sm leading-relaxed">Шерсть, кожа и мех — три кита кочевой моды. Войлок использовался везде: от подстилок до верхней одежды (шекпен) и головных уборов.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-[3.5rem] p-10 border border-stone-200 shadow-sm flex items-center space-x-6">
-                    <span class="text-5xl">🐫</span>
-                    <div>
-                        <h3 id="card4-t" class="text-2xl font-bold mb-2 text-stone-800">Транспортная триада</h3>
-                        <p id="card4-d" class="text-stone-500 text-sm leading-relaxed">Лошадь для верховой езды, верблюд для перевозки тяжелых грузов (кереуен) и быки для телег.</p>
-                    </div>
-                </div>
+        <!-- Section 3: Key Leaders & Goals -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="alash-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-800">
+                <div class="text-5xl mb-4">👤</div>
+                <h4 id="fact1-t" class="font-bold text-lg mb-2 uppercase">Лидеры</h4>
+                <p id="fact1-d" class="text-sm text-slate-600 leading-relaxed">А. Букейханов, А. Байтурсынов, М. Дулатов — интеллектуальный цвет нации, ставший во главе правительства.</p>
+            </div>
+            <div class="alash-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-600">
+                <div class="text-5xl mb-4">📰</div>
+                <h4 id="fact2-t" class="font-bold text-lg mb-2 uppercase">Программа</h4>
+                <p id="fact2-d" class="text-sm text-slate-600 leading-relaxed">Партия требовала всеобщего избирательного права, свободы слова и возвращения земель коренному населению.</p>
+            </div>
+            <div class="alash-card p-8 rounded-[2.5rem] text-center border-t-8 border-t-blue-400">
+                <div class="text-5xl mb-4">🤝</div>
+                <h4 id="fact3-t" class="font-bold text-lg mb-2 uppercase">Выбор пути</h4>
+                <p id="fact3-d" class="text-sm text-slate-600 leading-relaxed">В условиях наступающего хаоса лидеры Алаш стремились создать правовое демократическое государство.</p>
             </div>
         </div>
 
     </main>
 
-    <footer class="mt-20 py-24 bg-stone-900 text-stone-400">
+    <footer class="mt-20 py-20 bg-slate-900 text-slate-400">
         <div class="max-w-4xl mx-auto px-6 text-center">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight mb-8">
-                «Жизнь кочевника — это не борьба с природой, а умение раствориться в её законах, используя каждый дар степи с мудростью.»
+            <p id="footer-quote" class="text-2xl font-light italic leading-relaxed">
+                «Основание нации — в её единстве и просвещении, а не в силе оружия».
             </p>
-            <div class="w-16 h-1 bg-amber-700 mx-auto"></div>
+            <div class="mt-8 text-xs font-bold uppercase tracking-widest text-slate-600">History of Kazakhstan: Alash Movement Period</div>
         </div>
     </footer>
 
     <script>
         const translations = {
             ru: {
-                title: "Быт Кочевников",
-                vizTitle: "Экономика выживания",
-                vizDesc: "Жизнь кочевника — это идеальный баланс между использованием природных ресурсов и их сохранением. Скот — основа всего.",
-                badge: "Система жизнеобеспечения",
-                stat1: "Продукты от скота", stat2: "Безотходный быт",
-                card1T: "Юрта: Мобильный шедевр",
-                card1D: "Уникальное переносное жилище, идеально приспособленное к климату степи. Состоит из деревянного каркаса и войлока. Собирается за 2-3 часа.",
-                card2T: "Рацион питания",
-                card2D: "Основу составляли молочные продукты (кумыс, шубат, курт) и мясо. Продукты длительного хранения были жизненно важны.",
-                card3T: "Одежда и материалы",
-                card3D: "Шерсть, кожа и мех — главные материалы. Войлок (кииз) служил утеплителем, одеждой и ковром.",
-                card4T: "Транспортная триада",
-                card4D: "Лошадь для езды, верблюд для грузов, быки для тягловой силы. Каждый зверь имел свою роль в кочевке.",
-                footer: "«Жизнь кочевника — это не борьба с природой, а умение раствориться в её законах, используя каждый дар степи с мудростью.»",
-                chartLabels: ["Молочные продукты", "Мясные продукты", "Изделия из шерсти", "Кожа и кость", "Ремесла"],
-                chartTitle: "Распределение ресурсов скота (%)"
+                title: "Алаш 1917",
+                vizTitle: "Борьба за Автономию",
+                vizDesc: "Партия «Алаш» стала первой политической организацией казахов. Основная цель — создание национальной автономии в составе демократической России.",
+                statusBadge: "Национальное пробуждение",
+                alashTitle: "Провозглашение Алаш-Орды",
+                alashDesc: "В декабре 1917 года II Общеказахский съезд объявил о создании автономии Алаш и правительства Алаш-Орда под председательством Алихана Букейханова.",
+                fact1T: "Великая Тройка", fact1D: "Алихан Букейханов — лидер, Ахмет Байтурсынов — просветитель, Мыржакып Дулатов — трибун народа.",
+                fact2T: "10 пунктов Алаш", fact2D: "Программа партии включала требования территориальной целостности и собственной судебной системы.",
+                fact3T: "Демократический путь", fact3D: "Алашординцы верили в парламентскую республику и стремились защитить народ от гражданской войны.",
+                footer: "«Основание нации — в её единстве и просвещении, а не в силе оружия».",
+                chartLabels: ["Члены партии Алаш", "Поддержка в уездах", "Интеллигенция", "Делегаты съезда"],
+                chartTitle: "Рост влияния движения Алаш (%)"
             },
             kz: {
-                title: "Көшпелілер тұрмысы",
-                vizTitle: "Өмір сүру экономикасы",
-                vizDesc: "Көшпелілер өмірі — табиғи ресурстарды пайдалану мен оларды сақтау арасындағы тамаша теңгерім. Мал — бәрінің негізі.",
-                badge: "Өмірді қамтамасыз ету жүйесі",
-                stat1: "Мал өнімдері", stat2: "Қалдықсыз тұрмыс",
-                card1T: "Киіз үй: Мобильді жауһар",
-                card1D: "Дала климатына өте жақсы бейімделген бірегей тасымалы баспана. Ағаш қаңқа мен киізден тұрады. 2-3 сағатта жиналады.",
-                card2T: "Тамақтану рационы",
-                card2D: "Негізгі тағамдар — сүт өнімдері (қымыз, шұбат, құрт) мен ет. Ұзақ сақтауға болатын өнімдер өте маңызды болды.",
-                card3T: "Киім және материалдар",
-                card3D: "Жүн, тері және аң терісі — негізгі материалдар. Киіз жылытқыш, киім және кілем ретінде қызмет етті.",
-                card4T: "Көлік триадасы",
-                card4D: "Мінуге арналған жылқы, жүкке арналған түйе, күшке арналған өгіздер. Әр жануардың көште өз орны болды.",
-                footer: "«Көшпелілер өмірі — табиғатпен күрес емес, оның заңдылықтарымен үйлесе білу және дала сыйын даналықпен пайдалану.»",
-                chartLabels: ["Сүт өнімдері", "Ет өнімдері", "Жүн бұйымдары", "Тері мен сүйек", "Қолөнер"],
-                chartTitle: "Мал ресурстарын бөлу (%)"
+                title: "Алаш 1917",
+                vizTitle: "Автономия жолындағы күрес",
+                vizDesc: "«Алаш» партиясы қазақтардың алғашқы саяси ұйымы болды. Басты мақсат — демократиялық Ресей құрамында ұлттық автономия құру.",
+                statusBadge: "Ұлттық жаңғыру",
+                alashTitle: "Алашорданың жариялануы",
+                alashDesc: "1917 жылғы желтоқсанда II жалпықазақ съезі Алаш автономиясын және Әлихан Бөкейханов бастаған Алашорда үкіметін құру туралы шешім қабылдады.",
+                fact1T: "Ұлы Үштік", fact1D: "Әлихан Бөкейханов — көшбасшы, Ахмет Байтұрсынов — ұлт ұстазы, Міржақып Дулатов — халық жаршысы.",
+                fact2T: "Алаш бағдарламасы", fact2D: "Партия бағдарламасы аумақтық тұтастық пен жеке сот жүйесін құру талаптарын қамтыды.",
+                fact3T: "Демократиялық жол", fact3D: "Алашордалықтар парламенттік республикаға сенді және халықты азаматтық соғыстан қорғауға тырысты.",
+                footer: "«Ұлттың негізі — бірлік пен білімде, қарудың күшінде емес».",
+                chartLabels: ["Алаш партиясы мүшелері", "Уездердегі қолдау", "Зиялылар", "Съезд делегаттары"],
+                chartTitle: "Алаш қозғалысы ықпалының артуы (%)"
             },
             en: {
-                title: "Nomadic Life",
-                vizTitle: "Survival Economy",
-                vizDesc: "The life of a nomad is a perfect balance between using natural resources and preserving them. Livestock is the foundation.",
-                badge: "Life Support System",
-                stat1: "Livestock products", stat2: "Zero-waste lifestyle",
-                card1T: "Yurt: Mobile Masterpiece",
-                card1D: "A unique portable dwelling, perfectly adapted to the steppe climate. Consists of a wooden frame and felt. Assembled in 2-3 hours.",
-                card2T: "Dietary Habits",
-                card2D: "The basis was dairy products (kumis, shubat, kurt) and meat. Long-storage products were vital for survival.",
-                card3T: "Clothing & Materials",
-                card3D: "Wool, leather, and fur were the main materials. Felt (kiiz) served as insulation, clothing, and carpets.",
-                card4T: "Transport Triad",
-                card4D: "Horses for riding, camels for heavy loads, oxen for draft power. Each animal had its role in the migration.",
-                footer: "«A nomad's life is not a struggle with nature, but the ability to dissolve into its laws, using every gift of the steppe with wisdom.»",
-                chartLabels: ["Dairy products", "Meat products", "Wool items", "Leather & Bone", "Crafts"],
-                chartTitle: "Livestock Resource Distribution (%)"
+                title: "Alash 1917",
+                vizTitle: "Struggle for Autonomy",
+                vizDesc: "The 'Alash' party was the first Kazakh political organization. Its primary goal was to establish national autonomy within a democratic Russia.",
+                statusBadge: "National Awakening",
+                alashTitle: "Proclamation of Alash Orda",
+                alashDesc: "In December 1917, the 2nd All-Kazakh Congress proclaimed the Alash Autonomy and established the Alash Orda government led by Alikhan Bokeikhanov.",
+                fact1T: "The Great Three", fact1D: "Alikhan Bokeikhanov (leader), Akhmet Baitursynov (educator), and Myrzhakyp Dulatov (orator).",
+                fact2T: "Alash Program", fact2D: "The party's program demanded territorial integrity and a distinct national judicial system.",
+                fact3T: "Democratic Path", fact3D: "The Alash leaders believed in a parliamentary republic and aimed to shield the people from civil unrest.",
+                footer: "«The foundation of a nation lies in its unity and enlightenment, not in the strength of arms.»",
+                chartLabels: ["Alash Party Members", "Regional Support", "Intelligentsia", "Congress Delegates"],
+                chartTitle: "Growth of Alash Influence (%)"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('resourceChart').getContext('2d');
+            const ctx = document.getElementById('politicalChart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'doughnut',
+                type: 'line',
                 data: {
                     labels: translations[lang].chartLabels,
                     datasets: [{
-                        data: [40, 25, 20, 10, 5],
-                        backgroundColor: ['#78350f', '#b45309', '#d97706', '#f59e0b', '#fbbf24'],
-                        borderWidth: 0,
-                        hoverOffset: 30
+                        label: '%',
+                        data: [15, 45, 80, 100],
+                        borderColor: '#1e3a8a',
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 4,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#fff'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '65%',
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
                     plugins: {
-                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } },
+                        legend: { display: false },
                         title: { display: true, text: translations[lang].chartTitle, font: { family: 'Montserrat', size: 16 } }
                     }
                 }
             });
         }
 
-        function setLang(lang) {
+        function changeLang(lang) {
             const t = translations[lang];
             document.getElementById('main-title').innerText = t.title;
             document.getElementById('viz-title').innerText = t.vizTitle;
             document.getElementById('viz-desc').innerText = t.vizDesc;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('stat1').innerText = t.stat1;
-            document.getElementById('stat2').innerText = t.stat2;
-            document.getElementById('card1-t').innerText = t.card1T; document.getElementById('card1-d').innerText = t.card1D;
-            document.getElementById('card2-t').innerText = t.card2T; document.getElementById('card2-d').innerText = t.card2D;
-            document.getElementById('card3-t').innerText = t.card3T; document.getElementById('card3-d').innerText = t.card3D;
-            document.getElementById('card4-t').innerText = t.card4T; document.getElementById('card4-d').innerText = t.card4D;
-            document.getElementById('footer-text').innerText = t.footer;
+            document.getElementById('status-badge').innerText = t.statusBadge;
+            document.getElementById('alash-title').innerText = t.alashTitle;
+            document.getElementById('alash-desc').innerText = t.alashDesc;
+            document.getElementById('fact1-t').innerText = t.fact1T; document.getElementById('fact1-d').innerText = t.fact1D;
+            document.getElementById('fact2-t').innerText = t.fact2T; document.getElementById('fact2-d').innerText = t.fact2D;
+            document.getElementById('fact3-t').innerText = t.fact3T; document.getElementById('fact3-d').innerText = t.fact3D;
+            document.getElementById('footer-quote').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
-                btn.className = l === lang 
-                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-200 transition-all";
+                if(btn) btn.className = l === lang 
+                    ? "px-6 py-2 rounded-full text-sm font-black btn-active" 
+                    : "px-6 py-2 rounded-full text-sm font-bold text-blue-900 hover:bg-blue-100 transition-all";
             });
 
             initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
+        window.onload = () => changeLang('ru');
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>

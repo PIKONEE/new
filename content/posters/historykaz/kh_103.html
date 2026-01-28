@@ -3,450 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Эпоха бронзы и ее особенности</title>
+    <title>Палеолит: Археологический срез</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../libs/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
 
-        .bronze-bg {
-            background-color: #fdfaf6;
-            background-image: radial-gradient(circle at top right, #fff7ed 0%, #fdfaf6 100%);
+        .cave-bg {
+            background-color: #1a1512;
+            background-image: radial-gradient(circle at 50% 50%, #2a221d 0%, #1a1512 100%);
         }
 
-        .sun-gradient {
-            background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+        .excavation-line {
+            background: linear-gradient(180deg, #d97706 0%, #78350f 50%, #451a03 100%);
         }
 
-        .mosaic-card {
-            background: white;
-            border-radius: 2.5rem;
-            box-shadow: 0 4px 20px -2px rgba(180, 83, 9, 0.05);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid #ffedd5;
+        .era-card {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .mosaic-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px -10px rgba(180, 83, 9, 0.1);
-            border-color: #fbbf24;
+        .era-card:hover {
+            transform: translateX(10px);
+            background: rgba(251, 191, 36, 0.05);
         }
 
-        .lang-active {
-            background-color: #d97706;
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.3);
-        }
-
-        .glow-text {
-            text-shadow: 0 0 20px rgba(217, 119, 6, 0.2);
+        .glass-dark {
+            background: rgba(42, 34, 29, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(217, 119, 6, 0.2);
         }
 
         canvas {
-            filter: drop-shadow(0 10px 15px rgba(180, 83, 9, 0.15));
+            filter: drop-shadow(0 0 15px rgba(217, 119, 6, 0.2));
         }
     </style>
 </head>
-<body class="bronze-bg text-stone-900 min-h-screen">
+<body class="cave-bg text-amber-50 min-h-screen">
 
-<!-- Header Area -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-orange-100 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <span class="text-4xl">☀️</span>
-                <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tighter text-orange-900">Эпоха Бронзы</h1>
-            </div>
-            <div class="flex bg-orange-50 p-1 rounded-2xl border border-orange-100">
-                <button onclick="setLang('ru')" id="btn-ru" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">RU</button>
-                <button onclick="setLang('kz')" id="btn-kz" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">KZ</button>
-                <button onclick="setLang('en')" id="btn-en" class="px-6 py-2 rounded-xl text-sm font-bold transition-all">EN</button>
+    <!-- Header Navigation -->
+    <header class="fixed top-0 w-full z-50 bg-[#1a1512]/90 backdrop-blur-md border-b border-amber-900/30">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 id="main-title" class="text-xl md:text-2xl font-black uppercase tracking-tighter text-amber-500">Палеолит</h1>
+            <div class="flex bg-amber-950/50 p-1 rounded-full border border-amber-500/30">
+                <button onclick="updateLang('ru')" id="btn-ru" class="px-6 py-1.5 rounded-full text-sm font-bold transition-all">RU</button>
+                <button onclick="updateLang('kz')" id="btn-kz" class="px-6 py-1.5 rounded-full text-sm font-bold transition-all">KZ</button>
+                <button onclick="updateLang('en')" id="btn-en" class="px-6 py-1.5 rounded-full text-sm font-bold transition-all">EN</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12">
+    <main class="max-w-6xl mx-auto px-6 pt-32 pb-20">
         
-        <!-- Section 1: Hero & Map (Radial Chart) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-            <!-- Summary Intro -->
-            <div class="lg:col-span-5 flex flex-col justify-center">
-                <div id="badge" class="inline-block bg-orange-100 text-orange-700 px-4 py-1 rounded-full text-xs font-black uppercase mb-6 tracking-widest w-fit">Great Metallurgy Era</div>
-                <h2 id="viz-title" class="text-4xl md:text-5xl font-black text-stone-900 mb-8 leading-none glow-text">Эпоха великих открытий</h2>
-                <p id="viz-desc" class="text-xl text-stone-600 font-light leading-relaxed">
-                    Бронза — это сплав меди и олова. Открытие этого металла позволило создавать прочные инструменты и оружие, что привело к бурному росту хозяйства и культуры.
-                </p>
-                <div class="mt-10 grid grid-cols-2 gap-6">
-                    <div class="border-l-4 border-orange-500 pl-4">
-                        <div class="text-2xl font-black text-orange-600">2800-900</div>
-                        <div id="stat1" class="text-xs uppercase font-bold text-stone-400">гг. до н.э.</div>
+        <!-- Section 1: Visual Map (The Proportions of Time) -->
+        <div class="mb-24">
+            <div class="glass-dark p-8 md:p-12 rounded-[3rem] relative overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 id="chart-title" class="text-3xl font-black mb-6 leading-none">Масштаб времени</h2>
+                        <p id="chart-desc" class="text-amber-200/70 text-lg font-light leading-relaxed mb-8">
+                            Палеолит занимает 99% всей истории человечества. Нижний палеолит — самый длинный этап, когда человек только учился быть человеком.
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-1 bg-amber-500"></div>
+                            <span id="chart-legend" class="text-xs uppercase tracking-widest font-bold">Распределение эпох</span>
+                        </div>
                     </div>
-                    <div class="border-l-4 border-orange-500 pl-4">
-                        <div class="text-2xl font-black text-orange-600">30+</div>
-                        <div id="stat2" class="text-xs uppercase font-bold text-stone-400">Поселений в КЗ</div>
+                    <div class="h-64 md:h-80">
+                        <canvas id="paleoChart"></canvas>
                     </div>
-                </div>
-            </div>
-
-            <!-- Interactive Radar Map -->
-            <div class="lg:col-span-7 bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-orange-50">
-                <h3 id="chart-title" class="text-center font-bold text-stone-400 uppercase tracking-widest mb-6">Сравнение эпох: Камень vs Бронза</h3>
-                <div class="h-80 md:h-[400px]">
-                    <canvas id="evolutionRadar"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Mosaic Plan (Asymmetric Grid) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            <!-- Long Vertical Card: Metallurgy -->
-            <div class="md:row-span-2 sun-gradient p-10 rounded-[3rem] text-white flex flex-col justify-between relative overflow-hidden">
-                <div class="relative z-10">
-                    <div class="text-6xl mb-8">🛠️</div>
-                    <h3 id="card1-t" class="text-3xl font-black mb-6 leading-tight">Секрет Бронзы</h3>
-                    <p id="card1-d" class="text-orange-50 text-lg font-light leading-relaxed">
-                        Сплав 90% меди и 10% олова сделал инструменты твердыми. Люди научились добывать руду в огромных масштабах (Жезказган, Риддер).
-                    </p>
+        <!-- Section 2: Vertical Excavation (The Timeline) -->
+        <div class="relative">
+            <!-- Central Line -->
+            <div class="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 md:-translate-x-1/2 excavation-line rounded-full opacity-50"></div>
+
+            <div class="space-y-24">
+                
+                <!-- Period: Lower Paleo -->
+                <div class="relative flex flex-col md:flex-row items-center gap-8 group">
+                    <div class="md:w-1/2 text-right hidden md:block pr-12">
+                        <span class="text-6xl font-black text-amber-900/40">2.6M</span>
+                    </div>
+                    <div class="z-10 w-10 h-10 rounded-full bg-amber-600 border-4 border-[#1a1512] flex items-center justify-center shadow-[0_0_20px_rgba(217,119,6,0.5)]">
+                        <span class="text-white text-xs">I</span>
+                    </div>
+                    <div class="md:w-1/2 glass-dark p-8 rounded-[2rem] era-card">
+                        <h3 id="era1-t" class="text-2xl font-bold text-amber-500 mb-4">Нижний Палеолит</h3>
+                        <p id="era1-d" class="text-amber-100/80 leading-relaxed">Эпоха формирования «человека умелого» и «прямоходящего». Появление первых грубых орудий труда (чопперы) и начало освоения огня.</p>
+                        <div class="mt-6 flex gap-4 text-3xl">🪨 🔥 🦍</div>
+                    </div>
                 </div>
-                <div class="absolute -bottom-10 -right-10 text-[15rem] opacity-10 rotate-12">⚒️</div>
-            </div>
 
-            <!-- Wide Card: Culture -->
-            <div class="md:col-span-2 mosaic-card p-10 flex flex-col md:flex-row gap-10 items-center">
-                <div class="shrink-0 text-center">
-                    <div class="text-7xl mb-2">🏺</div>
-                    <div id="culture-label" class="text-xs font-black text-orange-500 uppercase tracking-widest">Andronovo</div>
+                <!-- Period: Middle Paleo -->
+                <div class="relative flex flex-col md:flex-row-reverse items-center gap-8 group">
+                    <div class="md:w-1/2 text-left hidden md:block pl-12">
+                        <span class="text-6xl font-black text-amber-900/40">140K</span>
+                    </div>
+                    <div class="z-10 w-10 h-10 rounded-full bg-amber-700 border-4 border-[#1a1512] flex items-center justify-center shadow-[0_0_20px_rgba(217,119,6,0.5)]">
+                        <span class="text-white text-xs">II</span>
+                    </div>
+                    <div class="md:w-1/2 glass-dark p-8 rounded-[2rem] era-card text-right md:text-right">
+                        <h3 id="era2-t" class="text-2xl font-bold text-amber-500 mb-4">Средний Палеолит</h3>
+                        <p id="era2-d" class="text-amber-100/80 leading-relaxed text-right">Эпоха неандертальцев (Мустье). Совершенствование каменной обработки, появление первых захоронений и зачатков религиозных представлений.</p>
+                        <div class="mt-6 flex gap-4 text-3xl justify-end">🏔️ 🦴 🕯️</div>
+                    </div>
                 </div>
-                <div>
-                    <h3 id="card2-t" class="text-2xl font-bold mb-4 text-stone-900">Андроновская культура</h3>
-                    <p id="card2-d" class="text-stone-600 leading-relaxed">Крупнейшая культура эпохи. Люди жили в полуземлянках, занимались мотыжным земледелием и отгонным скотоводством. Характерная черта — богатый геометрический орнамент на сосудах.</p>
+
+                <!-- Period: Upper Paleo -->
+                <div class="relative flex flex-col md:flex-row items-center gap-8 group">
+                    <div class="md:w-1/2 text-right hidden md:block pr-12">
+                        <span class="text-6xl font-black text-amber-900/40">40K</span>
+                    </div>
+                    <div class="z-10 w-10 h-10 rounded-full bg-amber-500 border-4 border-[#1a1512] flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.5)]">
+                        <span class="text-white text-xs">III</span>
+                    </div>
+                    <div class="md:w-1/2 glass-dark p-8 rounded-[2rem] era-card">
+                        <h3 id="era3-t" class="text-2xl font-bold text-amber-500 mb-4">Верхний Палеолит</h3>
+                        <p id="era3-d" class="text-amber-100/80 leading-relaxed">Появление человека современного типа (кроманьонца). Расцвет пещерной живописи, родовой общины и сложных костяных орудий.</p>
+                        <div class="mt-6 flex gap-4 text-3xl">🎨 🏹 👤</div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Small Square: Chariots -->
-            <div class="mosaic-card p-8 text-center flex flex-col justify-center border-b-8 border-orange-500">
-                <div class="text-5xl mb-4">🏹</div>
-                <h4 id="card3-t" class="font-black text-stone-800 uppercase text-sm mb-2">Военное дело</h4>
-                <p id="card3-d" class="text-xs text-stone-500">Появление боевых колесниц и бронзовых наконечников копий и стрел.</p>
             </div>
-
-            <!-- Small Square: Sun Worship -->
-            <div class="mosaic-card p-8 text-center flex flex-col justify-center border-b-8 border-amber-400">
-                <div class="text-5xl mb-4">☀️</div>
-                <h4 id="card4-t" class="font-black text-stone-800 uppercase text-sm mb-2">Верования</h4>
-                <p id="card4-d" class="text-xs text-stone-500">Культ солнца и огня. Рисунки «солнцеголовых» божеств в урочище Тамгалы.</p>
-            </div>
-
-            <!-- Wide Card Bottom: Social -->
-            <div class="md:col-span-2 bg-stone-900 p-10 rounded-[3rem] text-white flex flex-col md:flex-row items-center gap-10 shadow-2xl">
-                <div class="flex-1">
-                    <h3 id="card5-t" class="text-2xl font-bold mb-4">Общественное устройство</h3>
-                    <p id="card5-d" class="text-stone-400">На смену родовому равенству приходит социальное расслоение. Выделяются вожди, жрецы и воины-колесничие.</p>
-                </div>
-                <div class="text-6xl grayscale opacity-50 shrink-0">🤝</div>
-            </div>
-
-            <!-- Square Bottom: Jewelry -->
-            <div class="mosaic-card p-8 text-center flex flex-col justify-center border-t-8 border-orange-200">
-                <div class="text-5xl mb-4">💍</div>
-                <h4 id="card6-t" class="font-black text-stone-800 uppercase text-sm mb-2">Ювелирное искусство</h4>
-                <p id="card6-d" class="text-xs text-stone-500">Первые золотые и бронзовые украшения, спиралевидные кольца и подвески.</p>
-            </div>
-
         </div>
+
+        <!-- Section 3: Cultural Layers (The Grid) -->
+        <div class="mt-32">
+            <h2 id="grid-title" class="text-2xl font-black uppercase tracking-widest text-center mb-16 text-amber-700">Культурные маркеры</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="p-6 rounded-3xl bg-amber-950/30 border border-amber-900/30 text-center feature-card">
+                    <div class="text-4xl mb-4">🛖</div>
+                    <h4 id="f1-t" class="font-bold text-sm uppercase mb-2">Жилище</h4>
+                    <p id="f1-d" class="text-xs text-amber-200/50">Пещеры и шалаши из костей мамонта.</p>
+                </div>
+                <div class="p-6 rounded-3xl bg-amber-950/30 border border-amber-900/30 text-center feature-card">
+                    <div class="text-4xl mb-4">🥩</div>
+                    <h4 id="f2-t" class="font-bold text-sm uppercase mb-2">Питание</h4>
+                    <p id="f2-d" class="text-xs text-amber-200/50">Мясо диких животных и съедобные корни.</p>
+                </div>
+                <div class="p-6 rounded-3xl bg-amber-950/30 border border-amber-900/30 text-center feature-card">
+                    <div class="text-4xl mb-4">🧵</div>
+                    <h4 id="f3-t" class="font-bold text-sm uppercase mb-2">Одежда</h4>
+                    <p id="f3-d" class="text-xs text-amber-200/50">Шкуры, сшитые костяными иглами.</p>
+                </div>
+                <div class="p-6 rounded-3xl bg-amber-950/30 border border-amber-900/30 text-center feature-card">
+                    <div class="text-4xl mb-4">🤝</div>
+                    <h4 id="f4-t" class="font-bold text-sm uppercase mb-2">Общество</h4>
+                    <p id="f4-d" class="text-xs text-amber-200/50">Переход от стада к родовой общине.</p>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <footer class="mt-20 py-24 bg-stone-50 border-t border-orange-100">
-        <div class="max-w-3xl mx-auto px-6 text-center">
-            <p id="footer-text" class="text-2xl md:text-3xl font-light italic leading-tight text-stone-800/80">
-                «Бронза — это металл, который сплавил воедино технологии, силу и первые проблески великих государств степи.»
+    <footer class="bg-black/50 py-20 border-t border-amber-900/20">
+        <div class="max-w-2xl mx-auto px-6 text-center">
+            <p id="footer-text" class="text-xl md:text-2xl font-light italic text-amber-100/90 leading-relaxed">
+                "Палеолит научил человека не просто выживать, а преобразовывать мир вокруг себя."
             </p>
-            <div class="mt-12 flex justify-center space-x-3">
-                <div class="w-12 h-1 bg-orange-200 rounded-full"></div>
-                <div class="w-12 h-1 bg-orange-500 rounded-full"></div>
-                <div class="w-12 h-1 bg-orange-200 rounded-full"></div>
-            </div>
+            <div class="mt-8 h-1 w-24 bg-amber-500 mx-auto rounded-full"></div>
         </div>
     </footer>
 
     <script>
-        const translations = {
+        const content = {
             ru: {
-                title: "Эпоха Бронзы",
-                vizTitle: "Эпоха великих открытий",
-                vizDesc: "Бронза — это сплав меди и олова. Открытие этого металла позволило создавать прочные инструменты и оружие, что привело к бурному росту хозяйства и культуры.",
-                chartTitle: "Сравнение: Каменный век vs Бронза",
-                badge: "Эпоха металлургии",
-                stat1: "гг. до н.э.", stat2: "Поселений в КЗ",
-                card1T: "Секрет Бронзы", card1D: "Сплав 90% меди и 10% олова сделал инструменты твердыми. Люди научились добывать руду в огромных масштабах (Жезказган, Риддер).",
-                card2T: "Андроновская культура", card2D: "Крупнейшая культура эпохи. Люди жили в полуземлянках, занимались земледелием и отгонным скотоводством. Характерны орнаментированные сосуды.",
-                card3T: "Военное дело", card3D: "Появление боевых колесниц и бронзовых наконечников копий и стрел.",
-                card4T: "Верования", card4D: "Культ солнца и огня. Рисунки «солнцеголовых» божеств в урочище Тамгалы.",
-                card5T: "Общественное устройство", card5D: "На смену родовому равенству приходит социальное расслоение. Выделяются вожди, жрецы и воины.",
-                card6T: "Ювелирное искусство", card6D: "Первые золотые и бронзовые украшения, спиралевидные кольца и подвески.",
-                footer: "«Бронза — это металл, который сплавил воедино технологии, силу и первые проблески великих государств степи.»",
-                radarLabels: ["Металлургия", "Строительство", "Земледелие", "Военное дело", "Ювелирное дело", "Общество"]
+                title: "Древнекаменный век",
+                chartTitle: "Глубина веков",
+                chartDesc: "Палеолит занимает 99% всей истории человечества. Это время величайших биологических и социальных трансформаций.",
+                chartLegend: "Доля этапов в истории",
+                chartLabels: ["Нижний (94%)", "Средний (4.5%)", "Верхний (1.5%)"],
+                era1T: "Нижний Палеолит",
+                era1D: "Эпоха формирования «человека умелого» и «прямоходящего». Появление первых грубых орудий труда (чопперы) и начало освоения огня.",
+                era2T: "Средний Палеолит",
+                era2D: "Эпоха неандертальцев (Мустье). Совершенствование каменной обработки, появление первых захоронений и зачатков религии.",
+                era3T: "Верхний Палеолит",
+                era3D: "Появление человека современного типа (кроманьонца). Расцвет пещерной живописи, родовой общины и сложных орудий.",
+                gridTitle: "Культурные маркеры",
+                f1T: "Жилище", f1D: "Пещеры и шалаши из костей мамонта.",
+                f2T: "Питание", f2D: "Мясо диких животных и собирательство.",
+                f3T: "Одежда", f3D: "Шкуры, сшитые костяными иглами.",
+                f4T: "Общество", f4D: "Переход от стада к родовой общине.",
+                footer: "«Палеолит научил человека не просто выживать, а преобразовывать мир вокруг себя.»"
             },
             kz: {
-                title: "Қола дәуірі",
-                vizTitle: "Ұлы жаңалықтар дәуірі",
-                vizDesc: "Қола — мыс пен қалайының қоспасы. Бұл металды игеру мықты құралдар мен қару-жарақ жасауға мүмкіндік берді, бұл шаруашылық пен мәдениеттің қарқынды дамуына әкелді.",
-                chartTitle: "Салыстыру: Тас дәуірі vs Қола",
-                badge: "Металлургия дәуірі",
-                stat1: "б.з.б. жж.", stat2: "ҚР-дағы қоныстар",
-                card1T: "Қола құпиясы", card1D: "90% мыс пен 10% қалайы қоспасы құралдарды қатты етті. Адамдар руданы үлкен масштабта өндіруді үйренді (Жезқазған, Риддер).",
-                card2T: "Андронов мәдениеті", card2D: "Дәуірдің ең ірі мәдениеті. Адамдар жартылай жер үйлерде тұрып, егіншілікпен және жайылымдық мал шаруашылығымен айналысты.",
-                card3T: "Әскери іс", card3D: "Соғыс арбаларының және қоладан жасалған найза мен жебе ұштарының пайда болуы.",
-                card4T: "Сенім-нанымдар", card4D: "Күн мен отқа табыну. Тамғалы шатқалындағы «күнбасты» құдайлардың суреттері.",
-                card5T: "Әлеуметтік құрылым", card5D: "Рулық теңдіктің орнына әлеуметтік жіктелу келді. Көсемдер, абыздар мен жауынгерлер бөлініп шықты.",
-                card6T: "Зергерлік өнер", card6D: "Алғашқы алтын және қола әшекейлер, спираль тәрізді сақиналар мен алқалар.",
-                footer: "«Қола — технологияны, күшті және даланың ұлы мемлекеттерінің алғашқы белгілерін бір арнаға тоғыстырған металл.»",
-                radarLabels: ["Металлургия", "Құрылыс", "Егіншілік", "Әскери іс", "Зергерлік өнер", "Қоғам"]
+                title: "Ежелгі тас дәуірі",
+                chartTitle: "Ғасырлар тереңдігі",
+                chartDesc: "Палеолит адамзат тарихының 99%-ын қамтиды. Бұл ең ұзақ әрі маңызды биологиялық және әлеуметтік трансформациялар кезеңі.",
+                chartLegend: "Кезеңдердің тарихтағы үлесі",
+                chartLabels: ["Төменгі (94%)", "Орта (4.5%)", "Жоғарғы (1.5%)"],
+                era1T: "Төменгі Палеолит",
+                era1D: "«Епті адам» мен «тік жүретін адамның» қалыптасу кезеңі. Алғашқы дөрекі еңбек құралдарының (чоппер) пайда болуы және отты игеру.",
+                era2T: "Орта Палеолит",
+                era2D: "Неандертальдықтар дәуірі (Мустье). Тас өңдеудің жетілуі, алғашқы жерлеу ғұрыптары мен діни нанымдардың пайда болуы.",
+                era3T: "Жоғарғы Палеолит",
+                era3D: "Қазіргі саналы адамның (кроманьон) пайда болуы. Үңгір бейнелеу өнерінің, рулық қауымның және күрделі құралдардың гүлденуі.",
+                gridTitle: "Мәдени белгілер",
+                f1T: "Баспана", f1D: "Үңгірлер мен мамонт сүйегінен жасалған күркелер.",
+                f2T: "Тамақтану", f2D: "Жабайы аңдардың еті мен терімшілік.",
+                f3T: "Киім", f3D: "Сүйек инемен тігілген аң терілері.",
+                f4T: "Қоғам", f4D: "Табыннан рулық қауымға көшу кезеңі.",
+                footer: "«Палеолит адамды тек өмір сүріп қана қоймай, қоршаған ортаны өзгертуге үйретті.»"
             },
             en: {
-                title: "The Bronze Age",
-                vizTitle: "Age of Great Discoveries",
-                vizDesc: "Bronze is an alloy of copper and tin. The discovery of this metal allowed for the creation of durable tools and weapons, leading to rapid economic and cultural growth.",
-                chartTitle: "Comparison: Stone Age vs Bronze",
-                badge: "Age of Metallurgy",
-                stat1: "BC years", stat2: "Settlements in KZ",
-                card1T: "The Secret of Bronze", card1D: "An alloy of 90% copper and 10% tin made tools hard. People learned to mine ore on a massive scale (Zhezkazgan, Ridder).",
-                card2T: "Andronovo Culture", card2D: "The largest culture of the era. People lived in semi-dugouts, practiced farming and transhumant cattle breeding.",
-                card3T: "Military Affairs", card3D: "The emergence of war chariots and bronze spearheads and arrowheads.",
-                card4T: "Beliefs", card4D: "The cult of the sun and fire. Drawings of 'sun-headed' deities in the Tamgaly gorge.",
-                card5T: "Social Structure", card5D: "Tribal equality was replaced by social stratification. Leaders, priests, and chariot warriors emerged.",
-                card6T: "Jewelry Art", card6D: "First gold and bronze jewelry, spiral rings, and pendants.",
-                footer: "«Bronze is the metal that fused technology, power, and the first glimpses of the great states of the steppe together.»",
-                radarLabels: ["Metallurgy", "Construction", "Farming", "Military", "Jewelry", "Society"]
+                title: "The Paleolithic Age",
+                chartTitle: "Depth of Centuries",
+                chartDesc: "The Paleolithic accounts for 99% of human history. It was a time of grand biological and social transformations.",
+                chartLegend: "Period distribution in history",
+                chartLabels: ["Lower (94%)", "Middle (4.5%)", "Upper (1.5%)"],
+                era1T: "Lower Paleolithic",
+                era1D: "The era of 'Homo Habilis' and 'Homo Erectus'. Emergence of the first crude tools (choppers) and the beginning of fire mastery.",
+                era2T: "Middle Paleolithic",
+                era2D: "The Neanderthal era (Mousterian). Improvement of stone processing, emergence of the first burials and early religion.",
+                era3T: "Upper Paleolithic",
+                era3D: "Appearance of the modern human (Cro-Magnon). The rise of cave painting, tribal communities, and complex tools.",
+                gridTitle: "Cultural Markers",
+                f1T: "Shelter", f1D: "Caves and mammoth bone dwellings.",
+                f2T: "Food", f2D: "Wild animal meat and gathering.",
+                f3T: "Clothing", f3D: "Skins sewn with bone needles.",
+                f4T: "Society", f4D: "Transition from herds to tribal community.",
+                footer: "«The Paleolithic taught humans not just to survive, but to transform the world around them.»"
             }
         };
 
         let currentChart = null;
 
         function initChart(lang) {
-            const ctx = document.getElementById('evolutionRadar').getContext('2d');
+            const ctx = document.getElementById('paleoChart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
             currentChart = new Chart(ctx, {
-                type: 'radar',
+                type: 'polarArea',
                 data: {
-                    labels: translations[lang].radarLabels,
-                    datasets: [
-                        {
-                            label: lang === 'ru' ? 'Каменный век' : (lang === 'kz' ? 'Тас дәуірі' : 'Stone Age'),
-                            data: [30, 20, 50, 40, 20, 30],
-                            backgroundColor: 'rgba(168, 162, 158, 0.2)',
-                            borderColor: '#a8a29e',
-                            borderWidth: 2,
-                            pointRadius: 0
-                        },
-                        {
-                            label: lang === 'ru' ? 'Эпоха Бронзы' : (lang === 'kz' ? 'Қола дәуірі' : 'Bronze Age'),
-                            data: [95, 80, 75, 90, 85, 80],
-                            backgroundColor: 'rgba(217, 119, 6, 0.4)',
-                            borderColor: '#d97706',
-                            borderWidth: 4,
-                            pointBackgroundColor: '#d97706',
-                            pointRadius: 5
-                        }
-                    ]
+                    labels: content[lang].chartLabels,
+                    datasets: [{
+                        data: [2500, 100, 40], // условные доли по длительности
+                        backgroundColor: [
+                            'rgba(120, 53, 15, 0.7)',
+                            'rgba(180, 83, 9, 0.7)',
+                            'rgba(245, 158, 11, 0.7)'
+                        ],
+                        borderWidth: 0
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
                         r: {
-                            angleLines: { color: 'rgba(180, 83, 9, 0.1)' },
-                            grid: { color: 'rgba(180, 83, 9, 0.1)' },
-                            pointLabels: {
-                                font: { family: 'Inter', size: 13, weight: 'bold' },
-                                color: '#78350f'
-                            },
                             ticks: { display: false },
-                            beginAtZero: true,
-                            max: 100
+                            grid: { color: 'rgba(255,255,255,0.05)' }
                         }
                     },
                     plugins: {
-                        legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } }
+                        legend: { 
+                            position: 'bottom',
+                            labels: { color: '#fef3c7', font: { family: 'Inter', weight: 'bold' } }
+                        }
                     }
                 }
             });
         }
 
-        function setLang(lang) {
-            const t = translations[lang];
+        function updateLang(lang) {
+            const t = content[lang];
             document.getElementById('main-title').innerText = t.title;
-            document.getElementById('viz-title').innerText = t.vizTitle;
-            document.getElementById('viz-desc').innerText = t.vizDesc;
             document.getElementById('chart-title').innerText = t.chartTitle;
-            document.getElementById('badge').innerText = t.badge;
-            document.getElementById('stat1').innerText = t.stat1;
-            document.getElementById('stat2').innerText = t.stat2;
-            document.getElementById('card1-t').innerText = t.card1T; document.getElementById('card1-d').innerText = t.card1D;
-            document.getElementById('card2-t').innerText = t.card2T; document.getElementById('card2-d').innerText = t.card2D;
-            document.getElementById('card3-t').innerText = t.card3T; document.getElementById('card3-d').innerText = t.card3D;
-            document.getElementById('card4-t').innerText = t.card4T; document.getElementById('card4-d').innerText = t.card4D;
-            document.getElementById('card5-t').innerText = t.card5T; document.getElementById('card5-d').innerText = t.card5D;
-            document.getElementById('card6-t').innerText = t.card6T; document.getElementById('card6-d').innerText = t.card6D;
+            document.getElementById('chart-desc').innerText = t.chartDesc;
+            document.getElementById('chart-legend').innerText = t.chartLegend;
+            document.getElementById('era1-t').innerText = t.era1T;
+            document.getElementById('era1-d').innerText = t.era1D;
+            document.getElementById('era2-t').innerText = t.era2T;
+            document.getElementById('era2-d').innerText = t.era2D;
+            document.getElementById('era3-t').innerText = t.era3T;
+            document.getElementById('era3-d').innerText = t.era3D;
+            document.getElementById('grid-title').innerText = t.gridTitle;
+            document.getElementById('f1-t').innerText = t.f1T; document.getElementById('f1-d').innerText = t.f1D;
+            document.getElementById('f2-t').innerText = t.f2T; document.getElementById('f2-d').innerText = t.f2D;
+            document.getElementById('f3-t').innerText = t.f3T; document.getElementById('f3-d').innerText = t.f3D;
+            document.getElementById('f4-t').innerText = t.f4T; document.getElementById('f4-d').innerText = t.f4D;
             document.getElementById('footer-text').innerText = t.footer;
 
             ['ru', 'kz', 'en'].forEach(l => {
                 const btn = document.getElementById(`btn-${l}`);
                 btn.className = l === lang 
-                    ? "px-6 py-2 rounded-xl text-sm font-black lang-active" 
-                    : "px-6 py-2 rounded-xl text-sm font-bold text-orange-600 hover:bg-orange-100 transition-all";
+                    ? "px-6 py-1.5 rounded-full text-sm font-black bg-amber-500 text-amber-950 shadow-lg" 
+                    : "px-6 py-1.5 rounded-full text-sm font-bold text-amber-500/60 hover:text-amber-500 transition-all";
             });
 
             initChart(lang);
         }
 
-        window.onload = () => setLang('ru');
+        window.onload = () => updateLang('ru');
     </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-
-
-
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-.oi-map-modal{
-  width:min(1100px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:56px; /* место под тулбар */
-}
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-.oi-map-tabs{ display:flex; gap:8px; pointer-events:auto; }
-.oi-map-tab{
-  width:36px; height:34px; border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" type="button" data-oi-map-btn>🗺️ Карта</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="2">2</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="3">3</button>
-        <button type="button" class="oi-map-tab" data-oi-map-tab="4">4</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/karta_1.png" alt="Карта 1" style="display:block;">
-<img class="oi-map-img" data-oi-map-img data-map="2" src="../../assets/maps/karta_2.png" alt="Карта 2" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="3" src="../../assets/maps/karta_3.png" alt="Карта 3" style="display:none;">
-<img class="oi-map-img" data-oi-map-img data-map="4" src="../../assets/maps/karta_4.png" alt="Карта 4" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  const btn = document.querySelector('[data-oi-map-btn]');
-  const backdrop = document.querySelector('[data-oi-map-backdrop]');
-  const closeBtn = document.querySelector('[data-oi-map-close]');
-  const viewport = document.querySelector('[data-oi-map-viewport]');
-  const tabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const imgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-  if(!btn || !backdrop || !closeBtn || !viewport || imgs.length === 0) return;
-
-  let scale = 1;
-
-  function applyScale(){
-    imgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-  function openMap(){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMap(){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function showMap(n){
-    imgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-
-  btn.addEventListener('click', openMap);
-  closeBtn.addEventListener('click', closeMap);
-  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeMap(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMap(); });
-
-  tabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-  viewport.addEventListener('wheel', (e)=>{
-    if(backdrop.getAttribute('aria-hidden') !== 'false') return;
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    scale = Math.min(4, Math.max(0.6, scale + delta));
-    applyScale();
-  }, {passive:false});
-
-  applyScale();
-  showMap(1);
-})();
-</script>
 </body>
 </html>
