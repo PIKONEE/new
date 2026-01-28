@@ -1,439 +1,468 @@
 <!DOCTYPE html>
-<html lang="kk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Плакат: Метод наблюдения</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Интерактивная Модель ДНК</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0fdf4;
-            color: #14532d;
-            overflow-x: hidden;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at center, #10141a, #000000);
         }
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
         }
-        .header-card {
-            background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(22, 163, 74, 0.4);
-            color: white;
-            padding: 40px;
-        }
-        .section-heading {
-            color: #166534;
-            border-bottom: 3px solid #86efac;
-            display: inline-block;
-            padding-bottom: 5px;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-        .rule-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
+
+        /* Панель информации */
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(20, 20, 30, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
             padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            height: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 5px solid;
-        }
-        .rule-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-        .footer-card {
-            text-align: center;
-            margin-top: 40px;
-            padding: 24px;
-            background-color: #dcfce7;
-            border-radius: 1rem;
-            border-top: 4px solid #16a34a;
-        }
-        .term {
-            font-weight: bold;
-            color: #16a34a;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            border-left: 4px solid #00ffcc;
+            z-index: 10;
+            color: #d0d0d0;
         }
 
-        /* --- ЯЗЫКОВЫЕ НАСТРОЙКИ (С исправлением !important) --- */
-        .lang-content {
-            display: none !important; /* Скрываем все по умолчанию жестко */
+        #info-panel.active {
+            transform: translateX(0);
         }
 
-        /* Показываем только нужное */
-        .lang-kk .lang-content[lang="kk"],
-        .lang-en .lang-content[lang="en"],
-        .lang-ru .lang-content[lang="ru"] {
-            display: block !important;
-        }
-
-        /* Для строчных элементов внутри текста */
-        .lang-kk span.lang-content[lang="kk"],
-        .lang-en span.lang-content[lang="en"],
-        .lang-ru span.lang-content[lang="ru"] {
-            display: inline !important;
-        }
-
-        .lang-switcher {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-        .lang-btn {
-            padding: 8px 16px;
-            border: 2px solid #16a34a;
-            background-color: #ffffff;
-            color: #16a34a;
-            border-radius: 0.5rem;
+        #info-title {
+            margin: 0 0 10px 0;
+            color: #ffffff;
+            font-size: 22px;
             font-weight: 600;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        #info-desc {
+            color: #b0b0b0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 24px;
             cursor: pointer;
-            transition: all 0.2s;
+            line-height: 1;
         }
-        .lang-btn:hover { background-color: #f0fdf4; }
-        .lang-btn.active { background-color: #16a34a; color: #ffffff; }
 
-        .illustration-svg {
-            width: 100%;
-            height: 220px;
-            margin: 15px 0;
-            border: 1px solid #bbf7d0;
-            border-radius: 0.5rem;
-            background-color: #fff;
+        .close-btn:hover {
+            color: #fff;
         }
-        .svg-eye { fill: #fff; stroke: #000; stroke-width: 2; }
 
-        /* Стили для Блока 3 (HTML схема вместо SVG) */
-        .flow-step {
+        /* Маркер элемента */
+        #zone-label {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ffcc;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Легенда цветов */
+        #legend {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            color: #ccc;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .legend-item {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 10px;
-            border: 2px solid;
-            position: relative;
-        }
-        .flow-box {
-            background-color: #ecfccb; /* lime-100 */
-            border-color: #65a30d; /* lime-600 */
-            border-radius: 0.5rem;
-            min-width: 100px;
-            min-height: 60px;
-        }
-        .flow-circle {
-            background-color: #bef264; /* lime-200 */
-            border-color: #4d7c0f; /* lime-700 */
-            border-radius: 50%;
-            width: 100px;
-            height: 100px;
-        }
-        .flow-end {
-            background-color: #fef3c7; /* amber-100 */
-            border-color: #d97706; /* amber-600 */
-            border-radius: 0.5rem;
-            min-width: 100px;
-            min-height: 60px;
-        }
-        .arrow-divider {
-            color: #65a30d;
-            font-size: 2rem;
-            font-weight: bold;
-        }
-        @media (max-width: 768px) {
-            .arrow-divider { transform: rotate(90deg); margin: 10px 0; }
+            margin-bottom: 5px;
         }
 
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
     </style>
 </head>
-<body class="bg-green-50">
+<body>
 
+<div id="canvas-container"></div>
+<div id="zone-label">Элемент</div>
 
-
-    <div id="poster-container" class="container lang-kk">
-
-        <div class="lang-switcher">
-            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
-            <button class="lang-btn" onclick="switchLang('en')">English</button>
-            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
-        </div>
-
-        <header class="header-card text-center mb-10">
-            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">БАҚЫЛАУ ӘДІСІ</h1>
-            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">OBSERVATION METHOD</h1>
-            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">МЕТОД НАБЛЮДЕНИЯ</h1>
-
-            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-green-100">Табиғатты зерттеудің ең көне және негізгі әдісі.</p>
-            <p lang="en" class="lang-content mt-2 text-xl font-medium text-green-100">The oldest and most basic method of studying nature.</p>
-            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-green-100">Самый древний и основной метод изучения природы.</p>
-        </header>
-
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Бақылау дегеніміз не?</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Observation?</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое Наблюдение?</h2>
-
-            <div class="rule-card border-t-green-500">
-                <p lang="kk" class="lang-content text-lg mb-3">
-                    <span class="term">Бақылау</span> – бұл табиғи құбылыстарды оларға араласпай, сырттай қарап, сипаттау.
-                </p>
-                <p lang="en" class="lang-content text-lg mb-3">
-                    <span class="term">Observation</span> is describing natural phenomena by watching them without interference.
-                </p>
-                <p lang="ru" class="lang-content text-lg mb-3">
-                    <span class="term">Наблюдение</span> – это описание природных явлений путем созерцания без вмешательства.
-                </p>
-
-                <svg class="illustration-svg" viewBox="0 0 400 150">
-                    <defs>
-                        <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a" />
-                        </marker>
-                    </defs>
-                    <g transform="translate(100, 80)">
-                         <line x1="0" y1="0" x2="0" y2="50" stroke="#166534" stroke-width="3"/>
-                         <path d="M 0 20 Q 20 0, 0 -20 Q -20 0, 0 20" fill="#facc15"/>
-                         <circle cx="0" cy="0" r="8" fill="#a16207"/>
-                         <path d="M 0 30 Q 15 20, 20 30 Q 10 40, 0 30" fill="#4ade80"/>
-                         <text x="0" y="70" font-size="10" text-anchor="middle" fill="#14532d">Object</text>
-                    </g>
-                    <g transform="translate(300, 70)">
-                        <path d="M -30 0 Q 0 -30, 30 0 Q 0 30, -30 0" class="svg-eye" fill="#fff"/>
-                        <circle cx="0" cy="0" r="12" fill="#3b82f6"/> <circle cx="0" cy="0" r="5" fill="#000"/>
-                        <text x="0" y="50" font-size="10" text-anchor="middle" fill="#1e3a8a">Observer</text>
-                    </g>
-                    <line x1="260" y1="70" x2="140" y2="70" stroke="#86efac" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-green)"/>
-
-                    <g transform="translate(100, 30)">
-                        <circle cx="0" cy="0" r="20" fill="none" stroke="#dc2626" stroke-width="3"/>
-                        <line x1="-14" y1="14" x2="14" y2="-14" stroke="#dc2626" stroke-width="3"/>
-                    </g>
-                </svg>
-
-                <div class="bg-green-50 p-3 rounded text-center border-l-4 border-green-500">
-                    <p class="lang-content font-bold text-green-900" lang="kk">Ең басты ереже: Табиғатқа зиян келтірме!</p>
-                    <p class="lang-content font-bold text-green-900" lang="en">Golden Rule: Do not harm nature!</p>
-                    <p class="lang-content font-bold text-green-900" lang="ru">Главное правило: Не навреди природе!</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Бақылау құралдары</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">2. Observation Tools</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Инструменты наблюдения</h2>
-
-            <div class="rule-card border-t-emerald-500">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
-                        <h4 class="lang-content font-bold text-green-900 mb-2 text-center" lang="kk">Оптикалық құралдар</h4>
-                        <h4 class="lang-content font-bold text-green-900 mb-2 text-center" lang="en">Optical Tools</h4>
-                        <h4 class="lang-content font-bold text-green-900 mb-2 text-center" lang="ru">Оптические инструменты</h4>
-
-                        <p class="lang-content text-xs text-center mb-4 text-gray-600" lang="kk">Ұсақ немесе алыс заттарды көру үшін.</p>
-                        <p class="lang-content text-xs text-center mb-4 text-gray-600" lang="en">To see small or distant objects.</p>
-                        <p class="lang-content text-xs text-center mb-4 text-gray-600" lang="ru">Для мелких или удаленных объектов.</p>
-
-                        <div class="flex justify-center gap-6 items-end">
-                            <div class="text-center w-20">
-                                <svg viewBox="0 0 40 40" class="w-10 h-10 mx-auto mb-1">
-                                    <circle cx="15" cy="15" r="10" fill="none" stroke="#16a34a" stroke-width="2"/>
-                                    <line x1="23" y1="23" x2="35" y2="35" stroke="#16a34a" stroke-width="3"/>
-                                </svg>
-                                <span class="lang-content text-[10px] font-semibold" lang="kk">Лупа</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="en">Magnifier</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="ru">Лупа</span>
-                            </div>
-                            <div class="text-center w-20">
-                                <svg viewBox="0 0 40 40" class="w-8 h-10 mx-auto mb-1">
-                                     <path d="M 20 5 L 20 25 M 10 35 L 30 35" stroke="#15803d" stroke-width="2"/>
-                                     <rect x="15" y="10" width="10" height="15" fill="#dcfce7"/>
-                                </svg>
-                                <span class="lang-content text-[10px] font-semibold" lang="kk">Микроскоп</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="en">Microscope</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="ru">Микроскоп</span>
-                            </div>
-                            <div class="text-center w-20">
-                                <svg viewBox="0 0 40 40" class="w-10 h-8 mx-auto mb-1">
-                                     <rect x="5" y="10" width="10" height="20" fill="#86efac" stroke="#16a34a"/>
-                                     <rect x="25" y="10" width="10" height="20" fill="#86efac" stroke="#16a34a"/>
-                                     <line x1="15" y1="20" x2="25" y2="20" stroke="#16a34a"/>
-                                </svg>
-                                <span class="lang-content text-[10px] font-semibold" lang="kk">Дүрбі</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="en">Binoculars</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="ru">Бинокль</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
-                        <h4 class="lang-content font-bold text-emerald-900 mb-2 text-center" lang="kk">Тіркеу құралдары</h4>
-                        <h4 class="lang-content font-bold text-emerald-900 mb-2 text-center" lang="en">Recording Tools</h4>
-                        <h4 class="lang-content font-bold text-emerald-900 mb-2 text-center" lang="ru">Средства фиксации</h4>
-
-                        <p class="lang-content text-xs text-center mb-4 text-gray-600" lang="kk">Деректерді сақтау үшін.</p>
-                        <p class="lang-content text-xs text-center mb-4 text-gray-600" lang="en">To save data.</p>
-                        <p class="lang-content text-xs text-center mb-4 text-gray-600" lang="ru">Для сохранения данных.</p>
-
-                        <div class="flex justify-center gap-6 items-end">
-                            <div class="text-center w-20">
-                                <svg viewBox="0 0 40 40" class="w-8 h-10 mx-auto mb-1">
-                                    <rect x="10" y="5" width="20" height="30" fill="#fff" stroke="#047857"/>
-                                    <line x1="15" y1="10" x2="25" y2="10" stroke="#047857"/>
-                                    <line x1="15" y1="15" x2="25" y2="15" stroke="#047857"/>
-                                </svg>
-                                <span class="lang-content text-[10px] font-semibold" lang="kk">Дәптер</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="en">Notebook</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="ru">Тетрадь</span>
-                            </div>
-                            <div class="text-center w-20">
-                                <svg viewBox="0 0 40 40" class="w-10 h-8 mx-auto mb-1">
-                                    <rect x="5" y="10" width="30" height="20" rx="2" fill="#34d399" stroke="#059669"/>
-                                    <circle cx="20" cy="20" r="5" fill="#fff" stroke="#059669"/>
-                                </svg>
-                                <span class="lang-content text-[10px] font-semibold" lang="kk">Камера</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="en">Camera</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="ru">Камера</span>
-                            </div>
-                            <div class="text-center w-20">
-                                <svg viewBox="0 0 40 40" class="w-8 h-8 mx-auto mb-1">
-                                    <circle cx="20" cy="20" r="10" fill="#fff" stroke="#059669"/>
-                                    <line x1="20" y1="20" x2="20" y2="14" stroke="#059669"/>
-                                    <line x1="20" y1="20" x2="24" y2="20" stroke="#059669"/>
-                                </svg>
-                                <span class="lang-content text-[10px] font-semibold" lang="kk">Сағат</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="en">Timer</span>
-                                <span class="lang-content text-[10px] font-semibold" lang="ru">Часы</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Бақылау алгоритмі (Жоспары)</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">3. Observation Algorithm</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Алгоритм наблюдения</h2>
-
-            <div class="rule-card border-t-lime-500">
-                <p lang="kk" class="lang-content text-lg mb-6 text-gray-700">Ғылыми бақылау жоспар бойынша жүргізіледі:</p>
-                <p lang="en" class="lang-content text-lg mb-6 text-gray-700">Scientific observation is carried out according to a plan:</p>
-                <p lang="ru" class="lang-content text-lg mb-6 text-gray-700">Научное наблюдение проводится по плану:</p>
-
-                <div class="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 my-6">
-
-                    <div class="flow-step flow-box shadow-md">
-                        <span class="text-lime-800 font-bold text-sm block">1</span>
-                        <span class="lang-content font-bold text-lime-900" lang="kk">Мақсат қою</span>
-                        <span class="lang-content font-bold text-lime-900" lang="en">Set Goal</span>
-                        <span class="lang-content font-bold text-lime-900" lang="ru">Цель</span>
-                        <span class="lang-content text-xs text-lime-700" lang="kk">Не білгім келеді?</span>
-                        <span class="lang-content text-xs text-lime-700" lang="en">What to know?</span>
-                        <span class="lang-content text-xs text-lime-700" lang="ru">Что узнать?</span>
-                    </div>
-
-                    <div class="arrow-divider">→</div>
-
-                    <div class="flow-step flow-box shadow-md">
-                        <span class="text-lime-800 font-bold text-sm block">2</span>
-                        <span class="lang-content font-bold text-lime-900" lang="kk">Объект таңдау</span>
-                        <span class="lang-content font-bold text-lime-900" lang="en">Choose Object</span>
-                        <span class="lang-content font-bold text-lime-900" lang="ru">Объект</span>
-                        <span class="lang-content text-xs text-lime-700" lang="kk">Нені бақылаймын?</span>
-                        <span class="lang-content text-xs text-lime-700" lang="en">What to watch?</span>
-                        <span class="lang-content text-xs text-lime-700" lang="ru">Что наблюдать?</span>
-                    </div>
-
-                    <div class="arrow-divider">→</div>
-
-                    <div class="flow-step flow-circle shadow-lg flex items-center justify-center z-10">
-                        <div class="text-center">
-                            <span class="lang-content font-extrabold text-lime-950 text-sm md:text-base uppercase" lang="kk">3. Бақылау</span>
-                            <span class="lang-content font-extrabold text-lime-950 text-sm md:text-base uppercase" lang="en">3. Observe</span>
-                            <span class="lang-content font-extrabold text-lime-950 text-sm md:text-base uppercase" lang="ru">3. Процесс</span>
-                            <br>
-                            <span class="text-xs text-lime-800">Action</span>
-                        </div>
-                    </div>
-
-                    <div class="arrow-divider">→</div>
-
-                    <div class="flow-step flow-end shadow-md">
-                        <span class="text-amber-800 font-bold text-sm block">4</span>
-                        <span class="lang-content font-bold text-amber-900" lang="kk">Жазып алу</span>
-                        <span class="lang-content font-bold text-amber-900" lang="en">Record Data</span>
-                        <span class="lang-content font-bold text-amber-900" lang="ru">Запись</span>
-                        <span class="lang-content text-xs text-amber-700" lang="kk">Сурет, жазба</span>
-                        <span class="lang-content text-xs text-amber-700" lang="en">Photo, notes</span>
-                        <span class="lang-content text-xs text-amber-700" lang="ru">Фото, текст</span>
-                    </div>
-
-                </div>
-
-                <div class="bg-lime-50 rounded-md p-2 text-center mt-4">
-                     <p class="lang-content text-sm font-semibold text-green-800" lang="kk">5. Қорытынды (Conclusion) - ең соңғы қадам.</p>
-                     <p class="lang-content text-sm font-semibold text-green-800" lang="en">5. Conclusion - the final step.</p>
-                     <p class="lang-content text-sm font-semibold text-green-800" lang="ru">5. Вывод (Conclusion) - последний шаг.</p>
-                </div>
-            </div>
-        </section>
-
-        <footer class="footer-card">
-            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЕСТЕ САҚТАҢЫЗ</h3>
-            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-green-900">REMEMBER</h3>
-            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-green-900">ЗАПОМНИТЕ</h3>
-
-            <p lang="kk" class="lang-content text-md font-semibold text-green-800">Бақылау – белсенді, бірақ араласпайтын зерттеу. Нәтижелер міндетті түрде жазылуы керек.</p>
-            <p lang="en" class="lang-content text-md font-semibold text-green-800">Observation is active but non-intrusive research. Results must be recorded.</p>
-            <p lang="ru" class="lang-content text-md font-semibold text-green-800">Наблюдение – это активное исследование без вмешательства. Результаты должны быть записаны.</p>
-        </footer>
-
+<div id="legend">
+    <div class="legend-item">
+        <div class="dot" style="background:#50e3c2"></div>
+        Аденин (A)
     </div>
+    <div class="legend-item">
+        <div class="dot" style="background:#ff5f5f"></div>
+        Тимин (T)
+    </div>
+    <div class="legend-item">
+        <div class="dot" style="background:#f5a623"></div>
+        Гуанин (G)
+    </div>
+    <div class="legend-item">
+        <div class="dot" style="background:#4a90e2"></div>
+        Цитозин (C)
+    </div>
+</div>
 
-    <script>
-        function switchLang(lang) {
-            const container = document.getElementById('poster-container');
-            if (container) {
-                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
-                container.classList.add('lang-' + lang);
-            }
+<div id="info-panel">
+    <button class="close-btn" onclick="closePanel()">&times;</button>
+    <h2 id="info-title">Название</h2>
+    <p id="info-desc">Описание</p>
+</div>
 
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                if (btn.getAttribute('onclick').includes(lang)) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+    // --- ДАННЫЕ ДНК ---
+    const dnaData = {
+        "Adenine": {
+            title: "Аденин (A)",
+            desc: "Пуриновое основание. В двойной спирали ДНК аденин всегда образует связь с тимином (T) через две водородные связи. Является одним из ключевых компонентов не только ДНК, но и АТФ — главного источника энергии в клетке."
+        },
+        "Thymine": {
+            title: "Тимин (T)",
+            desc: "Пиримидиновое основание. Встречается почти исключительно в ДНК (в РНК заменяется урацилом). Комплементарен аденину (A). Ошибки в спаривании тимина могут приводить к мутациям под действием ультрафиолета."
+        },
+        "Guanine": {
+            title: "Гуанин (G)",
+            desc: "Пуриновое основание. Образует прочную тройную водородную связь с цитозином (C), что делает участки ДНК с высоким содержанием G-C пар более стабильными и тугоплавкими."
+        },
+        "Cytosine": {
+            title: "Цитозин (C)",
+            desc: "Пиримидиновое основание. Комплементарен гуанину (G). Цитозин часто подвергается метилированию в клетках, что является важным эпигенетическим механизмом регуляции активности генов."
+        },
+        "Backbone": {
+            title: "Сахаро-фосфатный остов",
+            desc: "Внешний каркас спирали ДНК. Состоит из чередующихся молекул дезоксирибозы (сахар) и фосфатных групп. Остов заряжен отрицательно, что придает ДНК кислотные свойства и позволяет ей связываться с белками-гистонами."
+        }
+    };
+
+    // Цвета (Biochemistry conventions)
+    const COLORS = {
+        A: 0x50e3c2, // Greenish/Teal
+        T: 0xff5f5f, // Red
+        G: 0xf5a623, // Orange/Yellow
+        C: 0x4a90e2, // Blue
+        Backbone: 0xe0e0e0 // White/Grey
+    };
+
+    // --- СЦЕНА ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    // Добавляем туман для глубины (делаем его менее плотным, чтобы не скрывал модель)
+    scene.fog = new THREE.FogExp2(0x10141a, 0.002);
+
+    // Увеличиваем дальность прорисовки (far clipping plane) с 100 до 2000
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera.position.set(0, 0, 25);
+
+    const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    // Включаем свечение (эмиссию)
+    renderer.toneMapping = THREE.ReinhardToneMapping;
+    container.appendChild(renderer.domElement);
+
+    // --- ОСВЕЩЕНИЕ ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+    scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+    pointLight.position.set(10, 10, 10);
+    scene.add(pointLight);
+
+    const blueLight = new THREE.PointLight(0x0055ff, 2, 50);
+    blueLight.position.set(-10, -5, 5);
+    scene.add(blueLight);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 1.0;
+    // Ограничиваем максимальное отдаление
+    controls.maxDistance = 200;
+
+    // --- ГЕНЕРАЦИЯ ДНК ---
+    const dnaGroup = new THREE.Group();
+    scene.add(dnaGroup);
+
+    // Материалы (используем MeshPhysicalMaterial для красивых бликов)
+    const baseMaterial = new THREE.MeshPhysicalMaterial({
+        roughness: 0.3,
+        metalness: 0.1,
+        reflectivity: 0.8,
+        clearcoat: 0.5,
+        clearcoatRoughness: 0.2
+    });
+
+    const backboneMaterial = new THREE.MeshPhysicalMaterial({
+        color: COLORS.Backbone,
+        roughness: 0.4,
+        metalness: 0.3,
+        clearcoat: 0.2
+    });
+
+    // Параметры спирали
+    const numPairs = 30;
+    const radius = 3.5;
+    const heightStep = 0.8;
+    const twist = 0.6; // Радианы поворота на шаг (~34 градуса)
+    const startY = -(numPairs * heightStep) / 2;
+
+    // Геометрии (переиспользуем для оптимизации)
+    const sphereGeo = new THREE.SphereGeometry(0.6, 32, 32);
+    const bondGeo = new THREE.CylinderGeometry(0.2, 0.2, radius * 1.8, 16);
+    const baseGeo = new THREE.CapsuleGeometry(0.4, 1.2, 4, 16);
+
+    // Создаем пары
+    for (let i = 0; i < numPairs; i++) {
+        const angle = i * twist;
+        const y = startY + i * heightStep;
+
+        // Координаты двух нитей
+        const x1 = Math.cos(angle) * radius;
+        const z1 = Math.sin(angle) * radius;
+
+        const x2 = Math.cos(angle + Math.PI) * radius; // Вторая нить сдвинута на 180 градусов
+        const z2 = Math.sin(angle + Math.PI) * radius;
+
+        // --- 1. ОСТОВ (Шарики Backbone) ---
+        const bb1 = new THREE.Mesh(sphereGeo, backboneMaterial.clone());
+        bb1.position.set(x1, y, z1);
+        bb1.name = "Backbone";
+        dnaGroup.add(bb1);
+
+        const bb2 = new THREE.Mesh(sphereGeo, backboneMaterial.clone());
+        bb2.position.set(x2, y, z2);
+        bb2.name = "Backbone";
+        dnaGroup.add(bb2);
+
+        // Соединяем шарики остова трубками (для цельности)
+        if (i > 0) {
+            const prevAngle = (i - 1) * twist;
+            const prevY = startY + (i - 1) * heightStep;
+            const px1 = Math.cos(prevAngle) * radius;
+            const pz1 = Math.sin(prevAngle) * radius;
+
+            // Векторная математика для трубок между шариками
+            // Здесь упростим: просто много сфер создают иллюзию цепи
+            // Или можно добавить cylinder между текущим и предыдущим
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            switchLang('kk');
-        });
+        // --- 2. АЗОТИСТЫЕ ОСНОВАНИЯ ---
+        // Случайный выбор пары: 0 = A-T, 1 = T-A, 2 = G-C, 3 = C-G
+        const pairType = Math.floor(Math.random() * 4);
+        let leftBaseType, rightBaseType;
 
-        function goBack() {
-            if (typeof bridge !== 'undefined' && bridge) {
-                bridge.onBackClicked();
-            } else {
-                console.log('Bridge not found');
+        switch (pairType) {
+            case 0:
+                leftBaseType = 'Adenine';
+                rightBaseType = 'Thymine';
+                break;
+            case 1:
+                leftBaseType = 'Thymine';
+                rightBaseType = 'Adenine';
+                break;
+            case 2:
+                leftBaseType = 'Guanine';
+                rightBaseType = 'Cytosine';
+                break;
+            case 3:
+                leftBaseType = 'Cytosine';
+                rightBaseType = 'Guanine';
+                break;
+        }
+
+        // Создаем половинку базы (левая)
+        const leftMat = baseMaterial.clone();
+        leftMat.color.setHex(COLORS[leftBaseType.charAt(0)]); // Берем первую букву для словаря цветов
+
+        const leftBase = new THREE.Mesh(baseGeo, leftMat);
+        // Поворачиваем и позиционируем
+        leftBase.position.set(x1 * 0.5, y, z1 * 0.5); // На полпути к центру
+        leftBase.lookAt(0, y, 0); // Смотрит в центр
+        leftBase.rotateX(Math.PI / 2); // Кладем горизонтально
+        leftBase.name = leftBaseType;
+        dnaGroup.add(leftBase);
+
+        // Создаем половинку базы (правая)
+        const rightMat = baseMaterial.clone();
+        rightMat.color.setHex(COLORS[rightBaseType.charAt(0)]);
+
+        const rightBase = new THREE.Mesh(baseGeo, rightMat);
+        rightBase.position.set(x2 * 0.5, y, z2 * 0.5);
+        rightBase.lookAt(0, y, 0);
+        rightBase.rotateX(Math.PI / 2);
+        rightBase.name = rightBaseType;
+        dnaGroup.add(rightBase);
+
+        // Водородная связь (Тонкая перемычка в центре)
+        const bond = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.6, 8), backboneMaterial);
+        bond.position.set(0, y, 0);
+        bond.lookAt(x1, y, z1);
+        bond.rotateX(Math.PI / 2);
+        dnaGroup.add(bond);
+    }
+
+    // --- ИНТЕРАКТИВНОСТЬ ---
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let highlightedObj = null;
+    let originalHex = null;
+
+    const panel = document.getElementById('info-panel');
+    const titleEl = document.getElementById('info-title');
+    const descEl = document.getElementById('info-desc');
+    const labelEl = document.getElementById('zone-label');
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('click', onClick);
+
+    function onMouseMove(event) {
+        // Остановка вращения при наведении? Можно, но лучше оставить для динамики
+        // controls.autoRotate = false;
+
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(dnaGroup.children);
+
+        if (intersects.length > 0) {
+            const obj = intersects[0].object;
+            // Игнорируем мелкие связующие элементы без имени
+            if (obj.name && dnaData[obj.name]) {
+                labelEl.textContent = dnaData[obj.name].title;
+                labelEl.style.opacity = 1;
+                document.body.style.cursor = 'pointer';
+
+                // Легкая подсветка без клика (опционально)
+                return;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-                new QWebChannel(qt.webChannelTransport, function(channel) {
-                    window.bridge = channel.objects.bridge;
-                });
-            }
-        });
-    </script>
-    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+        labelEl.style.opacity = 0;
+        document.body.style.cursor = 'default';
+    }
 
+    function onClick(event) {
+        if (event.target.closest('#info-panel') || event.target.closest('.close-btn')) return;
+
+        // Сброс предыдущей подсветки
+        if (highlightedObj) {
+            highlightedObj.material.emissive.setHex(0x000000);
+            highlightedObj = null;
+        }
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(dnaGroup.children);
+
+        if (intersects.length > 0) {
+            const obj = intersects[0].object;
+            if (obj.name && dnaData[obj.name]) {
+                // Подсветка
+                highlightedObj = obj;
+                obj.material.emissive.setHex(0x444444); // Добавляем свечение
+
+                showInfo(obj.name);
+            }
+        } else {
+            closePanel();
+        }
+    }
+
+    function showInfo(key) {
+        const data = dnaData[key];
+        titleEl.textContent = data.title;
+        descEl.textContent = data.desc;
+
+        // Красим границу панели в цвет элемента
+        let colorHex = '#ffffff';
+        if (key === 'Adenine') colorHex = '#50e3c2';
+        else if (key === 'Thymine') colorHex = '#ff5f5f';
+        else if (key === 'Guanine') colorHex = '#f5a623';
+        else if (key === 'Cytosine') colorHex = '#4a90e2';
+
+        panel.style.borderLeftColor = colorHex;
+        panel.classList.add('active');
+    }
+
+    window.closePanel = function () {
+        panel.classList.remove('active');
+        if (highlightedObj) {
+            highlightedObj.material.emissive.setHex(0x000000);
+            highlightedObj = null;
+        }
+    };
+
+    // --- АНИМАЦИЯ ---
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        // Легкое "дыхание" молекулы
+        const time = Date.now() * 0.001;
+        dnaGroup.position.y = Math.sin(time) * 0.5;
+
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+</script>
 </body>
 </html>

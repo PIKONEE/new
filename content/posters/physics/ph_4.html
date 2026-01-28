@@ -1,355 +1,665 @@
 <!DOCTYPE html>
-<!-- Бастапқы тіл - Қазақша -->
-<html lang="kk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Плакат 2: Диффузия</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Солнечная Система</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            overflow-x: hidden;
-            color: #1a202c;
-        }
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
-        }
-        /* Тақырып карточкасы */
-        .header-card {
-            background-color: #6d28d9; /* Күлгін-700 */
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(109, 40, 217, 0.4);
-            color: white;
-            padding: 40px;
-        }
-        /* Бөлім тақырыбы */
-        .section-heading {
-            color: #5b21b6; /* Күлгін-800 */
-            border-bottom: 3px solid #c4b5fd; /* Күлгін-300 */
-            display: inline-block;
-            padding-bottom: 5px;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-        /* Ереже карточкасы */
-        .rule-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            height: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 5px solid;
-        }
-        .rule-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-        /* Мысал блогы */
-        .example-block {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: #f5f3ff; /* Өте ашық күлгін */
-            border-left: 4px solid #a78bfa; /* Күлгін-400 */
-            border-radius: 0.5rem;
-            font-size: 0.875rem; /* text-sm */
-        }
-        /* Түйін */
-        .footer-card {
-            text-align: center;
-            margin-top: 40px;
-            padding: 24px;
-            background-color: #f1f5f9; /* Ашық сұр */
-            border-radius: 1rem;
-            border-top: 4px solid #64748b; /* Сұр */
-        }
-        .feature-list li {
-            margin-bottom: 8px;
-            list-style: none;
-            padding-left: 20px;
-            position: relative;
-        }
-        .feature-list li::before {
-            content: '⚛️'; /* Эмодзи */
-            position: absolute;
-            left: 0;
-            color: #6d28d9; /* Күлгін */
-        }
-         .term {
-            font-weight: bold;
-            color: #5b21b6; /* violet-800 */
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
         }
 
-        /* Language switcher */
-        .lang-switcher {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-        .lang-btn {
-            padding: 8px 16px;
-            border: 2px solid #6d28d9;
-            background-color: #ffffff;
-            color: #6d28d9;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .lang-btn:hover {
-            background-color: #f5f3ff;
-        }
-        .lang-btn.active {
-            background-color: #6d28d9;
-            color: #ffffff;
-        }
-
-        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
-        .lang-content {
-            display: none;
-        }
-        .lang-kk .lang-content[lang="kk"],
-        .lang-en .lang-content[lang="en"],
-        .lang-ru .lang-content[lang="ru"] {
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
             display: block;
         }
-        .lang-kk span.lang-content[lang="kk"],
-        .lang-en span.lang-content[lang="en"],
-        .lang-ru span.lang-content[lang="ru"] {
-            display: inline;
+
+        /* Панель информации */
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 340px;
+            background: rgba(10, 15, 30, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 0 40px rgba(255, 200, 50, 0.1);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            border-left: 4px solid #ffd700;
+            z-index: 10;
+            color: #d0d0d0;
         }
 
-        .illustration-svg {
+        #info-panel.active {
+            transform: translateX(0);
+        }
+
+        #info-title {
+            margin: 0 0 10px 0;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        #info-desc {
+            color: #b0c4de;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .info-stat {
+            font-size: 13px;
+            color: #8899a6;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-stat span {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        /* Маркер названия планеты при наведении */
+        #planet-label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            transform: translate(-50%, -150%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+        }
+
+        /* Заголовок сверху */
+        #main-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            pointer-events: none;
+            z-index: 5;
+            text-align: center;
             width: 100%;
-            height: 150px;
-            margin: 10px 0;
-            border: 1px solid #ddd6fe;
-            border-radius: 0.5rem;
-            background-color: #fff;
+        }
+
+        /* Инструкция внизу */
+        #controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            pointer-events: none;
         }
 
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-    // Функция переключения языков (Автоматически добавлено скриптом)
-    function switchLang(lang) {
-        var container = document.getElementById('poster-container');
-        if (container) {
-            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
-            container.classList.add('lang-' + lang);
+</head>
+<body>
+
+<h1 id="main-title">Солнечная Система</h1>
+<div id="controls-hint">Кликните по планете для информации • Колесо мыши для зума • ЛКМ для вращения</div>
+
+<div id="canvas-container"></div>
+<div id="planet-label">Земля</div>
+
+<div id="info-panel">
+    <button class="close-btn" onclick="closePanel()">&times;</button>
+    <h2 id="info-title">Название</h2>
+    <div id="info-stats">
+        <!-- Сюда вставляются данные -->
+    </div>
+    <p id="info-desc">Описание</p>
+</div>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
         }
-        var buttons = document.querySelectorAll('.lang-btn');
-        buttons.forEach(function(btn) {
-            btn.classList.remove('active');
-            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + lang + "'")) {
-                btn.classList.add('active');
-            }
-        });
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+    // --- ДАННЫЕ О ПЛАНЕТАХ ---
+    const solarSystemData = {
+        "Sun": {
+            name: "Солнце",
+            desc: "Звезда, вокруг которой вращается наша планетная система.",
+            type: "Звезда",
+            radius: 5,
+            distance: 0,
+            speed: 0,
+            color: 0xffaa00,
+            textureType: "sun"
+        },
+        "Mercury": {
+            name: "Меркурий",
+            desc: "Самая маленькая и ближайшая к Солнцу планета. Покрыта кратерами.",
+            type: "Планета земной группы",
+            radius: 0.6,
+            distance: 9,
+            speed: 0.04,
+            color: 0x8c8c8c, // Серый
+            textureType: "terrestrial"
+        },
+        "Venus": {
+            name: "Венера",
+            desc: "Самая горячая планета. Плотная атмосфера скрывает поверхность.",
+            type: "Планета земной группы",
+            radius: 1.1,
+            distance: 13,
+            speed: 0.015,
+            color: 0xe3bb76, // Бежевый
+            textureType: "atmosphere"
+        },
+        "Earth": {
+            name: "Земля",
+            desc: "Наш дом. Единственная планета с жидкой водой на поверхности.",
+            type: "Планета земной группы",
+            radius: 1.2,
+            distance: 18,
+            speed: 0.01,
+            color: 0x1144cc, // Синий океан
+            textureType: "earth"
+        },
+        "Mars": {
+            name: "Марс",
+            desc: "«Красная планета». Поверхность богата оксидом железа.",
+            type: "Планета земной группы",
+            radius: 0.8,
+            distance: 23,
+            speed: 0.008,
+            color: 0xdd4422, // Ржавый
+            textureType: "terrestrial"
+        },
+        "Jupiter": {
+            name: "Юпитер",
+            desc: "Газовый гигант с характерными полосами ветров.",
+            type: "Газовый гигант",
+            radius: 2.8,
+            distance: 34,
+            speed: 0.004,
+            color: 0xd8ca9d,
+            textureType: "gas"
+        },
+        "Saturn": {
+            name: "Сатурн",
+            desc: "Газовый гигант с великолепной системой колец.",
+            type: "Газовый гигант",
+            radius: 2.4,
+            distance: 44,
+            speed: 0.003,
+            color: 0xf4d03f,
+            hasRings: true,
+            textureType: "gas"
+        },
+        "Uranus": {
+            name: "Уран",
+            desc: "Ледяной гигант бирюзового цвета.",
+            type: "Ледяной гигант",
+            radius: 1.6,
+            distance: 54,
+            speed: 0.002,
+            color: 0x40e0d0,
+            textureType: "gas_smooth"
+        },
+        "Neptune": {
+            name: "Нептун",
+            desc: "Ледяной гигант глубокого синего цвета.",
+            type: "Ледяной гигант",
+            radius: 1.6,
+            distance: 64,
+            speed: 0.001,
+            color: 0x3333ff,
+            textureType: "gas_smooth"
+        }
+    };
+
+    // --- СЦЕНА ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.002);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera.position.set(0, 40, 80);
+
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.shadowMap.enabled = true; // Тени для колец
+    container.appendChild(renderer.domElement);
+
+    // --- ОСВЕЩЕНИЕ ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.PointLight(0xffffff, 5, 400);
+    sunLight.position.set(0, 0, 0);
+    sunLight.castShadow = true;
+    scene.add(sunLight);
+
+    // --- УПРАВЛЕНИЕ ---
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxDistance = 200;
+    controls.minDistance = 10;
+
+    // --- ЗВЕЗДНОЕ НЕБО ---
+    function createStars() {
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        for (let i = 0; i < 5000; i++) {
+            vertices.push(
+                    THREE.MathUtils.randFloatSpread(500),
+                    THREE.MathUtils.randFloatSpread(500),
+                    THREE.MathUtils.randFloatSpread(500)
+            );
+        }
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        const material = new THREE.PointsMaterial({color: 0xffffff, size: 0.5, transparent: true, opacity: 0.8});
+        const stars = new THREE.Points(geometry, material);
+        scene.add(stars);
     }
 
+    createStars();
+
+    // --- ГЕНЕРАТОР ТЕКСТУР ПЛАНЕТ ---
+    function createPlanetTexture(type, colorHex) {
+        const width = 512;
+        const height = 256;
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        const baseColor = new THREE.Color(colorHex);
+
+        // Фон
+        ctx.fillStyle = `#${baseColor.getHexString()}`;
+        ctx.fillRect(0, 0, width, height);
+
+        if (type === 'gas') {
+            // Полосы для Юпитера/Сатурна
+            for (let i = 0; i < 20; i++) {
+                const y = Math.random() * height;
+                const h = Math.random() * 20 + 5;
+                const hsl = {};
+                baseColor.getHSL(hsl);
+                hsl.l += (Math.random() - 0.5) * 0.2; // Вариация яркости
+                hsl.s += (Math.random() - 0.5) * 0.1;
+                const bandColor = new THREE.Color().setHSL(hsl.h, hsl.s, hsl.l);
+
+                ctx.fillStyle = `#${bandColor.getHexString()}`;
+                ctx.fillRect(0, y, width, h);
+            }
+            // Размытие для мягкости
+            ctx.filter = 'blur(4px)';
+            ctx.drawImage(canvas, 0, 0);
+
+        } else if (type === 'terrestrial') {
+            // Кратеры и пятна (Меркурий, Марс)
+            for (let i = 0; i < 150; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const r = Math.random() * 15 + 2;
+
+                const hsl = {};
+                baseColor.getHSL(hsl);
+                hsl.l += (Math.random() - 0.5) * 0.3; // Пятна темнее/светлее
+                const spotColor = new THREE.Color().setHSL(hsl.h, hsl.s, hsl.l);
+
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fillStyle = `#${spotColor.getHexString()}`;
+                ctx.fill();
+            }
+
+        } else if (type === 'earth') {
+            // Континенты (Зеленые пятна)
+            ctx.fillStyle = '#2d6a4f'; // Темно-зеленый
+            for (let i = 0; i < 40; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const r = Math.random() * 40 + 10;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            // Облака (Белые полосы/пятна)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            for (let i = 0; i < 60; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const w = Math.random() * 60 + 20;
+                const h = Math.random() * 20 + 5;
+                ctx.fillRect(x, y, w, h);
+            }
+
+        } else if (type === 'atmosphere') {
+            // Венера (облачная дымка)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            for (let i = 0; i < 50; i++) {
+                const y = Math.random() * height;
+                const h = Math.random() * 40 + 10;
+                ctx.fillRect(0, y, width, h);
+            }
+            ctx.filter = 'blur(8px)';
+            ctx.drawImage(canvas, 0, 0);
+
+        } else if (type === 'sun') {
+            // Солнечные пятна/плазма
+            for (let i = 0; i < 200; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const r = Math.random() * 10 + 2;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 200, 50, 0.3)';
+                ctx.fill();
+            }
+        } else if (type === 'gas_smooth') {
+            // Уран/Нептун (плавный градиент)
+            const grad = ctx.createLinearGradient(0, 0, 0, height);
+            const hsl = {};
+            baseColor.getHSL(hsl);
+            const c1 = new THREE.Color().setHSL(hsl.h, hsl.s, hsl.l + 0.05);
+            const c2 = new THREE.Color().setHSL(hsl.h, hsl.s, hsl.l - 0.05);
+            grad.addColorStop(0, `#${c1.getHexString()}`);
+            grad.addColorStop(1, `#${c2.getHexString()}`);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+        }
+
+        return new THREE.CanvasTexture(canvas);
+    }
+
+    function createGlowTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const context = canvas.getContext('2d');
+        const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 170, 0, 1)');
+        gradient.addColorStop(0.2, 'rgba(255, 170, 0, 0.6)');
+        gradient.addColorStop(0.5, 'rgba(255, 170, 0, 0.1)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 64, 64);
+        return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- СОЗДАНИЕ ПЛАНЕТ ---
+    const planets = [];
+    const orbitGroup = new THREE.Group();
+    scene.add(orbitGroup);
+
+    Object.keys(solarSystemData).forEach(key => {
+        const data = solarSystemData[key];
+
+        // Генерируем текстуру
+        const texture = createPlanetTexture(data.textureType, data.color);
+
+        let material;
+        if (key === 'Sun') {
+            material = new THREE.MeshBasicMaterial({
+                map: texture,
+                color: 0xffffff // Используем карту, цвет белый
+            });
+
+            // Свечение
+            const sunGlowMat = new THREE.SpriteMaterial({
+                map: createGlowTexture(),
+                color: 0xffaa00,
+                transparent: true,
+                opacity: 1.0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false // ИСПРАВЛЕНИЕ: предотвращаем перекрытие орбит квадратом
+            });
+            const sunGlow = new THREE.Sprite(sunGlowMat);
+            sunGlow.scale.set(data.radius * 8, data.radius * 8, 1);
+            scene.add(sunGlow);
+        } else {
+            material = new THREE.MeshStandardMaterial({
+                map: texture,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+        }
+
+        const geometry = new THREE.SphereGeometry(data.radius, 32, 32);
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.userData = {key: key};
+        mesh.name = key;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        // Орбита
+        if (data.distance > 0) {
+            const orbitGeo = new THREE.RingGeometry(data.distance - 0.08, data.distance + 0.08, 128);
+            const orbitMat = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.15,
+                side: THREE.DoubleSide
+            });
+            const orbitMesh = new THREE.Mesh(orbitGeo, orbitMat);
+            orbitMesh.rotation.x = Math.PI / 2;
+            orbitGroup.add(orbitMesh);
+        }
+
+        // Кольца Сатурна
+        if (data.hasRings) {
+            const ringGeo = new THREE.RingGeometry(data.radius * 1.4, data.radius * 2.2, 64);
+            // Текстура для колец (шум)
+            const ringTex = createPlanetTexture('terrestrial', 0xcfb56b);
+            const ringMat = new THREE.MeshStandardMaterial({
+                map: ringTex,
+                color: 0xffffff,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.8
+            });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = Math.PI / 2;
+            ring.receiveShadow = true;
+            mesh.add(ring);
+        }
+
+        orbitGroup.add(mesh);
+
+        planets.push({
+            mesh: mesh,
+            distance: data.distance,
+            speed: data.speed,
+            angle: Math.random() * Math.PI * 2
+        });
+    });
+
+
+    // --- ИНТЕРАКТИВНОСТЬ ---
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const panel = document.getElementById('info-panel');
+    const titleEl = document.getElementById('info-title');
+    const descEl = document.getElementById('info-desc');
+    const statsEl = document.getElementById('info-stats');
+    const labelEl = document.getElementById('planet-label');
+
+    let highlightedPlanet = null;
+
+    function updateRaycaster(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+    }
+
+    function onMouseMove(event) {
+        updateRaycaster(event);
+        const intersects = raycaster.intersectObjects(orbitGroup.children);
+
+        let found = null;
+        for (let hit of intersects) {
+            if (hit.object.userData.key) {
+                found = hit.object;
+                break;
+            }
+        }
+
+        if (found) {
+            const key = found.userData.key;
+            const data = solarSystemData[key];
+
+            labelEl.textContent = data.name;
+            labelEl.style.opacity = 1;
+
+            const vector = found.position.clone();
+            vector.project(camera);
+            const x = (vector.x * .5 + .5) * window.innerWidth;
+            const y = (-(vector.y * .5) + .5) * window.innerHeight;
+            labelEl.style.left = `${x}px`;
+            labelEl.style.top = `${y}px`;
+
+            document.body.style.cursor = 'pointer';
+        } else {
+            labelEl.style.opacity = 0;
+            document.body.style.cursor = 'default';
+        }
+    }
+
+    function onClick(event) {
+        if (event.target.closest('#info-panel') || event.target.closest('.close-btn')) return;
+
+        updateRaycaster(event);
+        const intersects = raycaster.intersectObjects(orbitGroup.children);
+
+        let found = null;
+        for (let hit of intersects) {
+            if (hit.object.userData.key) {
+                found = hit.object;
+                break;
+            }
+        }
+
+        if (found) {
+            showInfo(found.userData.key);
+
+            if (highlightedPlanet && highlightedPlanet !== found && highlightedPlanet.material.emissive) {
+                highlightedPlanet.material.emissive.setHex(0x000000);
+            }
+            if (found.material.emissive) {
+                highlightedPlanet = found;
+                if (found.userData.key !== 'Sun') {
+                    found.material.emissive.setHex(0x333333);
+                }
+            }
+        } else {
+            closePanel();
+        }
+    }
+
+    function showInfo(key) {
+        const data = solarSystemData[key];
+        titleEl.textContent = data.name;
+        descEl.textContent = data.desc;
+
+        statsEl.innerHTML = `
+                <div class="info-stat">Тип объекта <span>${data.type}</span></div>
+                <div class="info-stat">Радиус (усл.) <span>${data.radius}</span></div>
+                <div class="info-stat">Расстояние (усл.) <span>${data.distance}</span></div>
+            `;
+
+        const hexColor = '#' + data.color.toString(16).padStart(6, '0');
+        panel.style.borderLeftColor = hexColor;
+
+        panel.classList.add('active');
+    }
+
+    window.closePanel = function () {
+        panel.classList.remove('active');
+        if (highlightedPlanet && highlightedPlanet.userData.key !== 'Sun') {
+            highlightedPlanet.material.emissive.setHex(0x000000);
+        }
+        highlightedPlanet = null;
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('click', onClick);
+
+    // --- АНИМАЦИЯ ---
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        const timeScale = 0.5;
+
+        planets.forEach(p => {
+            if (p.distance > 0) {
+                p.angle += p.speed * timeScale;
+                p.mesh.position.x = Math.cos(p.angle) * p.distance;
+                p.mesh.position.z = Math.sin(p.angle) * p.distance;
+            }
+            p.mesh.rotation.y += 0.005;
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
 </script>
-</head>
-<body class="bg-gray-100">
-
-<!-- ID-і бар негізгі контейнер -->
-    <div id="poster-container" class="container lang-kk">
-
-        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
-        <div class="lang-switcher">
-            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
-            <button class="lang-btn" onclick="switchLang('en')">English</button>
-            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
-        </div>
-
-        <!-- БАСТЫ ТАҚЫРЫП -->
-        <header class="header-card text-center mb-10">
-            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ФИЗИКА 2: ДИФФУЗИЯ</h1>
-            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">PHYSICS 2: DIFFUSION</h1>
-            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ФИЗИКА 2: ДИФФУЗИЯ</h1>
-
-            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-gray-100">Бір зат бөлшектерінің екінші зат бөлшектерімен араласуы.</p>
-            <p lang="en" class="lang-content mt-2 text-xl font-medium text-gray-100">The intermixing of particles of one substance with another.</p>
-            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-gray-100">Взаимное проникновение частиц одного вещества в другое.</p>
-        </header>
-
-        <!-- 1. ДИФФУЗИЯ ДЕГЕНІМІЗ НЕ? -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Диффузия дегеніміз не?</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Diffusion?</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое Диффузия?</h2>
-
-            <div class="rule-card border-t-purple-500">
-                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="kk">Диффузия</span> – бұл жанасып тұрған әртүрлі заттар бөлшектерінің (молекулалардың, атомдардың) бір-біріне өзара өту құбылысы.
-                </p>
-                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="en">Diffusion</span> is the phenomenon of mutual intermixing of particles (molecules, atoms) of different substances that are in contact.
-                </p>
-                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <span class="term" lang="ru">Диффузия</span> – это явление взаимного проникновения частиц (молекул, атомов) одного вещества в другое при их контакте.
-                </p>
-
-                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <strong>Себебі:</strong> Барлық бөлшектер <strong>үздіксіз және ретсіз (хаосты) қозғалыста</strong> болады.
-                </p>
-                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <strong>Cause:</strong> All particles are in <strong>continuous and random (chaotic) motion</strong>.
-                </p>
-                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    <strong>Причина:</strong> Все частицы находятся в <strong>непрерывном и хаотичном (беспорядочном) движении</strong>.
-                </p>
-
-                <!-- Газдардағы диффузия иллюстрациясы -->
-                <svg class="illustration-svg" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="0" y="0" width="300" height="100" fill="#f5f3ff"/>
-                    <!-- Бастапқыда (Бөлінген) -->
-                    <line x1="150" y1="10" x2="150" y2="90" stroke="#a78bfa" stroke-width="2" stroke-dasharray="4"/>
-                    <text x="75" y="15" font-size="10" fill="#1e3a8a" text-anchor="middle">A</text>
-                    <text x="225" y="15" font-size="10" fill="#b91c1c" text-anchor="middle">B</text>
-                    <!-- A газы (көк) -->
-                    <circle cx="30" cy="30" r="4" fill="#1e3a8a"/> <circle cx="70" cy="60" r="4" fill="#1e3a8a"/> <circle cx="110" cy="40" r="4" fill="#1e3a8a"/> <circle cx="50" cy="80" r="4" fill="#1e3a8a"/>
-                    <!-- B газы (қызыл) -->
-                    <circle cx="180" cy="40" r="4" fill="#b91c1c"/> <circle cx="220" cy="70" r="4" fill="#b91c1c"/> <circle cx="260" cy="30" r="4" fill="#b91c1c"/> <circle cx="280" cy="80" r="4" fill="#b91c1c"/>
-
-                    <!-- Араласу -->
-                    <circle cx="130" cy="30" r="4" fill="#b91c1c"/> <circle cx="90" cy="70" r="4" fill="#b91c1c"/>
-                    <circle cx="170" cy="70" r="4" fill="#1e3a8a"/> <circle cx="200" cy="20" r="4" fill="#1e3a8a"/>
-                </svg>
-                 <p lang="kk" class="lang-content text-center font-semibold">Газдардағы диффузия (мысалы, бөлмедегі иістің таралуы)</p>
-                 <p lang="en" class="lang-content text-center font-semibold">Diffusion in gases (e.g., perfume spreading in a room)</p>
-                 <p lang="ru" class="lang-content text-center font-semibold">Диффузия в газах (напр., распространение запаха в комнате)</p>
-            </div>
-        </section>
-
-        <!-- 2. ЗАТТЫҢ КҮЙІНЕ БАЙЛАНЫСТЫ -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Диффузия әртүрлі күйде</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">2. Diffusion in Different States</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Диффузия в разных состояниях</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Газ -->
-                <div class="rule-card border-t-purple-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-purple-700 mb-3">1. Газдарда</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-purple-700 mb-3">1. In Gases</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-purple-700 mb-3">1. В Газах</h3>
-                    <p lang="kk" class="lang-content">Бөлшектер алыс және өте жылдам қозғалады. <span class="term" lang="kk">Өте жылдам</span> жүреді.</p>
-                    <p lang="en" class="lang-content">Particles are far apart and move very fast. Diffusion is <span class="term" lang="en">very fast</span>.</p>
-                    <p lang="ru" class="lang-content">Частицы далеко и движутся быстро. Диффузия <span class="term" lang="ru">очень быстрая</span>.</p>
-                </div>
-
-                <!-- Сұйық -->
-                <div class="rule-card border-t-blue-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-3">2. Сұйықтықтарда</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-3">2. In Liquids</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-3">2. В Жидкостях</h3>
-                    <p lang="kk" class="lang-content">Бөлшектер тығыз, бірақ орын ауыстырады. <span class="term" lang="kk">Баяу</span> жүреді.</p>
-                    <p lang="en" class="lang-content">Particles are close but can move. Diffusion is <span class="term" lang="en">slower</span>.</p>
-                    <p lang="ru" class="lang-content">Частицы близко, но подвижны. Диффузия <span class="term" lang="ru">медленная</span>.</p>
-                </div>
-
-                <!-- Қатты -->
-                <div class="rule-card border-t-gray-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-gray-700 mb-3">3. Қатты денелерде</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-gray-700 mb-3">3. In Solids</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-gray-700 mb-3">3. В Твердых телах</h3>
-                    <p lang="kk" class="lang-content">Бөлшектер тербеледі, орын ауыстырмайды. <span class="term" lang="kk">Өте баяу</span> (жылдар керек).</p>
-                    <p lang="en" class="lang-content">Particles vibrate but stay in place. Diffusion is <span class="term" lang="en">extremely slow</span> (takes years).</p>
-                    <p lang="ru" class="lang-content">Частицы колеблются на месте. Диффузия <span class="term" lang="ru">очень медленная</span> (нужны годы).</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 3. ТЕМПЕРАТУРАҒА ТӘУЕЛДІЛІК -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Температураға тәуелділік</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">3. Dependence on Temperature</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Зависимость от температуры</h2>
-
-            <div class="rule-card border-t-red-500">
-                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Температура <strong>неғұрлым жоғары</strong> болса, бөлшектер соғұрлым <strong>жылдам</strong> қозғалады. Демек, диффузия да <strong>жылдам</strong> жүреді.
-                </p>
-                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    The <strong>higher the temperature</strong>, the <strong>faster</strong> the particles move. Therefore, diffusion occurs <strong>faster</strong>.
-                </p>
-                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Чем <strong>выше температура</strong>, тем <strong>быстрее</strong> движутся частицы. Следовательно, диффузия происходит <strong>быстрее</strong>.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Суық су -->
-                    <div class="example-block border-l-blue-400">
-                        <p lang="kk" class="lang-content font-semibold text-blue-700">Суық су</p>
-                        <p lang="en" class="lang-content font-semibold text-blue-700">Cold Water</p>
-                        <p lang="ru" class="lang-content font-semibold text-blue-700">Холодная вода</p>
-                        <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="10" y="10" width="80" height="80" fill="#eff6ff" stroke="#60a5fa"/>
-                            <circle cx="50" cy="20" r="5" fill="#5b21b6"/>
-                            <circle cx="45" cy="30" r="3" fill="#a78bfa"/> <circle cx="55" cy="30" r="3" fill="#a78bfa"/>
-                            <circle cx="50" cy="40" r="2" fill="#ddd6fe"/>
-                        </svg>
-                        <p lang="kk" class="lang-content text-center">Бояу <strong>баяу</strong> тарайды.</p>
-                        <p lang="en" class="lang-content text-center">The dye spreads <strong>slowly</strong>.</p>
-                        <p lang="ru" class="lang-content text-center">Краска расходится <strong>медленно</strong>.</p>
-                    </div>
-
-                    <!-- Ыстық су -->
-                    <div class="example-block border-l-red-400">
-                        <p lang="kk" class="lang-content font-semibold text-red-700">Ыстық су</p>
-                        <p lang="en" class="lang-content font-semibold text-red-700">Hot Water</p>
-                        <p lang="ru" class="lang-content font-semibold text-red-700">Горячая вода</p>
-                        <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="10" y="10" width="80" height="80" fill="#fff1f2" stroke="#fb7185"/>
-                            <circle cx="50" cy="20" r="5" fill="#9d174d"/>
-                            <circle cx="30" cy="30" r="4" fill="#be185d"/> <circle cx="70" cy="30" r="4" fill="#be185d"/>
-                            <circle cx="40" cy="60" r="3" fill="#db2777"/> <circle cx="60" cy="60" r="3" fill="#db2777"/>
-                            <circle cx="20" cy="80" r="2" fill="#f472b6"/> <circle cx="80" cy="80" r="2" fill="#f472b6"/>
-                        </svg>
-                        <p lang="kk" class="lang-content text-center">Бояу <strong>жылдам</strong> тарайды.</p>
-                        <p lang="en" class="lang-content text-center">The dye spreads <strong>quickly</strong>.</p>
-                        <p lang="ru" class="lang-content text-center">Краска расходится <strong>быстро</strong>.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ТҮЙІН -->
-        <footer class="footer-card">
-            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-gray-800">БАСТЫ ОЙ</h3>
-            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-gray-800">SUMMARY</h3>
-            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-gray-800">ГЛАВНАЯ МЫСЛЬ</h3>
-
-            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                <span class="term" lang="kk">Диффузия</span> – бұл бөлшектердің үздіксіз <strong>қозғалысының</strong> дәлелі.<br>
-                Ол <strong>газдарда</strong> ең жылдам, <strong>қатты денелерде</strong> ең баяу жүреді. Температура <strong>жоғары</strong> болса, диффузия <strong>жылдам</strong> болады.
-            </p>
-            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                <span class="term" lang="en">Diffusion</span> is proof of the continuous <strong>motion</strong> of particles.<br>
-                It is fastest in <strong>gases</strong> and slowest in <strong>solids</strong>. Higher <strong>temperature</strong> means faster <strong>diffusion</strong>.
-            </p>
-            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                <span class="term" lang="ru">Диффузия</span> – это доказательство непрерывного <strong>движения</strong> частиц.<br>
-                Она быстрее всего в <strong>газах</strong> и медленнее всего в <strong>твердых телах</strong>. Чем <strong>выше температура</strong>, тем <strong>быстрее</strong> диффузия.
-            </p>
-        </footer>
-
-    </div>
-
-    
-
-
-
-
-
-
-
-
-
 </body>
 </html>

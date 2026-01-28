@@ -3,486 +3,752 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chemistry Poster - Chapter 1</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <title>Структура атома углерода</title>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top right, #1a2a6c, #b21f1f, #fdbb2d);
-            background-attachment: fixed;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2a2f4a 100%);
+            overflow: hidden;
             color: white;
-            min-height: 100vh;
         }
-        .heading-font { font-family: 'Montserrat', sans-serif; }
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
+
+
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .info-panel {
+            position: fixed;
+            right: -420px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 400px;
+            max-height: 85vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px 0 0 20px;
+            padding: 30px;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.4);
+            transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 500;
+            overflow-y: auto;
+            color: #333;
+        }
+
+        .info-panel.active {
+            right: 0;
+        }
+
+        .info-panel .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f44336;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .info-panel .close-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .info-panel h2 {
+            color: #2a2f4a;
+            font-size: 24px;
+            margin-bottom: 15px;
+            padding-right: 40px;
+        }
+
+        .info-panel .info-content {
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .info-section {
+            margin-bottom: 18px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-section strong {
+            color: #0a0e27;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-        .rounded-custom { border-radius: 3rem; }
-        canvas { cursor: crosshair; }
-        .lang-btn.active { background: white; color: black; }
+
+        .controls p {
+            font-size: 14px;
+            opacity: 0.95;
+            text-align: center;
+        }
+
+        .atom-info {
+            position: fixed;
+            top: 120px;
+            left: 30px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 280px;
+        }
+
+        .atom-info h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .info-row .label {
+            opacity: 0.85;
+        }
+
+        .info-row .value {
+            font-weight: 600;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 280px;
+        }
+
+        .legend h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .legend-item:hover {
+            transform: translateX(5px);
+        }
+
+        .legend-sphere {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body>
+<
 
-<!-- Header -->
-    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center">
-        <div>
-            <h1 id="main-title" class="heading-font text-3xl md:text-5xl uppercase tracking-tighter text-white"></h1>
-            <p id="sub-title" class="mt-2 text-white/70 font-light"></p>
-        </div>
-        <div class="flex gap-2 mt-4 md:mt-0">
-            <button onclick="setLang('ru')" id="btn-ru" class="lang-btn px-6 py-2 rounded-full border border-white/30 transition-all hover:bg-white/20">RU</button>
-            <button onclick="setLang('kz')" id="btn-kz" class="lang-btn px-6 py-2 rounded-full border border-white/30 transition-all hover:bg-white/20">KZ</button>
-            <button onclick="setLang('en')" id="btn-en" class="lang-btn px-6 py-2 rounded-full border border-white/30 transition-all hover:bg-white/20">EN</button>
-        </div>
-    </header>
+<div class="header">
+    <h1>⚛️ Атом углерода (C)</h1>
+    <p>Интерактивная 3D модель</p>
+</div>
 
-    <!-- Main Content -->
-    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <!-- Canvas Section -->
-        <div class="lg:col-span-2 glass rounded-custom p-6 relative overflow-hidden">
-            <h2 id="canvas-heading" class="heading-font text-xl mb-4 opacity-80 uppercase"></h2>
-            <canvas id="chemCanvas" class="w-full h-[400px] md:h-[500px]"></canvas>
-            <div class="absolute bottom-6 left-6 text-sm text-white/50 italic" id="canvas-hint"></div>
-        </div>
+<div id="canvas-container"></div>
 
-        <!-- Info Panel -->
-        <div class="glass rounded-custom p-8 flex flex-col justify-center">
-            <div id="info-content" class="transition-all duration-500 transform">
-                <h3 id="info-title" class="heading-font text-4xl mb-6 text-yellow-400"></h3>
-                <div id="info-text" class="text-lg leading-relaxed font-light space-y-4 text-white/90"></div>
-            </div>
-        </div>
-    </main>
+<div class="atom-info">
+    <h3>Углерод (Carbon)</h3>
+    <div class="info-row">
+        <span class="label">Атомный номер:</span>
+        <span class="value">6</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Атомная масса:</span>
+        <span class="value">12.011 а.е.м.</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Протоны:</span>
+        <span class="value">6</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Нейтроны:</span>
+        <span class="value">6</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Электроны:</span>
+        <span class="value">6</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Конфигурация:</span>
+        <span class="value">1s² 2s² 2p²</span>
+    </div>
+</div>
 
-    <!-- Detailed Cards -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <div class="glass rounded-custom p-8 transition-transform hover:scale-[1.02]">
-            <div class="w-12 h-12 bg-blue-500 rounded-2xl mb-6 flex items-center justify-center text-2xl">🔬</div>
-            <h4 id="card1-title" class="heading-font text-xl mb-4"></h4>
-            <p id="card1-desc" class="text-white/70 font-light leading-relaxed"></p>
-        </div>
-        <div class="glass rounded-custom p-8 transition-transform hover:scale-[1.02]">
-            <div class="w-12 h-12 bg-emerald-500 rounded-2xl mb-6 flex items-center justify-center text-2xl">⚡</div>
-            <h4 id="card2-title" class="heading-font text-xl mb-4"></h4>
-            <p id="card2-desc" class="text-white/70 font-light leading-relaxed"></p>
-        </div>
-        <div class="glass rounded-custom p-8 transition-transform hover:scale-[1.02]">
-            <div class="w-12 h-12 bg-purple-500 rounded-2xl mb-6 flex items-center justify-center text-2xl">🌍</div>
-            <h4 id="card3-title" class="heading-font text-xl mb-4"></h4>
-            <p id="card3-desc" class="text-white/70 font-light leading-relaxed"></p>
-        </div>
-    </section>
+<div class="info-panel" id="info-panel">
+    <button class="close-btn" onclick="closeInfo()">×</button>
+    <h2 id="info-title">Выберите часть атома</h2>
+    <div class="info-content" id="info-content">
+        <p>Кликните на протон, нейтрон или электрон, чтобы узнать подробнее.</p>
+    </div>
+</div>
 
-    <!-- Footer -->
-    <footer class="glass rounded-custom p-10 text-center">
-        <blockquote class="max-w-4xl mx-auto">
-            <p id="quote-text" class="text-2xl md:text-3xl italic font-light leading-snug mb-4"></p>
-            <cite id="quote-author" class="text-yellow-400 font-bold uppercase tracking-widest"></cite>
-        </blockquote>
-    </footer>
+<div class="controls">
+    <p>🖱️ Вращение: перетаскивание | 🔍 Масштаб: колесо мыши | Пробел: пауза/продолжить</p>
+</div>
 
-    <script>
-        const translations = {
-            ru: {
-                title: "Химия и Человек",
-                subtitle: "Естествознание и практическая деятельность",
-                canvasHeading: "Карта взаимосвязей химии",
-                canvasHint: "Нажмите на узлы, чтобы узнать больше",
-                defaultTitle: "Предмет химии",
-                defaultText: "Химия — это наука о веществах, их свойствах и превращениях. Она связывает физику, биологию и геологию в единую систему знаний о мире.",
-                nodes: {
-                    science: { title: "Естествознание", text: "Химия является центральной наукой, объясняющей молекулярный уровень жизни, строения Земли и физических явлений." },
-                    industry: { title: "Промышленность", text: "От металлургии до производства полимеров — химия создает материалы, которых нет в природе." },
-                    medicine: { title: "Медицина", text: "Синтез лекарств, понимание метаболизма и генетики невозможно без химического анализа." },
-                    ecology: { title: "Экология", text: "Химия помогает очищать среду и переходить к 'Зеленым технологиям' для сохранения планеты." }
-                },
-                cards: [
-                    { title: "Задачи химии", desc: "Изучение состава и структуры веществ, синтез новых соединений с заданными свойствами и управление химическими процессами." },
-                    { title: "Энергетика", desc: "Создание новых видов топлива и аккумуляторов. Химические реакции — основной источник энергии для человечества." },
-                    { title: "Будущее", desc: "Нанотехнологии и молекулярные роботы. Химия будущего позволит конструировать материю на атомном уровне." }
-                ],
-                quote: "«Широко распростирает химия руки свои в дела человеческие... Куда ни посмотрим, куда ни оглянемся, везде перед очами нашими успехи её прилежания»",
-                author: "Михаил Ломоносов"
-            },
-            kz: {
-                title: "Химия және Адам",
-                subtitle: "Жаратылыстану және практикалық қызмет",
-                canvasHeading: "Химияның өзара байланыс картасы",
-                canvasHint: "Көбірек білу үшін түйіндерді басыңыз",
-                defaultTitle: "Химия пәні",
-                defaultText: "Химия — заттарды, олардың қасиеттерін және айналуларын зерттейтін ғылым. Ол физиканы, биологияны және геологияны әлем туралы біртұтас білім жүйесіне біріктіреді.",
-                nodes: {
-                    science: { title: "Жаратылыстану", text: "Химия — өмірдің молекулалық деңгейін, Жердің құрылымын және физикалық құбылыстарды түсіндіретін негізгі ғылым." },
-                    industry: { title: "Өнеркәсіп", text: "Металлургиядан полимерлер өндірісіне дейін — химия табиғатта жоқ материалдарды жасайды." },
-                    medicine: { title: "Медицина", text: "Дәрілік заттардың синтезі, метаболизм мен генетиканы түсіну химиялық талдаусыз мүмкін емес." },
-                    ecology: { title: "Экология", text: "Химия қоршаған ортаны тазартуға және планетаны сақтау үшін 'Жасыл технологияларға' көшуге көмектеседі." }
-                },
-                cards: [
-                    { title: "Химия міндеттері", desc: "Заттардың құрамы мен құрылымын зерттеу, берілген қасиеттері бар жаңа қосылыстарды синтездеу және химиялық процестерді басқару." },
-                    { title: "Энергетика", desc: "Отынның жаңа түрлерін және аккумуляторларды жасау. Химиялық реакциялар — адамзат үшін негізгі энергия көзі." },
-                    { title: "Болашақ", desc: "Нанотехнологиялар және молекулалық роботтар. Болашақ химиясы материяны атом деңгейінде жобалауға мүмкіндік береді." }
-                ],
-                quote: "«Химия адам істеріне өз қолын кеңінен жаяды... Қайда қарасақ та, қайда көз салсақ та, барлық жерде оның тынымсыз еңбегінің жемісін көреміз»",
-                author: "Михаил Ломоносов"
-            },
-            en: {
-                title: "Chemistry & Humans",
-                subtitle: "Natural Science and Practical Activity",
-                canvasHeading: "Chemistry Interconnection Map",
-                canvasHint: "Click nodes to explore",
-                defaultTitle: "Subject of Chemistry",
-                defaultText: "Chemistry is the science of substances, their properties, and transformations. It bridges physics, biology, and geology into a unified system of knowledge.",
-                nodes: {
-                    science: { title: "Natural Science", text: "Chemistry is a central science explaining the molecular level of life, Earth's structure, and physical phenomena." },
-                    industry: { title: "Industry", text: "From metallurgy to polymer production, chemistry creates materials that do not exist in nature." },
-                    medicine: { title: "Medicine", text: "Drug synthesis and understanding metabolism or genetics are impossible without chemical analysis." },
-                    ecology: { title: "Ecology", text: "Chemistry helps clean the environment and move to 'Green Technologies' to save the planet." }
-                },
-                cards: [
-                    { title: "Goals of Chemistry", desc: "Studying the composition and structure of substances, synthesizing new compounds, and controlling chemical processes." },
-                    { title: "Energy", desc: "Creating new fuels and batteries. Chemical reactions are the primary source of energy for humanity." },
-                    { title: "Future", desc: "Nanotechnology and molecular robots. Future chemistry will allow constructing matter at the atomic level." }
-                ],
-                quote: "«Chemistry stretches its hands far into human affairs... Wherever we look, wherever we turn, the successes of its diligence are everywhere before our eyes»",
-                author: "Mikhail Lomonosov"
-            }
-        };
+<div class="legend">
+    <h3>Частицы атома:</h3>
+    <div class="legend-item" onclick="focusPart('proton')">
+        <div class="legend-sphere" style="background: radial-gradient(circle at 30% 30%, #ff6b6b, #ee5a6f);"></div>
+        <span>Протон (+)</span>
+    </div>
+    <div class="legend-item" onclick="focusPart('neutron')">
+        <div class="legend-sphere" style="background: radial-gradient(circle at 30% 30%, #95a5a6, #7f8c8d);"></div>
+        <span>Нейтрон (0)</span>
+    </div>
+    <div class="legend-item" onclick="focusPart('electron')">
+        <div class="legend-sphere" style="background: radial-gradient(circle at 30% 30%, #3498db, #2980b9);"></div>
+        <span>Электрон (−)</span>
+    </div>
+</div>
 
-        let currentLang = 'ru';
-        const canvas = document.getElementById('chemCanvas');
-        const ctx = canvas.getContext('2d');
-        let nodes = [];
-
-        function setLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${lang}`).classList.add('active');
-            updateUI();
+<script>
+    // QWebChannel Bridge
+    function goBack() {
+        if (typeof bridge !== 'undefined' && bridge) {
+            bridge.onBackClicked();
         }
+    }
 
-        function updateUI() {
-            const t = translations[currentLang];
-            document.getElementById('main-title').textContent = t.title;
-            document.getElementById('sub-title').textContent = t.subtitle;
-            document.getElementById('canvas-heading').textContent = t.canvasHeading;
-            document.getElementById('canvas-hint').textContent = t.canvasHint;
-            document.getElementById('info-title').textContent = t.defaultTitle;
-            document.getElementById('info-text').innerHTML = `<p>${t.defaultText}</p>`;
-            
-            document.getElementById('card1-title').textContent = t.cards[0].title;
-            document.getElementById('card1-desc').textContent = t.cards[0].desc;
-            document.getElementById('card2-title').textContent = t.cards[1].title;
-            document.getElementById('card2-desc').textContent = t.cards[1].desc;
-            document.getElementById('card3-title').textContent = t.cards[2].title;
-            document.getElementById('card3-desc').textContent = t.cards[2].desc;
-
-            document.getElementById('quote-text').textContent = t.quote;
-            document.getElementById('quote-author').textContent = t.author;
-
-            drawCanvas();
-        }
-
-        function initCanvas() {
-            const w = canvas.parentElement.clientWidth;
-            const h = canvas.parentElement.clientHeight;
-            canvas.width = w;
-            canvas.height = h;
-
-            nodes = [
-                { id: 'science', x: w * 0.25, y: h * 0.3, r: 50, color: '#3b82f6' },
-                { id: 'industry', x: w * 0.75, y: h * 0.3, r: 60, color: '#10b981' },
-                { id: 'medicine', x: w * 0.3, y: h * 0.7, r: 55, color: '#f59e0b' },
-                { id: 'ecology', x: w * 0.7, y: h * 0.7, r: 50, color: '#8b5cf6' },
-                { id: 'center', x: w * 0.5, y: h * 0.5, r: 80, color: '#ef4444' }
-            ];
-            drawCanvas();
-        }
-
-        function drawCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const t = translations[currentLang];
-
-            // Draw connections
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-            ctx.lineWidth = 2;
-            nodes.forEach(node => {
-                if (node.id !== 'center') {
-                    ctx.moveTo(nodes[4].x, nodes[4].y);
-                    ctx.lineTo(node.x, node.y);
-                }
+    if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+        try {
+            new QWebChannel(qt.webChannelTransport, function (channel) {
+                window.bridge = channel.objects.bridge;
             });
-            ctx.stroke();
-
-            // Draw nodes
-            nodes.forEach(node => {
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
-                ctx.fillStyle = node.color;
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = node.color;
-                ctx.fill();
-                
-                ctx.shadowBlur = 0;
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 14px Inter';
-                ctx.textAlign = 'center';
-                const label = node.id === 'center' ? t.title.split(' ')[0] : t.nodes[node.id].title;
-                ctx.fillText(label, node.x, node.y + 5);
-            });
+        } catch (e) {
         }
+    }
 
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+    // Информация о частицах
+    const particleInfo = {
+        proton: {
+            title: "Протон (p⁺)",
+            content: `
+                    <div class="info-section">
+                        <strong>Описание:</strong>
+                        <p>Положительно заряженная элементарная частица, находящаяся в ядре атома.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Характеристики:</strong>
+                        <p>• Заряд: +1 (1.602 × 10⁻¹⁹ Кл)<br>
+                        • Масса: 1.6726 × 10⁻²⁷ кг<br>
+                        • Относительная масса: 1 а.е.м.<br>
+                        • Спин: ½</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Роль в атоме:</strong>
+                        <p>Количество протонов определяет атомный номер элемента и его химические свойства. У углерода 6 протонов.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Состав:</strong>
+                        <p>Состоит из 2 верхних (up) кварков и 1 нижнего (down) кварка.</p>
+                    </div>
+                `
+        },
+        neutron: {
+            title: "Нейтрон (n⁰)",
+            content: `
+                    <div class="info-section">
+                        <strong>Описание:</strong>
+                        <p>Нейтральная (незаряженная) элементарная частица, находящаяся в ядре атома.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Характеристики:</strong>
+                        <p>• Заряд: 0 (нейтральная)<br>
+                        • Масса: 1.6749 × 10⁻²⁷ кг<br>
+                        • Относительная масса: 1 а.е.м.<br>
+                        • Спин: ½</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Роль в атоме:</strong>
+                        <p>Обеспечивает стабильность ядра, уменьшая отталкивание между протонами. У изотопа углерода-12 — 6 нейтронов.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Интересный факт:</strong>
+                        <p>Свободный нейтрон нестабилен и распадается за ~15 минут на протон, электрон и антинейтрино.</p>
+                    </div>
+                `
+        },
+        electron: {
+            title: "Электрон (e⁻)",
+            content: `
+                    <div class="info-section">
+                        <strong>Описание:</strong>
+                        <p>Отрицательно заряженная элементарная частица, вращающаяся вокруг ядра атома на электронных оболочках.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Характеристики:</strong>
+                        <p>• Заряд: −1 (−1.602 × 10⁻¹⁹ Кл)<br>
+                        • Масса: 9.109 × 10⁻³¹ кг<br>
+                        • Относительная масса: 0.0005 а.е.м.<br>
+                        • Спин: ½</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Электронная конфигурация углерода:</strong>
+                        <p>• K-оболочка (n=1): 2 электрона<br>
+                        • L-оболочка (n=2): 4 электрона<br>
+                        • Валентные электроны: 4</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Роль в химии:</strong>
+                        <p>Электроны на внешней оболочке (валентные) участвуют в образовании химических связей. 4 валентных электрона углерода позволяют ему образовывать 4 ковалентные связи.</p>
+                    </div>
+                `
+        },
+        nucleus: {
+            title: "Ядро атома",
+            content: `
+                    <div class="info-section">
+                        <strong>Описание:</strong>
+                        <p>Центральная часть атома, содержащая протоны и нейтроны (нуклоны).</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Характеристики ядра углерода-12:</strong>
+                        <p>• Протоны: 6<br>
+                        • Нейтроны: 6<br>
+                        • Массовое число: 12<br>
+                        • Радиус: ~2.7 фм (фемтометров)</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Ядерные силы:</strong>
+                        <p>Сильное взаимодействие удерживает протоны и нейтроны в ядре, преодолевая электростатическое отталкивание между протонами.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Изотопы углерода:</strong>
+                        <p>• Углерод-12 (6p, 6n) — 98.9%<br>
+                        • Углерод-13 (6p, 7n) — 1.1%<br>
+                        • Углерод-14 (6p, 8n) — радиоактивный</p>
+                    </div>
+                `
+        }
+    };
 
-            nodes.forEach(node => {
-                const dist = Math.sqrt((mouseX - node.x)**2 + (mouseY - node.y)**2);
-                if (dist < node.r) {
-                    const infoTitle = document.getElementById('info-title');
-                    const infoText = document.getElementById('info-text');
-                    const t = translations[currentLang];
+    // Three.js
+    let scene, camera, renderer;
+    let atomParts = {};
+    let atomGroup;
+    let electrons = [];
+    let raycaster, mouse;
+    let selectedPart = null;
+    let isDragging = false;
+    let previousMousePosition = {x: 0, y: 0};
+    let animationPaused = false;
+    let time = 0;
 
-                    if (node.id === 'center') {
-                        infoTitle.textContent = t.defaultTitle;
-                        infoText.innerHTML = `<p>${t.defaultText}</p>`;
-                    } else {
-                        infoTitle.textContent = t.nodes[node.id].title;
-                        infoText.innerHTML = `<p>${t.nodes[node.id].text}</p>`;
-                    }
-                    
-                    // Animation effect
-                    const panel = document.getElementById('info-content');
-                    panel.style.opacity = '0';
-                    panel.style.transform = 'translateX(20px)';
-                    setTimeout(() => {
-                        panel.style.opacity = '1';
-                        panel.style.transform = 'translateX(0)';
-                    }, 100);
-                }
-            });
+    function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0e27);
+
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 8);
+
+        const container = document.getElementById('canvas-container');
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // Освещение
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const light1 = new THREE.PointLight(0x667eea, 1, 100);
+        light1.position.set(10, 10, 10);
+        scene.add(light1);
+
+        const light2 = new THREE.PointLight(0x764ba2, 0.8, 100);
+        light2.position.set(-10, -5, 5);
+        scene.add(light2);
+
+        const light3 = new THREE.PointLight(0x3498db, 0.6, 100);
+        light3.position.set(0, -10, -10);
+        scene.add(light3);
+
+        atomGroup = new THREE.Group();
+        scene.add(atomGroup);
+
+        createAtom();
+
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+
+        window.addEventListener('resize', onWindowResize);
+        renderer.domElement.addEventListener('click', onMouseClick);
+        renderer.domElement.addEventListener('mousemove', onMouseMove);
+        renderer.domElement.addEventListener('mousedown', onMouseDown);
+        renderer.domElement.addEventListener('mouseup', onMouseUp);
+        renderer.domElement.addEventListener('wheel', onWheel);
+        window.addEventListener('keydown', onKeyDown);
+
+        animate();
+    }
+
+    function createAtom() {
+        // ЯДРО
+        const nucleusGroup = new THREE.Group();
+        nucleusGroup.userData = {name: 'nucleus'};
+        atomGroup.add(nucleusGroup);
+
+        // Создаём 6 протонов
+        const protonGeom = new THREE.SphereGeometry(0.25, 32, 32);
+        const protonMat = new THREE.MeshPhongMaterial({
+            color: 0xff6b6b,
+            emissive: 0xff4444,
+            emissiveIntensity: 0.3,
+            shininess: 100,
+            specular: 0xffffff
         });
 
-        window.addEventListener('resize', initCanvas);
-        window.onload = () => {
-            setLang('ru');
-            initCanvas();
-        };
-    </script>
+        const protonPositions = [
+            [0.3, 0.3, 0],
+            [-0.3, 0.3, 0],
+            [0.3, -0.3, 0],
+            [-0.3, -0.3, 0],
+            [0, 0, 0.4],
+            [0, 0, -0.4]
+        ];
 
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+        protonPositions.forEach((pos, i) => {
+            const proton = new THREE.Mesh(protonGeom, protonMat.clone());
+            proton.position.set(pos[0], pos[1], pos[2]);
+            proton.userData = {name: 'proton', id: i};
+            nucleusGroup.add(proton);
+            atomParts[`proton_${i}`] = proton;
+        });
 
+        // Создаём 6 нейтронов
+        const neutronGeom = new THREE.SphereGeometry(0.25, 32, 32);
+        const neutronMat = new THREE.MeshPhongMaterial({
+            color: 0x95a5a6,
+            emissive: 0x7f8c8d,
+            emissiveIntensity: 0.2,
+            shininess: 80,
+            specular: 0xcccccc
+        });
 
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-table-btn{
-  position:fixed; right:120px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
+        const neutronPositions = [
+            [0, 0.3, 0.3],
+            [0, -0.3, 0.3],
+            [0, 0.3, -0.3],
+            [0, -0.3, -0.3],
+            [0.3, 0, 0],
+            [-0.3, 0, 0]
+        ];
 
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
+        neutronPositions.forEach((pos, i) => {
+            const neutron = new THREE.Mesh(neutronGeom, neutronMat.clone());
+            neutron.position.set(pos[0], pos[1], pos[2]);
+            neutron.userData = {name: 'neutron', id: i};
+            nucleusGroup.add(neutron);
+            atomParts[`neutron_${i}`] = neutron;
+        });
 
-.oi-map-modal{
-  width:min(1200px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
+        // Свечение ядра
+        const glowGeom = new THREE.SphereGeometry(0.9, 32, 32);
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: 0xffaa44,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.BackSide
+        });
+        const glow = new THREE.Mesh(glowGeom, glowMat);
+        nucleusGroup.add(glow);
 
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
+        // ЭЛЕКТРОННЫЕ ОБОЛОЧКИ
 
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:62px; /* место под тулбар */
-}
+        // K-оболочка (n=1): 2 электрона
+        createElectronShell(1.8, 2, 0x3498db);
 
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
+        // L-оболочка (n=2): 4 электрона
+        createElectronShell(3.2, 4, 0x2ecc71);
 
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
+        // Визуализация орбит
+        createOrbitRings();
+    }
 
-.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
+    function createElectronShell(radius, count, color) {
+        const electronGeom = new THREE.SphereGeometry(0.15, 24, 24);
+        const electronMat = new THREE.MeshPhongMaterial({
+            color: color,
+            emissive: color,
+            emissiveIntensity: 0.5,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.9
+        });
 
-.oi-map-tab{
-  min-width:36px; height:34px; padding:0 10px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2;
+            const electron = new THREE.Mesh(electronGeom, electronMat.clone());
 
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
+            electron.userData = {
+                name: 'electron',
+                radius: radius,
+                angle: angle,
+                speed: 0.5 + Math.random() * 0.3,
+                id: electrons.length
+            };
 
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
+            atomGroup.add(electron);
+            electrons.push(electron);
+            atomParts[`electron_${electrons.length - 1}`] = electron;
 
-<button class="oi-map-btn" style="display:none" type="button" data-oi-map-btn>🗺️ Карта</button>
-<button class="oi-table-btn" type="button" data-oi-table-btn>🧪 Таблица</button>
+            // Добавляем свечение электронам
+            const electronGlow = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.25, 16, 16),
+                    new THREE.MeshBasicMaterial({
+                        color: color,
+                        transparent: true,
+                        opacity: 0.15
+                    })
+            );
+            electron.add(electronGlow);
+        }
+    }
 
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
+    function createOrbitRings() {
+        // K-оболочка
+        const ring1Geom = new THREE.TorusGeometry(1.8, 0.01, 16, 100);
+        const ring1Mat = new THREE.MeshBasicMaterial({
+            color: 0x3498db,
+            transparent: true,
+            opacity: 0.3
+        });
+        const ring1 = new THREE.Mesh(ring1Geom, ring1Mat);
+        ring1.rotation.x = Math.PI / 2;
+        atomGroup.add(ring1);
 
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
+        // L-оболочка
+        const ring2Geom = new THREE.TorusGeometry(3.2, 0.01, 16, 100);
+        const ring2Mat = new THREE.MeshBasicMaterial({
+            color: 0x2ecc71,
+            transparent: true,
+            opacity: 0.25
+        });
+        const ring2 = new THREE.Mesh(ring2Geom, ring2Mat);
+        ring2.rotation.x = Math.PI / 2;
+        atomGroup.add(ring2);
+    }
 
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/mendeleev_1.png" alt="map 1" style="display:block;">
-    </div>
-  </div>
-</div>
+    function updateElectrons() {
+        if (animationPaused) return;
 
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-table-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Таблица Менделеева">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-table-close>×</button>
+        electrons.forEach(electron => {
+            const data = electron.userData;
+            data.angle += 0.01 * data.speed;
 
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-table-tab="1">1</button>
-<button type="button" class="oi-map-tab" data-oi-table-tab="2">2</button>
-      </div>
-      <div class="oi-map-hint">Таблица Менделеева • Esc — закрыть</div>
-    </div>
+            // Орбитальное движение с небольшими колебаниями
+            const wobble = Math.sin(time * 2 + data.id) * 0.1;
+            electron.position.x = Math.cos(data.angle) * data.radius;
+            electron.position.z = Math.sin(data.angle) * data.radius;
+            electron.position.y = wobble;
 
-    <div class="oi-map-viewport" data-oi-table-viewport>
-      <img class="oi-map-img" data-oi-table-img data-table="1" src="../../assets/maps/mendeleev_1.png" alt="table 1" style="display:block;">
-<img class="oi-map-img" data-oi-table-img data-table="2" src="../../assets/maps/mendeleev_2.png" alt="table 2" style="display:none;">
-    </div>
-  </div>
-</div>
+            // Вращение электрона вокруг своей оси
+            electron.rotation.y += 0.1;
+        });
+    }
 
+    function onMouseDown(e) {
+        isDragging = true;
+        previousMousePosition = {x: e.clientX, y: e.clientY};
+    }
 
-<script data-oi-map-overlay>
-(function(){
-  // ====== MAPS ======
-  const mapBtn = document.querySelector('[data-oi-map-btn]');
-  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
-  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
-  const mapViewport = document.querySelector('[data-oi-map-viewport]');
-  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+    function onMouseUp() {
+        isDragging = false;
+    }
 
-  // ====== MENDELEEV ======
-  const tableBtn = document.querySelector('[data-oi-table-btn]');
-  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
-  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
-  const tableViewport = document.querySelector('[data-oi-table-viewport]');
-  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
-  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+    function onMouseMove(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-  let scale = 1;
+        if (isDragging) {
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+            atomGroup.rotation.y += deltaX * 0.005;
+            atomGroup.rotation.x += deltaY * 0.005;
+            previousMousePosition = {x: e.clientX, y: e.clientY};
+        }
 
-  function applyScale(){
-    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(Object.values(atomParts));
+        document.body.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+    }
 
-  function openBackdrop(backdrop){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeBackdrop(backdrop){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
+    function onMouseClick(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-  function showMap(n){
-    mapImgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
-  }
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(Object.values(atomParts));
 
-  function showTable(n){
-    tableImgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
-    });
-    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
-    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
-  }
+        if (intersects.length > 0) {
+            const part = intersects[0].object;
+            const name = part.userData.name;
+            if (particleInfo[name]) {
+                showInfo(name);
+                highlightPart(part);
+            }
+        }
+    }
 
-  // MAP events
-  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
-    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
-    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
-    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
-    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
-    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+    function onWheel(e) {
+        e.preventDefault();
+        camera.position.z += e.deltaY * 0.005;
+        camera.position.z = Math.max(4, Math.min(15, camera.position.z));
+    }
 
-    mapViewport.addEventListener('wheel', (e)=>{
-      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
-      e.preventDefault();
-      const delta = -Math.sign(e.deltaY) * 0.1;
-      scale = Math.min(4, Math.max(0.6, scale + delta));
-      applyScale();
-    }, {passive:false});
+    function onKeyDown(e) {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            animationPaused = !animationPaused;
+        }
+    }
 
-    showMap(1);
-  }
+    function showInfo(name) {
+        const info = particleInfo[name];
+        document.getElementById('info-title').textContent = info.title;
+        document.getElementById('info-content').innerHTML = info.content;
+        document.getElementById('info-panel').classList.add('active');
+    }
 
-  // TABLE events
-  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
-    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
-    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
-    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
-    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
-    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+    function closeInfo() {
+        document.getElementById('info-panel').classList.remove('active');
+        if (selectedPart) {
+            if (selectedPart.material.emissive) {
+                const originalColor = selectedPart.userData.name === 'proton' ? 0xff4444 :
+                        selectedPart.userData.name === 'neutron' ? 0x7f8c8d :
+                                selectedPart.material.color.getHex();
+                selectedPart.material.emissive.setHex(originalColor);
+                selectedPart.material.emissiveIntensity = 0.3;
+            }
+            selectedPart = null;
+        }
+    }
 
-    tableViewport.addEventListener('wheel', (e)=>{
-      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
-      e.preventDefault();
-      const delta = -Math.sign(e.deltaY) * 0.1;
-      scale = Math.min(4, Math.max(0.6, scale + delta));
-      applyScale();
-    }, {passive:false});
+    function highlightPart(part) {
+        if (selectedPart && selectedPart.material.emissive) {
+            const originalColor = selectedPart.userData.name === 'proton' ? 0xff4444 :
+                    selectedPart.userData.name === 'neutron' ? 0x7f8c8d :
+                            selectedPart.material.color.getHex();
+            selectedPart.material.emissive.setHex(originalColor);
+            selectedPart.material.emissiveIntensity = 0.3;
+        }
+        if (part.material.emissive) {
+            part.material.emissive.setHex(0xffffff);
+            part.material.emissiveIntensity = 0.8;
+        }
+        selectedPart = part;
+    }
 
-    showTable(1);
-  }
+    function focusPart(name) {
+        showInfo(name);
+        // Находим первую частицу этого типа
+        const part = Object.values(atomParts).find(p => p.userData.name === name);
+        if (part) highlightPart(part);
+    }
 
-  applyScale();
-})();
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        if (!animationPaused) {
+            time += 0.016;
+            atomGroup.rotation.y += 0.003;
+            updateElectrons();
+        }
+
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('load', init);
 </script>
 </body>
 </html>

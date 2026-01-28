@@ -3,634 +3,863 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Химия и Жизнь</title>
+    <title>Молекула воды (H₂O)</title>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        :root {
-            --primary-color: #06b6d4; /* Cyan-500 */
-            --primary-light: #ecfeff; /* Cyan-50 */
-            --primary-border: #0891b2; /* Cyan-600 */
-            --text-main: #334155;     /* Slate-700 */
-            --text-header: #0f172a;   /* Slate-900 */
-            --bg-body: #f8fafc;       /* Slate-50 */
-            --bg-card: #ffffff;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .poster-container {
-            background-color: var(--bg-card);
-            width: 100%;
-            max-width: 900px;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%);
             overflow: hidden;
-            border-top: 8px solid var(--primary-color);
-            transition: all 0.3s ease;
+            color: white;
         }
 
-        /* Header */
+
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
         .header {
-            background-color: var(--primary-light);
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom: 1px solid #cffafe;
-            position: relative;
-        }
-
-        .icon-wrapper {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 90px;
-            height: 90px;
-            background-color: #a5f3fc; /* Cyan-200 */
-            color: #0e7490; /* Cyan-700 */
-            border-radius: 50%;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        .title {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--text-header);
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-        }
-
-        .decorative-line {
-            width: 100px;
-            height: 6px;
-            background-color: var(--primary-color);
-            border-radius: 3px;
-            margin: 20px auto 0;
-        }
-
-        /* Content */
-        .content {
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .section-card {
-            background-color: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 30px;
-            border-left: 8px solid var(--primary-color);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .section-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            border-color: var(--primary-border);
-        }
-
-        .section-header-group {
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: #0e7490; /* Cyan-700 */
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .section-subtitle {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #155e75; /* Cyan-800 */
-            margin-top: 5px;
-            display: block;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .section-text {
-            font-size: 1.15rem;
-            line-height: 1.7;
-            margin-bottom: 25px;
-            color: #475569;
-        }
-
-        .list-container {
-            background-color: #ecfeff; /* Cyan-50 */
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .list-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 12px;
-            font-size: 1.05rem;
-            line-height: 1.5;
-        }
-
-        .list-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .bullet {
-            min-width: 12px;
-            height: 12px;
-            background-color: var(--primary-color);
-            border-radius: 2px;
-            margin-top: 6px;
-            transform: rotate(45deg);
-        }
-
-        /* Footer */
-        .footer {
-            background-color: var(--text-header);
-            padding: 40px;
-            text-align: center;
-            margin: 0 40px 40px;
-            border-radius: 16px;
-            color: white;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .footer-title {
-            font-size: 1.1rem;
-            font-weight: 900;
-            color: var(--primary-border);
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            margin-bottom: 15px;
-        }
-
-        .footer-text {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        /* Controls */
-        .controls {
-            position: absolute;
+            position: fixed;
             top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 10;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            text-align: center;
         }
 
-        .btn {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 8px 18px;
-            border-radius: 30px;
-            cursor: pointer;
+        .header h1 {
+            font-size: 32px;
             font-weight: 800;
-            color: #64748b;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 5px;
         }
 
-        .btn:hover {
-            background-color: #cffafe;
-            color: var(--primary-color);
-            border-color: var(--primary-border);
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
         }
 
-        .btn.active {
-            background-color: var(--primary-color);
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .info-panel {
+            position: fixed;
+            right: -420px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 400px;
+            max-height: 85vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px 0 0 20px;
+            padding: 30px;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.4);
+            transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 500;
+            overflow-y: auto;
+            color: #333;
+        }
+
+        .info-panel.active {
+            right: 0;
+        }
+
+        .info-panel .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f44336;
             color: white;
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
         }
 
-        @media (max-width: 700px) {
-            .title { font-size: 1.8rem; }
-            .content { padding: 20px; }
-            .controls { position: static; justify-content: center; margin-bottom: 30px; }
-            .header { padding-top: 20px; padding-bottom: 30px; }
-            .section-card { padding: 20px; }
-            .footer { margin: 0 20px 30px; padding: 30px 20px; }
-            .footer-text { font-size: 1.1rem; }
+        .info-panel .close-btn:hover {
+            transform: scale(1.1);
         }
 
-        @media print {
-            .controls { display: none; }
-            body { background: white; padding: 0; }
-            .poster-container { box-shadow: none; max-width: 100%; border: 2px solid #000; }
-            .section-card { border: 1px solid #ccc; border-left: 6px solid #000; page-break-inside: avoid; }
-            .header, .footer { background-color: #fff; color: #000; border: 1px solid #000; }
-            .footer-text { color: #000; }
+        .info-panel h2 {
+            color: #0d1b2a;
+            font-size: 24px;
+            margin-bottom: 15px;
+            padding-right: 40px;
+        }
+
+        .info-panel .info-content {
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .info-section {
+            margin-bottom: 18px;
+            padding: 15px;
+            background: rgba(65, 90, 119, 0.08);
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-section strong {
+            color: #0d1b2a;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .controls p {
+            font-size: 14px;
+            opacity: 0.95;
+            text-align: center;
+        }
+
+        .molecule-info {
+            position: fixed;
+            top: 120px;
+            left: 30px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 280px;
+        }
+
+        .molecule-info h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .info-row .label {
+            opacity: 0.85;
+        }
+
+        .info-row .value {
+            font-weight: 600;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 280px;
+        }
+
+        .legend h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .legend-item:hover {
+            transform: translateX(5px);
+        }
+
+        .legend-sphere {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .view-controls {
+            position: fixed;
+            top: 120px;
+            right: 30px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .view-controls h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .view-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(3px);
+        }
+
+        .view-btn.active {
+            background: rgba(52, 152, 219, 0.5);
+            border-color: #3498db;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-<div class="poster-container">
-        <!-- Controls -->
-        <div class="header">
-            <div class="controls">
-                <button class="btn active" onclick="setLang('ru')">RU</button>
-                <button class="btn" onclick="setLang('kz')">KZ</button>
-                <button class="btn" onclick="setLang('en')">EN</button>
-                <button class="btn" onclick="window.print()">🖨️</button>
-            </div>
 
-            <div class="icon-wrapper">
-                <!-- SVG Icon: Flask -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 2v7.31"></path>
-                    <path d="M14 2v7.31"></path>
-                    <path d="M8.5 2h7"></path>
-                    <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
-                </svg>
-            </div>
-            <h1 class="title" id="main-title">Химия и Жизнь</h1>
-            <div class="decorative-line"></div>
-        </div>
-
-        <div class="content">
-            <!-- Section 1 -->
-            <div class="section-card">
-                <div class="section-header-group">
-                    <h2 class="section-title" id="sec1-title">1. ЧТО ТАКОЕ ХИМИЯ?</h2>
-                    <span class="section-subtitle" id="sec1-sub">🧪 Наука о веществах</span>
-                </div>
-                <p class="section-text" id="sec1-text">
-                    Химия — это наука о веществах, их свойствах, строении и превращениях. Это часть естествознания, наряду с физикой и биологией.
-                </p>
-                <div class="list-container" id="sec1-list">
-                    <!-- List items injected by JS -->
-                </div>
-            </div>
-
-            <!-- Section 2 -->
-            <div class="section-card">
-                <div class="section-header-group">
-                    <h2 class="section-title" id="sec2-title">2. РОЛЬ В ЖИЗНИ</h2>
-                    <span class="section-subtitle" id="sec2-sub">🌍 Везде вокруг нас</span>
-                </div>
-                <p class="section-text" id="sec2-text">
-                    Химия играет огромную роль в практической деятельности. Без неё не было бы лекарств, пластика, топлива и удобрений.
-                </p>
-                <div class="list-container" id="sec2-list">
-                    <!-- List items injected by JS -->
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <div class="footer-title" id="footer-title">ВЫВОД</div>
-            <p class="footer-text" id="footer-text">Химия — это не просто формулы, это наука о том, как устроен наш мир.</p>
-        </div>
-    </div>
-
-    <script>
-        const content = {
-            ru: {
-                mainTitle: "Химия и Жизнь",
-
-                sec1Title: "1. ЧТО ТАКОЕ ХИМИЯ?",
-                sec1Sub: "🧪 Наука о веществах",
-                sec1Text: "Химия — это наука о веществах, их свойствах, строении и превращениях. Это часть естествознания, наряду с физикой и биологией.",
-                sec1List: [
-                    "<b>Вещи:</b> Из чего состоит мир.",
-                    "<b>Свойства:</b> Цвет, запах, твердость.",
-                    "<b>Изменения:</b> Реакции (горение, ржавление)."
-                ],
-
-                sec2Title: "2. РОЛЬ В ЖИЗНИ",
-                sec2Sub: "🌍 Везде вокруг нас",
-                sec2Text: "Химия играет огромную роль в практической деятельности. Без неё не было бы лекарств, пластика, топлива и удобрений.",
-                sec2List: [
-                    "<b>Медицина:</b> Лекарства и витамины.",
-                    "<b>Промышленность:</b> Металлы, ткани.",
-                    "<b>Быт:</b> Мыло, шампунь, еда."
-                ],
-
-                footerTitle: "ВЫВОД",
-                footerText: "Химия — это не просто формулы, это наука о том, как устроен наш мир."
-            },
-            kz: {
-                mainTitle: "Химия және Өмір",
-
-                sec1Title: "1. ХИМИЯ ДЕГЕНІМІЗ НЕ?",
-                sec1Sub: "🧪 Заттар туралы ғылым",
-                sec1Text: "Химия — заттар, олардың қасиеттері, құрылысы және өзгерістері туралы ғылым. Бұл физика және биологиямен қатар жаратылыстанудың бір бөлігі.",
-                sec1List: [
-                    "<b>Заттар:</b> Әлем неден тұрады.",
-                    "<b>Қасиеттер:</b> Түсі, иісі, қаттылығы.",
-                    "<b>Өзгерістер:</b> Реакциялар (жану, тот басу)."
-                ],
-
-                sec2Title: "2. ӨМІРДЕГІ РӨЛІ",
-                sec2Sub: "🌍 Біздің айналамызда",
-                sec2Text: "Химия практикалық қызметте үлкен рөл атқарады. Онсыз дәрі-дәрмек, пластик, жанармай және тыңайтқыштар болмас еді.",
-                sec2List: [
-                    "<b>Медицина:</b> Дәрілер мен витаминдер.",
-                    "<b>Өнеркәсіп:</b> Металдар, маталар.",
-                    "<b>Тұрмыс:</b> Сабын, сусабын, тамақ."
-                ],
-
-                footerTitle: "ТҮЙІН",
-                footerText: "Химия — бұл жай ғана формулалар емес, бұл біздің әлеміміздің қалай құрылғаны туралы ғылым."
-            },
-            en: {
-                mainTitle: "Chemistry & Life",
-
-                sec1Title: "1. WHAT IS CHEMISTRY?",
-                sec1Sub: "🧪 Science of Substances",
-                sec1Text: "Chemistry is the science of substances, their properties, structure, and transformations. It is part of natural science, alongside physics and biology.",
-                sec1List: [
-                    "<b>Substances:</b> What the world is made of.",
-                    "<b>Properties:</b> Color, smell, hardness.",
-                    "<b>Changes:</b> Reactions (burning, rusting)."
-                ],
-
-                sec2Title: "2. ROLE IN LIFE",
-                sec2Sub: "🌍 All Around Us",
-                sec2Text: "Chemistry plays a huge role in practical activities. Without it, there would be no medicines, plastics, fuel, or fertilizers.",
-                sec2List: [
-                    "<b>Medicine:</b> Drugs and vitamins.",
-                    "<b>Industry:</b> Metals, fabrics.",
-                    "<b>Home:</b> Soap, shampoo, food."
-                ],
-
-                footerTitle: "CONCLUSION",
-                footerText: "Chemistry is not just formulas, it's the science of how our world is built."
-            }
-        };
-
-        function setLang(lang) {
-            // Update Text fields
-            document.getElementById('main-title').innerText = content[lang].mainTitle;
-
-            document.getElementById('sec1-title').innerText = content[lang].sec1Title;
-            document.getElementById('sec1-sub').innerText = content[lang].sec1Sub;
-            document.getElementById('sec1-text').innerText = content[lang].sec1Text;
-            updateList('sec1-list', content[lang].sec1List);
-
-            document.getElementById('sec2-title').innerText = content[lang].sec2Title;
-            document.getElementById('sec2-sub').innerText = content[lang].sec2Sub;
-            document.getElementById('sec2-text').innerText = content[lang].sec2Text;
-            updateList('sec2-list', content[lang].sec2List);
-
-            document.getElementById('footer-title').innerText = content[lang].footerTitle;
-            document.getElementById('footer-text').innerText = content[lang].footerText;
-
-            // Update Buttons State
-            document.querySelectorAll('.btn').forEach(btn => {
-                if (btn.innerText.toLowerCase() === lang) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-        }
-
-        function updateList(elementId, items) {
-            const container = document.getElementById(elementId);
-            container.innerHTML = '';
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `<div class="bullet"></div><span>${item}</span>`;
-                container.appendChild(div);
-            });
-        }
-
-        // Initialize with Russian
-        setLang('ru');
-    </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-table-btn{
-  position:fixed; right:120px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-
-.oi-map-modal{
-  width:min(1200px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:62px; /* место под тулбар */
-}
-
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-
-.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
-
-.oi-map-tab{
-  min-width:36px; height:34px; padding:0 10px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" style="display:none" type="button" data-oi-map-btn>🗺️ Карта</button>
-<button class="oi-table-btn" type="button" data-oi-table-btn>🧪 Таблица</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/mendeleev_1.png" alt="map 1" style="display:block;">
-    </div>
-  </div>
+<div class="header">
+    <h1>💧 Молекула воды (H₂O)</h1>
+    <p>Интерактивная 3D модель</p>
 </div>
 
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-table-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Таблица Менделеева">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-table-close>×</button>
+<div id="canvas-container"></div>
 
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-table-tab="1">1</button>
-<button type="button" class="oi-map-tab" data-oi-table-tab="2">2</button>
-      </div>
-      <div class="oi-map-hint">Таблица Менделеева • Esc — закрыть</div>
+<div class="molecule-info">
+    <h3>Вода (H₂O)</h3>
+    <div class="info-row">
+        <span class="label">Молекулярная масса:</span>
+        <span class="value">18.015 г/моль</span>
     </div>
-
-    <div class="oi-map-viewport" data-oi-table-viewport>
-      <img class="oi-map-img" data-oi-table-img data-table="1" src="../../assets/maps/mendeleev_1.png" alt="table 1" style="display:block;">
-<img class="oi-map-img" data-oi-table-img data-table="2" src="../../assets/maps/mendeleev_2.png" alt="table 2" style="display:none;">
+    <div class="info-row">
+        <span class="label">Угол связи:</span>
+        <span class="value">104.5°</span>
     </div>
-  </div>
+    <div class="info-row">
+        <span class="label">Длина O-H связи:</span>
+        <span class="value">95.84 пм</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Тип связи:</span>
+        <span class="value">Ковалентная</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Полярность:</span>
+        <span class="value">Полярная</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Форма молекулы:</span>
+        <span class="value">Угловая</span>
+    </div>
 </div>
 
+<div class="view-controls">
+    <h3>Визуализация:</h3>
+    <button class="view-btn active" onclick="toggleDipole()">Показать диполь</button>
+    <button class="view-btn" onclick="toggleElectronCloud()">Электронные облака</button>
+    <button class="view-btn" onclick="toggleCharges()">Частичные заряды</button>
+    <button class="view-btn" onclick="toggleAngles()">Показать углы</button>
+</div>
 
-<script data-oi-map-overlay>
-(function(){
-  // ====== MAPS ======
-  const mapBtn = document.querySelector('[data-oi-map-btn]');
-  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
-  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
-  const mapViewport = document.querySelector('[data-oi-map-viewport]');
-  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
+<div class="info-panel" id="info-panel">
+    <button class="close-btn" onclick="closeInfo()">×</button>
+    <h2 id="info-title">Молекула воды</h2>
+    <div class="info-content" id="info-content">
+        <p>Кликните на атом кислорода или водорода, чтобы узнать подробнее.</p>
+    </div>
+</div>
 
-  // ====== MENDELEEV ======
-  const tableBtn = document.querySelector('[data-oi-table-btn]');
-  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
-  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
-  const tableViewport = document.querySelector('[data-oi-table-viewport]');
-  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
-  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
+<div class="controls">
+    <p>🖱️ Вращение: перетаскивание | 🔍 Масштаб: колесо мыши | Пробел: пауза</p>
+</div>
 
-  let scale = 1;
+<div class="legend">
+    <h3>Атомы:</h3>
+    <div class="legend-item" onclick="focusPart('oxygen')">
+        <div class="legend-sphere" style="background: radial-gradient(circle at 30% 30%, #ff4444, #cc0000);"></div>
+        <span>Кислород (O)</span>
+    </div>
+    <div class="legend-item" onclick="focusPart('hydrogen')">
+        <div class="legend-sphere" style="background: radial-gradient(circle at 30% 30%, #e8f4f8, #b8d4e8);"></div>
+        <span>Водород (H)</span>
+    </div>
+</div>
 
-  function applyScale(){
-    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
+<script>
+    // QWebChannel Bridge
+    function goBack() {
+        if (typeof bridge !== 'undefined' && bridge) {
+            bridge.onBackClicked();
+        }
+    }
 
-  function openBackdrop(backdrop){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeBackdrop(backdrop){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
+    if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
+        try {
+            new QWebChannel(qt.webChannelTransport, function (channel) {
+                window.bridge = channel.objects.bridge;
+            });
+        } catch (e) {
+        }
+    }
 
-  function showMap(n){
-    mapImgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
-  }
+    // Информация об атомах
+    const atomInfo = {
+        oxygen: {
+            title: "Атом кислорода (O)",
+            content: `
+                    <div class="info-section">
+                        <strong>Характеристики:</strong>
+                        <p>• Атомный номер: 8<br>
+                        • Атомная масса: 15.999 а.е.м.<br>
+                        • Электроотрицательность: 3.44 (по Полингу)<br>
+                        • Валентность: 2<br>
+                        • Ковалентный радиус: 66 пм</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Роль в молекуле:</strong>
+                        <p>Центральный атом молекулы воды. Образует две ковалентные связи с атомами водорода.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Электронная конфигурация:</strong>
+                        <p>1s² 2s² 2p⁴<br>
+                        На внешнем уровне 6 электронов: 2 неподелённые пары и 2 связывающие электроны.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Частичный заряд:</strong>
+                        <p>δ⁻ (отрицательный). Кислород более электроотрицателен, чем водород, поэтому притягивает электроны связи к себе.</p>
+                    </div>
+                `
+        },
+        hydrogen: {
+            title: "Атом водорода (H)",
+            content: `
+                    <div class="info-section">
+                        <strong>Характеристики:</strong>
+                        <p>• Атомный номер: 1<br>
+                        • Атомная масса: 1.008 а.е.м.<br>
+                        • Электроотрицательность: 2.20 (по Полингу)<br>
+                        • Валентность: 1<br>
+                        • Ковалентный радиус: 31 пм</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Роль в молекуле:</strong>
+                        <p>Образует полярную ковалентную связь с кислородом. В молекуле воды два атома водорода.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Электронная конфигурация:</strong>
+                        <p>1s¹ (один электрон)<br>
+                        При образовании связи делит электронную пару с кислородом.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Частичный заряд:</strong>
+                        <p>δ⁺ (положительный). Электроны связи смещены к более электроотрицательному кислороду.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Водородные связи:</strong>
+                        <p>Атомы водорода могут образовывать водородные связи с атомами кислорода других молекул воды, что объясняет уникальные свойства воды.</p>
+                    </div>
+                `
+        },
+        molecule: {
+            title: "Молекула воды (H₂O)",
+            content: `
+                    <div class="info-section">
+                        <strong>Геометрия молекулы:</strong>
+                        <p>Угловая (V-образная) форма. Угол между связями O-H составляет 104.5° (теоретически 109.5° для тетраэдра, но сжат из-за неподелённых пар электронов).</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Полярность:</strong>
+                        <p>Молекула воды полярна. Атом кислорода имеет частичный отрицательный заряд (δ⁻), атомы водорода — частичный положительный (δ⁺). Дипольный момент: 1.85 D (дебай).</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Тип гибридизации:</strong>
+                        <p>sp³-гибридизация кислорода. Четыре sp³-орбитали направлены к вершинам тетраэдра: две заняты связями O-H, две — неподелёнными парами.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Водородные связи:</strong>
+                        <p>Каждая молекула воды может образовать до 4 водородных связей: 2 через атомы водорода и 2 через неподелённые пары кислорода.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Уникальные свойства:</strong>
+                        <p>• Высокая температура кипения (100°C)<br>
+                        • Высокая теплоёмкость<br>
+                        • Плотность льда меньше плотности жидкой воды<br>
+                        • Универсальный растворитель<br>
+                        • Поверхностное натяжение</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Значение для жизни:</strong>
+                        <p>Вода — основа всей жизни на Земле. Составляет ~60% массы человеческого тела.</p>
+                    </div>
+                `
+        }
+    };
 
-  function showTable(n){
-    tableImgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
-    });
-    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
-    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
-  }
+    // Three.js
+    let scene, camera, renderer;
+    let moleculeGroup;
+    let atoms = {};
+    let bonds = [];
+    let dipoleArrow = null;
+    let electronClouds = [];
+    let chargeLabels = [];
+    let angleIndicators = [];
+    let raycaster, mouse;
+    let selectedPart = null;
+    let isDragging = false;
+    let previousMousePosition = {x: 0, y: 0};
+    let animationPaused = false;
+    let showDipole = true;
+    let showElectrons = false;
+    let showCharges = false;
+    let showAngles = false;
 
-  // MAP events
-  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
-    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
-    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
-    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
-    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
-    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
+    function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0d1b2a);
 
-    mapViewport.addEventListener('wheel', (e)=>{
-      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
-      e.preventDefault();
-      const delta = -Math.sign(e.deltaY) * 0.1;
-      scale = Math.min(4, Math.max(0.6, scale + delta));
-      applyScale();
-    }, {passive:false});
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 6);
 
-    showMap(1);
-  }
+        const container = document.getElementById('canvas-container');
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
 
-  // TABLE events
-  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
-    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
-    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
-    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
-    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
-    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
+        // Освещение
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
 
-    tableViewport.addEventListener('wheel', (e)=>{
-      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
-      e.preventDefault();
-      const delta = -Math.sign(e.deltaY) * 0.1;
-      scale = Math.min(4, Math.max(0.6, scale + delta));
-      applyScale();
-    }, {passive:false});
+        const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        light1.position.set(5, 5, 5);
+        scene.add(light1);
 
-    showTable(1);
-  }
+        const light2 = new THREE.DirectionalLight(0xffffff, 0.5);
+        light2.position.set(-5, -3, -5);
+        scene.add(light2);
 
-  applyScale();
-})();
+        const light3 = new THREE.PointLight(0x3498db, 0.6, 20);
+        light3.position.set(0, 3, 3);
+        scene.add(light3);
+
+        moleculeGroup = new THREE.Group();
+        scene.add(moleculeGroup);
+
+        createWaterMolecule();
+
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+
+        window.addEventListener('resize', onWindowResize);
+        renderer.domElement.addEventListener('click', onMouseClick);
+        renderer.domElement.addEventListener('mousemove', onMouseMove);
+        renderer.domElement.addEventListener('mousedown', onMouseDown);
+        renderer.domElement.addEventListener('mouseup', onMouseUp);
+        renderer.domElement.addEventListener('wheel', onWheel);
+        window.addEventListener('keydown', onKeyDown);
+
+        animate();
+    }
+
+    function createWaterMolecule() {
+        // АТОМ КИСЛОРОДА (центр)
+        const oxygenGeom = new THREE.SphereGeometry(0.6, 32, 32);
+        const oxygenMat = new THREE.MeshPhongMaterial({
+            color: 0xff4444,
+            emissive: 0xcc0000,
+            emissiveIntensity: 0.3,
+            shininess: 100,
+            specular: 0xffffff
+        });
+        const oxygen = new THREE.Mesh(oxygenGeom, oxygenMat);
+        oxygen.position.set(0, 0, 0);
+        oxygen.userData = {type: 'oxygen'};
+        moleculeGroup.add(oxygen);
+        atoms.oxygen = oxygen;
+
+        // АТОМЫ ВОДОРОДА
+        // Угол связи 104.5 градусов
+        const angle = (104.5 * Math.PI) / 180;
+        const bondLength = 1.8;
+
+        const h1Geom = new THREE.SphereGeometry(0.35, 32, 32);
+        const h1Mat = new THREE.MeshPhongMaterial({
+            color: 0xe8f4f8,
+            emissive: 0xb8d4e8,
+            emissiveIntensity: 0.2,
+            shininess: 100,
+            specular: 0xffffff
+        });
+        const hydrogen1 = new THREE.Mesh(h1Geom, h1Mat);
+        hydrogen1.position.set(
+                bondLength * Math.sin(angle / 2),
+                bondLength * Math.cos(angle / 2),
+                0
+        );
+        hydrogen1.userData = {type: 'hydrogen', id: 1};
+        moleculeGroup.add(hydrogen1);
+        atoms.hydrogen1 = hydrogen1;
+
+        const hydrogen2 = new THREE.Mesh(h1Geom.clone(), h1Mat.clone());
+        hydrogen2.position.set(
+                -bondLength * Math.sin(angle / 2),
+                bondLength * Math.cos(angle / 2),
+                0
+        );
+        hydrogen2.userData = {type: 'hydrogen', id: 2};
+        moleculeGroup.add(hydrogen2);
+        atoms.hydrogen2 = hydrogen2;
+
+        // КОВАЛЕНТНЫЕ СВЯЗИ
+        createBond(oxygen.position, hydrogen1.position);
+        createBond(oxygen.position, hydrogen2.position);
+
+        // ЭЛЕКТРОННЫЕ ОБЛАКА (неподелённые пары)
+        createElectronClouds();
+
+        // ДИПОЛЬ
+        createDipoleArrow();
+
+        // ЧАСТИЧНЫЕ ЗАРЯДЫ
+        createChargeLabels();
+
+        // ИНДИКАТОРЫ УГЛОВ
+        createAngleIndicators();
+    }
+
+    function createBond(pos1, pos2) {
+        const direction = new THREE.Vector3().subVectors(pos2, pos1);
+        const length = direction.length();
+        const bondGeom = new THREE.CylinderGeometry(0.08, 0.08, length, 16);
+        const bondMat = new THREE.MeshPhongMaterial({
+            color: 0xcccccc,
+            shininess: 50
+        });
+        const bond = new THREE.Mesh(bondGeom, bondMat);
+
+        bond.position.copy(pos1).add(direction.multiplyScalar(0.5));
+        bond.lookAt(pos2);
+        bond.rotateX(Math.PI / 2);
+
+        moleculeGroup.add(bond);
+        bonds.push(bond);
+    }
+
+    function createElectronClouds() {
+        // Две неподелённые пары электронов на кислороде
+        const cloudGeom = new THREE.SphereGeometry(0.35, 24, 24);
+        const cloudMat = new THREE.MeshBasicMaterial({
+            color: 0xff6666,
+            transparent: true,
+            opacity: 0.3,
+            side: THREE.BackSide
+        });
+
+        // Неподелённые пары направлены вниз под углом
+        const cloud1 = new THREE.Mesh(cloudGeom, cloudMat);
+        cloud1.position.set(0.5, -0.7, 0);
+        cloud1.visible = showElectrons;
+        moleculeGroup.add(cloud1);
+        electronClouds.push(cloud1);
+
+        const cloud2 = new THREE.Mesh(cloudGeom, cloudMat.clone());
+        cloud2.position.set(-0.5, -0.7, 0);
+        cloud2.visible = showElectrons;
+        moleculeGroup.add(cloud2);
+        electronClouds.push(cloud2);
+    }
+
+    function createDipoleArrow() {
+        // Стрелка диполя от δ⁺ к δ⁻
+        const arrowGroup = new THREE.Group();
+
+        // Линия
+        const lineGeom = new THREE.CylinderGeometry(0.04, 0.04, 2.2, 12);
+        const lineMat = new THREE.MeshBasicMaterial({color: 0xffff00});
+        const line = new THREE.Mesh(lineGeom, lineMat);
+        line.position.set(0, 0.3, 0);
+        arrowGroup.add(line);
+
+        // Наконечник
+        const coneGeom = new THREE.ConeGeometry(0.15, 0.3, 16);
+        const coneMat = new THREE.MeshBasicMaterial({color: 0xffff00});
+        const cone = new THREE.Mesh(coneGeom, coneMat);
+        cone.position.set(0, -0.9, 0);
+        cone.rotation.x = Math.PI;
+        arrowGroup.add(cone);
+
+        // Плюс вверху
+        const plusGeom = new THREE.TorusGeometry(0.12, 0.03, 12, 24);
+        const plus1 = new THREE.Mesh(plusGeom, new THREE.MeshBasicMaterial({color: 0xff0000}));
+        plus1.position.set(0, 1.5, 0);
+        arrowGroup.add(plus1);
+
+        const plus2 = new THREE.Mesh(plusGeom, new THREE.MeshBasicMaterial({color: 0xff0000}));
+        plus2.position.set(0, 1.5, 0);
+        plus2.rotation.z = Math.PI / 2;
+        arrowGroup.add(plus2);
+
+        // Минус внизу
+        const minusGeom = new THREE.BoxGeometry(0.25, 0.05, 0.05);
+        const minus = new THREE.Mesh(minusGeom, new THREE.MeshBasicMaterial({color: 0x0000ff}));
+        minus.position.set(0, -0.95, 0);
+        arrowGroup.add(minus);
+
+        arrowGroup.visible = showDipole;
+        moleculeGroup.add(arrowGroup);
+        dipoleArrow = arrowGroup;
+    }
+
+    function createChargeLabels() {
+        // Создаём текстовые метки для частичных зарядов
+        // (Упрощённая версия без THREE.TextGeometry)
+        // Вместо этого используем маленькие индикаторы
+
+        // δ⁻ на кислороде
+        const negGeom = new THREE.SphereGeometry(0.1, 16, 16);
+        const negMat = new THREE.MeshBasicMaterial({color: 0x0000ff});
+        const negCharge = new THREE.Mesh(negGeom, negMat);
+        negCharge.position.set(-0.7, -0.3, 0);
+        negCharge.visible = showCharges;
+        moleculeGroup.add(negCharge);
+        chargeLabels.push(negCharge);
+
+        // δ⁺ на водородах
+        const posGeom = new THREE.SphereGeometry(0.08, 16, 16);
+        const posMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+
+        const posCharge1 = new THREE.Mesh(posGeom, posMat);
+        posCharge1.position.set(
+                atoms.hydrogen1.position.x + 0.3,
+                atoms.hydrogen1.position.y + 0.3,
+                0
+        );
+        posCharge1.visible = showCharges;
+        moleculeGroup.add(posCharge1);
+        chargeLabels.push(posCharge1);
+
+        const posCharge2 = new THREE.Mesh(posGeom, posMat.clone());
+        posCharge2.position.set(
+                atoms.hydrogen2.position.x - 0.3,
+                atoms.hydrogen2.position.y + 0.3,
+                0
+        );
+        posCharge2.visible = showCharges;
+        moleculeGroup.add(posCharge2);
+        chargeLabels.push(posCharge2);
+    }
+
+    function createAngleIndicators() {
+        // Дуга показывающая угол 104.5°
+        const curve = new THREE.EllipseCurve(
+                0, 0,
+                0.8, 0.8,
+                0, (104.5 * Math.PI) / 180,
+                false,
+                Math.PI / 2
+        );
+
+        const points = curve.getPoints(50);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const material = new THREE.LineBasicMaterial({color: 0x00ff00, linewidth: 2});
+        const arc = new THREE.Line(geometry, material);
+        arc.rotation.z = -(104.5 * Math.PI) / 360;
+        arc.visible = showAngles;
+        moleculeGroup.add(arc);
+        angleIndicators.push(arc);
+    }
+
+    function toggleDipole() {
+        showDipole = !showDipole;
+        if (dipoleArrow) dipoleArrow.visible = showDipole;
+        updateButton(0, showDipole);
+    }
+
+    function toggleElectronCloud() {
+        showElectrons = !showElectrons;
+        electronClouds.forEach(cloud => cloud.visible = showElectrons);
+        updateButton(1, showElectrons);
+    }
+
+    function toggleCharges() {
+        showCharges = !showCharges;
+        chargeLabels.forEach(label => label.visible = showCharges);
+        updateButton(2, showCharges);
+    }
+
+    function toggleAngles() {
+        showAngles = !showAngles;
+        angleIndicators.forEach(indicator => indicator.visible = showAngles);
+        updateButton(3, showAngles);
+    }
+
+    function updateButton(index, active) {
+        const buttons = document.querySelectorAll('.view-btn');
+        if (buttons[index]) {
+            buttons[index].classList.toggle('active', active);
+        }
+    }
+
+    function onMouseDown(e) {
+        isDragging = true;
+        previousMousePosition = {x: e.clientX, y: e.clientY};
+    }
+
+    function onMouseUp() {
+        isDragging = false;
+    }
+
+    function onMouseMove(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        if (isDragging) {
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+            moleculeGroup.rotation.y += deltaX * 0.005;
+            moleculeGroup.rotation.x += deltaY * 0.005;
+            previousMousePosition = {x: e.clientX, y: e.clientY};
+        }
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects([atoms.oxygen, atoms.hydrogen1, atoms.hydrogen2]);
+        document.body.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+    }
+
+    function onMouseClick(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects([atoms.oxygen, atoms.hydrogen1, atoms.hydrogen2]);
+
+        if (intersects.length > 0) {
+            const atom = intersects[0].object;
+            const type = atom.userData.type;
+            showInfo(type);
+            highlightPart(atom);
+        } else {
+            showInfo('molecule');
+        }
+    }
+
+    function onWheel(e) {
+        e.preventDefault();
+        camera.position.z += e.deltaY * 0.005;
+        camera.position.z = Math.max(3, Math.min(12, camera.position.z));
+    }
+
+    function onKeyDown(e) {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            animationPaused = !animationPaused;
+        }
+    }
+
+    function showInfo(type) {
+        const info = atomInfo[type];
+        if (info) {
+            document.getElementById('info-title').textContent = info.title;
+            document.getElementById('info-content').innerHTML = info.content;
+            document.getElementById('info-panel').classList.add('active');
+        }
+    }
+
+    function closeInfo() {
+        document.getElementById('info-panel').classList.remove('active');
+        if (selectedPart) {
+            const originalColor = selectedPart.userData.type === 'oxygen' ? 0xcc0000 : 0xb8d4e8;
+            selectedPart.material.emissive.setHex(originalColor);
+            selectedPart.material.emissiveIntensity = selectedPart.userData.type === 'oxygen' ? 0.3 : 0.2;
+            selectedPart = null;
+        }
+    }
+
+    function highlightPart(atom) {
+        if (selectedPart) {
+            const originalColor = selectedPart.userData.type === 'oxygen' ? 0xcc0000 : 0xb8d4e8;
+            selectedPart.material.emissive.setHex(originalColor);
+            selectedPart.material.emissiveIntensity = selectedPart.userData.type === 'oxygen' ? 0.3 : 0.2;
+        }
+        atom.material.emissive.setHex(0xffffff);
+        atom.material.emissiveIntensity = 0.7;
+        selectedPart = atom;
+    }
+
+    function focusPart(type) {
+        if (type === 'oxygen') {
+            showInfo('oxygen');
+            highlightPart(atoms.oxygen);
+        } else if (type === 'hydrogen') {
+            showInfo('hydrogen');
+            highlightPart(atoms.hydrogen1);
+        }
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        if (!animationPaused) {
+            moleculeGroup.rotation.y += 0.003;
+        }
+
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('load', init);
 </script>
 </body>
 </html>

@@ -1,338 +1,480 @@
 <!DOCTYPE html>
-<!-- Бастапқы тіл - Қазақша -->
-<html lang="kk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Плакат 1: Заттың құрылысы</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Математический Маятник</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            overflow-x: hidden;
-            color: #1a202c;
-        }
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
-        }
-        /* Тақырып карточкасы */
-        .header-card {
-            background-color: #1d4ed8; /* Көк-700 */
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(29, 78, 216, 0.4);
-            color: white;
-            padding: 40px;
-        }
-        /* Бөлім тақырыбы */
-        .section-heading {
-            color: #1e3a8a; /* Көк-800 */
-            border-bottom: 3px solid #93c5fd; /* Көк-300 */
-            display: inline-block;
-            padding-bottom: 5px;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-        /* Ереже карточкасы */
-        .rule-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            height: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 5px solid;
-        }
-        .rule-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-        /* Мысал блогы */
-        .example-block {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: #eff6ff; /* Өте ашық көк */
-            border-left: 4px solid #60a5fa; /* Көк-400 */
-            border-radius: 0.5rem;
-            font-size: 0.875rem; /* text-sm */
-        }
-        /* Түйін */
-        .footer-card {
-            text-align: center;
-            margin-top: 40px;
-            padding: 24px;
-            background-color: #f1f5f9; /* Ашық сұр */
-            border-radius: 1rem;
-            border-top: 4px solid #64748b; /* Сұр */
-        }
-        .feature-list li {
-            margin-bottom: 8px;
-            list-style: none;
-            padding-left: 20px;
-            position: relative;
-        }
-        .feature-list li::before {
-            content: '🔬'; /* Эмодзи */
-            position: absolute;
-            left: 0;
-            color: #1d4ed8; /* Көк */
-        }
-         .term {
-            font-weight: bold;
-            color: #1e3a8a; /* blue-800 */
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at center, #1a1c20, #000000);
         }
 
-        /* Language switcher */
-        .lang-switcher {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-        .lang-btn {
-            padding: 8px 16px;
-            border: 2px solid #1d4ed8;
-            background-color: #ffffff;
-            color: #1d4ed8;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .lang-btn:hover {
-            background-color: #eff6ff;
-        }
-        .lang-btn.active {
-            background-color: #1d4ed8;
-            color: #ffffff;
-        }
-
-        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
-        .lang-content {
-            display: none;
-        }
-        .lang-kk .lang-content[lang="kk"],
-        .lang-en .lang-content[lang="en"],
-        .lang-ru .lang-content[lang="ru"] {
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
             display: block;
         }
-        .lang-kk span.lang-content[lang="kk"],
-        .lang-en span.lang-content[lang="en"],
-        .lang-ru span.lang-content[lang="ru"] {
-            display: inline;
+
+        /* Панель информации */
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(25, 25, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            border-left: 4px solid #00ff88;
+            z-index: 10;
+            color: #d0d0d0;
         }
 
-        .illustration-svg {
+        #info-panel.active {
+            transform: translateX(0);
+        }
+
+        #info-title {
+            margin: 0 0 10px 0;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        #info-desc {
+            color: #b0b0b0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        /* Маркер элемента */
+        #zone-label {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: #00ff88;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Легенда / Энергия */
+        #stats-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            color: #ccc;
+            font-size: 13px;
+            pointer-events: none;
+            border: 1px solid #333;
+            width: 200px;
+        }
+
+        .bar-container {
             width: 100%;
-            height: 120px;
-            margin: 10px 0;
+            background: #333;
+            height: 6px;
+            border-radius: 3px;
+            margin: 5px 0 15px 0;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Заголовок сверху */
+        #main-title {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+            pointer-events: none;
+            z-index: 5;
+            text-align: center;
+            width: 100%;
         }
 
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-    // Функция переключения языков (Автоматически добавлено скриптом)
-    function switchLang(lang) {
-        var container = document.getElementById('poster-container');
-        if (container) {
-            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
-            container.classList.add('lang-' + lang);
-        }
-        var buttons = document.querySelectorAll('.lang-btn');
-        buttons.forEach(function(btn) {
-            btn.classList.remove('active');
-            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + lang + "'")) {
-                btn.classList.add('active');
-            }
-        });
-    }
-
-</script>
 </head>
-<body class="bg-gray-100">
+<body>
 
-<!-- ID-і бар негізгі контейнер -->
-    <div id="poster-container" class="container lang-kk">
+<h1 id="main-title">Математический Маятник</h1>
 
-        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
-        <div class="lang-switcher">
-            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
-            <button class="lang-btn" onclick="switchLang('en')">English</button>
-            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
-        </div>
+<div id="canvas-container"></div>
+<div id="zone-label">Элемент</div>
 
-        <!-- БАСТЫ ТАҚЫРЫП -->
-        <header class="header-card text-center mb-10">
-            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ФИЗИКА 1: ЗАТТЫҢ ҚҰРЫЛЫСЫ ТУРАЛЫ АЛҒАШҚЫ МӘЛІМЕТТЕР</h1>
-            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">PHYSICS 1: BASIC INFORMATION ON THE STRUCTURE OF MATTER</h1>
-            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ФИЗИКА 1: ПЕРВОНАЧАЛЬНЫЕ СВЕДЕНИЯ О СТРОЕНИИ ВЕЩЕСТВА</h1>
-        </header>
-
-        <!-- 1. НЕГІЗГІ ҚАҒИДА -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Барлық зат неден тұрады?</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Everything Made of?</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Из чего состоит всё?</h2>
-
-            <div class="rule-card border-t-blue-500">
-                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Барлық заттар (қатты, сұйық, газ) көзбен көру мүмкін емес ең кішкентай, жеке <strong>бөлшектерден</strong> тұрады.
-                </p>
-                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    All substances (solid, liquid, gas) are made of tiny, separate <strong>particles</strong> that are impossible to see with the naked eye.
-                </p>
-                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Все вещества (твердые, жидкие, газообразные) состоят из мельчайших, отдельных <strong>частиц</strong>, которые невозможно увидеть глазом.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Молекула -->
-                    <div class="example-block border-l-blue-400">
-                        <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-2">Молекула</h3>
-                        <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-2">Molecule</h3>
-                        <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-2">Молекула</h3>
-                        <p lang="kk" class="lang-content">Заттың химиялық қасиеттерін сақтайтын ең кіші бөлшегі.</p>
-                        <p lang="en" class="lang-content">The smallest particle of a substance that retains its chemical properties.</p>
-                        <p lang="ru" class="lang-content">Мельчайшая частица вещества, сохраняющая его химические свойства.</p>
-                        <!-- H2O молекуласының сызбасы -->
-                        <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="25" fill="#ef4444"/> <!-- O (Оттегі) -->
-                            <circle cx="30" cy="80" r="15" fill="#e5e7eb"/> <!-- H (Сутегі) -->
-                            <circle cx="70" cy="80" r="15" fill="#e5e7eb"/> <!-- H (Сутегі) -->
-                            <line x1="50" y1="50" x2="30" y2="80" stroke="#9ca3af" stroke-width="3"/>
-                            <line x1="50" y1="50" x2="70" y2="80" stroke="#9ca3af" stroke-width="3"/>
-                        </svg>
-                        <p lang="kk" class="lang-content text-center font-semibold">Су молекуласы (H₂O)</p>
-                        <p lang="en" class="lang-content text-center font-semibold">Water Molecule (H₂O)</p>
-                        <p lang="ru" class="lang-content text-center font-semibold">Молекула воды (H₂O)</p>
-                    </div>
-                    <!-- Атом -->
-                    <div class="example-block border-l-blue-400">
-                        <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-2">Атом</h3>
-                        <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-2">Atom</h3>
-                        <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-2">Атом</h3>
-                        <p lang="kk" class="lang-content">Молекулалар құралатын "құрылыс материалы".</p>
-                        <p lang="en" class="lang-content">The "building blocks" that make up molecules.</p>
-                        <p lang="ru" class="lang-content">"Строительные блоки", из которых состоят молекулы.</p>
-                        <!-- Атом сызбасы -->
-                        <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="10" fill="#3b82f6"/> <!-- Ядро -->
-                            <circle cx="50" cy="50" r="30" stroke="#93c5fd" stroke-width="2" fill="none"/>
-                            <circle cx="50" cy="20" r="5" fill="#1e3a8a"/> <!-- Электрон -->
-                        </svg>
-                        <p lang="kk" class="lang-content text-center font-semibold">Атомның қарапайым моделі</p>
-                        <p lang="en" class="lang-content text-center font-semibold">Simple model of an Atom</p>
-                        <p lang="ru" class="lang-content text-center font-semibold">Простая модель Атома</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. ЗАТТЫҢ КҮЙЛЕРІ -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Заттың үш күйі (Иллюстрация)</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">2. The Three States of Matter (Illustrated)</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Три состояния вещества (Иллюстрация)</h2>
-
-            <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">Заттың күйі (қатты, сұйық, газ) бөлшектердің <strong>қозғалысы</strong> мен <strong>орналасуына</strong> байланысты болады.</p>
-            <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">The state of matter (solid, liquid, gas) depends on the <strong>movement</strong> and <strong>spacing</strong> of its particles.</p>
-            <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">Состояние вещества (твердое, жидкое, газ) зависит от <strong>движения</strong> и <strong>расположения</strong> частиц.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-                <!-- Қатты -->
-                <div class="rule-card border-t-blue-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-3">1. Қатты дене</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-3">1. Solid</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-3">1. Твердое тело</h3>
-
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="20" cy="20" r="8" fill="#1d4ed8"/> <circle cx="40" cy="20" r="8" fill="#1d4ed8"/> <circle cx="60" cy="20" r="8" fill="#1d4ed8"/> <circle cx="80" cy="20" r="8" fill="#1d4ed8"/>
-                        <circle cx="20" cy="40" r="8" fill="#1d4ed8"/> <circle cx="40" cy="40" r="8" fill="#1d4ed8"/> <circle cx="60" cy="40" r="8" fill="#1d4ed8"/> <circle cx="80" cy="40" r="8" fill="#1d4ed8"/>
-                        <circle cx="20" cy="60" r="8" fill="#1d4ed8"/> <circle cx="40" cy="60" r="8" fill="#1d4ed8"/> <circle cx="60" cy="60" r="8" fill="#1d4ed8"/> <circle cx="80" cy="60" r="8" fill="#1d4ed8"/>
-                        <circle cx="20" cy="80" r="8" fill="#1d4ed8"/> <circle cx="40" cy="80" r="8" fill="#1d4ed8"/> <circle cx="60" cy="80" r="8" fill="#1d4ed8"/> <circle cx="80" cy="80" r="8" fill="#1d4ed8"/>
-                    </svg>
-
-                    <p lang="kk" class="lang-content">Бөлшектер <strong>тығыз орналасқан</strong> және өз орнында <strong>тербеледі</strong>.</p>
-                    <p lang="en" class="lang-content">Particles are <strong>tightly packed</strong> and <strong>vibrate</strong> in place.</p>
-                    <p lang="ru" class="lang-content">Частицы <strong>плотно упакованы</strong> и <strong>колеблются</strong> на месте.</p>
-                </div>
-
-                <!-- Сұйық -->
-                <div class="rule-card border-t-cyan-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-cyan-700 mb-3">2. Сұйықтық</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-cyan-700 mb-3">2. Liquid</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-cyan-700 mb-3">2. Жидкость</h3>
-
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="30" cy="20" r="8" fill="#0891b2"/> <circle cx="50" cy="30" r="8" fill="#0891b2"/> <circle cx="75" cy="25" r="8" fill="#0891b2"/>
-                        <circle cx="20" cy="45" r="8" fill="#0891b2"/> <circle cx="45" cy="55" r="8" fill="#0891b2"/> <circle cx="70" cy="45" r="8" fill="#0891b2"/>
-                        <circle cx="30" cy="75" r="8" fill="#0891b2"/> <circle cx="55" cy="80" r="8" fill="#0891b2"/> <circle cx="80" cy="70" r="8" fill="#0891b2"/>
-                        <circle cx="15" cy="70" r="8" fill="#0891b2"/> <circle cx="40" cy="35" r="8" fill="#0891b2"/> <circle cx="60" cy="65" r="8" fill="#0891b2"/>
-                    </svg>
-
-                    <p lang="kk" class="lang-content">Бөлшектер <strong>жақын орналасқан</strong>, бірақ орындарын <strong>ауыстыра алады</strong>.</p>
-                    <p lang="en" class="lang-content">Particles are <strong>close together</strong> but can <strong>move and slide</strong> past one another.</p>
-                    <p lang="ru" class="lang-content">Частицы <strong>близко</strong> друг к другу, но могут <strong>перемещаться</strong> и "перескакивать".</p>
-                </div>
-
-                <!-- Газ -->
-                <div class="rule-card border-t-purple-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-purple-700 mb-3">3. Газ</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-purple-700 mb-3">3. Gas</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-purple-700 mb-3">3. Газ</h3>
-
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="20" cy="20" r="8" fill="#6d28d9"/>
-                        <circle cx="80" cy="30" r="8" fill="#6d28d9"/>
-                        <circle cx="50" cy="50" r="8" fill="#6d28d9"/>
-                        <circle cx="25" cy="75" r="8" fill="#6d28d9"/>
-                        <circle cx="70" cy="80" r="8" fill="#6d28d9"/>
-                    </svg>
-
-                    <p lang="kk" class="lang-content">Бөлшектер бір-бірінен <strong>алыс</strong> орналасқан және <strong>еркін, жылдам қозғалады</strong>.</p>
-                    <p lang="en" class="lang-content">Particles are <strong>far apart</strong> and <strong>move freely and quickly</strong>.</p>
-                    <p lang="ru" class="lang-content">Частицы находятся <strong>далеко</strong> друг от друга и <strong>движутся свободно и быстро</strong>.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ТҮЙІН -->
-        <footer class="footer-card">
-            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-gray-800">БАСТЫ ОЙ</h3>
-            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-gray-800">SUMMARY</h3>
-            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-gray-800">ГЛАВНАЯ МЫСЛЬ</h3>
-
-            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                Барлық заттар <strong>молекулалар мен атомдардан</strong> тұрады.<br>
-                Бұл бөлшектер <strong>әрқашан қозғалыста</strong> болады.<br>
-                Бөлшектердің арасында <strong>бос орын</strong> бар.
-            </p>
-            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                All matter is made of <strong>molecules and atoms</strong>.<br>
-                These particles are <strong>always in motion</strong>.<br>
-                There are <strong>gaps</strong> between these particles.
-            </p>
-            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                Все вещества состоят из <strong>молекул и атомов</strong>.<br>
-                Эти частицы <strong>всегда находятся в движении</strong>.<br>
-                Между частицами есть <strong>промежутки</strong>.
-            </p>
-        </footer>
-
+<div id="stats-panel">
+    <div style="margin-bottom:5px; color:#00d2ff">Кинетическая энергия (Ek)</div>
+    <div class="bar-container">
+        <div id="bar-ke" class="bar-fill" style="background:#00d2ff"></div>
     </div>
 
-    
+    <div style="margin-bottom:5px; color:#ff3366">Потенциальная энергия (Ep)</div>
+    <div class="bar-container">
+        <div id="bar-pe" class="bar-fill" style="background:#ff3366"></div>
+    </div>
 
+    <div style="border-top: 1px solid #444; margin: 10px 0; padding-top:10px;">
+        <div class="legend-item">
+            <div class="dot" style="background:#ff3366"></div>
+            Сила тяжести
+        </div>
+    </div>
+    <div style="color: #888; font-size: 11px;">Кликните по грузу, чтобы толкнуть</div>
+</div>
 
+<div id="info-panel">
+    <button class="close-btn" onclick="closePanel()">&times;</button>
+    <h2 id="info-title">Название</h2>
+    <p id="info-desc">Описание</p>
+</div>
 
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+</script>
 
+<script type="module">
+    import * as THREE from 'three';
+    import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
+    // --- ДАННЫЕ СИМУЛЯЦИИ ---
+    const pendulumData = {
+        "Bob": {
+            title: "Материальная точка (Груз)",
+            desc: "Массивное тело, размерами которого можно пренебречь. В математическом маятнике вся масса сосредоточена в этой точке. При движении груз совершает гармонические колебания (при малых углах).",
+            color: 0xffffff
+        },
+        "String": {
+            title: "Нить подвеса",
+            desc: "Нерастяжимая, невесомая нить длиной L. Удерживает груз на постоянном расстоянии от точки подвеса. Сила натяжения нити меняется в зависимости от положения груза (максимальна в нижней точке).",
+            color: 0x888888
+        },
+        "Pivot": {
+            title: "Точка подвеса",
+            desc: "Неподвижная точка, вокруг которой совершаются колебания. Реакция опоры в этой точке уравновешивает вес системы.",
+            color: 0x444444
+        },
+        "Trajectory": {
+            title: "Траектория",
+            desc: "Дуга окружности. При малых отклонениях траектория близка к горизонтальной прямой, а движение описывается законом синуса.",
+            color: 0x00d2ff
+        }
+    };
 
+    // --- СЦЕНА ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x1a1c20, 0.02);
 
+    // Сетка координат для наглядности
+    const gridHelper = new THREE.GridHelper(20, 20, 0x333333, 0x222222);
+    gridHelper.position.y = -10;
+    scene.add(gridHelper);
 
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 25);
 
+    const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    container.appendChild(renderer.domElement);
+
+    // --- ОСВЕЩЕНИЕ ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const spotLight = new THREE.SpotLight(0xffffff, 100);
+    spotLight.position.set(5, 15, 10);
+    spotLight.castShadow = true;
+    scene.add(spotLight);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.maxDistance = 60;
+    controls.minDistance = 5;
+
+    // --- ФИЗИЧЕСКИЕ ПАРАМЕТРЫ ---
+    let length = 10;        // Длина нити (L)
+    let gravity = 9.81;     // Гравитация (g)
+    let angle = Math.PI / 4; // Начальный угол (45 градусов)
+    let aVelocity = 0;      // Угловая скорость
+    let aAcceleration = 0;  // Угловое ускорение
+    let damping = 0.995;    // Затухание
+
+    const origin = new THREE.Vector3(0, 8, 0); // Точка подвеса
+
+    // --- СОЗДАНИЕ ОБЪЕКТОВ ---
+    const pendulumGroup = new THREE.Group();
+    scene.add(pendulumGroup);
+
+    // 1. Точка подвеса (Pivot)
+    const pivotGeo = new THREE.BoxGeometry(1, 0.5, 1);
+    const pivotMat = new THREE.MeshStandardMaterial({color: 0x666666, roughness: 0.5});
+    const pivot = new THREE.Mesh(pivotGeo, pivotMat);
+    pivot.position.copy(origin);
+    pivot.name = "Pivot";
+    scene.add(pivot);
+
+    // 2. Нить (String) - используем Line для простоты обновления
+    const stringMat = new THREE.LineBasicMaterial({color: 0x888888, linewidth: 2});
+    const stringGeo = new THREE.BufferGeometry().setFromPoints([origin, new THREE.Vector3(0, 0, 0)]);
+    const stringLine = new THREE.Line(stringGeo, stringMat);
+    stringLine.name = "String";
+    scene.add(stringLine);
+
+    // 3. Груз (Bob)
+    const bobGeo = new THREE.SphereGeometry(1.2, 32, 32);
+    const bobMat = new THREE.MeshPhysicalMaterial({
+        color: 0xeeeeee,
+        metalness: 0.5,
+        roughness: 0.2,
+        clearcoat: 1.0
+    });
+    const bob = new THREE.Mesh(bobGeo, bobMat);
+    bob.name = "Bob";
+    scene.add(bob);
+
+    // 4. Траектория (След)
+    const trailPoints = [];
+    const maxTrailLength = 50;
+    const trailGeo = new THREE.BufferGeometry();
+    const trailMat = new THREE.LineBasicMaterial({color: 0x00d2ff, transparent: true, opacity: 0.5});
+    const trail = new THREE.Line(trailGeo, trailMat);
+    trail.name = "Trajectory";
+    scene.add(trail);
+
+    // 5. Векторы сил (Стрелки)
+    const gravArrow = new THREE.ArrowHelper(
+            new THREE.Vector3(0, -1, 0),
+            new THREE.Vector3(0, 0, 0),
+            3,
+            0xff3366 // Красный - сила
+    );
+    scene.add(gravArrow);
+
+    // --- UI ОБНОВЛЕНИЕ ---
+    const barKE = document.getElementById('bar-ke');
+    const barPE = document.getElementById('bar-pe');
+
+    function updateEnergy() {
+        // h = L - L*cos(theta)
+        const h = length * (1 - Math.cos(angle));
+        const v = aVelocity * length;
+
+        // Ep = mgh (масса условно 1)
+        const Ep = gravity * h;
+        // Ek = mv^2 / 2
+        const Ek = 0.5 * v * v;
+
+        // Нормализация для UI (примерная макс энергия)
+        const maxE = 150;
+
+        barKE.style.width = Math.min((Ek / maxE) * 100, 100) + '%';
+        barPE.style.width = Math.min((Ep / maxE) * 100, 100) + '%';
+    }
+
+    // --- ИНТЕРАКТИВНОСТЬ ---
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let highlightedObj = null;
+
+    const panel = document.getElementById('info-panel');
+    const titleEl = document.getElementById('info-title');
+    const descEl = document.getElementById('info-desc');
+    const labelEl = document.getElementById('zone-label');
+
+    function onMouseMove(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children);
+
+        let found = null;
+        for (let hit of intersects) {
+            if (hit.object.name && pendulumData[hit.object.name]) {
+                found = hit.object;
+                break;
+            }
+        }
+
+        if (found) {
+            labelEl.textContent = pendulumData[found.name].title;
+            labelEl.style.opacity = 1;
+            document.body.style.cursor = 'pointer';
+        } else {
+            labelEl.style.opacity = 0;
+            document.body.style.cursor = 'default';
+        }
+    }
+
+    function onClick(event) {
+        if (event.target.closest('#info-panel') || event.target.closest('.close-btn')) return;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children);
+
+        let found = null;
+        for (let hit of intersects) {
+            if (hit.object.name && pendulumData[hit.object.name]) {
+                found = hit.object;
+                break;
+            }
+        }
+
+        if (found) {
+            // Если кликнули по грузу - "толкаем" его
+            if (found.name === "Bob") {
+                aVelocity += (Math.random() > 0.5 ? 0.05 : -0.05); // Случайный толчок
+                // Вспышка цвета
+                const originalColor = found.material.color.getHex();
+                found.material.color.setHex(0x00ff88);
+                setTimeout(() => found.material.color.setHex(originalColor), 200);
+            } else {
+                showInfo(found.name);
+            }
+        } else {
+            closePanel();
+        }
+    }
+
+    function showInfo(key) {
+        const data = pendulumData[key];
+        titleEl.textContent = data.title;
+        descEl.textContent = data.desc;
+
+        const hexColor = '#' + data.color.toString(16).padStart(6, '0');
+        panel.style.borderLeftColor = hexColor;
+        panel.classList.add('active');
+    }
+
+    window.closePanel = function () {
+        panel.classList.remove('active');
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('click', onClick);
+
+    // --- АНИМАЦИЯ ---
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        // 1. Физика маятника
+        // Угловое ускорение: a = -(g/L) * sin(angle)
+        aAcceleration = (-1 * gravity / length) * Math.sin(angle);
+
+        // Метод Эйлера (интегрирование)
+        aVelocity += aAcceleration;
+        aVelocity *= damping; // Сопротивление воздуха
+
+        // ЗАМЕДЛЕНИЕ: уменьшили коэффициент с 0.15 до 0.05
+        angle += aVelocity * 0.05;
+
+        // 2. Обновление позиций
+        const x = length * Math.sin(angle);
+        const y = length * Math.cos(angle);
+
+        // В Three.js Y вверх, поэтому вычитаем y из origin
+        const bobPos = new THREE.Vector3(origin.x + x, origin.y - y, origin.z);
+
+        bob.position.copy(bobPos);
+
+        // Обновляем линию нити
+        const positions = stringLine.geometry.attributes.position;
+        positions.setXYZ(0, origin.x, origin.y, origin.z);
+        positions.setXYZ(1, bobPos.x, bobPos.y, bobPos.z); // Только 2 точки нужны
+        stringLine.geometry.setFromPoints([origin, bobPos]);
+
+        // 3. Обновление следа (Trail)
+        trailPoints.push(bobPos.clone());
+        if (trailPoints.length > maxTrailLength) trailPoints.shift();
+        trail.geometry.setFromPoints(trailPoints);
+
+        // 4. Обновление векторов сил
+        gravArrow.position.copy(bobPos);
+        // Гравитация всегда вниз
+        gravArrow.setDirection(new THREE.Vector3(0, -1, 0));
+        // Или показываем тангенциальную составляющую (восстанавливающую силу)?
+        // Покажем полную силу тяжести для наглядности
+        gravArrow.setLength(3);
+
+        // 5. Обновление UI
+        updateEnergy();
+
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+</script>
 </body>
 </html>
