@@ -1,317 +1,485 @@
 <!DOCTYPE html>
-<html lang="kk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Плакат: Биология</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Интерактивная Анатомия Сердца (Реалистичная)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0fdf4;
-            color: #14532d;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* Сделали фон чуть светлее и с красноватым оттенком для атмосферы */
+            background: radial-gradient(circle at center, #2c1e1e, #0a0a0a);
         }
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
         }
-        .header-card {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(22, 163, 74, 0.4);
-            color: white;
-            padding: 40px;
+
+        /* Информационная панель */
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 340px;
+            background: rgba(30, 30, 30, 0.85); /* Чуть прозрачнее */
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            border-left: 6px solid #ff5252; /* Ярче цвет границы */
+            z-index: 10;
+            color: #fff;
         }
-        .section-heading {
-            color: #166534;
-            border-bottom: 3px solid #86efac;
-            display: inline-block;
-            padding-bottom: 5px;
-            margin-bottom: 25px;
+
+        #info-panel.active {
+            transform: translateX(0);
+        }
+
+        #info-title {
+            margin: 0 0 12px 0;
+            color: #ffeba7;
+            font-size: 22px;
             font-weight: 700;
+            border-bottom: 2px solid #555;
+            padding-bottom: 12px;
         }
-        .rule-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            height: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 5px solid;
+
+        #info-desc {
+            color: #eeeeee; /* Светлее текст */
+            font-size: 16px;
+            line-height: 1.6;
         }
-        .rule-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-        .footer-card {
-            text-align: center;
-            margin-top: 40px;
-            padding: 24px;
-            background-color: #dcfce7;
-            border-radius: 1rem;
-            border-top: 4px solid #16a34a;
-        }
-        .term {
-            font-weight: bold;
-            color: #16a34a;
-        }
-        .lang-switcher {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-        .lang-btn {
-            padding: 8px 16px;
-            border: 2px solid #16a34a;
-            background-color: #ffffff;
-            color: #16a34a;
-            border-radius: 0.5rem;
-            font-weight: 600;
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 20px;
             cursor: pointer;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s;
         }
-        .lang-btn:hover { background-color: #f0fdf4; }
-        .lang-btn.active { background-color: #16a34a; color: #ffffff; }
 
-        /* --- ИСПРАВЛЕННАЯ ЛОГИКА ЯЗЫКОВ --- */
-        /* По умолчанию скрываем все элементы с классом lang-content */
-        .lang-content {
-            display: none !important;
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
-        /* Показываем ТОЛЬКО нужный язык в зависимости от класса контейнера */
-        .lang-kk .lang-content[lang="kk"],
-        .lang-en .lang-content[lang="en"],
-        .lang-ru .lang-content[lang="ru"] {
-            display: block !important;
+        /* Подсказка */
+        #tooltip {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.7);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 1px solid #444;
+            font-size: 14px;
+            pointer-events: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            animation: fadeIn 1s 1s forwards;
+            text-align: center;
         }
 
-        /* Для строчных элементов (span) используем inline */
-        .lang-kk span.lang-content[lang="kk"],
-        .lang-en span.lang-content[lang="en"],
-        .lang-ru span.lang-content[lang="ru"] {
-            display: inline !important;
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
         }
 
-        .illustration-svg {
-            width: 100%;
-            height: 200px;
-            margin: 15px 0;
-            border: 1px solid #bbf7d0;
-            border-radius: 0.5rem;
-            background-color: #fff;
+        /* Loading */
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #fff;
+            font-weight: 500;
+            display: none;
         }
-        .svg-leaf { fill: #4ade80; stroke: #16a34a; stroke-width: 2; }
-        .svg-dna { fill: none; stroke: #22c55e; stroke-width: 3; stroke-linecap: round; }
     </style>
 </head>
-<body class="bg-green-50">
+<body>
 
+<div id="loading">Генерация анатомии...</div>
 
+<div id="canvas-container"></div>
 
-    <div id="poster-container" class="container lang-kk">
+<div id="tooltip">Нажимайте на камеры и сосуды.<br>Модель сокращается в реальном времени.</div>
 
-        <div class="lang-switcher">
-            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
-            <button class="lang-btn" onclick="switchLang('en')">English</button>
-            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
-        </div>
+<div id="info-panel">
+    <button class="close-btn" onclick="closePanel()">&times;</button>
+    <h2 id="info-title">Название</h2>
+    <p id="info-desc">Описание</p>
+</div>
 
-        <header class="header-card text-center mb-10">
-            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">БИОЛОГИЯ – ТІРІ ТАБИҒАТ ТУРАЛЫ ҒЫЛЫМ</h1>
-            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">BIOLOGY – THE SCIENCE OF LIFE</h1>
-            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">БИОЛОГИЯ – НАУКА О ЖИВОЙ ПРИРОДЕ</h1>
+<!-- Подключаем Three.js через CDN -->
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+</script>
 
-            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-green-100">Тіршіліктің құрылымы мен заңдылықтары.</p>
-            <p lang="en" class="lang-content mt-2 text-xl font-medium text-green-100">Structure and laws of life.</p>
-            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-green-100">Строение и законы жизни.</p>
-        </header>
+<script type="module">
+    import * as THREE from 'three';
+    import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Биология дегеніміз не?</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Biology?</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Что такое Биология?</h2>
+    // --- ДАННЫЕ СЕРДЦА ---
+    const heartData = {
+        "LeftVentricle": {
+            title: "Левый желудочек (Ventriculus sinister)",
+            desc: "Самая мощная камера сердца. Имеет толстые мышечные стенки, так как именно отсюда обогащенная кислородом кровь выталкивается в аорту и разносится по всему организму под высоким давлением."
+        },
+        "RightVentricle": {
+            title: "Правый желудочек (Ventriculus dexter)",
+            desc: "Принимает венозную кровь из правого предсердия и перекачивает её через легочный ствол в легкие для насыщения кислородом. Его стенки тоньше левого."
+        },
+        "LeftAtrium": {
+            title: "Левое предсердие (Atrium sinistrum)",
+            desc: "Располагается сзади и сверху. Принимает насыщенную кислородом кровь от легких через четыре легочные вены."
+        },
+        "RightAtrium": {
+            title: "Правое предсердие (Atrium dextrum)",
+            desc: "Сюда впадают полые вены, приносящие венозную кровь от всего организма. Отсюда кровь поступает в правый желудочек."
+        },
+        "Aorta": {
+            title: "Аорта (Aorta)",
+            desc: "Крупнейший артериальный сосуд тела. Образует характерную дугу над сердцем, от которой отходят артерии к голове и рукам, а затем спускается вниз, питая всё тело."
+        },
+        "PulmonaryArtery": {
+            title: "Легочный ствол (Truncus pulmonalis)",
+            desc: "Выходит из правого желудочка и несет венозную кровь к легким. Делится на правую и левую легочные артерии."
+        },
+        "SuperiorVenaCava": {
+            title: "Верхняя полая вена (Vena cava superior)",
+            desc: "Толстый короткий сосуд, собирающий венозную кровь от головы, шеи и рук, и впадающий в правое предсердие сверху."
+        }
+    };
 
-            <div class="rule-card border-t-green-500">
-                <p lang="kk" class="lang-content text-lg mb-3">
-                    <span class="term">Биология</span> – тірі ағзаларды зерттейтін ғылым.
-                </p>
-                <p lang="en" class="lang-content text-lg mb-3">
-                    <span class="term">Biology</span> is the science that studies living organisms.
-                </p>
-                <p lang="ru" class="lang-content text-lg mb-3">
-                    <span class="term">Биология</span> – наука, изучающая живые организмы.
-                </p>
+    // --- СЦЕНА ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
 
-                <svg class="illustration-svg" viewBox="0 0 400 150">
-                    <g transform="translate(100, 20)">
-                        <path d="M 20 0 Q 60 25, 20 50 Q -20 75, 20 100" class="svg-dna"/>
-                        <path d="M 20 0 Q -20 25, 20 50 Q 60 75, 20 100" class="svg-dna" stroke="#15803d" stroke-dasharray="5"/>
-                    </g>
-                    <text x="250" y="50" font-size="20" font-weight="bold" fill="#15803d" text-anchor="middle">BIOS (Life)</text>
-                    <text x="250" y="80" font-size="20" font-weight="bold" fill="#475569" text-anchor="middle">+</text>
-                    <text x="250" y="110" font-size="20" font-weight="bold" fill="#166534" text-anchor="middle">LOGOS (Science)</text>
-                </svg>
-            </div>
-        </section>
+    // Настройка камеры
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 2, 16);
 
-                <!-- 2. БИОЛОГИЯ САЛАЛАРЫ -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Биологияның негізгі салалары</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">2. Main Branches of Biology</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Основные разделы биологии</h2>
+    const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.SoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.3; // Увеличили экспозицию (было 0.9)
+    container.appendChild(renderer.domElement);
 
-            <div class="rule-card border-t-emerald-500">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Botany -->
-                    <div class="bg-green-50 p-4 rounded-lg border border-green-200 flex items-center gap-4">
-                        <svg viewBox="0 0 50 50" class="w-12 h-12">
-                            <path d="M 25 45 Q 25 5, 5 15 Q 10 5, 25 5 Q 40 5, 45 15 Q 25 5, 25 45" class="svg-leaf"/>
-                        </svg>
-                        <div>
-                            <h4 lang="kk" class="lang-content font-bold text-green-900">Ботаника</h4>
-                            <h4 lang="en" class="lang-content font-bold text-green-900">Botany</h4>
-                            <h4 lang="ru" class="lang-content font-bold text-green-900">Ботаника</h4>
-                            <p lang="kk" class="lang-content text-xs text-gray-600">Өсімдіктер туралы ғылым</p>
-                            <p lang="en" class="lang-content text-xs text-gray-600">Study of Plants</p>
-                            <p lang="ru" class="lang-content text-xs text-gray-600">Наука о растениях</p>
-                        </div>
-                    </div>
+    // --- СВЕТ (Ярче и объемнее) ---
+    // Общий заполняющий свет (белый)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
 
-                    <!-- Zoology -->
-                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200 flex items-center gap-4">
-                        <svg viewBox="0 0 50 50" class="w-12 h-12">
-                            <circle cx="15" cy="20" r="5" fill="#059669"/>
-                            <circle cx="25" cy="10" r="5" fill="#059669"/>
-                            <circle cx="35" cy="20" r="5" fill="#059669"/>
-                            <path d="M 15 35 Q 25 25, 35 35 Q 40 45, 25 45 Q 10 45, 15 35" fill="#059669"/>
-                        </svg>
-                        <div>
-                            <h4 lang="kk" class="lang-content font-bold text-emerald-900">Зоология</h4>
-                            <h4 lang="en" class="lang-content font-bold text-emerald-900">Zoology</h4>
-                            <h4 lang="ru" class="lang-content font-bold text-emerald-900">Зоология</h4>
-                            <p lang="kk" class="lang-content text-xs text-gray-600">Жануарлар туралы ғылым</p>
-                            <p lang="en" class="lang-content text-xs text-gray-600">Study of Animals</p>
-                            <p lang="ru" class="lang-content text-xs text-gray-600">Наука о животных</p>
-                        </div>
-                    </div>
+    // Основной рисующий свет (теплый)
+    const keyLight = new THREE.SpotLight(0xfff0dd, 25);
+    keyLight.position.set(8, 12, 10);
+    keyLight.angle = Math.PI / 5;
+    keyLight.penumbra = 0.3;
+    keyLight.castShadow = true;
+    keyLight.shadow.bias = -0.0001;
+    scene.add(keyLight);
 
-                    <!-- Anatomy -->
-                    <div class="bg-teal-50 p-4 rounded-lg border border-teal-200 flex items-center gap-4">
-                        <svg viewBox="0 0 50 50" class="w-12 h-12">
-                             <circle cx="25" cy="15" r="8" fill="none" stroke="#0d9488" stroke-width="2"/>
-                             <path d="M 15 30 L 35 30 L 35 45 L 15 45 Z" fill="none" stroke="#0d9488" stroke-width="2"/>
-                             <path d="M 20 35 L 25 40 L 30 35" fill="none" stroke="#ef4444" stroke-width="2"/>
-                        </svg>
-                        <div>
-                            <h4 lang="kk" class="lang-content font-bold text-teal-900">Анатомия</h4>
-                            <h4 lang="en" class="lang-content font-bold text-teal-900">Anatomy</h4>
-                            <h4 lang="ru" class="lang-content font-bold text-teal-900">Анатомия</h4>
-                            <p lang="kk" class="lang-content text-xs text-gray-600">Ағзаның құрылысы</p>
-                            <p lang="en" class="lang-content text-xs text-gray-600">Body Structure</p>
-                            <p lang="ru" class="lang-content text-xs text-gray-600">Строение организма</p>
-                        </div>
-                    </div>
+    // Фронтальный заполняющий свет (чтобы убрать черноту спереди)
+    const frontLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    frontLight.position.set(0, 2, 10);
+    scene.add(frontLight);
 
-                    <!-- Microbiology -->
-                    <div class="bg-lime-50 p-4 rounded-lg border border-lime-200 flex items-center gap-4">
-                        <svg viewBox="0 0 50 50" class="w-12 h-12">
-                             <path d="M 20 40 L 30 40 M 25 40 L 25 10 L 35 20" stroke="#65a30d" stroke-width="2" fill="none"/>
-                             <circle cx="15" cy="20" r="2" fill="#65a30d"/>
-                             <circle cx="35" cy="10" r="3" fill="#65a30d"/>
-                        </svg>
-                        <div>
-                            <h4 lang="kk" class="lang-content font-bold text-lime-900">Микробиология</h4>
-                            <h4 lang="en" class="lang-content font-bold text-lime-900">Microbiology</h4>
-                            <h4 lang="ru" class="lang-content font-bold text-lime-900">Микробиология</h4>
-                            <p lang="kk" class="lang-content text-xs text-gray-600">Микроағзалар туралы ғылым</p>
-                            <p lang="en" class="lang-content text-xs text-gray-600">Study of Microorganisms</p>
-                            <p lang="ru" class="lang-content text-xs text-gray-600">Наука о микроорганизмах</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    // Красный подсвет снизу (оставили для объема, но ярче)
+    const bottomLight = new THREE.PointLight(0xff3333, 8, 25);
+    bottomLight.position.set(0, -6, 2);
+    scene.add(bottomLight);
 
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Тірі ағзаның белгілері</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">3. Characteristics of Living Things</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Признаки живого организма</h2>
+    // Холодный контурный свет (ярче)
+    const rimLight = new THREE.SpotLight(0xeefeff, 15);
+    rimLight.position.set(-10, 5, -5);
+    rimLight.lookAt(0, 0, 0);
+    scene.add(rimLight);
 
-            <div class="rule-card border-t-lime-500">
-                <p lang="kk" class="lang-content text-lg text-gray-700">Тірі табиғат өлі табиғаттан негізгі процестер арқылы ерекшеленеді.</p>
-                <p lang="en" class="lang-content text-lg text-gray-700">Living nature differs from non-living nature through key processes.</p>
-                <p lang="ru" class="lang-content text-lg text-gray-700">Живая природа отличается от неживой основными процессами.</p>
+    // --- УПРАВЛЕНИЕ ---
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 8;
+    controls.maxDistance = 30;
 
-                <svg class="illustration-svg" viewBox="0 0 400 150">
-                    <line x1="0" y1="130" x2="400" y2="130" stroke="#78350f" stroke-width="2"/>
-                    <g transform="translate(110, 100)">
-                        <path d="M 0 30 Q 0 10, 5 0 Q 5 10, 10 5" fill="none" stroke="#22c55e" stroke-width="2"/>
-                        <circle cx="5" cy="0" r="3" fill="#4ade80"/>
-                    </g>
-                    <g transform="translate(320, 70)">
-                         <line x1="0" y1="60" x2="0" y2="0" stroke="#15803d" stroke-width="3"/>
-                         <circle cx="0" cy="0" r="5" fill="#fbbf24"/>
-                    </g>
-                </svg>
-            </div>
-        </section>
+    // --- ГРУППА СЕРДЦА ---
+    const heartGroup = new THREE.Group();
+    scene.add(heartGroup);
 
-        <footer class="footer-card">
-            <h3 lang="kk" class="lang-content text-xl font-extrabold text-green-900">ЕСТЕ САҚТАҢЫЗ</h3>
-            <h3 lang="en" class="lang-content text-xl font-extrabold text-green-900">REMEMBER</h3>
-            <h3 lang="ru" class="lang-content text-xl font-extrabold text-green-900">ЗАПОМНИТЕ</h3>
+    // --- МАТЕРИАЛЫ (Сделали чуть светлее базовые цвета) ---
+    // Материал сердечной мышцы (Миокард)
+    const muscleMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x900000,        // Чуть светлее красный
+        roughness: 0.45,        // Меньше бликов - больше матовости
+        metalness: 0.1,
+        clearcoat: 0.4,
+        clearcoatRoughness: 0.2,
+        sheen: 0.3,
+        sheenColor: 0xff8888,   // Розоватый блеск
+        side: THREE.DoubleSide
+    });
 
-            <p lang="kk" class="lang-content mt-2 text-green-800">Биология – өмір туралы ғылым.</p>
-            <p lang="en" class="lang-content mt-2 text-green-800">Biology is the science of life.</p>
-            <p lang="ru" class="lang-content mt-2 text-green-800">Биология – это наука о жизни.</p>
-        </footer>
+    // Материал вен
+    const veinMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x4a6b7c,        // Светлее синий
+        roughness: 0.5,
+        metalness: 0.1,
+        clearcoat: 0.3
+    });
 
-    </div>
+    // Материал аорты
+    const aortaMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0xc43e3e,        // Светлее красный
+        roughness: 0.4,
+        clearcoat: 0.2
+    });
 
-    <script>
-        function switchLang(lang) {
-            const container = document.getElementById('poster-container');
-            if (container) {
-                // Сначала удаляем все классы языков
-                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
-                // Добавляем нужный
-                container.classList.add('lang-' + lang);
+    // Материал жира (желтоватые прожилки)
+    const fatMaterial = new THREE.MeshStandardMaterial({
+        color: 0xeeddcc,
+        roughness: 0.8
+    });
+
+    // --- ФУНКЦИЯ ИСКАЖЕНИЯ ГЕОМЕТРИИ (ORGANIC NOISE) ---
+    function distortGeometry(geometry, intensity = 0.5, freq = 1.0, seed = 0) {
+        const posAttribute = geometry.attributes.position;
+        const vertex = new THREE.Vector3();
+
+        for (let i = 0; i < posAttribute.count; i++) {
+            vertex.fromBufferAttribute(posAttribute, i);
+
+            // Создаем "бугристость"
+            const noise = Math.sin(vertex.x * freq + seed) +
+                    Math.cos(vertex.y * freq + seed) +
+                    Math.sin(vertex.z * freq + seed);
+
+            const factor = 1 + noise * intensity * 0.1;
+
+            vertex.multiplyScalar(factor);
+            posAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
+        }
+        geometry.computeVertexNormals();
+        return geometry;
+    }
+
+    // --- СОЗДАНИЕ КАМЕР СЕРДЦА ---
+
+    // 1. Левый желудочек (Основа - вытянутый конус/сфера)
+    let lvGeo = new THREE.IcosahedronGeometry(2.5, 6);
+    lvGeo.scale(0.9, 1.4, 0.9); // Вытягиваем вниз
+    lvGeo.translate(0.5, -1, 0); // Смещаем
+    distortGeometry(lvGeo, 1.2, 1.5, 10); // Сильное искажение
+    const leftVentricle = new THREE.Mesh(lvGeo, muscleMaterial.clone());
+    leftVentricle.name = "LeftVentricle";
+    heartGroup.add(leftVentricle);
+
+    // 2. Правый желудочек (Обернут вокруг левого)
+    let rvGeo = new THREE.IcosahedronGeometry(2.2, 6);
+    rvGeo.scale(1.1, 1.1, 0.8);
+    rvGeo.rotateZ(0.5);
+    rvGeo.translate(-1.2, -0.5, 0.5); // Слева и спереди
+    distortGeometry(rvGeo, 1.5, 1.2, 20);
+    const rightVentricle = new THREE.Mesh(rvGeo, muscleMaterial.clone());
+    rightVentricle.name = "RightVentricle";
+    heartGroup.add(rightVentricle);
+
+    // 3. Левое предсердие (Сзади сверху)
+    let laGeo = new THREE.SphereGeometry(1.4, 32, 32);
+    laGeo.translate(1.0, 1.5, -0.5);
+    distortGeometry(laGeo, 0.8, 2.0, 30);
+    const leftAtrium = new THREE.Mesh(laGeo, muscleMaterial.clone());
+    leftAtrium.name = "LeftAtrium";
+    heartGroup.add(leftAtrium);
+
+    // 4. Правое предсердие (Справа сверху)
+    let raGeo = new THREE.SphereGeometry(1.5, 32, 32);
+    raGeo.translate(-1.5, 1.2, 0.2);
+    distortGeometry(raGeo, 0.9, 2.0, 40);
+    const rightAtrium = new THREE.Mesh(raGeo, muscleMaterial.clone());
+    rightAtrium.name = "RightAtrium";
+    heartGroup.add(rightAtrium);
+
+    // --- СОЗДАНИЕ СОСУДОВ (Curve Paths) ---
+
+    function createVessel(path, radius, material, name) {
+        const curve = new THREE.CatmullRomCurve3(path);
+        const tubeGeo = new THREE.TubeGeometry(curve, 20, radius, 16, false);
+        const mesh = new THREE.Mesh(tubeGeo, material);
+        mesh.name = name;
+        return mesh;
+    }
+
+    // 5. Аорта (Дуга)
+    const aortaPath = [
+        new THREE.Vector3(0.5, 1.5, 0),    // Выход из желудочка
+        new THREE.Vector3(0.6, 3.5, 0),    // Вверх
+        new THREE.Vector3(-0.5, 4.2, -0.5), // Дуга влево-назад
+        new THREE.Vector3(-1.0, 3.5, -1.5), // Вниз сзади
+        new THREE.Vector3(-1.0, 0, -2.0)    // Нисходящая
+    ];
+    const aorta = createVessel(aortaPath, 0.7, aortaMaterial, "Aorta");
+    heartGroup.add(aorta);
+
+    // 6. Легочный ствол (Перекрещивает аорту)
+    const pulmPath = [
+        new THREE.Vector3(-0.8, 1.0, 1.0), // Из правого желудочка
+        new THREE.Vector3(-0.2, 2.5, 0.5), // Вверх-назад
+        new THREE.Vector3(0.5, 2.8, -0.5)  // Разделение (уходит под дугу аорты)
+    ];
+    const pulmArtery = createVessel(pulmPath, 0.65, veinMaterial.clone(), "PulmonaryArtery");
+    // Меняем цвет легочного ствола (венозная кровь -> синеватый, но артерия по структуре)
+    pulmArtery.material.color.setHex(0x5d4037);
+    heartGroup.add(pulmArtery);
+
+    // 7. Верхняя полая вена
+    const svcPath = [
+        new THREE.Vector3(-2.0, 1.5, 0), // Вход в правое предсердие
+        new THREE.Vector3(-2.2, 4.5, 0)  // Вверх
+    ];
+    const svc = createVessel(svcPath, 0.6, veinMaterial, "SuperiorVenaCava");
+    heartGroup.add(svc);
+
+    // Центрируем сердце
+    new THREE.Box3().setFromObject(heartGroup).getCenter(heartGroup.position).multiplyScalar(-1);
+    heartGroup.rotation.y = -0.3; // Легкий поворот для лучшего ракурса
+
+    // --- ИНТЕРАКТИВНОСТЬ (Raycasting) ---
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let selectedObject = null;
+    const originalEmissives = new Map();
+
+    window.addEventListener('click', onMouseClick, false);
+    window.addEventListener('mousemove', onMouseMove, false);
+
+    function onMouseMove(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(heartGroup.children);
+
+        if (intersects.length > 0 && heartData[intersects[0].object.name]) {
+            container.style.cursor = 'pointer';
+        } else {
+            container.style.cursor = 'default';
+        }
+    }
+
+    function onMouseClick(event) {
+        if (event.target.closest('#info-panel') || event.target.closest('.close-btn')) return;
+
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(heartGroup.children);
+
+        if (intersects.length > 0) {
+            let target = intersects[0].object;
+            if (heartData[target.name]) {
+                highlightObject(target);
+                showInfo(target.name);
             }
+        } else {
+            closePanel();
+            resetHighlight();
+        }
+    }
 
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                if (btn.getAttribute('onclick').includes(lang)) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
+    function highlightObject(object) {
+        resetHighlight();
+        selectedObject = object;
+
+        if (!originalEmissives.has(object.uuid)) {
+            originalEmissives.set(object.uuid, object.material.emissive.getHex());
         }
 
-        // Запуск по умолчанию
-        document.addEventListener('DOMContentLoaded', () => {
-            switchLang('kk');
-        });
+        // Яркое свечение при выборе
+        object.material.emissive.setHex(0xff5555); // Ярче подсветка выделения
+        object.material.emissiveIntensity = 0.6;
+    }
 
-        function goBack() {
-            if (typeof bridge !== 'undefined' && bridge) {
-                bridge.onBackClicked();
-            } else {
-                console.log('Bridge not found');
-            }
+    function resetHighlight() {
+        if (selectedObject) {
+            const originalHex = originalEmissives.get(selectedObject.uuid) || 0x000000;
+            selectedObject.material.emissive.setHex(originalHex);
+            selectedObject.material.emissiveIntensity = 1.0;
+            selectedObject = null;
         }
+    }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-                new QWebChannel(qt.webChannelTransport, function(channel) {
-                    window.bridge = channel.objects.bridge;
-                });
-            }
-        });
-    </script>
-    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    // --- UI ЛОГИКА ---
+    const panel = document.getElementById('info-panel');
+    const titleEl = document.getElementById('info-title');
+    const descEl = document.getElementById('info-desc');
+
+    function showInfo(partName) {
+        const data = heartData[partName];
+        if (!data) return;
+        titleEl.textContent = data.title;
+        descEl.textContent = data.desc;
+        panel.classList.add('active');
+    }
+
+    window.closePanel = function () {
+        panel.classList.remove('active');
+        resetHighlight();
+    };
+
+    // --- АНИМАЦИЯ (БИЕНИЕ СЕРДЦА) ---
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        const time = Date.now() * 0.001;
+
+        // Сложная формула биения (Быстрое сокращение - пауза)
+        // Систола и Диастола
+        const beat = Math.pow(Math.sin(time * 5), 63) * 0.15 + 1;
+
+        // Применяем масштабирование ко всей группе
+        heartGroup.scale.set(beat, beat, beat);
+
+        // Легкое покачивание
+        heartGroup.rotation.z = Math.sin(time) * 0.02;
+
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+</script>
 </body>
 </html>

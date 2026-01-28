@@ -3,478 +3,831 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Methods of Scientific Cognition</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <title>Молекула метана (CH₄)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0f172a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
+            overflow: hidden;
             color: white;
-            min-height: 100vh;
         }
-        .heading-font { font-family: 'Montserrat', sans-serif; }
-        .glass {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+
+        .header {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            text-align: center;
         }
-        .rounded-custom { border-radius: 3rem; }
-        .method-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .method-btn:hover { background: #f59e0b; color: #000; transform: scale(1.05); }
-        canvas { border-radius: 2rem; }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .info-panel {
+            position: fixed;
+            right: -420px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 400px;
+            max-height: 85vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px 0 0 20px;
+            padding: 30px;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.4);
+            transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 500;
+            overflow-y: auto;
+            color: #333;
+        }
+
+        .info-panel.active {
+            right: 0;
+        }
+
+        .info-panel .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f44336;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .info-panel .close-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .info-panel h2 {
+            color: #141e30;
+            font-size: 24px;
+            margin-bottom: 15px;
+            padding-right: 40px;
+        }
+
+        .info-panel .info-content {
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .info-section {
+            margin-bottom: 18px;
+            padding: 15px;
+            background: rgba(36, 59, 85, 0.08);
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .info-section strong {
+            color: #141e30;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .controls p {
+            font-size: 14px;
+            opacity: 0.95;
+            text-align: center;
+        }
+
+        .molecule-info {
+            position: fixed;
+            top: 140px;
+            left: 30px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 300px;
+        }
+
+        .molecule-info h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #4CAF50;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .info-row .label {
+            opacity: 0.85;
+        }
+
+        .info-row .value {
+            font-weight: 600;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 280px;
+        }
+
+        .legend h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .legend-item:hover {
+            transform: translateX(5px);
+        }
+
+        .legend-sphere {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .view-controls {
+            position: fixed;
+            top: 140px;
+            right: 30px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .view-controls h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .view-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(3px);
+        }
+
+        .view-btn.active {
+            background: rgba(76, 175, 80, 0.5);
+            border-color: #4CAF50;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body>
+<div class="header">
+    <h1>🧪 Молекула метана (CH₄)</h1>
+    <p>Интерактивная 3D модель - Тетраэдрическая геометрия</p>
+</div>
 
-<!-- Header -->
-    <header class="glass rounded-custom p-8 mb-8 flex flex-col md:flex-row justify-between items-center border-b-4 border-amber-500">
-        <div class="text-center md:text-left">
-            <h1 id="main-title" class="heading-font text-4xl md:text-6xl text-amber-500 uppercase"></h1>
-            <p id="sub-title" class="text-white/50 tracking-widest uppercase text-sm mt-2"></p>
-        </div>
-        <div class="flex space-x-2 mt-4 md:mt-0">
-            <button onclick="setLang('ru')" id="btn-ru" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">RU</button>
-            <button onclick="setLang('kz')" id="btn-kz" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">KZ</button>
-            <button onclick="setLang('en')" id="btn-en" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">EN</button>
-        </div>
-    </header>
+<div id="canvas-container"></div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <!-- Sidebar Controls -->
-        <div class="glass rounded-custom p-8 space-y-4">
-            <h3 id="sidebar-title" class="heading-font text-xl mb-6 text-amber-400"></h3>
-            <div id="method-buttons" class="space-y-3">
-                <!-- Buttons generated by JS -->
-            </div>
-        </div>
-
-        <!-- Interactive Lab Canvas -->
-        <div class="lg:col-span-2 glass rounded-custom p-6 flex flex-col">
-            <div class="flex justify-between items-center mb-4 px-4">
-                <span id="canvas-label" class="text-xs font-bold text-white/30 uppercase tracking-widest">Scientific Simulation</span>
-                <span id="experiment-status" class="text-amber-500 text-sm italic"></span>
-            </div>
-            <canvas id="labCanvas" class="bg-black/40 flex-grow w-full h-[400px]"></canvas>
-            <div id="method-desc" class="mt-6 p-6 bg-white/5 rounded-2xl text-lg font-light leading-relaxed border-l-4 border-amber-500"></div>
-        </div>
+<div class="molecule-info">
+    <h3>Метан (CH₄)</h3>
+    <div class="info-row">
+        <span class="label">Молекулярная масса:</span>
+        <span class="value">16.043 г/моль</span>
     </div>
+    <div class="info-row">
+        <span class="label">Угол связи:</span>
+        <span class="value">109.5°</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Длина C-H связи:</span>
+        <span class="value">109 пм</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Тип связи:</span>
+        <span class="value">Ковалентная</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Полярность:</span>
+        <span class="value">Неполярная</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Форма:</span>
+        <span class="value">Тетраэдр</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Гибридизация:</span>
+        <span class="value">sp³</span>
+    </div>
+</div>
 
-    <!-- Cards -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <div class="glass rounded-custom p-10 border-t border-white/10">
-            <div class="text-amber-500 text-4xl mb-4 font-black">01</div>
-            <h4 id="card1-title" class="heading-font text-xl mb-4 uppercase"></h4>
-            <p id="card1-desc" class="text-white/60"></p>
-        </div>
-        <div class="glass rounded-custom p-10 border-t border-white/10">
-            <div class="text-amber-500 text-4xl mb-4 font-black">02</div>
-            <h4 id="card2-title" class="heading-font text-xl mb-4 uppercase"></h4>
-            <p id="card2-desc" class="text-white/60"></p>
-        </div>
-        <div class="glass rounded-custom p-10 border-t border-white/10">
-            <div class="text-amber-500 text-4xl mb-4 font-black">03</div>
-            <h4 id="card3-title" class="heading-font text-xl mb-4 uppercase"></h4>
-            <p id="card3-desc" class="text-white/60"></p>
-        </div>
-    </section>
+<div class="view-controls">
+    <h3>Визуализация:</h3>
+    <button class="view-btn active" onclick="toggleTetrahedron()">Показать тетраэдр</button>
+    <button class="view-btn" onclick="toggleOrbitals()">Орбитали sp³</button>
+    <button class="view-btn" onclick="toggleAngles()">Показать углы</button>
+    <button class="view-btn" onclick="toggleElectronDensity()">Электронная плотность</button>
+</div>
 
-    <!-- Footer -->
-    <footer class="text-center p-12 glass rounded-custom">
-        <p id="quote" class="text-3xl font-light mb-4 italic"></p>
-        <p id="author" class="text-amber-500 font-bold uppercase tracking-widest"></p>
-    </footer>
+<div class="info-panel" id="info-panel">
+    <button class="close-btn" onclick="closeInfo()">×</button>
+    <h2 id="info-title">Молекула метана</h2>
+    <div class="info-content" id="info-content">
+        <p>Кликните на атом углерода или водорода, чтобы узнать подробнее.</p>
+    </div>
+</div>
 
-    <script>
-        const translations = {
-            ru: {
-                title: "Путь Познания",
-                subtitle: "Методы науки и химический эксперимент",
-                sidebarTitle: "Этапы исследования",
-                canvasLabel: "Виртуальная лаборатория",
-                status: "Эксперимент активен",
-                methods: {
-                    observation: { btn: "Наблюдение", title: "Наблюдение", text: "Целенаправленное восприятие химических явлений без вмешательства в процесс. Сбор первичных данных." },
-                    experiment: { btn: "Эксперимент", title: "Химический Эксперимент", text: "Исследование в строго контролируемых условиях. Позволяет подтвердить или опровергнуть гипотезу." },
-                    measurement: { btn: "Измерение", title: "Измерение", text: "Определение количественных характеристик: массы, объема, температуры, времени реакции." },
-                    modeling: { btn: "Моделирование", title: "Моделирование", text: "Создание копии объекта (модели) для изучения сложных процессов, которые нельзя увидеть напрямую." }
-                },
-                cards: [
-                    { title: "Гипотеза", desc: "Научное предположение, требующее экспериментальной проверки. Основа любого исследования." },
-                    { title: "Техника безопасности", desc: "Строгий регламент работы с реактивами, нагревательными приборами и стеклянной посудой." },
-                    { title: "Теория", desc: "Высшая форма научного знания, дающая целостное представление о закономерностях химии." }
-                ],
-                quote: "«Один опыт я ставлю выше, чем тысячу мнений, рожденных только воображением»",
-                author: "Михаил Ломоносов"
-            },
-            kz: {
-                title: "Білім Жолы",
-                subtitle: "Ғылым әдістері және химиялық эксперимент",
-                sidebarTitle: "Зерттеу кезеңдері",
-                canvasLabel: "Виртуалды зертхана",
-                status: "Эксперимент белсенді",
-                methods: {
-                    observation: { btn: "Бақылау", title: "Бақылау", text: "Химиялық құбылыстарды процесске араласпай мақсатты түрде қабылдау. Бастапқы деректерді жинау." },
-                    experiment: { btn: "Эксперимент", title: "Химиялық Эксперимент", text: "Қатаң бақыланатын жағдайларда зерттеу. Гипотезаны растауға немесе жоққа шығаруға мүмкіндік береді." },
-                    measurement: { btn: "Өлшеу", title: "Өлшеу", text: "Сандық сипаттамаларды анықтау: масса, көлем, температура, реакция уақыты." },
-                    modeling: { btn: "Модельдеу", title: "Модельдеу", text: "Тікелей көруге болмайтын күрделі процестерді зерттеу үшін объектінің көшірмесін (моделін) жасау." }
-                },
-                cards: [
-                    { title: "Гипотеза", desc: "Эксперименттік тексеруді қажет ететін ғылыми болжам. Кез келген зерттеудің негізі." },
-                    { title: "Қауіпсіздік техникасы", desc: "Реактивтермен, қыздыру аспаптарымен және шыны ыдыстармен жұмыс істеудің қатаң ережесі." },
-                    { title: "Теория", desc: "Химия заңдылықтары туралы тұтас түсінік беретін ғылыми білімнің жоғарғы формасы." }
-                ],
-                quote: "«Мен бір тәжірибені тек қиялдан туған мыңдаған пікірлерден жоғары қоямын»",
-                author: "Михаил Ломоносов"
-            },
-            en: {
-                title: "Path of Cognition",
-                subtitle: "Scientific Methods and Chemical Experiment",
-                sidebarTitle: "Research Stages",
-                canvasLabel: "Virtual Laboratory",
-                status: "Experiment Active",
-                methods: {
-                    observation: { btn: "Observation", title: "Observation", text: "Purposeful perception of chemical phenomena without interfering with the process. Collecting primary data." },
-                    experiment: { btn: "Experiment", title: "Chemical Experiment", text: "Research under strictly controlled conditions. Allows to confirm or refute a hypothesis." },
-                    measurement: { btn: "Measurement", title: "Measurement", text: "Determining quantitative characteristics: mass, volume, temperature, reaction time." },
-                    modeling: { btn: "Modeling", title: "Modeling", text: "Creating a copy of an object (model) to study complex processes that cannot be seen directly." }
-                },
-                cards: [
-                    { title: "Hypothesis", desc: "A scientific assumption requiring experimental verification. The basis of any research." },
-                    { title: "Safety Rules", desc: "Strict regulations for working with reagents, heating devices, and glassware." },
-                    { title: "Theory", desc: "The highest form of scientific knowledge, providing a holistic view of the patterns of chemistry." }
-                ],
-                quote: "«I value one experiment higher than a thousand opinions born only of imagination»",
-                author: "Mikhail Lomonosov"
-            }
-        };
+<div class="controls">
+    <p>🖱️ Вращение: перетаскивание | 🔍 Масштаб: колесо мыши | Пробел: пауза</p>
+</div>
 
-        let currentLang = 'ru';
-        let activeMethod = 'experiment';
-        const canvas = document.getElementById('labCanvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+<div class="legend">
+    <h3>Атомы:</h3>
+    <div class="legend-item" onclick="focusPart('carbon')">
+        <div class="legend-sphere" style="background: radial-gradient(circle at 30% 30%, #555555, #222222);"></div>
+        <span>Углерод (C)</span>
+    </div>
+    <div class="legend-item" onclick="focusPart('hydrogen')">
+        <div class="legend-sphere" style="background: radial-gradient(circle at 30% 30%, #e8f4f8, #b8d4e8);"></div>
+        <span>Водород (H)</span>
+    </div>
+</div>
 
-        function setLang(lang) {
-            currentLang = lang;
-            updateUI();
+<script>
+    // Информация об атомах
+    const atomInfo = {
+        carbon: {
+            title: "Атом углерода (C)",
+            content: `
+                    <div class="info-section">
+                        <strong>Характеристики:</strong>
+                        <p>• Атомный номер: 6<br>
+                        • Атомная масса: 12.011 а.е.м.<br>
+                        • Электроотрицательность: 2.55<br>
+                        • Валентность: 4<br>
+                        • Ковалентный радиус: 77 пм</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Роль в молекуле:</strong>
+                        <p>Центральный атом молекулы метана. Образует четыре одинаковые ковалентные σ-связи с атомами водорода.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Гибридизация:</strong>
+                        <p>sp³-гибридизация. Четыре sp³-гибридные орбитали направлены к вершинам правильного тетраэдра под углом 109.5°.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Электронная конфигурация:</strong>
+                        <p>Основное состояние: 1s² 2s² 2p²<br>
+                        Возбуждённое состояние: 1s² 2s¹ 2p³<br>
+                        При гибридизации: четыре sp³-орбитали</p>
+                    </div>
+                `
+        },
+        hydrogen: {
+            title: "Атом водорода (H)",
+            content: `
+                    <div class="info-section">
+                        <strong>Характеристики:</strong>
+                        <p>• Атомный номер: 1<br>
+                        • Атомная масса: 1.008 а.е.м.<br>
+                        • Электроотрицательность: 2.20<br>
+                        • Валентность: 1<br>
+                        • Ковалентный радиус: 31 пм</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Роль в молекуле:</strong>
+                        <p>Образует ковалентную σ-связь с углеродом. В молекуле метана четыре эквивалентных атома водорода.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Тип связи C-H:</strong>
+                        <p>Слабополярная ковалентная связь. Разница электроотрицательностей C и H небольшая (0.35), поэтому молекула в целом неполярна.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Положение в пространстве:</strong>
+                        <p>Четыре атома водорода расположены симметрично на вершинах правильного тетраэдра с углеродом в центре.</p>
+                    </div>
+                `
+        },
+        molecule: {
+            title: "Молекула метана (CH₄)",
+            content: `
+                    <div class="info-section">
+                        <strong>Геометрия молекулы:</strong>
+                        <p>Правильная тетраэдрическая форма. Все четыре связи C-H идентичны и направлены к вершинам тетраэдра. Угол H-C-H = 109.5° (тетраэдрический угол).</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Полярность:</strong>
+                        <p>Молекула неполярна. Хотя связи C-H слабополярны, симметричное расположение атомов приводит к нулевому дипольному моменту.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Тип гибридизации:</strong>
+                        <p>sp³-гибридизация углерода. Один 2s-электрон и три 2p-электрона образуют четыре эквивалентные sp³-орбитали.</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Химические свойства:</strong>
+                        <p>• Горение: CH₄ + 2O₂ → CO₂ + 2H₂O<br>
+                        • Замещение: CH₄ + Cl₂ → CH₃Cl + HCl<br>
+                        • Химически стабилен при обычных условиях<br>
+                        • Основной компонент природного газа</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Физические свойства:</strong>
+                        <p>• Бесцветный газ без запаха<br>
+                        • Температура кипения: -161.5°C<br>
+                        • Плотность: 0.656 кг/м³ (при н.у.)<br>
+                        • Легче воздуха<br>
+                        • Плохо растворим в воде</p>
+                    </div>
+                    <div class="info-section">
+                        <strong>Применение:</strong>
+                        <p>• Топливо (природный газ)<br>
+                        • Сырьё для химической промышленности<br>
+                        • Производство водорода<br>
+                        • Получение углеродных материалов</p>
+                    </div>
+                `
         }
+    };
 
-        function updateUI() {
-            const t = translations[currentLang];
-            document.getElementById('main-title').textContent = t.title;
-            document.getElementById('sub-title').textContent = t.subtitle;
-            document.getElementById('sidebar-title').textContent = t.sidebarTitle;
-            document.getElementById('canvas-label').textContent = t.canvasLabel;
-            document.getElementById('experiment-status').textContent = t.status;
-            
-            const btnContainer = document.getElementById('method-buttons');
-            btnContainer.innerHTML = '';
-            Object.keys(t.methods).forEach(key => {
-                const btn = document.createElement('button');
-                btn.className = `method-btn w-full p-4 rounded-2xl text-left font-bold border ${activeMethod === key ? 'bg-amber-500 text-black border-transparent' : 'bg-white/5 border-white/10'}`;
-                btn.textContent = t.methods[key].btn;
-                btn.onclick = () => {
-                    activeMethod = key;
-                    updateUI();
-                };
-                btnContainer.appendChild(btn);
+    // Three.js
+    let scene, camera, renderer;
+    let moleculeGroup;
+    let atoms = {};
+    let bonds = [];
+    let tetrahedron = null;
+    let orbitals = [];
+    let angleIndicators = [];
+    let electronDensity = null;
+    let raycaster, mouse;
+    let selectedPart = null;
+    let isDragging = false;
+    let previousMousePosition = {x: 0, y: 0};
+    let animationPaused = false;
+    let showTetrahedron = true;
+    let showOrbitals = false;
+    let showAngles = false;
+    let showDensity = false;
+
+    function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x141e30);
+
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 7);
+
+        const container = document.getElementById('canvas-container');
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // Освещение
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        light1.position.set(5, 5, 5);
+        scene.add(light1);
+
+        const light2 = new THREE.DirectionalLight(0xffffff, 0.5);
+        light2.position.set(-5, -3, -5);
+        scene.add(light2);
+
+        const light3 = new THREE.PointLight(0x4CAF50, 0.6, 20);
+        light3.position.set(0, 3, 3);
+        scene.add(light3);
+
+        moleculeGroup = new THREE.Group();
+        scene.add(moleculeGroup);
+
+        createMethaneMolecule();
+
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+
+        window.addEventListener('resize', onWindowResize);
+        renderer.domElement.addEventListener('click', onMouseClick);
+        renderer.domElement.addEventListener('mousemove', onMouseMove);
+        renderer.domElement.addEventListener('mousedown', onMouseDown);
+        renderer.domElement.addEventListener('mouseup', onMouseUp);
+        renderer.domElement.addEventListener('wheel', onWheel);
+        window.addEventListener('keydown', onKeyDown);
+
+        animate();
+    }
+
+    function createMethaneMolecule() {
+        // АТОМ УГЛЕРОДА (центр)
+        const carbonGeom = new THREE.SphereGeometry(0.5, 32, 32);
+        const carbonMat = new THREE.MeshPhongMaterial({
+            color: 0x444444,
+            emissive: 0x222222,
+            emissiveIntensity: 0.3,
+            shininess: 100,
+            specular: 0xffffff
+        });
+        const carbon = new THREE.Mesh(carbonGeom, carbonMat);
+        carbon.position.set(0, 0, 0);
+        carbon.userData = {type: 'carbon'};
+        moleculeGroup.add(carbon);
+        atoms.carbon = carbon;
+
+        // АТОМЫ ВОДОРОДА (тетраэдрические позиции)
+        const bondLength = 2.0;
+
+        // Координаты вершин правильного тетраэдра
+        const tetraCoords = [
+            [1, 1, 1],
+            [-1, -1, 1],
+            [-1, 1, -1],
+            [1, -1, -1]
+        ];
+
+        const hydrogenGeom = new THREE.SphereGeometry(0.3, 32, 32);
+        const hydrogenMat = new THREE.MeshPhongMaterial({
+            color: 0xe8f4f8,
+            emissive: 0xb8d4e8,
+            emissiveIntensity: 0.2,
+            shininess: 100,
+            specular: 0xffffff
+        });
+
+        tetraCoords.forEach((coord, i) => {
+            const hydrogen = new THREE.Mesh(hydrogenGeom.clone(), hydrogenMat.clone());
+            const normalized = new THREE.Vector3(coord[0], coord[1], coord[2]).normalize();
+            hydrogen.position.copy(normalized.multiplyScalar(bondLength));
+            hydrogen.userData = {type: 'hydrogen', id: i + 1};
+            moleculeGroup.add(hydrogen);
+            atoms[`hydrogen${i + 1}`] = hydrogen;
+
+            // Создаём связь C-H
+            createBond(carbon.position, hydrogen.position);
+        });
+
+        // ТЕТРАЭДР (каркас)
+        createTetrahedronFrame();
+
+        // ОРБИТАЛИ sp³
+        createOrbitals();
+
+        // ИНДИКАТОРЫ УГЛОВ
+        createAngleIndicators();
+
+        // ЭЛЕКТРОННАЯ ПЛОТНОСТЬ
+        createElectronDensity();
+    }
+
+    function createBond(pos1, pos2) {
+        const direction = new THREE.Vector3().subVectors(pos2, pos1);
+        const length = direction.length();
+        const bondGeom = new THREE.CylinderGeometry(0.08, 0.08, length, 16);
+        const bondMat = new THREE.MeshPhongMaterial({
+            color: 0xcccccc,
+            shininess: 50
+        });
+        const bond = new THREE.Mesh(bondGeom, bondMat);
+
+        bond.position.copy(pos1).add(direction.multiplyScalar(0.5));
+        bond.lookAt(pos2);
+        bond.rotateX(Math.PI / 2);
+
+        moleculeGroup.add(bond);
+        bonds.push(bond);
+    }
+
+    function createTetrahedronFrame() {
+        const bondLength = 2.0;
+        const coords = [
+            [1, 1, 1],
+            [-1, -1, 1],
+            [-1, 1, -1],
+            [1, -1, -1]
+        ];
+
+        const points = coords.map(c =>
+                new THREE.Vector3(c[0], c[1], c[2]).normalize().multiplyScalar(bondLength)
+        );
+
+        // Рёбра тетраэдра
+        const edges = [
+            [0, 1], [0, 2], [0, 3],
+            [1, 2], [1, 3], [2, 3]
+        ];
+
+        const material = new THREE.LineBasicMaterial({
+            color: 0x4CAF50,
+            transparent: true,
+            opacity: 0.4,
+            linewidth: 2
+        });
+
+        const tetraGroup = new THREE.Group();
+
+        edges.forEach(edge => {
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                points[edge[0]],
+                points[edge[1]]
+            ]);
+            const line = new THREE.Line(geometry, material);
+            tetraGroup.add(line);
+        });
+
+        tetraGroup.visible = showTetrahedron;
+        moleculeGroup.add(tetraGroup);
+        tetrahedron = tetraGroup;
+    }
+
+    function createOrbitals() {
+        // Визуализация четырёх sp³-орбиталей
+        const bondLength = 2.0;
+        const coords = [
+            [1, 1, 1],
+            [-1, -1, 1],
+            [-1, 1, -1],
+            [1, -1, -1]
+        ];
+
+        coords.forEach(coord => {
+            const direction = new THREE.Vector3(coord[0], coord[1], coord[2]).normalize();
+
+            // Форма орбитали - вытянутый эллипсоид
+            const orbitalGeom = new THREE.SphereGeometry(0.3, 24, 24);
+            const orbitalMat = new THREE.MeshBasicMaterial({
+                color: 0xffaa00,
+                transparent: true,
+                opacity: 0.25,
+                side: THREE.DoubleSide
             });
+            const orbital = new THREE.Mesh(orbitalGeom, orbitalMat);
+            orbital.scale.set(1, 1, 2.5);
+            orbital.position.copy(direction.multiplyScalar(1.0));
+            orbital.lookAt(direction.multiplyScalar(3));
+            orbital.visible = showOrbitals;
+            moleculeGroup.add(orbital);
+            orbitals.push(orbital);
+        });
+    }
 
-            document.getElementById('method-desc').innerHTML = `<strong>${t.methods[activeMethod].title}:</strong> ${t.methods[activeMethod].text}`;
-            
-            document.getElementById('card1-title').textContent = t.cards[0].title;
-            document.getElementById('card1-desc').textContent = t.cards[0].desc;
-            document.getElementById('card2-title').textContent = t.cards[1].title;
-            document.getElementById('card2-desc').textContent = t.cards[1].desc;
-            document.getElementById('card3-title').textContent = t.cards[2].title;
-            document.getElementById('card3-desc').textContent = t.cards[2].desc;
+    function createAngleIndicators() {
+        // Показываем угол 109.5° между связями
+        const angle = 109.5 * Math.PI / 180;
 
-            document.getElementById('quote').textContent = t.quote;
-            document.getElementById('author').textContent = t.author;
+        const arcMaterial = new THREE.LineBasicMaterial({
+            color: 0xffff00,
+            transparent: true,
+            opacity: 0.6,
+            linewidth: 2
+        });
+
+        const curve = new THREE.EllipseCurve(
+                0, 0,
+                0.8, 0.8,
+                0, angle,
+                false,
+                0
+        );
+
+        const points = curve.getPoints(30);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const arc = new THREE.Line(geometry, arcMaterial);
+        arc.visible = showAngles;
+        moleculeGroup.add(arc);
+        angleIndicators.push(arc);
+    }
+
+    function createElectronDensity() {
+        // Общее электронное облако молекулы
+        const densityGeom = new THREE.SphereGeometry(2.3, 32, 32);
+        const densityMat = new THREE.MeshBasicMaterial({
+            color: 0x00ffff,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.BackSide
+        });
+        const density = new THREE.Mesh(densityGeom, densityMat);
+        density.visible = showDensity;
+        moleculeGroup.add(density);
+        electronDensity = density;
+    }
+
+    function toggleTetrahedron() {
+        showTetrahedron = !showTetrahedron;
+        if (tetrahedron) tetrahedron.visible = showTetrahedron;
+        updateButton(0, showTetrahedron);
+    }
+
+    function toggleOrbitals() {
+        showOrbitals = !showOrbitals;
+        orbitals.forEach(orbital => orbital.visible = showOrbitals);
+        updateButton(1, showOrbitals);
+    }
+
+    function toggleAngles() {
+        showAngles = !showAngles;
+        angleIndicators.forEach(indicator => indicator.visible = showAngles);
+        updateButton(2, showAngles);
+    }
+
+    function toggleElectronDensity() {
+        showDensity = !showDensity;
+        if (electronDensity) electronDensity.visible = showDensity;
+        updateButton(3, showDensity);
+    }
+
+    function updateButton(index, active) {
+        const buttons = document.querySelectorAll('.view-btn');
+        if (buttons[index]) {
+            buttons[index].classList.toggle('active', active);
+        }
+    }
+
+    function onMouseDown(e) {
+        isDragging = true;
+        previousMousePosition = {x: e.clientX, y: e.clientY};
+    }
+
+    function onMouseUp() {
+        isDragging = false;
+    }
+
+    function onMouseMove(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        if (isDragging) {
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+            moleculeGroup.rotation.y += deltaX * 0.005;
+            moleculeGroup.rotation.x += deltaY * 0.005;
+            previousMousePosition = {x: e.clientX, y: e.clientY};
         }
 
-        function initParticles() {
-            particles = [];
-            for(let i=0; i<30; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    r: Math.random() * 4 + 2,
-                    speed: Math.random() * 2 + 1,
-                    color: activeMethod === 'experiment' ? '#f59e0b' : '#38bdf8'
-                });
-            }
+        raycaster.setFromCamera(mouse, camera);
+        const atomArray = [atoms.carbon, atoms.hydrogen1, atoms.hydrogen2, atoms.hydrogen3, atoms.hydrogen4];
+        const intersects = raycaster.intersectObjects(atomArray);
+        document.body.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+    }
+
+    function onMouseClick(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const atomArray = [atoms.carbon, atoms.hydrogen1, atoms.hydrogen2, atoms.hydrogen3, atoms.hydrogen4];
+        const intersects = raycaster.intersectObjects(atomArray);
+
+        if (intersects.length > 0) {
+            const atom = intersects[0].object;
+            const type = atom.userData.type;
+            showInfo(type);
+            highlightPart(atom);
+        } else {
+            showInfo('molecule');
+        }
+    }
+
+    function onWheel(e) {
+        e.preventDefault();
+        camera.position.z += e.deltaY * 0.005;
+        camera.position.z = Math.max(3, Math.min(12, camera.position.z));
+    }
+
+    function onKeyDown(e) {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            animationPaused = !animationPaused;
+        }
+    }
+
+    function showInfo(type) {
+        const info = atomInfo[type];
+        if (info) {
+            document.getElementById('info-title').textContent = info.title;
+            document.getElementById('info-content').innerHTML = info.content;
+            document.getElementById('info-panel').classList.add('active');
+        }
+    }
+
+    function closeInfo() {
+        document.getElementById('info-panel').classList.remove('active');
+        if (selectedPart) {
+            const originalColor = selectedPart.userData.type === 'carbon' ? 0x222222 : 0xb8d4e8;
+            selectedPart.material.emissive.setHex(originalColor);
+            selectedPart.material.emissiveIntensity = selectedPart.userData.type === 'carbon' ? 0.3 : 0.2;
+            selectedPart = null;
+        }
+    }
+
+    function highlightPart(atom) {
+        if (selectedPart) {
+            const originalColor = selectedPart.userData.type === 'carbon' ? 0x222222 : 0xb8d4e8;
+            selectedPart.material.emissive.setHex(originalColor);
+            selectedPart.material.emissiveIntensity = selectedPart.userData.type === 'carbon' ? 0.3 : 0.2;
+        }
+        atom.material.emissive.setHex(0xffffff);
+        atom.material.emissiveIntensity = 0.7;
+        selectedPart = atom;
+    }
+
+    function focusPart(type) {
+        if (type === 'carbon') {
+            showInfo('carbon');
+            highlightPart(atoms.carbon);
+        } else if (type === 'hydrogen') {
+            showInfo('hydrogen');
+            highlightPart(atoms.hydrogen1);
+        }
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        if (!animationPaused) {
+            moleculeGroup.rotation.y += 0.003;
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if(activeMethod === 'observation') {
-                // Static circle
-                ctx.beginPath();
-                ctx.arc(canvas.width/2, canvas.height/2, 80, 0, Math.PI*2);
-                ctx.strokeStyle = '#38bdf8';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.fillStyle = 'rgba(56, 189, 248, 0.1)';
-                ctx.fill();
-            } else if(activeMethod === 'experiment') {
-                particles.forEach(p => {
-                    p.y -= p.speed;
-                    if(p.y < 0) p.y = canvas.height;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-                    ctx.fillStyle = '#f59e0b';
-                    ctx.fill();
-                });
-            } else if(activeMethod === 'measurement') {
-                ctx.strokeStyle = '#fff';
-                ctx.beginPath();
-                ctx.moveTo(50, canvas.height - 50);
-                ctx.lineTo(canvas.width - 50, canvas.height - 50);
-                ctx.moveTo(50, canvas.height - 50);
-                ctx.lineTo(50, 50);
-                ctx.stroke();
-                // Sine wave
-                ctx.beginPath();
-                ctx.strokeStyle = '#f59e0b';
-                for(let x=50; x<canvas.width-50; x++) {
-                    const y = canvas.height/2 + Math.sin(x * 0.05 + Date.now()*0.005) * 50;
-                    ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            } else {
-                // Modeling: Wireframe cube
-                const time = Date.now() * 0.001;
-                ctx.strokeStyle = '#f59e0b';
-                ctx.strokeRect(canvas.width/2 - 50 + Math.cos(time)*20, canvas.height/2 - 50, 100, 100);
-            }
+        renderer.render(scene, camera);
+    }
 
-            requestAnimationFrame(draw);
-        }
-
-        window.onload = () => {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            initParticles();
-            setLang('ru');
-            draw();
-        };
-
-        window.onresize = () => {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-        };
-    </script>
-
-<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
-
-<style data-oi-map-overlay>
-.oi-map-btn{
-  position:fixed; right:16px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.oi-table-btn{
-  position:fixed; right:120px; bottom:16px; z-index:9999;
-  padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-  background:#fff; cursor:pointer; font:600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-
-.oi-map-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:10000;
-  display:none; align-items:center; justify-content:center; padding:18px;
-}
-.oi-map-backdrop[aria-hidden="false"]{ display:flex; }
-
-.oi-map-modal{
-  width:min(1200px, 100%); height:min(85vh, 900px);
-  background:#111; border-radius:14px; overflow:hidden; position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-
-.oi-map-close{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35); color:#fff; cursor:pointer; font-size:22px;
-}
-
-.oi-map-viewport{
-  width:100%; height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
-  touch-action: pan-x pan-y;
-  background:#000;
-  padding-top:62px; /* место под тулбар */
-}
-
-.oi-map-img{
-  display:block;
-  transform-origin: 0 0;
-  user-select:none; -webkit-user-drag:none;
-}
-
-.oi-map-toolbar{
-  position:absolute; left:12px; top:12px; right:12px; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  pointer-events:none;
-}
-
-.oi-map-tabs{ display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto; }
-
-.oi-map-tab{
-  min-width:36px; height:34px; padding:0 10px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35); color:#fff;
-  cursor:pointer; font:600 14px system-ui,-apple-system,Segoe UI,Roboto,Arial;
-}
-
-.oi-map-tab.is-active{
-  background:rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.45);
-}
-
-.oi-map-hint{
-  pointer-events:none;
-  color:#fff; opacity:.85; font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18);
-  padding:8px 10px; border-radius:10px;
-}
-</style>
-
-<button class="oi-map-btn" style="display:none" type="button" data-oi-map-btn>🗺️ Карта</button>
-<button class="oi-table-btn" type="button" data-oi-table-btn>🧪 Таблица</button>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-map-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Карта">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-map-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-map-tab="1">1</button>
-      </div>
-      <div class="oi-map-hint">Колёсико/трекпад — зум • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-map-viewport>
-      <img class="oi-map-img" data-oi-map-img data-map="1" src="../../assets/maps/mendeleev_1.png" alt="map 1" style="display:block;">
-    </div>
-  </div>
-</div>
-
-<div class="oi-map-backdrop" aria-hidden="true" data-oi-table-backdrop>
-  <div class="oi-map-modal" role="dialog" aria-modal="true" aria-label="Таблица Менделеева">
-    <button class="oi-map-close" type="button" aria-label="Закрыть" data-oi-table-close>×</button>
-
-    <div class="oi-map-toolbar">
-      <div class="oi-map-tabs">
-        <button type="button" class="oi-map-tab is-active" data-oi-table-tab="1">1</button>
-<button type="button" class="oi-map-tab" data-oi-table-tab="2">2</button>
-      </div>
-      <div class="oi-map-hint">Таблица Менделеева • Esc — закрыть</div>
-    </div>
-
-    <div class="oi-map-viewport" data-oi-table-viewport>
-      <img class="oi-map-img" data-oi-table-img data-table="1" src="../../assets/maps/mendeleev_1.png" alt="table 1" style="display:block;">
-<img class="oi-map-img" data-oi-table-img data-table="2" src="../../assets/maps/mendeleev_2.png" alt="table 2" style="display:none;">
-    </div>
-  </div>
-</div>
-
-
-<script data-oi-map-overlay>
-(function(){
-  // ====== MAPS ======
-  const mapBtn = document.querySelector('[data-oi-map-btn]');
-  const mapBackdrop = document.querySelector('[data-oi-map-backdrop]');
-  const mapCloseBtn = document.querySelector('[data-oi-map-close]');
-  const mapViewport = document.querySelector('[data-oi-map-viewport]');
-  const mapTabs = Array.from(document.querySelectorAll('[data-oi-map-tab]'));
-  const mapImgs = Array.from(document.querySelectorAll('[data-oi-map-img][data-map]'));
-
-  // ====== MENDELEEV ======
-  const tableBtn = document.querySelector('[data-oi-table-btn]');
-  const tableBackdrop = document.querySelector('[data-oi-table-backdrop]');
-  const tableCloseBtn = document.querySelector('[data-oi-table-close]');
-  const tableViewport = document.querySelector('[data-oi-table-viewport]');
-  const tableTabs = Array.from(document.querySelectorAll('[data-oi-table-tab]'));
-  const tableImgs = Array.from(document.querySelectorAll('[data-oi-table-img][data-table]'));
-
-  let scale = 1;
-
-  function applyScale(){
-    mapImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-    tableImgs.forEach(img => { img.style.transform = `scale(${scale})`; });
-  }
-
-  function openBackdrop(backdrop){
-    backdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeBackdrop(backdrop){
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-
-  function showMap(n){
-    mapImgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-map') === String(n)) ? 'block' : 'none';
-    });
-    mapTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-map-tab') === String(n)));
-    if(mapViewport){ mapViewport.scrollTop = 0; mapViewport.scrollLeft = 0; }
-  }
-
-  function showTable(n){
-    tableImgs.forEach(img => {
-      img.style.display = (img.getAttribute('data-table') === String(n)) ? 'block' : 'none';
-    });
-    tableTabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('data-oi-table-tab') === String(n)));
-    if(tableViewport){ tableViewport.scrollTop = 0; tableViewport.scrollLeft = 0; }
-  }
-
-  // MAP events
-  if(mapBtn && mapBackdrop && mapCloseBtn && mapViewport && mapImgs.length){
-    mapBtn.addEventListener('click', () => openBackdrop(mapBackdrop));
-    mapCloseBtn.addEventListener('click', () => closeBackdrop(mapBackdrop));
-    mapBackdrop.addEventListener('click', (e)=>{ if(e.target === mapBackdrop) closeBackdrop(mapBackdrop); });
-    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(mapBackdrop); });
-    mapTabs.forEach(t => t.addEventListener('click', () => showMap(t.getAttribute('data-oi-map-tab'))));
-
-    mapViewport.addEventListener('wheel', (e)=>{
-      if(mapBackdrop.getAttribute('aria-hidden') !== 'false') return;
-      e.preventDefault();
-      const delta = -Math.sign(e.deltaY) * 0.1;
-      scale = Math.min(4, Math.max(0.6, scale + delta));
-      applyScale();
-    }, {passive:false});
-
-    showMap(1);
-  }
-
-  // TABLE events
-  if(tableBtn && tableBackdrop && tableCloseBtn && tableViewport && tableImgs.length){
-    tableBtn.addEventListener('click', () => openBackdrop(tableBackdrop));
-    tableCloseBtn.addEventListener('click', () => closeBackdrop(tableBackdrop));
-    tableBackdrop.addEventListener('click', (e)=>{ if(e.target === tableBackdrop) closeBackdrop(tableBackdrop); });
-    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeBackdrop(tableBackdrop); });
-    tableTabs.forEach(t => t.addEventListener('click', () => showTable(t.getAttribute('data-oi-table-tab'))));
-
-    tableViewport.addEventListener('wheel', (e)=>{
-      if(tableBackdrop.getAttribute('aria-hidden') !== 'false') return;
-      e.preventDefault();
-      const delta = -Math.sign(e.deltaY) * 0.1;
-      scale = Math.min(4, Math.max(0.6, scale + delta));
-      applyScale();
-    }, {passive:false});
-
-    showTable(1);
-  }
-
-  applyScale();
-})();
+    window.addEventListener('load', init);
 </script>
 </body>
 </html>

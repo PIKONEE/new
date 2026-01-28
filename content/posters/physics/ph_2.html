@@ -1,338 +1,597 @@
 <!DOCTYPE html>
-<!-- Бастапқы тіл - Қазақша -->
-<html lang="kk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Плакат 1: Заттың құрылысы</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Строение Атома (Модель Бора)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            overflow-x: hidden;
-            color: #1a202c;
-        }
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
-        }
-        /* Тақырып карточкасы */
-        .header-card {
-            background-color: #1d4ed8; /* Көк-700 */
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(29, 78, 216, 0.4);
-            color: white;
-            padding: 40px;
-        }
-        /* Бөлім тақырыбы */
-        .section-heading {
-            color: #1e3a8a; /* Көк-800 */
-            border-bottom: 3px solid #93c5fd; /* Көк-300 */
-            display: inline-block;
-            padding-bottom: 5px;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-        /* Ереже карточкасы */
-        .rule-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            height: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 5px solid;
-        }
-        .rule-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-        /* Мысал блогы */
-        .example-block {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: #eff6ff; /* Өте ашық көк */
-            border-left: 4px solid #60a5fa; /* Көк-400 */
-            border-radius: 0.5rem;
-            font-size: 0.875rem; /* text-sm */
-        }
-        /* Түйін */
-        .footer-card {
-            text-align: center;
-            margin-top: 40px;
-            padding: 24px;
-            background-color: #f1f5f9; /* Ашық сұр */
-            border-radius: 1rem;
-            border-top: 4px solid #64748b; /* Сұр */
-        }
-        .feature-list li {
-            margin-bottom: 8px;
-            list-style: none;
-            padding-left: 20px;
-            position: relative;
-        }
-        .feature-list li::before {
-            content: '🔬'; /* Эмодзи */
-            position: absolute;
-            left: 0;
-            color: #1d4ed8; /* Көк */
-        }
-         .term {
-            font-weight: bold;
-            color: #1e3a8a; /* blue-800 */
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at center, #0b1021, #000000);
         }
 
-        /* Language switcher */
-        .lang-switcher {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-        .lang-btn {
-            padding: 8px 16px;
-            border: 2px solid #1d4ed8;
-            background-color: #ffffff;
-            color: #1d4ed8;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .lang-btn:hover {
-            background-color: #eff6ff;
-        }
-        .lang-btn.active {
-            background-color: #1d4ed8;
-            color: #ffffff;
-        }
-
-        /* ТІЛ АУЫСТЫРУДЫҢ CSS ЕРЕЖЕЛЕРІ */
-        .lang-content {
-            display: none;
-        }
-        .lang-kk .lang-content[lang="kk"],
-        .lang-en .lang-content[lang="en"],
-        .lang-ru .lang-content[lang="ru"] {
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
             display: block;
         }
-        .lang-kk span.lang-content[lang="kk"],
-        .lang-en span.lang-content[lang="en"],
-        .lang-ru span.lang-content[lang="ru"] {
-            display: inline;
+
+        /* Панель информации */
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(16, 20, 35, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 0 50px rgba(0, 100, 255, 0.2);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            border-left: 4px solid #00d2ff;
+            z-index: 10;
+            color: #d0d0d0;
         }
 
-        .illustration-svg {
-            width: 100%;
-            height: 120px;
-            margin: 10px 0;
+        #info-panel.active {
+            transform: translateX(0);
         }
 
+        #info-title {
+            margin: 0 0 10px 0;
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        #info-desc {
+            color: #b0c4de;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        /* Маркер элемента */
+        #zone-label {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 10, 30, 0.8);
+            color: #00d2ff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
+
+        /* Легенда цветов */
+        #legend {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            color: #ccc;
+            font-size: 13px;
+            pointer-events: none;
+            border: 1px solid #333;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 5px currentColor;
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-    // Функция переключения языков (Автоматически добавлено скриптом)
-    function switchLang(lang) {
-        var container = document.getElementById('poster-container');
-        if (container) {
-            container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
-            container.classList.add('lang-' + lang);
+</head>
+<body>
+
+
+
+<div id="canvas-container"></div>
+<div id="zone-label">Частица</div>
+
+<div id="legend">
+    <div class="legend-item">
+        <div class="dot" style="background:#ff3366; color:#ff3366"></div>
+        Протон (+)
+    </div>
+    <div class="legend-item">
+        <div class="dot" style="background:#3366ff; color:#3366ff"></div>
+        Нейтрон (0)
+    </div>
+    <div class="legend-item">
+        <div class="dot" style="background:#ffd700; color:#ffd700"></div>
+        Электрон (-)
+    </div>
+    <div class="legend-item">
+        <div class="dot" style="background:#bd00ff; color:#bd00ff; box-shadow: 0 0 5px #bd00ff;"></div>
+        Магнитное поле
+    </div>
+</div>
+
+<div id="info-panel">
+    <button class="close-btn" onclick="closePanel()">&times;</button>
+    <h2 id="info-title">Название</h2>
+    <p id="info-desc">Описание</p>
+</div>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
         }
-        var buttons = document.querySelectorAll('.lang-btn');
-        buttons.forEach(function(btn) {
-            btn.classList.remove('active');
-            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + lang + "'")) {
-                btn.classList.add('active');
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+    // --- ДАННЫЕ АТОМА ---
+    const atomData = {
+        "Proton": {
+            title: "Протон (p⁺)",
+            desc: "Положительно заряженная субатомная частица в ядре атома. Количество протонов определяет химический элемент (атомный номер). Масса протона примерно в 1836 раз больше массы электрона.",
+            color: 0xff3366
+        },
+        "Neutron": {
+            title: "Нейтрон (n⁰)",
+            desc: "Нейтральная субатомная частица в ядре. Имеет массу, близкую к массе протона. Нейтроны стабилизируют ядро, удерживая протоны вместе за счет сильного ядерного взаимодействия, преодолевая их электростатическое отталкивание.",
+            color: 0x3366ff
+        },
+        "Electron": {
+            title: "Электрон (e⁻)",
+            desc: "Легчайшая элементарная частица с отрицательным зарядом. Электроны движутся вокруг ядра по определенным орбитам (энергетическим уровням). Именно электроны участвуют в образовании химических связей.",
+            color: 0xffd700
+        },
+        "Nucleus": {
+            title: "Атомное ядро",
+            desc: "Плотный центр атома, состоящий из нуклонов (протонов и нейтронов). Несмотря на то, что ядро занимает ничтожно малый объем по сравнению с размером атома, в нем сосредоточено более 99.9% всей массы атома.",
+            color: 0xffffff
+        },
+        "Shell": {
+            title: "Электронная оболочка",
+            desc: "Энергетический уровень, на котором электроны вращаются вокруг ядра. По модели Бора электроны могут находиться только на определенных орбитах с фиксированной энергией.",
+            color: 0x00d2ff
+        },
+        "MagneticField": {
+            title: "Магнитное поле",
+            desc: "Визуализация дипольного магнитного поля атома. Возникает вследствие движения заряженных частиц (орбитальный момент) и их спинов (собственный момент импульса).",
+            color: 0xbd00ff
+        }
+    };
+
+    // --- СЦЕНА ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    // Легкий туман для глубины космоса
+    scene.fog = new THREE.FogExp2(0x0b1021, 0.02);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 15, 30);
+
+    const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    // Включаем bloom-эффект (симуляция через emissive materials)
+    renderer.toneMapping = THREE.ReinhardToneMapping;
+    renderer.toneMappingExposure = 1.5;
+    container.appendChild(renderer.domElement);
+
+    // --- ОСВЕЩЕНИЕ ---
+    const ambientLight = new THREE.AmbientLight(0x404040, 2);
+    scene.add(ambientLight);
+
+    // Свет из центра (ядро светится)
+    const nucleusLight = new THREE.PointLight(0xffffff, 2, 50);
+    nucleusLight.position.set(0, 0, 0);
+    scene.add(nucleusLight);
+
+    const blueLight = new THREE.DirectionalLight(0x0055ff, 1);
+    blueLight.position.set(10, 10, 10);
+    scene.add(blueLight);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.5;
+    controls.maxDistance = 100;
+    controls.minDistance = 5;
+
+    // --- ГЕНЕРАЦИЯ АТОМА ---
+    // Создадим атом углерода-12 (6 протонов, 6 нейтронов, 6 электронов)
+    const PROTON_COUNT = 6;
+    const NEUTRON_COUNT = 6;
+    const ELECTRONS_CONFIG = [2, 4]; // 2 на K-оболочке, 4 на L-оболочке
+
+    const atomGroup = new THREE.Group();
+    scene.add(atomGroup);
+
+    const nucleusGroup = new THREE.Group();
+    atomGroup.add(nucleusGroup);
+
+    // Материалы
+    const protonMat = new THREE.MeshPhysicalMaterial({
+        color: atomData.Proton.color,
+        roughness: 0.2,
+        metalness: 0.1,
+        emissive: atomData.Proton.color,
+        emissiveIntensity: 0.4,
+        clearcoat: 1.0
+    });
+
+    const neutronMat = new THREE.MeshPhysicalMaterial({
+        color: atomData.Neutron.color,
+        roughness: 0.2,
+        metalness: 0.1,
+        emissive: atomData.Neutron.color,
+        emissiveIntensity: 0.3,
+        clearcoat: 1.0
+    });
+
+    const electronMat = new THREE.MeshBasicMaterial({
+        color: atomData.Electron.color
+    });
+
+    // Свечение электрона (Sprite)
+    const spriteMaterial = new THREE.SpriteMaterial({
+        color: atomData.Electron.color,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+    });
+
+    // Создаем текстуру для свечения программно
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const context = canvas.getContext('2d');
+    const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.2, 'rgba(255, 215, 0, 1)');
+    gradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.4)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, 32, 32);
+    const glowTexture = new THREE.CanvasTexture(canvas);
+    spriteMaterial.map = glowTexture;
+
+    const particleGeo = new THREE.SphereGeometry(0.8, 32, 32);
+
+    // --- 1. ЯДРО (Упаковка сфер) ---
+    const nucleons = [];
+    const nucleusRadius = 2.5;
+
+    function addNucleon(type) {
+        const mesh = new THREE.Mesh(particleGeo, type === 'Proton' ? protonMat : neutronMat);
+
+        // Пытаемся найти позицию, не пересекающуюся с другими
+        let pos = new THREE.Vector3();
+        let safe = false;
+        let attempts = 0;
+
+        while (!safe && attempts < 100) {
+            pos.set(
+                    (Math.random() - 0.5) * nucleusRadius,
+                    (Math.random() - 0.5) * nucleusRadius,
+                    (Math.random() - 0.5) * nucleusRadius
+            );
+
+            safe = true;
+            for (let n of nucleons) {
+                if (pos.distanceTo(n.position) < 1.4) { // 1.4 = чуть меньше 2*radius, чтобы они "слипались"
+                    safe = false;
+                    break;
+                }
             }
-        });
+            attempts++;
+        }
+
+        mesh.position.copy(pos);
+        mesh.name = type;
+        nucleusGroup.add(mesh);
+        nucleons.push(mesh);
     }
 
+    for (let i = 0; i < PROTON_COUNT; i++) addNucleon('Proton');
+    for (let i = 0; i < NEUTRON_COUNT; i++) addNucleon('Neutron');
+
+    // Центрируем ядро
+    new THREE.Box3().setFromObject(nucleusGroup).getCenter(nucleusGroup.position).multiplyScalar(-1);
+
+
+    // --- 2. ЭЛЕКТРОННЫЕ ОБОЛОЧКИ ---
+    const electrons = [];
+    const shellRadii = [6, 10, 15]; // Радиусы орбит
+
+    ELECTRONS_CONFIG.forEach((count, shellIndex) => {
+        const radius = shellRadii[shellIndex];
+
+        // Визуализация орбиты (кольцо)
+        const curve = new THREE.EllipseCurve(
+                0, 0,            // ax, aY
+                radius, radius,  // xRadius, yRadius
+                0, 2 * Math.PI,  // aStartAngle, aEndAngle
+                false,           // aClockwise
+                0                // aRotation
+        );
+        const points = curve.getPoints(64);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const material = new THREE.LineBasicMaterial({
+            color: 0x00d2ff,
+            transparent: true,
+            opacity: 0.15
+        });
+        const orbit = new THREE.Line(geometry, material);
+        orbit.rotation.x = Math.PI / 2; // Кладем горизонтально
+        orbit.name = "Shell";
+        atomGroup.add(orbit);
+
+        // Создание электронов на этой оболочке
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2;
+
+            const pivot = new THREE.Group();
+            pivot.rotation.x = (Math.random() - 0.5) * 0.5; // Небольшой наклон орбиты
+            pivot.rotation.y = (Math.random() - 0.5) * 0.5;
+
+            // Сам электрон
+            const electronGroup = new THREE.Group();
+
+            const core = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), electronMat);
+            electronGroup.add(core);
+
+            const glow = new THREE.Sprite(spriteMaterial);
+            glow.scale.set(3, 3, 1);
+            electronGroup.add(glow);
+
+            electronGroup.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
+            electronGroup.name = "Electron";
+
+            pivot.add(electronGroup);
+            atomGroup.add(pivot);
+
+            electrons.push({
+                obj: electronGroup,
+                pivot: pivot,
+                speed: (3 - shellIndex) * 0.5 + Math.random() * 0.2, // Внутренние быстрее
+                angle: angle,
+                radius: radius
+            });
+        }
+    });
+
+    // --- 3. МАГНИТНЫЕ СИЛОВЫЕ ЛИНИИ ---
+    const magneticGroup = new THREE.Group();
+    atomGroup.add(magneticGroup);
+
+    const fieldMat = new THREE.LineBasicMaterial({
+        color: atomData.MagneticField.color,
+        transparent: true,
+        opacity: 0.15, // Полупрозрачные
+    });
+
+    // Создаем пучок силовых линий (диполь)
+    const linesCount = 12; // Количество меридианов
+    const loopsPerLine = 3; // Количество колец в одном направлении
+
+    for (let i = 0; i < linesCount; i++) {
+        const angle = (i / linesCount) * Math.PI * 2;
+        const meridianGroup = new THREE.Group();
+        meridianGroup.rotation.y = angle;
+
+        // Генерируем несколько эллипсов разного размера
+        [8, 14, 22].forEach(radius => {
+            const yStretch = 1.2; // Вытянутость по вертикали
+            const curve = new THREE.EllipseCurve(
+                    0, 0,              // ax, aY (центр)
+                    radius, radius * yStretch, // xRadius, yRadius
+                    0, 2 * Math.PI,
+                    false, 0
+            );
+            const points = curve.getPoints(64);
+            // Преобразуем 2D точки в 3D (в плоскости XY, затем повернем)
+            // Нам нужно, чтобы эллипс стоял вертикально, проходя через полюса
+            // Но EllipseCurve генерит в плоскости XY.
+            // Мы повернем meridianGroup, а внутри него положим эллипс вертикально.
+
+            const points3D = points.map(p => new THREE.Vector3(p.x, p.y, 0));
+            const geometry = new THREE.BufferGeometry().setFromPoints(points3D);
+
+            const line = new THREE.Line(geometry, fieldMat);
+            // Повернем так, чтобы он проходил через Y ось
+            line.rotation.y = Math.PI / 2;
+
+            // Имя для raycaster
+            line.name = "MagneticField";
+
+            // Чтобы raycaster легче ловил тонкие линии, можно добавить невидимую геометрию,
+            // но для простоты оставим как есть или будем ловить группу.
+
+            meridianGroup.add(line);
+        });
+
+        magneticGroup.add(meridianGroup);
+    }
+
+    // --- ИНТЕРАКТИВНОСТЬ ---
+    const raycaster = new THREE.Raycaster();
+    raycaster.params.Line.threshold = 1; // Увеличиваем чувствительность к линиям
+
+    const mouse = new THREE.Vector2();
+    let highlightedObj = null;
+
+    const panel = document.getElementById('info-panel');
+    const titleEl = document.getElementById('info-title');
+    const descEl = document.getElementById('info-desc');
+    const labelEl = document.getElementById('zone-label');
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('click', onClick);
+
+    function onMouseMove(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        const intersects = raycaster.intersectObjects(scene.children, true);
+
+        let found = null;
+        for (let hit of intersects) {
+            if (hit.object.name && atomData[hit.object.name]) {
+                found = hit.object;
+                break;
+            }
+        }
+
+        if (found) {
+            labelEl.textContent = atomData[found.name].title;
+            labelEl.style.opacity = 1;
+            document.body.style.cursor = 'pointer';
+        } else {
+            labelEl.style.opacity = 0;
+            document.body.style.cursor = 'default';
+        }
+    }
+
+    function onClick(event) {
+        if (event.target.closest('#info-panel') || event.target.closest('.close-btn')) return;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children, true);
+
+        let found = null;
+        for (let hit of intersects) {
+            if (hit.object.name && atomData[hit.object.name]) {
+                found = hit.object;
+                break;
+            }
+        }
+
+        if (found) {
+            showInfo(found.name);
+
+            if (highlightedObj && highlightedObj.material.emissive) {
+                highlightedObj.material.emissiveIntensity = highlightedObj.userData.originalEmissive || 0.4;
+            }
+
+            highlightedObj = found;
+            if (found.material && found.material.emissive) {
+                found.userData.originalEmissive = found.material.emissiveIntensity;
+                found.material.emissiveIntensity = 1.0;
+            }
+            // Для магнитных линий отдельная подсветка
+            if (found.name === 'MagneticField') {
+                // Можно временно увеличить непрозрачность
+            }
+
+        } else {
+            closePanel();
+        }
+    }
+
+    function showInfo(key) {
+        const data = atomData[key];
+        titleEl.textContent = data.title;
+        descEl.textContent = data.desc;
+
+        const hexColor = '#' + data.color.toString(16).padStart(6, '0');
+        panel.style.borderLeftColor = hexColor;
+        panel.classList.add('active');
+    }
+
+    window.closePanel = function () {
+        panel.classList.remove('active');
+        if (highlightedObj && highlightedObj.material && highlightedObj.material.emissive) {
+            highlightedObj.material.emissiveIntensity = highlightedObj.userData.originalEmissive || 0.4;
+            highlightedObj = null;
+        }
+    };
+
+    // --- АНИМАЦИЯ ---
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        const time = Date.now() * 0.001;
+
+        // 1. Вибрация ядра
+        nucleusGroup.scale.setScalar(1 + Math.sin(time * 10) * 0.02);
+        nucleusGroup.rotation.y = Math.sin(time * 0.5) * 0.1;
+
+        // 2. Вращение электронов
+        electrons.forEach(e => {
+            e.angle += e.speed * 0.02;
+            e.obj.position.x = Math.cos(e.angle) * e.radius;
+            e.obj.position.z = Math.sin(e.angle) * e.radius;
+
+            const glow = e.obj.children[1];
+            if (glow) glow.material.opacity = 0.6 + Math.sin(time * 5 + e.angle) * 0.2;
+        });
+
+        // 3. Анимация магнитного поля (пульсация)
+        magneticGroup.children.forEach((meridian, i) => {
+            // Медленное вращение всего поля
+            // magneticGroup.rotation.y += 0.0001;
+
+            // Пульсация прозрачности
+            meridian.children.forEach(line => {
+                line.material.opacity = 0.15 + Math.sin(time * 2 + i) * 0.05;
+            });
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
 </script>
-</head>
-<body class="bg-gray-100">
-
-<!-- ID-і бар негізгі контейнер -->
-    <div id="poster-container" class="container lang-kk">
-
-        <!-- ТІЛ АУЫСТЫРҒЫШ / LANGUAGE SWITCHER -->
-        <div class="lang-switcher">
-            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
-            <button class="lang-btn" onclick="switchLang('en')">English</button>
-            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
-        </div>
-
-        <!-- БАСТЫ ТАҚЫРЫП -->
-        <header class="header-card text-center mb-10">
-            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ФИЗИКА 1: ЗАТТЫҢ ҚҰРЫЛЫСЫ ТУРАЛЫ АЛҒАШҚЫ МӘЛІМЕТТЕР</h1>
-            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">PHYSICS 1: BASIC INFORMATION ON THE STRUCTURE OF MATTER</h1>
-            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold tracking-tight">ФИЗИКА 1: ПЕРВОНАЧАЛЬНЫЕ СВЕДЕНИЯ О СТРОЕНИИ ВЕЩЕСТВА</h1>
-        </header>
-
-        <!-- 1. НЕГІЗГІ ҚАҒИДА -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Барлық зат неден тұрады?</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">1. What is Everything Made of?</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Из чего состоит всё?</h2>
-
-            <div class="rule-card border-t-blue-500">
-                <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Барлық заттар (қатты, сұйық, газ) көзбен көру мүмкін емес ең кішкентай, жеке <strong>бөлшектерден</strong> тұрады.
-                </p>
-                <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    All substances (solid, liquid, gas) are made of tiny, separate <strong>particles</strong> that are impossible to see with the naked eye.
-                </p>
-                <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">
-                    Все вещества (твердые, жидкие, газообразные) состоят из мельчайших, отдельных <strong>частиц</strong>, которые невозможно увидеть глазом.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Молекула -->
-                    <div class="example-block border-l-blue-400">
-                        <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-2">Молекула</h3>
-                        <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-2">Molecule</h3>
-                        <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-2">Молекула</h3>
-                        <p lang="kk" class="lang-content">Заттың химиялық қасиеттерін сақтайтын ең кіші бөлшегі.</p>
-                        <p lang="en" class="lang-content">The smallest particle of a substance that retains its chemical properties.</p>
-                        <p lang="ru" class="lang-content">Мельчайшая частица вещества, сохраняющая его химические свойства.</p>
-                        <!-- H2O молекуласының сызбасы -->
-                        <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="25" fill="#ef4444"/> <!-- O (Оттегі) -->
-                            <circle cx="30" cy="80" r="15" fill="#e5e7eb"/> <!-- H (Сутегі) -->
-                            <circle cx="70" cy="80" r="15" fill="#e5e7eb"/> <!-- H (Сутегі) -->
-                            <line x1="50" y1="50" x2="30" y2="80" stroke="#9ca3af" stroke-width="3"/>
-                            <line x1="50" y1="50" x2="70" y2="80" stroke="#9ca3af" stroke-width="3"/>
-                        </svg>
-                        <p lang="kk" class="lang-content text-center font-semibold">Су молекуласы (H₂O)</p>
-                        <p lang="en" class="lang-content text-center font-semibold">Water Molecule (H₂O)</p>
-                        <p lang="ru" class="lang-content text-center font-semibold">Молекула воды (H₂O)</p>
-                    </div>
-                    <!-- Атом -->
-                    <div class="example-block border-l-blue-400">
-                        <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-2">Атом</h3>
-                        <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-2">Atom</h3>
-                        <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-2">Атом</h3>
-                        <p lang="kk" class="lang-content">Молекулалар құралатын "құрылыс материалы".</p>
-                        <p lang="en" class="lang-content">The "building blocks" that make up molecules.</p>
-                        <p lang="ru" class="lang-content">"Строительные блоки", из которых состоят молекулы.</p>
-                        <!-- Атом сызбасы -->
-                        <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="10" fill="#3b82f6"/> <!-- Ядро -->
-                            <circle cx="50" cy="50" r="30" stroke="#93c5fd" stroke-width="2" fill="none"/>
-                            <circle cx="50" cy="20" r="5" fill="#1e3a8a"/> <!-- Электрон -->
-                        </svg>
-                        <p lang="kk" class="lang-content text-center font-semibold">Атомның қарапайым моделі</p>
-                        <p lang="en" class="lang-content text-center font-semibold">Simple model of an Atom</p>
-                        <p lang="ru" class="lang-content text-center font-semibold">Простая модель Атома</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. ЗАТТЫҢ КҮЙЛЕРІ -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Заттың үш күйі (Иллюстрация)</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">2. The Three States of Matter (Illustrated)</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Три состояния вещества (Иллюстрация)</h2>
-
-            <p lang="kk" class="lang-content text-base md:text-lg mb-3 text-gray-700">Заттың күйі (қатты, сұйық, газ) бөлшектердің <strong>қозғалысы</strong> мен <strong>орналасуына</strong> байланысты болады.</p>
-            <p lang="en" class="lang-content text-base md:text-lg mb-3 text-gray-700">The state of matter (solid, liquid, gas) depends on the <strong>movement</strong> and <strong>spacing</strong> of its particles.</p>
-            <p lang="ru" class="lang-content text-base md:text-lg mb-3 text-gray-700">Состояние вещества (твердое, жидкое, газ) зависит от <strong>движения</strong> и <strong>расположения</strong> частиц.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-                <!-- Қатты -->
-                <div class="rule-card border-t-blue-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-blue-700 mb-3">1. Қатты дене</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-blue-700 mb-3">1. Solid</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-blue-700 mb-3">1. Твердое тело</h3>
-
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="20" cy="20" r="8" fill="#1d4ed8"/> <circle cx="40" cy="20" r="8" fill="#1d4ed8"/> <circle cx="60" cy="20" r="8" fill="#1d4ed8"/> <circle cx="80" cy="20" r="8" fill="#1d4ed8"/>
-                        <circle cx="20" cy="40" r="8" fill="#1d4ed8"/> <circle cx="40" cy="40" r="8" fill="#1d4ed8"/> <circle cx="60" cy="40" r="8" fill="#1d4ed8"/> <circle cx="80" cy="40" r="8" fill="#1d4ed8"/>
-                        <circle cx="20" cy="60" r="8" fill="#1d4ed8"/> <circle cx="40" cy="60" r="8" fill="#1d4ed8"/> <circle cx="60" cy="60" r="8" fill="#1d4ed8"/> <circle cx="80" cy="60" r="8" fill="#1d4ed8"/>
-                        <circle cx="20" cy="80" r="8" fill="#1d4ed8"/> <circle cx="40" cy="80" r="8" fill="#1d4ed8"/> <circle cx="60" cy="80" r="8" fill="#1d4ed8"/> <circle cx="80" cy="80" r="8" fill="#1d4ed8"/>
-                    </svg>
-
-                    <p lang="kk" class="lang-content">Бөлшектер <strong>тығыз орналасқан</strong> және өз орнында <strong>тербеледі</strong>.</p>
-                    <p lang="en" class="lang-content">Particles are <strong>tightly packed</strong> and <strong>vibrate</strong> in place.</p>
-                    <p lang="ru" class="lang-content">Частицы <strong>плотно упакованы</strong> и <strong>колеблются</strong> на месте.</p>
-                </div>
-
-                <!-- Сұйық -->
-                <div class="rule-card border-t-cyan-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-cyan-700 mb-3">2. Сұйықтық</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-cyan-700 mb-3">2. Liquid</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-cyan-700 mb-3">2. Жидкость</h3>
-
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="30" cy="20" r="8" fill="#0891b2"/> <circle cx="50" cy="30" r="8" fill="#0891b2"/> <circle cx="75" cy="25" r="8" fill="#0891b2"/>
-                        <circle cx="20" cy="45" r="8" fill="#0891b2"/> <circle cx="45" cy="55" r="8" fill="#0891b2"/> <circle cx="70" cy="45" r="8" fill="#0891b2"/>
-                        <circle cx="30" cy="75" r="8" fill="#0891b2"/> <circle cx="55" cy="80" r="8" fill="#0891b2"/> <circle cx="80" cy="70" r="8" fill="#0891b2"/>
-                        <circle cx="15" cy="70" r="8" fill="#0891b2"/> <circle cx="40" cy="35" r="8" fill="#0891b2"/> <circle cx="60" cy="65" r="8" fill="#0891b2"/>
-                    </svg>
-
-                    <p lang="kk" class="lang-content">Бөлшектер <strong>жақын орналасқан</strong>, бірақ орындарын <strong>ауыстыра алады</strong>.</p>
-                    <p lang="en" class="lang-content">Particles are <strong>close together</strong> but can <strong>move and slide</strong> past one another.</p>
-                    <p lang="ru" class="lang-content">Частицы <strong>близко</strong> друг к другу, но могут <strong>перемещаться</strong> и "перескакивать".</p>
-                </div>
-
-                <!-- Газ -->
-                <div class="rule-card border-t-purple-500">
-                    <h3 lang="kk" class="lang-content text-xl font-bold text-purple-700 mb-3">3. Газ</h3>
-                    <h3 lang="en" class="lang-content text-xl font-bold text-purple-700 mb-3">3. Gas</h3>
-                    <h3 lang="ru" class="lang-content text-xl font-bold text-purple-700 mb-3">3. Газ</h3>
-
-                    <svg class="illustration-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="20" cy="20" r="8" fill="#6d28d9"/>
-                        <circle cx="80" cy="30" r="8" fill="#6d28d9"/>
-                        <circle cx="50" cy="50" r="8" fill="#6d28d9"/>
-                        <circle cx="25" cy="75" r="8" fill="#6d28d9"/>
-                        <circle cx="70" cy="80" r="8" fill="#6d28d9"/>
-                    </svg>
-
-                    <p lang="kk" class="lang-content">Бөлшектер бір-бірінен <strong>алыс</strong> орналасқан және <strong>еркін, жылдам қозғалады</strong>.</p>
-                    <p lang="en" class="lang-content">Particles are <strong>far apart</strong> and <strong>move freely and quickly</strong>.</p>
-                    <p lang="ru" class="lang-content">Частицы находятся <strong>далеко</strong> друг от друга и <strong>движутся свободно и быстро</strong>.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ТҮЙІН -->
-        <footer class="footer-card">
-            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-gray-800">БАСТЫ ОЙ</h3>
-            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-gray-800">SUMMARY</h3>
-            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-gray-800">ГЛАВНАЯ МЫСЛЬ</h3>
-
-            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                Барлық заттар <strong>молекулалар мен атомдардан</strong> тұрады.<br>
-                Бұл бөлшектер <strong>әрқашан қозғалыста</strong> болады.<br>
-                Бөлшектердің арасында <strong>бос орын</strong> бар.
-            </p>
-            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                All matter is made of <strong>molecules and atoms</strong>.<br>
-                These particles are <strong>always in motion</strong>.<br>
-                There are <strong>gaps</strong> between these particles.
-            </p>
-            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-gray-700">
-                Все вещества состоят из <strong>молекул и атомов</strong>.<br>
-                Эти частицы <strong>всегда находятся в движении</strong>.<br>
-                Между частицами есть <strong>промежутки</strong>.
-            </p>
-        </footer>
-
-    </div>
-
-    
-
-
-
-
-
-
-
-
-
 </body>
 </html>

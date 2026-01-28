@@ -1,391 +1,643 @@
 <!DOCTYPE html>
-<html lang="kk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Плакат: Тамыр (Корень)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Строение Клетки (Реалистичная)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fefce8; /* yellow-50 */
-            color: #422006; /* brown-950 */
-            overflow-x: hidden;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at center, #0f172a, #000000);
         }
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
         }
-        /* Header */
-        .header-card {
-            background: linear-gradient(135deg, #a16207 0%, #65a30d 100%);
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(161, 98, 7, 0.4);
-            color: white;
-            padding: 40px;
+
+        /* Панель информации */
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 340px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border-left: 4px solid #38bdf8;
+            z-index: 10;
+            color: #e2e8f0;
         }
-        .section-heading {
-            color: #166534;
-            border-bottom: 3px solid #a16207;
-            display: inline-block;
-            padding-bottom: 5px;
-            margin-bottom: 25px;
+
+        #info-panel.active {
+            transform: translateX(0);
+        }
+
+        #info-title {
+            margin: 0 0 10px 0;
+            color: #38bdf8;
+            font-size: 24px;
             font-weight: 700;
-        }
-        .rule-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            height: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 5px solid;
-        }
-        .rule-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-        .footer-card {
-            text-align: center;
-            margin-top: 40px;
-            padding: 24px;
-            background-color: #fef08a;
-            border-radius: 1rem;
-            border-top: 4px solid #854d0e;
-        }
-        .term {
-            font-weight: bold;
-            color: #a16207;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 12px;
+            letter-spacing: 0.5px;
         }
 
-        /* --- ЯЗЫКОВЫЕ НАСТРОЙКИ (Updated) --- */
-        .lang-content {
-            display: none !important;
+        #info-desc {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* Block display for divs/headings */
-        .lang-kk .lang-content[lang="kk"],
-        .lang-en .lang-content[lang="en"],
-        .lang-ru .lang-content[lang="ru"] {
-            display: block !important;
-        }
-
-        /* Inline display for spans and SVG text */
-        .lang-kk span.lang-content[lang="kk"],
-        .lang-en span.lang-content[lang="en"],
-        .lang-ru span.lang-content[lang="ru"],
-        .lang-kk text.lang-content[lang="kk"],
-        .lang-en text.lang-content[lang="en"],
-        .lang-ru text.lang-content[lang="ru"] {
-            display: inline !important;
-        }
-
-        .lang-switcher {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-        .lang-btn {
-            padding: 8px 16px;
-            border: 2px solid #a16207;
-            background-color: #ffffff;
-            color: #a16207;
-            border-radius: 0.5rem;
-            font-weight: 600;
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 24px;
             cursor: pointer;
-            transition: all 0.2s;
+            line-height: 1;
+            transition: color 0.2s;
         }
-        .lang-btn:hover { background-color: #fefce8; }
-        .lang-btn.active { background-color: #a16207; color: #ffffff; }
 
-        .illustration-svg {
-            width: 100%;
-            height: 250px;
-            margin: 15px 0;
-            border: 1px solid #d4d4d4;
-            border-radius: 0.5rem;
-            background-color: #fff;
+        .close-btn:hover {
+            color: #fff;
         }
+
+        /* Маркер при наведении */
+        #hover-label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(15, 23, 42, 0.8);
+            color: #38bdf8;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            transform: translate(20px, 0); /* Сдвиг вправо от курсора */
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            white-space: nowrap;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 5;
+        }
+
+        /* Линия-указатель от курсора (декор) */
+        #hover-label::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-right: 6px solid rgba(15, 23, 42, 0.8);
+        }
+
+        #main-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 26px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+            pointer-events: none;
+            z-index: 5;
+            text-align: center;
+            width: 100%;
+            background: linear-gradient(to right, transparent, rgba(15, 23, 42, 0.8), transparent);
+            padding: 10px 0;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #38bdf8;
+            font-size: 14px;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
     </style>
 </head>
-<body class="bg-yellow-50">
+<body>
 
+<h1 id="main-title">Клетка Человека (В разрезе)</h1>
+<div id="loading">Синтез структуры...</div>
 
+<div id="canvas-container"></div>
+<div id="hover-label">Ядро</div>
 
-    <div id="poster-container" class="container lang-kk">
+<div id="info-panel">
+    <button class="close-btn" onclick="closePanel()">&times;</button>
+    <h2 id="info-title">Название</h2>
+    <p id="info-desc">Описание</p>
+</div>
 
-        <div class="lang-switcher">
-            <button class="lang-btn active" onclick="switchLang('kk')">Қазақша</button>
-            <button class="lang-btn" onclick="switchLang('en')">English</button>
-            <button class="lang-btn" onclick="switchLang('ru')">Русский</button>
-        </div>
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+</script>
 
-        <header class="header-card text-center mb-10">
-            <h1 lang="kk" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">ТАМЫР (ROOT)</h1>
-            <h1 lang="en" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">PLANT ROOT</h1>
-            <h1 lang="ru" class="lang-content text-3xl sm:text-4xl font-extrabold uppercase">КОРЕНЬ РАСТЕНИЯ</h1>
+<script type="module">
+    import * as THREE from 'three';
+    import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
-            <p lang="kk" class="lang-content mt-2 text-xl font-medium text-yellow-100">Өсімдіктің жерасты мүшесі.</p>
-            <p lang="en" class="lang-content mt-2 text-xl font-medium text-yellow-100">The underground organ of a plant.</p>
-            <p lang="ru" class="lang-content mt-2 text-xl font-medium text-yellow-100">Подземный орган растения.</p>
-        </header>
+    // --- ДАННЫЕ ---
+    const cellData = {
+        "Membrane": {
+            name: "Плазматическая мембрана",
+            desc: "Внешняя граница клетки. На модели показана в разрезе. Это двойной слой липидов, который контролирует транспорт веществ и защищает внутреннее содержимое.",
+            color: 0x60a5fa
+        },
+        "Cytoplasm": {
+            name: "Цитозоль (Цитоплазма)",
+            desc: "Полужидкая внутренняя среда. Здесь расположены органеллы и протекают основные метаболические реакции.",
+            color: 0x94a3b8
+        },
+        "Nucleus": {
+            name: "Клеточное ядро",
+            desc: "Крупнейшая органелла. Содержит ДНК (хроматин). В центре видно ядрышко (более плотная область), где образуются рибосомы. Поверхность ядра покрыта порами.",
+            color: 0xa855f7
+        },
+        "RoughER": {
+            name: "Шероховатая ЭПС",
+            desc: "Лабиринт из мембран, примыкающий к ядру. Называется «шероховатой» из-за множества рибосом на поверхности. Здесь синтезируются и сворачиваются белки.",
+            color: 0xec4899
+        },
+        "SmoothER": {
+            name: "Гладкая ЭПС",
+            desc: "Сеть трубочек без рибосом. Отвечает за синтез липидов (жиров), обезвреживание токсинов и запас ионов кальция.",
+            color: 0xf472b6
+        },
+        "Mitochondria": {
+            name: "Митохондрия",
+            desc: "Двумембранная органелла. Внутри видны складки (кристы). Генерирует энергию (АТФ) для клетки через клеточное дыхание.",
+            color: 0xf97316
+        },
+        "Golgi": {
+            name: "Аппарат Гольджи",
+            desc: "Система плоских цистерн. Здесь белки сортируются, модифицируются и упаковываются в везикулы для отправки в нужное место.",
+            color: 0xfacc15
+        },
+        "Centrioles": {
+            name: "Центриоли",
+            desc: "Пара цилиндрических структур, расположенных перпендикулярно друг другу. Участвуют в делении клетки, формируя веретено деления.",
+            color: 0xe2e8f0
+        },
+        "Cytoskeleton": {
+            name: "Цитоскелет (Микротрубочки)",
+            desc: "Каркас клетки из белковых нитей. Поддерживает форму, обеспечивает транспорт органелл и движение самой клетки.",
+            color: 0x38bdf8
+        }
+    };
 
-        <!-- 1. FUNCTIONS -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">1. Тамырдың негізгі қызметтері</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">1. Main Functions of the Root</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">1. Основные функции корня</h2>
+    // --- СЦЕНА ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0f172a, 0.02);
 
-            <div class="rule-card border-t-yellow-600">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                    <div>
-                        <ul class="list-disc pl-5 space-y-3 text-gray-800 text-lg">
-                            <li class="lang-content" lang="kk"><strong>Бекіту:</strong> Өсімдікті топырақта ұстап тұрады.</li>
-                            <li class="lang-content" lang="en"><strong>Anchoring:</strong> Holds the plant in the soil.</li>
-                            <li class="lang-content" lang="ru"><strong>Закрепление:</strong> Удерживает растение в почве.</li>
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 10, 25);
+    camera.lookAt(0, 0, 0);
 
-                            <li class="lang-content" lang="kk"><strong>Сору:</strong> Су мен минералды тұздарды сіңіреді.</li>
-                            <li class="lang-content" lang="en"><strong>Absorption:</strong> Absorbs water and minerals.</li>
-                            <li class="lang-content" lang="ru"><strong>Всасывание:</strong> Поглощает воду и минеральные соли.</li>
+    const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.SoftShadowMap;
+    container.appendChild(renderer.domElement);
 
-                            <li class="lang-content" lang="kk"><strong>Қор жинау:</strong> Қоректік заттарды сақтайды (сәбіз, қызылша).</li>
-                            <li class="lang-content" lang="en"><strong>Storage:</strong> Stores nutrients (carrots, beets).</li>
-                            <li class="lang-content" lang="ru"><strong>Запас:</strong> Хранит питательные вещества (морковь, свекла).</li>
-                        </ul>
-                    </div>
+    // --- ОСВЕЩЕНИЕ ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
 
-                    <div class="flex justify-center">
-                        <svg class="illustration-svg" viewBox="0 0 300 200">
-                            <rect x="0" y="80" width="300" height="120" fill="#fef3c7"/>
-                            <line x1="0" y1="80" x2="300" y2="80" stroke="#a16207" stroke-width="2"/>
-                            <!-- Plant -->
-                            <line x1="150" y1="80" x2="150" y2="20" stroke="#4ade80" stroke-width="4"/>
-                            <path d="M 150 40 Q 180 20, 190 40 Q 170 60, 150 40" fill="#22c55e"/>
-                            <!-- Roots -->
-                            <path d="M 150 80 Q 140 120, 150 180" fill="none" stroke="#a16207" stroke-width="4" stroke-linecap="round"/>
-                            <path d="M 150 100 Q 120 110, 100 120" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M 150 120 Q 180 130, 200 140" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round"/>
-                            <!-- Particles -->
-                            <circle cx="120" cy="140" r="3" fill="#3b82f6"/> <circle cx="180" cy="120" r="3" fill="#3b82f6"/>
-                            <!-- Arrows -->
-                            <path d="M 120 140 L 140 110" fill="none" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-water)"/>
-                            <defs>
-                                <marker id="arrow-water" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                                    <polygon points="0 0, 6 3, 0 6" fill="#3b82f6" />
-                                </marker>
-                            </defs>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </section>
+    // Основной свет (холодный медицинский)
+    const mainLight = new THREE.SpotLight(0xffffff, 2);
+    mainLight.position.set(10, 20, 15);
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 2048;
+    mainLight.shadow.mapSize.height = 2048;
+    mainLight.shadow.bias = -0.0001;
+    scene.add(mainLight);
 
-        <!-- 2. ROOT SYSTEMS -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">2. Тамыр жүйелері</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">2. Root Systems</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">2. Типы корневых систем</h2>
+    // Контровой свет (теплый для контраста)
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
+    rimLight.position.set(-10, 0, -10);
+    scene.add(rimLight);
 
-            <div class="rule-card border-t-green-600">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    // Заполняющий снизу (отскок)
+    const fillLight = new THREE.PointLight(0xc084fc, 0.5);
+    fillLight.position.set(0, -10, 0);
+    scene.add(fillLight);
 
-                    <!-- Taproot -->
-                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-center">
-                        <h3 class="lang-content font-bold text-lg text-yellow-900 mb-2" lang="kk">Кіндік тамыр</h3>
-                        <h3 class="lang-content font-bold text-lg text-yellow-900 mb-2" lang="en">Taproot System</h3>
-                        <h3 class="lang-content font-bold text-lg text-yellow-900 mb-2" lang="ru">Стержневая система</h3>
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 5;
+    controls.maxDistance = 50;
 
-                        <p class="lang-content text-sm text-gray-700 mb-2" lang="kk">Негізгі тамыр жақсы жетілген. (Бұршақ, Бақбақ).</p>
-                        <p class="lang-content text-sm text-gray-700 mb-2" lang="en">Main root is well developed. (Bean, Dandelion).</p>
-                        <p class="lang-content text-sm text-gray-700 mb-2" lang="ru">Главный корень хорошо развит. (Фасоль, Одуванчик).</p>
+    // --- ГЕНЕРАЦИЯ КЛЕТКИ (В РАЗРЕЗЕ) ---
+    const cellGroup = new THREE.Group();
+    // Наклоним клетку к камере "срезом"
+    cellGroup.rotation.x = Math.PI * 0.15;
+    scene.add(cellGroup);
 
-                        <svg viewBox="0 0 150 200" class="w-40 h-52 mx-auto">
-                             <line x1="0" y1="20" x2="150" y2="20" stroke="#a16207"/>
-                             <line x1="75" y1="20" x2="75" y2="0" stroke="#4ade80" stroke-width="3"/>
-                             <path d="M 75 20 L 75 180" stroke="#713f12" stroke-width="5" stroke-linecap="round"/>
-                             <path d="M 75 40 L 40 60" stroke="#854d0e" stroke-width="2"/>
-                             <path d="M 75 80 L 50 100" stroke="#854d0e" stroke-width="2"/>
+    const objects = []; // Для рейкастинга
 
-                             <text class="lang-content" lang="kk" x="115" y="160" font-size="10" fill="#713f12">Негізгі тамыр</text>
-                             <text class="lang-content" lang="en" x="115" y="160" font-size="10" fill="#713f12">Main Root</text>
-                             <text class="lang-content" lang="ru" x="115" y="160" font-size="10" fill="#713f12">Главный корень</text>
+    // 1. Мембрана (Срезанная сфера)
+    // Используем phiLength < 2PI чтобы сделать вырез
+    const membraneGeo = new THREE.SphereGeometry(9, 128, 128, 0, Math.PI * 2, 0, Math.PI * 0.65);
+    // Материал с подповерхностным рассеиванием (симуляция через MeshPhysicalMaterial)
+    const membraneMat = new THREE.MeshPhysicalMaterial({
+        color: 0x3b82f6,
+        roughness: 0.2,
+        metalness: 0.1,
+        transmission: 0.1, // Легкая прозрачность
+        thickness: 1.0,
+        clearcoat: 0.5,
+        side: THREE.DoubleSide
+    });
+    const membrane = new THREE.Mesh(membraneGeo, membraneMat);
+    membrane.rotation.x = Math.PI; // Переворачиваем чашей вверх
+    membrane.receiveShadow = true;
+    membrane.userData = {key: "Membrane"};
+    cellGroup.add(membrane);
+    objects.push(membrane);
 
-                             <line x1="100" y1="150" x2="80" y2="150" stroke="#713f12" stroke-width="1"/>
-                        </svg>
-                    </div>
+    // 2. Цитозоль (Заполнитель дна)
+    const cytoGeo = new THREE.CircleGeometry(8.5, 64);
+    const cytoMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        roughness: 0.9,
+        metalness: 0.0
+    });
+    const cytosol = new THREE.Mesh(cytoGeo, cytoMat);
+    cytosol.rotation.x = -Math.PI / 2;
+    cytosol.position.y = -2; // Чуть ниже края
+    cytosol.userData = {key: "Cytoplasm"};
+    // cellGroup.add(cytosol); // Можно не добавлять отдельно, если мембрана достаточно плотная
 
-                    <!-- Fibrous -->
-                    <div class="bg-green-50 p-4 rounded-lg border border-green-200 text-center">
-                        <h3 class="lang-content font-bold text-lg text-green-900 mb-2" lang="kk">Шашақ тамыр</h3>
-                        <h3 class="lang-content font-bold text-lg text-green-900 mb-2" lang="en">Fibrous System</h3>
-                        <h3 class="lang-content font-bold text-lg text-green-900 mb-2" lang="ru">Мочковатая система</h3>
+    // 3. Ядро (Сфера с порами)
+    const nucleusGroup = new THREE.Group();
+    nucleusGroup.position.set(0, -1, 0);
+    cellGroup.add(nucleusGroup);
 
-                        <p class="lang-content text-sm text-gray-700 mb-2" lang="kk">Негізгі тамыр жоқ. (Бидай, Пияз).</p>
-                        <p class="lang-content text-sm text-gray-700 mb-2" lang="en">No main root. (Wheat, Onion).</p>
-                        <p class="lang-content text-sm text-gray-700 mb-2" lang="ru">Главного корня нет. (Пшеница, Лук).</p>
+    const nucleusGeo = new THREE.SphereGeometry(2.5, 64, 64);
+    // Текстура пор (процедурная)
+    const cvs = document.createElement('canvas');
+    cvs.width = 512;
+    cvs.height = 512;
+    const ctx = cvs.getContext('2d');
+    ctx.fillStyle = '#a855f7';
+    ctx.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 300; i++) {
+        ctx.fillStyle = '#7e22ce';
+        const x = Math.random() * 512;
+        const y = Math.random() * 512;
+        const r = Math.random() * 3 + 1;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    const nucTex = new THREE.CanvasTexture(cvs);
 
-                        <svg viewBox="0 0 150 200" class="w-40 h-52 mx-auto">
-                            <line x1="0" y1="20" x2="150" y2="20" stroke="#a16207"/>
-                            <line x1="75" y1="20" x2="75" y2="0" stroke="#4ade80" stroke-width="3"/>
-                            <path d="M 75 20 Q 50 60, 40 100" stroke="#854d0e" stroke-width="2"/>
-                            <path d="M 75 20 Q 90 60, 100 100" stroke="#854d0e" stroke-width="2"/>
-                            <path d="M 75 20 Q 75 80, 75 120" stroke="#854d0e" stroke-width="2"/>
+    const nucleusMat = new THREE.MeshStandardMaterial({
+        map: nucTex,
+        roughness: 0.6,
+        bumpMap: nucTex,
+        bumpScale: 0.05
+    });
+    const nucleus = new THREE.Mesh(nucleusGeo, nucleusMat);
+    nucleus.userData = {key: "Nucleus"};
+    nucleus.castShadow = true;
+    nucleusGroup.add(nucleus);
+    objects.push(nucleus);
 
-                            <text class="lang-content" lang="kk" x="110" y="160" font-size="10" fill="#713f12">Қосалқы тамырлар</text>
-                            <text class="lang-content" lang="en" x="110" y="160" font-size="10" fill="#713f12">Many Roots</text>
-                            <text class="lang-content" lang="ru" x="110" y="160" font-size="10" fill="#713f12">Придаточные корни</text>
-                        </svg>
-                    </div>
+    // 4. Шероховатая ЭПС (Слои вокруг ядра)
+    // Генерируем несколько искаженных торусов
+    const roughERGeo = new THREE.TorusGeometry(3.5, 0.4, 32, 100);
+    // Искажаем вершины для органичности
+    const posER = roughERGeo.attributes.position;
+    for (let i = 0; i < posER.count; i++) {
+        const x = posER.getX(i);
+        const y = posER.getY(i);
+        const z = posER.getZ(i);
+        const noise = Math.sin(x * 2) * 0.2 + Math.cos(y * 3) * 0.2;
+        posER.setXYZ(i, x + noise, y + noise, z + Math.sin(z) * 0.3);
+    }
+    roughERGeo.computeVertexNormals();
 
-                </div>
-            </div>
-        </section>
+    const roughERMat = new THREE.MeshStandardMaterial({
+        color: 0xd946ef,
+        roughness: 0.5,
+        flatShading: false
+    });
 
-        <!-- 3. ZONES (FIXED SVG TEXT AND LIST) -->
-        <section class="mb-12">
-            <h2 lang="kk" class="lang-content text-3xl section-heading">3. Тамырдың ішкі құрылысы</h2>
-            <h2 lang="en" class="lang-content text-3xl section-heading">3. Zones of the Root</h2>
-            <h2 lang="ru" class="lang-content text-3xl section-heading">3. Зоны корня</h2>
+    // Создаем несколько слоев
+    for (let i = 0; i < 3; i++) {
+        const layer = new THREE.Mesh(roughERGeo, roughERMat);
+        layer.rotation.x = Math.PI / 2;
+        layer.rotation.z = Math.random() * Math.PI;
+        layer.scale.setScalar(1 + i * 0.2);
+        layer.position.y = -1;
+        layer.userData = {key: "RoughER"};
+        nucleusGroup.add(layer);
+        objects.push(layer);
+    }
 
-            <div class="rule-card border-t-amber-500">
-                <div class="flex flex-col md:flex-row gap-6 items-center">
+    // 5. Митохондрии (Детализированные)
+    const mitoGeo = new THREE.CapsuleGeometry(0.5, 1.5, 4, 8);
+    const mitoMat = new THREE.MeshStandardMaterial({color: 0xf97316, roughness: 0.3});
 
-                    <!-- Diagram with DYNAMIC TEXT -->
-                    <div class="w-full md:w-1/2 flex justify-center">
-                        <svg class="illustration-svg" viewBox="0 0 200 400" style="height: 350px;">
-                            <path d="M 70 0 L 70 300 Q 100 350, 130 300 L 130 0" fill="#fef08a" stroke="#a16207" stroke-width="2"/>
+    // Внутренние кристы (текстура)
+    const mitoTexCanvas = document.createElement('canvas');
+    mitoTexCanvas.width = 128;
+    mitoTexCanvas.height = 128;
+    const mCtx = mitoTexCanvas.getContext('2d');
+    mCtx.fillStyle = '#f97316';
+    mCtx.fillRect(0, 0, 128, 128);
+    mCtx.strokeStyle = '#c2410c';
+    mCtx.lineWidth = 4;
+    for (let i = 0; i < 10; i++) {
+        mCtx.beginPath();
+        mCtx.moveTo(10, 10 + i * 10);
+        mCtx.bezierCurveTo(40, 10 + i * 10 - 10, 80, 10 + i * 10 + 10, 118, 10 + i * 10);
+        mCtx.stroke();
+    }
+    const mitoTex = new THREE.CanvasTexture(mitoTexCanvas);
+    mitoMat.map = mitoTex;
 
-                            <!-- 1. Root Cap -->
-                            <path d="M 72 300 Q 100 345, 128 300" fill="#ca8a04" opacity="0.8"/>
-                            <text class="lang-content" lang="kk" x="160" y="320" font-size="12" fill="#78350f" font-weight="bold">Тамыр оймағы</text>
-                            <text class="lang-content" lang="en" x="160" y="320" font-size="12" fill="#78350f" font-weight="bold">Root Cap</text>
-                            <text class="lang-content" lang="ru" x="160" y="320" font-size="12" fill="#78350f" font-weight="bold">Корневой чехлик</text>
-                            <line x1="100" y1="320" x2="150" y2="320" stroke="#78350f"/>
+    function addMito(x, y, z, rot) {
+        const m = new THREE.Mesh(mitoGeo, mitoMat);
+        m.position.set(x, y, z);
+        m.rotation.set(rot.x, rot.y, rot.z);
+        m.castShadow = true;
+        m.userData = {key: "Mitochondria"};
+        cellGroup.add(m);
+        objects.push(m);
+    }
 
-                            <!-- 2. Division -->
-                            <rect x="72" y="270" width="56" height="30" fill="#fde047" opacity="0.5"/>
-                            <text class="lang-content" lang="kk" x="160" y="285" font-size="12" fill="#78350f">Бөліну аймағы</text>
-                            <text class="lang-content" lang="en" x="160" y="285" font-size="12" fill="#78350f">Division Zone</text>
-                            <text class="lang-content" lang="ru" x="160" y="285" font-size="12" fill="#78350f">Зона деления</text>
-                            <line x1="100" y1="285" x2="150" y2="285" stroke="#78350f"/>
+    addMito(4, 0, 2, {x: 0.5, y: 0.5, z: 0});
+    addMito(-5, 1, -2, {x: 1, y: 0.2, z: 0.5});
+    addMito(2, -2, -4, {x: 0, y: 1, z: 0.2});
+    addMito(-3, -1, 4, {x: 2, y: 0.5, z: 0});
 
-                            <!-- 3. Growth -->
-                            <rect x="72" y="220" width="56" height="50" fill="#fef9c3" opacity="0.5"/>
-                            <text class="lang-content" lang="kk" x="160" y="245" font-size="12" fill="#78350f">Өсу аймағы</text>
-                            <text class="lang-content" lang="en" x="160" y="245" font-size="12" fill="#78350f">Growth Zone</text>
-                            <text class="lang-content" lang="ru" x="160" y="245" font-size="12" fill="#78350f">Зона роста</text>
-                            <line x1="100" y1="245" x2="150" y2="245" stroke="#78350f"/>
+    // 6. Аппарат Гольджи (Изогнутые пластины)
+    const golgiGroup = new THREE.Group();
+    golgiGroup.position.set(5, -1, -2);
+    golgiGroup.rotation.y = -0.5;
+    cellGroup.add(golgiGroup);
 
-                            <!-- 4. Absorption -->
-                            <rect x="72" y="100" width="56" height="120" fill="#fff" opacity="0.1"/>
-                            <line x1="70" y1="120" x2="40" y2="110" stroke="#a16207"/>
-                            <line x1="130" y1="170" x2="160" y2="180" stroke="#a16207"/>
-                            <text class="lang-content" lang="kk" x="160" y="150" font-size="12" fill="#78350f" font-weight="bold">Сору аймағы</text>
-                            <text class="lang-content" lang="en" x="160" y="150" font-size="12" fill="#78350f" font-weight="bold">Absorption Zone</text>
-                            <text class="lang-content" lang="ru" x="160" y="150" font-size="12" fill="#78350f" font-weight="bold">Зона всасывания</text>
+    // Используем TubeGeometry по дуге
+    class GolgiCurve extends THREE.Curve {
+        constructor(scale = 1) {
+            super();
+            this.scale = scale;
+        }
 
-                            <text class="lang-content" lang="kk" x="40" y="130" font-size="10" fill="#a16207">Түктер</text>
-                            <text class="lang-content" lang="en" x="40" y="130" font-size="10" fill="#a16207">Hairs</text>
-                            <text class="lang-content" lang="ru" x="40" y="130" font-size="10" fill="#a16207">Волоски</text>
+        getPoint(t) {
+            const angle = (t - 0.5) * 2; // -1 to 1
+            const x = Math.cos(angle) * 2 * this.scale;
+            const z = Math.sin(angle) * 1 * this.scale;
+            return new THREE.Vector3(x, 0, z);
+        }
+    }
 
-                            <!-- 5. Conduction -->
-                            <rect x="72" y="0" width="56" height="100" fill="#eab308" opacity="0.3"/>
-                            <text class="lang-content" lang="kk" x="160" y="50" font-size="12" fill="#78350f">Өткізу аймағы</text>
-                            <text class="lang-content" lang="en" x="160" y="50" font-size="12" fill="#78350f">Conduction Zone</text>
-                            <text class="lang-content" lang="ru" x="160" y="50" font-size="12" fill="#78350f">Зона проведения</text>
-                        </svg>
-                    </div>
+    const golgiMat = new THREE.MeshStandardMaterial({color: 0xeab308, roughness: 0.4});
 
-                    <!-- Description List (Multilingual) -->
-                    <div class="w-full md:w-1/2">
-                        <!-- Kazakh -->
-                        <ul class="lang-content space-y-4 text-sm text-gray-800" lang="kk">
-                            <li><span class="font-bold text-amber-700 block">1. Тамыр оймағы</span>Тамыр ұшын қорғайды.</li>
-                            <li><span class="font-bold text-amber-700 block">2. Бөліну аймағы</span>Жасушалар үздіксіз көбейеді.</li>
-                            <li><span class="font-bold text-amber-700 block">3. Өсу аймағы</span>Жасушалар ұзарады.</li>
-                            <li><span class="font-bold text-amber-700 block">4. Сору аймағы</span>Су мен тұздарды сіңіреді.</li>
-                            <li><span class="font-bold text-amber-700 block">5. Өткізу аймағы</span>Заттарды жоғары өткізеді.</li>
-                        </ul>
-                        <!-- English -->
-                        <ul class="lang-content space-y-4 text-sm text-gray-800" lang="en">
-                            <li><span class="font-bold text-amber-700 block">1. Root Cap</span>Protects the root tip.</li>
-                            <li><span class="font-bold text-amber-700 block">2. Zone of Division</span>Cells divide continuously.</li>
-                            <li><span class="font-bold text-amber-700 block">3. Zone of Elongation</span>Cells grow longer.</li>
-                            <li><span class="font-bold text-amber-700 block">4. Zone of Absorption</span>Absorbs water via root hairs.</li>
-                            <li><span class="font-bold text-amber-700 block">5. Zone of Conduction</span>Transports substances upward.</li>
-                        </ul>
-                        <!-- Russian -->
-                        <ul class="lang-content space-y-4 text-sm text-gray-800" lang="ru">
-                            <li><span class="font-bold text-amber-700 block">1. Корневой чехлик</span>Защищает кончик корня.</li>
-                            <li><span class="font-bold text-amber-700 block">2. Зона деления</span>Клетки постоянно делятся.</li>
-                            <li><span class="font-bold text-amber-700 block">3. Зона роста</span>Клетки удлиняются.</li>
-                            <li><span class="font-bold text-amber-700 block">4. Зона всасывания</span>Всасывает воду через волоски.</li>
-                            <li><span class="font-bold text-amber-700 block">5. Зона проведения</span>Проводит вещества вверх.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
+    for (let i = 0; i < 5; i++) {
+        const curve = new GolgiCurve(1 - i * 0.1);
+        const tube = new THREE.TubeGeometry(curve, 20, 0.2, 8, false);
+        const mesh = new THREE.Mesh(tube, golgiMat);
+        mesh.position.y = i * 0.4;
+        mesh.userData = {key: "Golgi"};
+        golgiGroup.add(mesh);
+        objects.push(mesh); // Каждый слой кликабелен
+    }
 
-        <footer class="footer-card">
-            <h3 lang="kk" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">ЕСТЕ САҚТАҢЫЗ</h3>
-            <h3 lang="en" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">REMEMBER</h3>
-            <h3 lang="ru" class="lang-content text-xl font-extrabold mb-2 text-yellow-900">ЗАПОМНИТЕ</h3>
+    // 7. Центриоли (Трубочки)
+    const centGeo = new THREE.CylinderGeometry(0.2, 0.2, 1, 12);
+    const centMat = new THREE.MeshStandardMaterial({color: 0xcbd5e1});
 
-            <p lang="kk" class="lang-content text-md font-semibold leading-relaxed text-yellow-800">
-                Тамыр суды сорады және өсімдікті бекітеді. Екі түрі бар: кіндік және шашақ.
-            </p>
-            <p lang="en" class="lang-content text-md font-semibold leading-relaxed text-yellow-800">
-                The root absorbs water and anchors the plant. Two types: Taproot and Fibrous.
-            </p>
-            <p lang="ru" class="lang-content text-md font-semibold leading-relaxed text-yellow-800">
-                Корень всасывает воду и закрепляет растение. Два типа: стержневая и мочковатая.
-            </p>
-        </footer>
+    const c1 = new THREE.Mesh(centGeo, centMat);
+    c1.position.set(-2, 1, 3);
+    c1.userData = {key: "Centrioles"};
 
-    </div>
+    const c2 = new THREE.Mesh(centGeo, centMat);
+    c2.position.set(-2, 1, 3);
+    c2.rotation.z = Math.PI / 2;
+    c2.userData = {key: "Centrioles"};
 
-    <script>
-        function switchLang(lang) {
-            const container = document.getElementById('poster-container');
-            if (container) {
-                container.classList.remove('lang-kk', 'lang-en', 'lang-ru');
-                container.classList.add('lang-' + lang);
-            }
+    // Объединим их для удобства
+    const centGroup = new THREE.Group();
+    centGroup.add(c1);
+    centGroup.add(c2);
+    cellGroup.add(centGroup);
+    // Хитбокс для центриолей
+    const cHit = new THREE.Mesh(new THREE.SphereGeometry(1), new THREE.MeshBasicMaterial({visible: false}));
+    cHit.position.set(-2, 1, 3);
+    cHit.userData = {key: "Centrioles"};
+    cellGroup.add(cHit);
+    objects.push(cHit);
 
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                if (btn.getAttribute('onclick').includes(lang)) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
+    // 8. Цитоскелет (Нити)
+    const microtubules = new THREE.Group();
+    const lineMat = new THREE.LineBasicMaterial({color: 0x38bdf8, transparent: true, opacity: 0.3});
+
+    for (let i = 0; i < 20; i++) {
+        const p1 = new THREE.Vector3((Math.random() - 0.5) * 12, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 12);
+        const p2 = new THREE.Vector3((Math.random() - 0.5) * 12, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 12);
+        const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+        const line = new THREE.Line(geo, lineMat);
+        microtubules.add(line);
+    }
+    microtubules.userData = {key: "Cytoskeleton"};
+    cellGroup.add(microtubules);
+    // Для кликабельности линий нужен Line Raycasting threshold, но лучше просто игнорировать или добавить общий объем
+
+    // --- ЛОГИКА ВЗАИМОДЕЙСТВИЯ ---
+    const raycaster = new THREE.Raycaster();
+    raycaster.params.Line.threshold = 0.5; // Чтобы легче попадать в линии цитоскелета
+    const mouse = new THREE.Vector2();
+
+    const panel = document.getElementById('info-panel');
+    const titleEl = document.getElementById('info-title');
+    const descEl = document.getElementById('info-desc');
+    const hoverLabel = document.getElementById('hover-label');
+
+    let highlightedObj = null;
+
+    function updateRaycaster(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+    }
+
+    // Умный поиск объекта
+    function getHitObject(intersects) {
+        // Проходим по списку пересечений
+        for (let hit of intersects) {
+            const obj = hit.object;
+
+            // Пропускаем невидимые хитбоксы при визуальной проверке,
+            // но если это первый хит - берем его.
+
+            if (obj.userData.key) {
+                // Если мы попали в мембрану, но за ней есть что-то еще близко?
+                // В режиме cut-away мы видим внутренности.
+                // Мембрана имеет back-face.
+
+                // Логика: Если первый хит - мембрана, проверяем, не "смотрит" ли она внутренней стороной.
+                // Но проще: если key == Membrane, проверяем следующий хит.
+                // Если следующий хит близко (внутри клетки), выбираем его.
+
+                if (obj.userData.key === "Membrane") {
+                    // Если есть второй объект и это не мембрана
+                    if (intersects.length > 1 && intersects[1].object.userData.key !== "Membrane") {
+                        return intersects[1].object;
+                    }
                 }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            switchLang('kk');
-        });
-
-        function goBack() {
-            if (typeof bridge !== 'undefined' && bridge) {
-                bridge.onBackClicked();
-            } else {
-                console.log('Bridge not found');
+                return obj;
             }
         }
+        return null;
+    }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
-                new QWebChannel(qt.webChannelTransport, function(channel) {
-                    window.bridge = channel.objects.bridge;
-                });
+    function onMouseMove(event) {
+        updateRaycaster(event);
+        const intersects = raycaster.intersectObjects(objects); // objects содержит все кликабельные части
+
+        // Также проверяем цитоскелет отдельно, так как он группа линий
+        // Но для простоты опустим линии в objects
+
+        const found = getHitObject(intersects);
+
+        if (found) {
+            const key = found.userData.key;
+            const data = cellData[key];
+
+            hoverLabel.textContent = data.name;
+            hoverLabel.style.opacity = 1;
+
+            // Следование за мышью + сдвиг
+            hoverLabel.style.left = `${event.clientX}px`;
+            hoverLabel.style.top = `${event.clientY}px`;
+
+            document.body.style.cursor = 'pointer';
+        } else {
+            hoverLabel.style.opacity = 0;
+            document.body.style.cursor = 'default';
+        }
+    }
+
+    function onClick(event) {
+        if (event.target.closest('#info-panel') || event.target.closest('.close-btn')) return;
+
+        updateRaycaster(event);
+        const intersects = raycaster.intersectObjects(objects);
+        const found = getHitObject(intersects);
+
+        if (found) {
+            showInfo(found.userData.key);
+
+            // Подсветка
+            if (highlightedObj) {
+                // Возвращаем как было
+                if (highlightedObj.material.emissive) highlightedObj.material.emissive.setHex(0x000000);
+            }
+
+            highlightedObj = found;
+            if (found.material && found.material.emissive) {
+                // Цвет эмиссии зависит от цвета объекта
+                found.material.emissive.setHex(0x333333);
+            }
+        } else {
+            closePanel();
+        }
+    }
+
+    function showInfo(key) {
+        const data = cellData[key];
+        titleEl.textContent = data.name;
+        descEl.textContent = data.desc;
+
+        const hexColor = '#' + new THREE.Color(data.color).getHexString();
+        panel.style.borderLeftColor = hexColor;
+        titleEl.style.color = hexColor;
+
+        panel.classList.add('active');
+    }
+
+    window.closePanel = function () {
+        panel.classList.remove('active');
+        if (highlightedObj && highlightedObj.material.emissive) {
+            highlightedObj.material.emissive.setHex(0x000000);
+        }
+        highlightedObj = null;
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('click', onClick);
+
+    // --- АНИМАЦИЯ ---
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        const time = Date.now() * 0.001;
+
+        // Мягкое покачивание всей клетки
+        cellGroup.rotation.y = Math.sin(time * 0.05) * 0.1 + Math.PI * 0.15; // + базовый поворот
+        cellGroup.rotation.z = Math.cos(time * 0.03) * 0.05;
+
+        // Пульсация ядра
+        nucleus.scale.setScalar(1 + Math.sin(time) * 0.01);
+
+        // Движение митохондрий (плавание)
+        objects.forEach(obj => {
+            if (obj.userData.key === "Mitochondria") {
+                obj.position.y += Math.sin(time + obj.id) * 0.002;
             }
         });
-    </script>
-    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    document.getElementById('loading').style.display = 'none';
+    animate();
+
+</script>
 </body>
 </html>
