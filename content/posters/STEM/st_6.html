@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Двигатель Внутреннего Сгорания (4 Такта)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            color: #e2e8f0;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 30px;
+            background: linear-gradient(180deg, rgba(20, 20, 30, 0.9) 0%, transparent 100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .header h1 {
+            color: #ef4444; /* Engine Red */
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            width: 340px;
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 24px;
+            z-index: 10;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-left: 4px solid #ef4444;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding-bottom: 8px;
+            margin-top: 20px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* Sliders */
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .slider-group label span.value {
+            color: #ef4444;
+            font-weight: 600;
+            font-family: 'Consolas', monospace;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            height: 6px;
+            border-radius: 3px;
+            -webkit-appearance: none;
+            background: #475569;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f8fafc;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid #ef4444;
+            transition: transform 0.1s;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        /* Checkboxes */
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .checkbox-item input {
+            accent-color: #ef4444;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 13px;
+            color: #e2e8f0;
+            flex: 1;
+        }
+
+        /* Info Panel */
+        .info-panel {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            width: 280px;
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 10;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-right: 4px solid #ef4444;
+        }
+
+        .info-panel h3 {
+            color: #f1f5f9;
+            font-size: 16px;
+            margin: 0 0 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .stat-value {
+            color: #f1f5f9;
+            font-weight: 700;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+        }
+
+        /* Cycle Indicator */
+        .cycle-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cycle-step {
+            z-index: 2;
+            flex: 1;
+            text-align: center;
+            font-size: 10px;
+            padding: 5px 0;
+            color: #64748b;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .cycle-step.active {
+            color: #fff;
+        }
+
+        .cycle-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 25%;
+            background: #ef4444;
+            border-radius: 20px;
+            transition: left 0.1s linear;
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: rgba(148, 163, 184, 0.6);
+            font-size: 12px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<div class="header">
+    <h1>🚗 Двигатель (4 Такта)</h1>
+    <p>Термодинамика • Механика • ДВС</p>
+</div>
+
+<div class="control-panel">
+    <div class="section-title">⚙️ Управление</div>
+    <div class="slider-group">
+        <label><span>Скорость (RPM):</span><span class="value" id="val-rpm">60</span></label>
+        <input type="range" id="input-rpm" min="0" max="600" step="10" value="60">
+    </div>
+
+    <div class="slider-group">
+        <label><span>Прогресс цикла:</span><span class="value" id="val-cycle">0°</span></label>
+        <input type="range" id="input-cycle" min="0" max="720" step="1" value="0">
+    </div>
+
+    <div class="section-title">👁️ Визуализация</div>
+    <div class="checkbox-item">
+        <input type="checkbox" id="check-transparent" checked>
+        <label for="check-transparent">Прозрачный цилиндр</label>
+    </div>
+    <div class="checkbox-item">
+        <input type="checkbox" id="check-particles" checked>
+        <label for="check-particles">Частицы топлива/газов</label>
+    </div>
+</div>
+
+<div class="info-panel">
+    <h3>📊 Состояние</h3>
+    <div class="stat-row">
+        <span class="stat-label">Такт:</span>
+        <span class="stat-value" id="stat-stroke" style="color: #38bdf8">ВПУСК</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label">Клапаны:</span>
+        <span class="stat-value" id="stat-valves">IN: OPEN / EX: CLOSED</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label">Угол коленвала:</span>
+        <span class="stat-value" id="stat-angle">0°</span>
+    </div>
+
+    <div class="cycle-indicator">
+        <div class="cycle-bar" id="cycle-progress-bar"></div>
+        <div class="cycle-step active" id="step-1">ВПУСК</div>
+        <div class="cycle-step" id="step-2">СЖАТИЕ</div>
+        <div class="cycle-step" id="step-3">ХОД</div>
+        <div class="cycle-step" id="step-4">ВЫПУСК</div>
+    </div>
+</div>
+
+<div class="hint">ЛКМ - Вращение • ПКМ - Панорама • Колесо - Зум</div>
+
+<!-- Three.js -->
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+    // --- Configuration ---
+    const CONFIG = {
+        crankRadius: 3,
+        rodLength: 10,
+        pistonRadius: 4,
+        pistonHeight: 4,
+        cylinderHeight: 16,
+        valveLift: 1.5,
+
+        colorBlock: 0x94a3b8,
+        colorPiston: 0xcbd5e1,
+        colorRod: 0x64748b,
+        colorCrank: 0x475569,
+        colorValveIn: 0x3b82f6, // Blue
+        colorValveEx: 0xef4444  // Red
+    };
+
+    // --- State ---
+    let state = {
+        rpm: 60,
+        cycleAngle: 0, // 0 to 720 degrees
+        stroke: 0, // 0: Intake, 1: Compression, 2: Power, 3: Exhaust
+        isPlaying: true
+    };
+
+    // --- Globals ---
+    let scene, camera, renderer, controls;
+    let pistonGroup, rodMesh, crankGroup, valveIn, valveEx;
+    let cylinderMesh, combustionChamberLight;
+    let particleSystem;
+
+    // --- Initialization ---
+    function init() {
+        // Scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0f172a);
+        scene.fog = new THREE.FogExp2(0x0f172a, 0.01);
+
+        // Camera
+        const aspect = window.innerWidth / window.innerHeight;
+        camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
+        camera.position.set(25, 20, 30);
+        camera.lookAt(0, 5, 0);
+
+        // Renderer
+        renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        dirLight.position.set(20, 30, 20);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        scene.add(dirLight);
+
+        const fillLight = new THREE.PointLight(0x38bdf8, 0.3);
+        fillLight.position.set(-20, 10, -20);
+        scene.add(fillLight);
+
+        // Internal combustion light (dynamic)
+        combustionChamberLight = new THREE.PointLight(0xffaa00, 0, 10);
+        combustionChamberLight.position.set(0, 12, 0);
+        scene.add(combustionChamberLight);
+
+        // Controls
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 10;
+        controls.maxDistance = 100;
+        controls.target.set(0, 5, 0);
+
+        // Build Engine
+        createEngine();
+        createParticles();
+
+        // Listeners
+        window.addEventListener('resize', onWindowResize, false);
+        setupUI();
+
+        // Start
+        animate();
+    }
+
+    // --- Engine Construction ---
+
+    function createEngine() {
+        // 1. Crankshaft (Rotating)
+        crankGroup = new THREE.Group();
+        scene.add(crankGroup);
+
+        // Main shaft
+        const shaftGeo = new THREE.CylinderGeometry(1, 1, 10, 16);
+        const shaftMat = new THREE.MeshStandardMaterial({color: CONFIG.colorCrank, metalness: 0.8, roughness: 0.3});
+        const shaft = new THREE.Mesh(shaftGeo, shaftMat);
+        shaft.rotation.z = Math.PI / 2;
+        crankGroup.add(shaft);
+
+        // Counterweights/Webs
+        const webGeo = new THREE.BoxGeometry(2, 6, 1);
+        const web1 = new THREE.Mesh(webGeo, shaftMat);
+        web1.position.set(0, -1.5, 1.5);
+        crankGroup.add(web1);
+        const web2 = new THREE.Mesh(webGeo, shaftMat);
+        web2.position.set(0, -1.5, -1.5);
+        crankGroup.add(web2);
+
+        // Crank Pin
+        const pinGeo = new THREE.CylinderGeometry(0.8, 0.8, 3, 16);
+        const pin = new THREE.Mesh(pinGeo, shaftMat);
+        pin.rotation.z = Math.PI / 2;
+        pin.position.y = CONFIG.crankRadius;
+        crankGroup.add(pin);
+
+        // 2. Connecting Rod
+        // Visual trick: The rod rotates and moves.
+        // We will position/rotate it in updatePhysics loop.
+        const rodGeo = new THREE.BoxGeometry(1.5, CONFIG.rodLength, 1);
+        const rodMat = new THREE.MeshStandardMaterial({color: CONFIG.colorRod, metalness: 0.5, roughness: 0.5});
+        rodMesh = new THREE.Mesh(rodGeo, rodMat);
+        // Pivot is at bottom end. Move geometry up by half length.
+        // Actually, let's create a group for the rod to pivot easily
+        // But simpler: just position and rotate mesh. geometry center at 0,0,0
+        // We'll fix geometry offset:
+        rodGeo.translate(0, CONFIG.rodLength / 2, 0);
+        scene.add(rodMesh);
+
+        // 3. Piston
+        const pistonGeo = new THREE.CylinderGeometry(CONFIG.pistonRadius - 0.1, CONFIG.pistonRadius - 0.1, CONFIG.pistonHeight, 32);
+        const pistonMat = new THREE.MeshStandardMaterial({color: CONFIG.colorPiston, metalness: 0.6, roughness: 0.4});
+        pistonGroup = new THREE.Mesh(pistonGeo, pistonMat);
+        scene.add(pistonGroup);
+
+        // Piston Pin (visual)
+        const pPinGeo = new THREE.CylinderGeometry(0.5, 0.5, CONFIG.pistonRadius * 1.8, 16);
+        const pPin = new THREE.Mesh(pPinGeo, shaftMat);
+        pPin.rotation.x = Math.PI / 2;
+        pPin.position.y = -1; // Inside piston
+        pistonGroup.add(pPin);
+
+        // 4. Cylinder Block (Transparent)
+        const cylGeo = new THREE.CylinderGeometry(CONFIG.pistonRadius, CONFIG.pistonRadius, CONFIG.cylinderHeight, 32, 1, true); // Open ends
+        // Thickness hack: render backface or double geometry.
+        const glassMat = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            metalness: 0.1,
+            roughness: 0.1,
+            transmission: 0.8, // Glass-like
+            opacity: 0.3,
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+        cylinderMesh = new THREE.Mesh(cylGeo, glassMat);
+        cylinderMesh.position.y = CONFIG.cylinderHeight / 2 + 2; // Offset from crank center
+        scene.add(cylinderMesh);
+
+        // Block Base (Mount)
+        const mountGeo = new THREE.BoxGeometry(12, 2, 12);
+        const mountMat = new THREE.MeshStandardMaterial({color: CONFIG.colorBlock});
+        const mount = new THREE.Mesh(mountGeo, mountMat);
+        mount.position.y = -2;
+        scene.add(mount);
+
+        // Head
+        const headGeo = new THREE.BoxGeometry(10, 2, 10);
+        const head = new THREE.Mesh(headGeo, mountMat);
+        head.position.y = CONFIG.cylinderHeight + 3;
+        scene.add(head);
+
+        // 5. Valves
+        // Intake (Left)
+        const valveGeo = new THREE.CylinderGeometry(1.5, 0.2, 6, 16);
+        valveGeo.translate(0, 3, 0); // Pivot at top stem? No, pivot at head. Move down.
+        // Let's model valve as T shape.
+        const vHeadGeo = new THREE.CylinderGeometry(1.2, 0, 0.5, 16);
+        const vStemGeo = new THREE.CylinderGeometry(0.2, 0.2, 5, 8);
+        vStemGeo.translate(0, 2.5, 0);
+
+        // Intake Valve Mesh
+        valveIn = new THREE.Group();
+        const vInHead = new THREE.Mesh(vHeadGeo, new THREE.MeshStandardMaterial({color: CONFIG.colorValveIn}));
+        const vInStem = new THREE.Mesh(vStemGeo, new THREE.MeshStandardMaterial({color: 0xcccccc}));
+        valveIn.add(vInHead);
+        valveIn.add(vInStem);
+        valveIn.position.set(-2.5, CONFIG.cylinderHeight + 2, 0);
+        valveIn.rotation.z = Math.PI; // Point down
+        scene.add(valveIn);
+
+        // Exhaust Valve Mesh
+        valveEx = new THREE.Group();
+        const vExHead = new THREE.Mesh(vHeadGeo, new THREE.MeshStandardMaterial({color: CONFIG.colorValveEx}));
+        const vExStem = new THREE.Mesh(vStemGeo, new THREE.MeshStandardMaterial({color: 0xcccccc}));
+        valveEx.add(vExHead);
+        valveEx.add(vExStem);
+        valveEx.position.set(2.5, CONFIG.cylinderHeight + 2, 0);
+        valveEx.rotation.z = Math.PI;
+        scene.add(valveEx);
+
+        // Spark Plug
+        const sparkGeo = new THREE.CylinderGeometry(0.5, 0.5, 2, 16);
+        const spark = new THREE.Mesh(sparkGeo, new THREE.MeshStandardMaterial({color: 0xffffff}));
+        spark.position.set(0, CONFIG.cylinderHeight + 2, 0);
+        scene.add(spark);
+    }
+
+    function createParticles() {
+        const count = 200;
+        const geo = new THREE.BufferGeometry();
+        const pos = new Float32Array(count * 3);
+        const alpha = new Float32Array(count);
+
+        for (let i = 0; i < count; i++) {
+            pos[i * 3] = (Math.random() - 0.5) * 6;
+            pos[i * 3 + 1] = Math.random() * 10 + 5;
+            pos[i * 3 + 2] = (Math.random() - 0.5) * 6;
+            alpha[i] = 0;
+        }
+
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        geo.setAttribute('alpha', new THREE.BufferAttribute(alpha, 1));
+
+        const mat = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.5,
+            transparent: true,
+            opacity: 1,
+            vertexColors: false
+        });
+
+        particleSystem = new THREE.Points(geo, mat);
+        particleSystem.visible = false;
+        scene.add(particleSystem);
+    }
+
+    // --- Physics & Kinematics ---
+
+    function updatePhysics(dt) {
+        // Update cycle angle
+        if (state.isPlaying && state.rpm > 0) {
+            const degPerSec = state.rpm * 360 / 60;
+            state.cycleAngle += degPerSec * dt;
+            if (state.cycleAngle >= 720) state.cycleAngle -= 720;
+
+            // Sync slider
+            document.getElementById('input-cycle').value = state.cycleAngle;
+        }
+
+        // --- Kinematics Calculation ---
+        // Crank angle theta (0-360)
+        // Cycle is 720 (2 turns).
+        // 0-180: Intake (Down)
+        // 180-360: Compression (Up)
+        // 360-540: Power (Down)
+        // 540-720: Exhaust (Up)
+
+        // Adjust angle so 0 is Top Dead Center (TDC) visually?
+        // Standard: 0 = TDC.
+        // Piston Y = r*cos(a) + sqrt(l^2 - (r*sin(a))^2)
+        // We need to map cycleAngle (0-720) to crank rotation.
+        // 0 cycle = TDC Intake start.
+        // 180 cycle = BDC.
+
+        const rad = THREE.MathUtils.degToRad(state.cycleAngle);
+
+        // Crank Position
+        // Rotate crank visually. 0 deg -> Pin is UP (TDC).
+        // Standard trig: Y = sin(theta). If theta=0, Y=0. That's horizontal.
+        // We want Y=max at 0. So cos(theta).
+        const crankY = Math.cos(rad) * CONFIG.crankRadius;
+        const crankX = Math.sin(rad) * CONFIG.crankRadius; // Side to side
+
+        // Crank Mesh Rotation
+        // At 0 deg (Intake start), piston is at Top, moving down.
+        // Visually rotate Z.
+        crankGroup.rotation.z = -rad; // Negative for clockwise rotation standard? Or visually whatever.
+
+        // Piston Position (Kinematics)
+        // L = Rod Length, R = Crank Radius
+        // y_piston = y_crank + y_rod_vertical_component
+        // x_piston = 0 (constrained)
+        // x_crank = R * sin(a)
+        // rod_horizontal_span = x_crank
+        // rod_vertical_height = sqrt(L^2 - x_crank^2)
+
+        const rodVert = Math.sqrt(CONFIG.rodLength ** 2 - crankX ** 2);
+        const pistonY = crankY + rodVert;
+
+        pistonGroup.position.y = pistonY;
+
+        // Rod Orientation
+        // Rod connects (crankX, crankY) to (0, pistonY)
+        // Midpoint
+        rodMesh.position.x = crankX / 2;
+        rodMesh.position.y = (crankY + pistonY) / 2;
+
+        // Angle
+        // dx = -crankX, dy = rodVert
+        const rodAngle = Math.atan2(-crankX, rodVert);
+        rodMesh.rotation.z = rodAngle;
+
+        // --- Valve Logic & Effects ---
+        const angle = state.cycleAngle;
+
+        // Determine Stroke
+        let strokeName = "";
+        let stepId = "";
+
+        // Valve positions (Default closed Y)
+        const valveClosedY = CONFIG.cylinderHeight + 2;
+        let vInY = valveClosedY;
+        let vExY = valveClosedY;
+        let chamberColor = 0x222222; // Dark
+        let lightInt = 0;
+
+        if (angle < 180) {
+            // INTAKE
+            strokeName = "ВПУСК";
+            stepId = "step-1";
+            document.getElementById('stat-valves').textContent = "ВХ: ОТКР / ВЫХ: ЗАКР";
+            document.getElementById('stat-valves').style.color = "#3b82f6";
+
+            // Open Intake Valve (Sine wave lift)
+            const lift = Math.sin(THREE.MathUtils.degToRad(angle)) * CONFIG.valveLift;
+            // Only positive part of sine is relevant 0-180
+            vInY -= Math.max(0, lift);
+
+            // Particles: Fuel/Air entry
+            updateParticles('intake');
+
+        } else if (angle < 360) {
+            // COMPRESSION
+            strokeName = "СЖАТИЕ";
+            stepId = "step-2";
+            document.getElementById('stat-valves').textContent = "ВХ: ЗАКР / ВЫХ: ЗАКР";
+            document.getElementById('stat-valves').style.color = "#fbbf24";
+
+            // Both closed
+            updateParticles('compression');
+
+        } else if (angle < 540) {
+            // POWER
+            strokeName = "РАБОЧИЙ ХОД";
+            stepId = "step-3";
+            document.getElementById('stat-valves').textContent = "ВХ: ЗАКР / ВЫХ: ЗАКР";
+            document.getElementById('stat-valves').style.color = "#ef4444";
+
+            // Explosion visual at start (approx 360-380)
+            if (angle < 380) {
+                lightInt = 5 * (1 - (angle - 360) / 20); // Flash fade
+                chamberColor = 0xffaa00;
+            } else {
+                chamberColor = 0x552200; // Smoke/Burned
+            }
+
+            updateParticles('power');
+
+        } else {
+            // EXHAUST
+            strokeName = "ВЫПУСК";
+            stepId = "step-4";
+            document.getElementById('stat-valves').textContent = "ВХ: ЗАКР / ВЫХ: ОТКР";
+            document.getElementById('stat-valves').style.color = "#94a3b8";
+
+            // Open Exhaust Valve (Sine wave 540-720)
+            // Normalized angle 0-180
+            const normA = angle - 540;
+            const lift = Math.sin(THREE.MathUtils.degToRad(normA)) * CONFIG.valveLift;
+            vExY -= Math.max(0, lift);
+
+            updateParticles('exhaust');
+        }
+
+        // Apply Valve Pos
+        valveIn.position.y = vInY;
+        valveEx.position.y = vExY;
+
+        // Apply Light
+        combustionChamberLight.intensity = lightInt;
+
+        // UI Updates
+        document.getElementById('stat-stroke').textContent = strokeName;
+        document.getElementById('stat-angle').textContent = Math.floor(angle) + "°";
+
+        // Cycle Bar
+        document.querySelectorAll('.cycle-step').forEach(el => el.classList.remove('active'));
+        document.getElementById(stepId).classList.add('active');
+        document.getElementById('cycle-progress-bar').style.left = (angle / 720 * 100) + "%";
+    }
+
+    function updateParticles(mode) {
+        if (!document.getElementById('check-particles').checked) {
+            particleSystem.visible = false;
+            return;
+        }
+        particleSystem.visible = true;
+
+        const positions = particleSystem.geometry.attributes.position.array;
+        const mat = particleSystem.material;
+
+        // Dynamic color based on mode
+        if (mode === 'intake') mat.color.setHex(0x3b82f6); // Blue air
+        else if (mode === 'compression') mat.color.setHex(0x2563eb); // Compressed
+        else if (mode === 'power') mat.color.setHex(0xffaa00); // Fire
+        else if (mode === 'exhaust') mat.color.setHex(0x555555); // Smoke
+
+        // Particle logic: Fill the volume between piston and head
+        // Piston Y top surface is approx pistonGroup.position.y + 2
+        // Head Y is approx CONFIG.cylinderHeight + 2
+        const bottomY = pistonGroup.position.y + 2;
+        const topY = CONFIG.cylinderHeight + 2;
+        const volumeHeight = topY - bottomY;
+
+        for (let i = 0; i < 200; i++) {
+            // Randomly scatter in current volume
+            // Just noise for effect
+            positions[i * 3] = (Math.random() - 0.5) * 6; // X
+            // Y mapped to volume
+            positions[i * 3 + 1] = bottomY + Math.random() * volumeHeight;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 6; // Z
+        }
+        particleSystem.geometry.attributes.position.needsUpdate = true;
+    }
+
+    // --- UI Setup ---
+    function setupUI() {
+        const sliderRpm = document.getElementById('input-rpm');
+        const valRpm = document.getElementById('val-rpm');
+
+        sliderRpm.addEventListener('input', (e) => {
+            state.rpm = parseInt(e.target.value);
+            valRpm.textContent = state.rpm;
+            state.isPlaying = (state.rpm > 0);
+        });
+
+        const sliderCycle = document.getElementById('input-cycle');
+        sliderCycle.addEventListener('input', (e) => {
+            state.rpm = 0; // Stop auto play
+            sliderRpm.value = 0;
+            valRpm.textContent = 0;
+            state.isPlaying = false;
+
+            state.cycleAngle = parseFloat(e.target.value);
+            updatePhysics(0); // Force update
+        });
+
+        document.getElementById('check-transparent').addEventListener('change', (e) => {
+            cylinderMesh.material.opacity = e.target.checked ? 0.3 : 1.0;
+            cylinderMesh.material.transparent = e.target.checked;
+        });
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    let lastTime = 0;
+
+    function animate(time) {
+        requestAnimationFrame(animate);
+        const dt = (time - lastTime) / 1000 || 0;
+        lastTime = time;
+
+        updatePhysics(dt);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+
+    // Start
+    init();
+
+</script>
+</body>
+</html>
