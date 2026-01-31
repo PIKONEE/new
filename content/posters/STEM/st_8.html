@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Стыковка с МКС - Симулятор | STEM 3D</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(ellipse at center, #0a0e1a 0%, #000000 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            color: #fff;
+            position: relative;
+        }
+
+        /* Звездное поле */
+        #stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Заголовок */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 25px 35px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            z-index: 100;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 0 2px 15px rgba(0, 200, 255, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .title span {
+            color: #00c8ff;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        /* Панель управления */
+        .control-panel {
+            position: fixed;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 20px;
+            padding: 28px;
+            width: 340px;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 200, 255, 0.15);
+            z-index: 100;
+        }
+
+        .panel-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 22px;
+            color: #00c8ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 14px;
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .control-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 11px;
+        }
+
+        .control-value {
+            color: #00c8ff;
+            font-weight: 700;
+            font-size: 15px;
+            background: rgba(0, 200, 255, 0.12);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00c8ff, #0080ff);
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(0, 200, 255, 0.6);
+            transition: transform 0.2s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px 22px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #00c8ff, #0080ff);
+            color: #000;
+            box-shadow: 0 4px 20px rgba(0, 200, 255, 0.3);
+        }
+
+        .btn.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 35px rgba(0, 200, 255, 0.5);
+        }
+
+        .btn.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn.secondary.active {
+            background: rgba(0, 200, 255, 0.25);
+            border-color: #00c8ff;
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: #fff;
+        }
+
+        .btn.danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 35px rgba(255, 68, 68, 0.5);
+        }
+
+        /* Информационная панель */
+        .info-panel {
+            position: fixed;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 20px;
+            padding: 28px;
+            width: 360px;
+            border: 1px solid rgba(255, 200, 0, 0.3);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 200, 0, 0.15);
+            z-index: 100;
+        }
+
+        .info-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 22px;
+            color: #ffc800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00c8ff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .metric-unit {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-left: 4px;
+        }
+
+        .status-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .status-value {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .status-value.standby {
+            background: rgba(100, 100, 100, 0.3);
+            color: #aaa;
+        }
+
+        .status-value.approaching {
+            background: rgba(255, 200, 0, 0.2);
+            color: #ffc800;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-value.aligned {
+            background: rgba(0, 200, 255, 0.2);
+            color: #00c8ff;
+        }
+
+        .status-value.docked {
+            background: rgba(0, 255, 100, 0.2);
+            color: #00ff64;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-value.failed {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            animation: shake 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .alignment-indicator {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .alignment-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .alignment-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alignment-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .alignment-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .alignment-fill.x {
+            background: linear-gradient(90deg, #ff4444, #00ff64);
+        }
+
+        .alignment-fill.y {
+            background: linear-gradient(90deg, #4444ff, #00ff64);
+        }
+
+        .alignment-fill.z {
+            background: linear-gradient(90deg, #ff44ff, #00ff64);
+        }
+
+        /* HUD элементы */
+        .hud-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(0, 200, 255, 0.6);
+            border-radius: 50%;
+        }
+
+        .crosshair::before,
+        .crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(0, 200, 255, 0.6);
+        }
+
+        .crosshair::before {
+            width: 2px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .crosshair::after {
+            width: 20px;
+            height: 2px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Теория */
+        .theory-panel {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 20px;
+            padding: 25px 30px;
+            max-width: 700px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .theory-panel.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .theory-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00c8ff;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .theory-content {
+            font-size: 13px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .theory-content strong {
+            color: #ffc800;
+        }
+
+        /* Звезды на фоне */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Планета Земля */
+        .earth {
+            position: fixed;
+            bottom: -30%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle at 30% 30%, #4a90e2, #1e3a8a);
+            border-radius: 50%;
+            box-shadow: 0 0 100px rgba(74, 144, 226, 0.5),
+            inset -30px -30px 80px rgba(0, 0, 0, 0.5);
+            z-index: 0;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body>
+<!-- Звезды -->
+<div id="stars"></div>
+<div class="earth"></div>
+
+<!-- HUD -->
+<div class="hud-overlay">
+    <div class="crosshair"></div>
+</div>
+
+<!-- Заголовок -->
+<div class="header">
+    <div class="title">Стыковка с <span>МКС</span></div>
+    <div class="subtitle">Симулятор сближения и стыковки космического корабля</div>
+</div>
+
+<!-- 3D Canvas -->
+<div id="canvas-container"></div>
+
+<!-- Панель управления -->
+<div class="control-panel">
+    <div class="panel-title">⚙️ Управление</div>
+
+    <button class="btn primary" id="start-btn" onclick="startDocking()">🚀 Начать стыковку</button>
+    <button class="btn danger" id="reset-btn" onclick="resetSimulation()">🔄 Сброс</button>
+
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <div class="control-label" style="margin-bottom: 12px;">
+            <span>🎛️ Параметры стыковки</span>
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span style="font-size: 11px;">Скорость сближения</span>
+                <span class="control-value" id="speed-val" style="font-size: 12px;">100%</span>
+            </div>
+            <input type="range" id="speed-slider" min="50" max="200" value="100" step="10" oninput="updateSpeed()">
+        </div>
+
+        <button class="btn secondary" id="pause-btn" onclick="togglePause()" style="margin-bottom: 8px;">⏸️ Пауза
+        </button>
+        <button class="btn secondary" id="skip-btn" onclick="skipPhase()">⏩ Пропустить фазу</button>
+    </div>
+
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <button class="btn secondary" id="theory-btn" onclick="toggleTheory()">📚 Теория</button>
+
+        <div class="control-label" style="margin-top: 15px; margin-bottom: 8px;">
+            <span style="font-size: 10px;">💡 Управление камерой</span>
+        </div>
+        <div style="font-size: 10px; color: rgba(255,255,255,0.5); line-height: 1.5;">
+            • ЛКМ + движение мыши - вращение<br>
+            • Колесико - приближение/отдаление
+        </div>
+    </div>
+</div>
+
+<!-- Информационная панель -->
+<div class="info-panel">
+    <div class="info-title">📊 Телеметрия</div>
+
+    <div class="metric-grid">
+        <div class="metric">
+            <div class="metric-label">Расстояние</div>
+            <div class="metric-value" id="distance">150<span class="metric-unit">м</span></div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Скорость</div>
+            <div class="metric-value" id="velocity">0.0<span class="metric-unit">м/с</span></div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Угол</div>
+            <div class="metric-value" id="angle">0<span class="metric-unit">°</span></div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Топливо</div>
+            <div class="metric-value" id="fuel">100<span class="metric-unit">%</span></div>
+        </div>
+    </div>
+
+    <div class="status-section">
+        <div class="status-label">Статус миссии</div>
+        <div class="status-value standby" id="status">ОЖИДАНИЕ</div>
+    </div>
+
+    <div class="alignment-indicator">
+        <div class="alignment-label">Выравнивание осей</div>
+        <div class="alignment-bars">
+            <div class="alignment-bar">
+                <div class="alignment-fill x" id="align-x" style="width: 50%"></div>
+            </div>
+            <div class="alignment-bar">
+                <div class="alignment-fill y" id="align-y" style="width: 50%"></div>
+            </div>
+            <div class="alignment-bar">
+                <div class="alignment-fill z" id="align-z" style="width: 50%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Теория -->
+<div class="theory-panel" id="theory-panel">
+    <div class="theory-title">🚀 Как происходит стыковка</div>
+    <div class="theory-content">
+        <strong>Этапы стыковки:</strong><br>
+        1. <strong>Сближение</strong> - корабль приближается к станции со скоростью ~1 м/с<br>
+        2. <strong>Выравнивание</strong> - точное совмещение осей стыковочных механизмов<br>
+        3. <strong>Захват</strong> - активация стыковочного механизма при расстоянии <5 м<br>
+        4. <strong>Герметизация</strong> - создание герметичного соединения<br><br>
+        <strong>Требования:</strong> расстояние <2м, скорость сближения <0.3 м/с, угол отклонения <5°
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Инициализация сцены Three.js
+    let scene, camera, renderer, controls;
+    let spacecraft, iss, stars;
+    let dockingInProgress = false;
+    let dockingPhase = 0; // 0-не началась, 1-сближение, 2-точная коррекция, 3-захват, 4-завершено
+
+    // Состояние симуляции
+    let state = {
+        position: {x: 0, y: 0, z: -100},
+        velocity: {x: 0, y: 0, z: 0},
+        rotation: 0,
+        rotationVel: 0,
+        fuel: 100,
+        status: 'standby'
+    };
+
+    function init() {
+        // Создание сцены
+        scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0x000000, 150, 600);
+
+        // Камера - вид сбоку
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(80, 30, 80);
+        camera.lookAt(0, 0, 0);
+
+        // Рендерер
+        renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Добавляем OrbitControls для вращения камеры
+        addOrbitControls();
+
+        // Освещение
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        sunLight.position.set(150, 100, 100);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.left = -100;
+        sunLight.shadow.camera.right = 100;
+        sunLight.shadow.camera.top = 100;
+        sunLight.shadow.camera.bottom = -100;
+        scene.add(sunLight);
+
+        const fillLight = new THREE.DirectionalLight(0x4a90e2, 0.3);
+        fillLight.position.set(-50, 0, -50);
+        scene.add(fillLight);
+
+        // Создание звезд
+        createStarField();
+        createBackgroundStars();
+
+        // Создание МКС
+        createISS();
+
+        // Создание космического корабля
+        createSpacecraft();
+
+        // Запуск анимации
+        animate();
+    }
+
+    // Простая реализация OrbitControls
+    function addOrbitControls() {
+        let isDragging = false;
+        let previousMousePosition = {x: 0, y: 0};
+        let cameraDistance = Math.sqrt(
+                camera.position.x ** 2 +
+                camera.position.y ** 2 +
+                camera.position.z ** 2
+        );
+        let theta = Math.atan2(camera.position.x, camera.position.z);
+        let phi = Math.acos(camera.position.y / cameraDistance);
+
+        renderer.domElement.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = {x: e.clientX, y: e.clientY};
+        });
+
+        renderer.domElement.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+
+                theta -= deltaX * 0.005;
+                phi -= deltaY * 0.005;
+                phi = Math.max(0.1, Math.min(Math.PI - 0.1, phi));
+
+                camera.position.x = cameraDistance * Math.sin(phi) * Math.sin(theta);
+                camera.position.y = cameraDistance * Math.cos(phi);
+                camera.position.z = cameraDistance * Math.sin(phi) * Math.cos(theta);
+
+                camera.lookAt(0, 0, 0);
+                previousMousePosition = {x: e.clientX, y: e.clientY};
+            }
+        });
+
+        renderer.domElement.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        renderer.domElement.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            cameraDistance += e.deltaY * 0.05;
+            cameraDistance = Math.max(30, Math.min(200, cameraDistance));
+
+            camera.position.x = cameraDistance * Math.sin(phi) * Math.sin(theta);
+            camera.position.y = cameraDistance * Math.cos(phi);
+            camera.position.z = cameraDistance * Math.sin(phi) * Math.cos(theta);
+
+            camera.lookAt(0, 0, 0);
+        });
+    }
+
+    function createStarField() {
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 2,
+            sizeAttenuation: true,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const starsVertices = [];
+        for (let i = 0; i < 5000; i++) {
+            const x = (Math.random() - 0.5) * 2000;
+            const y = (Math.random() - 0.5) * 2000;
+            const z = (Math.random() - 0.5) * 2000;
+            starsVertices.push(x, y, z);
+        }
+
+        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+        stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+    }
+
+    function createBackgroundStars() {
+        const container = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            container.appendChild(star);
+        }
+    }
+
+    function createISS() {
+        iss = new THREE.Group();
+
+        // === ЦЕНТРАЛЬНАЯ ФЕРМА (TRUSS) ===
+        const trussSegments = [];
+        const trussLength = 50;
+        const segmentCount = 10;
+
+        for (let i = 0; i < segmentCount; i++) {
+            const x = (i - segmentCount / 2) * (trussLength / segmentCount);
+
+            // Основная балка
+            const beam = new THREE.Mesh(
+                    new THREE.BoxGeometry(4, 0.8, 0.8, 8, 2, 2),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x888888,
+                        metalness: 0.8,
+                        roughness: 0.3
+                    })
+            );
+            beam.position.x = x;
+            beam.castShadow = true;
+            iss.add(beam);
+
+            // Поперечные балки
+            const crossBeam1 = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.5, 3, 0.5, 2, 6, 2),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x777777,
+                        metalness: 0.8,
+                        roughness: 0.3
+                    })
+            );
+            crossBeam1.position.set(x, 0, 0);
+            iss.add(crossBeam1);
+
+            // Диагональные связи
+            if (i % 2 === 0) {
+                const diag1 = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.15, 0.15, 4, 8),
+                        new THREE.MeshStandardMaterial({color: 0x666666, metalness: 0.9})
+                );
+                diag1.position.set(x, 0.5, 0);
+                diag1.rotation.z = Math.PI / 4;
+                iss.add(diag1);
+
+                const diag2 = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.15, 0.15, 4, 8),
+                        new THREE.MeshStandardMaterial({color: 0x666666, metalness: 0.9})
+                );
+                diag2.position.set(x, -0.5, 0);
+                diag2.rotation.z = -Math.PI / 4;
+                iss.add(diag2);
+            }
+        }
+
+        // === МОДУЛИ СТАНЦИИ ===
+
+        // Zarya (Заря) - первый модуль
+        const zarya = new THREE.Group();
+        const zaryaBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(2.3, 2.3, 13, 32, 4),
+                new THREE.MeshStandardMaterial({
+                    color: 0xdddddd,
+                    metalness: 0.6,
+                    roughness: 0.4
+                })
+        );
+        zaryaBody.rotation.z = Math.PI / 2;
+        zaryaBody.castShadow = true;
+        zarya.add(zaryaBody);
+
+        // Детали модуля Заря
+        for (let i = 0; i < 6; i++) {
+            const ring = new THREE.Mesh(
+                    new THREE.TorusGeometry(2.35, 0.08, 8, 24),
+                    new THREE.MeshStandardMaterial({color: 0xaaaaaa, metalness: 0.8})
+            );
+            ring.rotation.y = Math.PI / 2;
+            ring.position.x = -6 + i * 2.4;
+            zarya.add(ring);
+        }
+
+        // Радиаторы
+        for (let side of [-1, 1]) {
+            const radiator = new THREE.Mesh(
+                    new THREE.BoxGeometry(8, 3, 0.1, 16, 6, 1),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x333333,
+                        metalness: 0.7,
+                        roughness: 0.5
+                    })
+            );
+            radiator.position.set(0, side * 3, 0);
+            zarya.add(radiator);
+
+            // Решетка радиатора
+            const gridGeometry = new THREE.BufferGeometry();
+            const gridPoints = [];
+            for (let i = -4; i <= 4; i += 0.5) {
+                gridPoints.push(i, -1.5, 0.06, i, 1.5, 0.06);
+            }
+            for (let j = -1.5; j <= 1.5; j += 0.5) {
+                gridPoints.push(-4, j, 0.06, 4, j, 0.06);
+            }
+            gridGeometry.setAttribute('position', new THREE.Float32BufferAttribute(gridPoints, 3));
+            const grid = new THREE.LineSegments(gridGeometry, new THREE.LineBasicMaterial({color: 0x555555}));
+            grid.position.set(0, side * 3, 0);
+            zarya.add(grid);
+        }
+
+        zarya.position.set(0, 0, 0);
+        iss.add(zarya);
+
+        // Zvezda (Звезда) - жилой модуль
+        const zvezda = new THREE.Group();
+        const zvezdaBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(2.2, 2.2, 13, 32, 4),
+                new THREE.MeshStandardMaterial({
+                    color: 0xcccccc,
+                    metalness: 0.6,
+                    roughness: 0.4
+                })
+        );
+        zvezdaBody.rotation.z = Math.PI / 2;
+        zvezdaBody.castShadow = true;
+        zvezda.add(zvezdaBody);
+
+        // Окна модуля Звезда
+        for (let i = 0; i < 4; i++) {
+            const window = new THREE.Mesh(
+                    new THREE.CircleGeometry(0.3, 16),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x111111,
+                        emissive: 0x4a90e2,
+                        emissiveIntensity: 0.3
+                    })
+            );
+            const angle = (Math.PI / 2) * i;
+            window.position.set(3, Math.cos(angle) * 2.25, Math.sin(angle) * 2.25);
+            window.rotation.y = Math.PI / 2;
+            window.rotation.z = -angle;
+            zvezda.add(window);
+        }
+
+        zvezda.position.set(-15, 0, 0);
+        iss.add(zvezda);
+
+        // Unity (Node 1) - соединительный узел
+        const unity = new THREE.Mesh(
+                new THREE.CylinderGeometry(2.5, 2.5, 5, 16, 2),
+                new THREE.MeshStandardMaterial({
+                    color: 0xbbbbbb,
+                    metalness: 0.7,
+                    roughness: 0.3
+                })
+        );
+        unity.castShadow = true;
+        unity.position.set(10, 0, 0);
+        iss.add(unity);
+
+        // Destiny (лабораторный модуль США)
+        const destiny = new THREE.Group();
+        const destinyBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(2.1, 2.1, 8.5, 24, 3),
+                new THREE.MeshStandardMaterial({
+                    color: 0xdedede,
+                    metalness: 0.6,
+                    roughness: 0.4
+                })
+        );
+        destinyBody.rotation.z = Math.PI / 2;
+        destinyBody.castShadow = true;
+        destiny.add(destinyBody);
+
+        destiny.position.set(17, 0, 0);
+        iss.add(destiny);
+
+        // Columbus (европейский модуль)
+        const columbus = new THREE.Mesh(
+                new THREE.CylinderGeometry(2.2, 2.2, 7, 24, 3),
+                new THREE.MeshStandardMaterial({
+                    color: 0xd0d0d0,
+                    metalness: 0.6,
+                    roughness: 0.4
+                })
+        );
+        columbus.rotation.x = Math.PI / 2;
+        columbus.castShadow = true;
+        columbus.position.set(10, 0, 5);
+        iss.add(columbus);
+
+        // Kibo (японский модуль)
+        const kibo = new THREE.Mesh(
+                new THREE.CylinderGeometry(2.2, 2.2, 11, 24, 3),
+                new THREE.MeshStandardMaterial({
+                    color: 0xe0e0e0,
+                    metalness: 0.6,
+                    roughness: 0.4
+                })
+        );
+        kibo.rotation.x = Math.PI / 2;
+        kibo.castShadow = true;
+        kibo.position.set(10, 0, -7);
+        iss.add(kibo);
+
+        // === СТЫКОВОЧНЫЙ МОДУЛЬ ===
+        const dockingModule = new THREE.Group();
+
+        const dockingBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.8, 1.8, 4, 24),
+                new THREE.MeshStandardMaterial({
+                    color: 0xaaaaaa,
+                    metalness: 0.7,
+                    roughness: 0.3
+                })
+        );
+        dockingBody.castShadow = true;
+        dockingModule.add(dockingBody);
+
+        // Стыковочный конус
+        const dockingCone = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.2, 1.8, 2, 24),
+                new THREE.MeshStandardMaterial({
+                    color: 0x999999,
+                    metalness: 0.8,
+                    roughness: 0.2
+                })
+        );
+        dockingCone.position.y = 3;
+        dockingModule.add(dockingCone);
+
+        // Стыковочное кольцо
+        const dockingRing = new THREE.Mesh(
+                new THREE.TorusGeometry(1.2, 0.15, 16, 32),
+                new THREE.MeshStandardMaterial({
+                    color: 0xffaa00,
+                    emissive: 0xffaa00,
+                    emissiveIntensity: 0.6,
+                    metalness: 0.9,
+                    roughness: 0.1
+                })
+        );
+        dockingRing.position.y = 4;
+        dockingRing.rotation.x = Math.PI / 2;
+        dockingModule.add(dockingRing);
+
+        // Огни стыковочного порта
+        const dockingLights = [0, Math.PI / 2, Math.PI, Math.PI * 1.5];
+        dockingLights.forEach((angle, i) => {
+            const light = new THREE.PointLight(0x00c8ff, 1.5, 20);
+            light.position.set(
+                    Math.cos(angle) * 1.5,
+                    4.2,
+                    Math.sin(angle) * 1.5
+            );
+            dockingModule.add(light);
+
+            const lightMesh = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.15, 12, 12),
+                    new THREE.MeshBasicMaterial({
+                        color: 0x00c8ff,
+                        emissive: 0x00c8ff,
+                        emissiveIntensity: 1
+                    })
+            );
+            lightMesh.position.copy(light.position);
+            dockingModule.add(lightMesh);
+        });
+
+        dockingModule.position.set(24, 0, 0);
+        iss.add(dockingModule);
+
+        // === СОЛНЕЧНЫЕ ПАНЕЛИ ===
+        iss.solarPanels = [];
+
+        const createSolarArray = (x, y, z) => {
+            const solarGroup = new THREE.Group();
+
+            // Ферма для панелей
+            const mast = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.4, 0.4, 12, 2, 2, 24),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x666666,
+                        metalness: 0.8,
+                        roughness: 0.4
+                    })
+            );
+            solarGroup.add(mast);
+
+            // Механизм вращения
+            const rotator = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.5, 0.5, 1, 16),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x555555,
+                        metalness: 0.9,
+                        roughness: 0.2
+                    })
+            );
+            rotator.rotation.x = Math.PI / 2;
+            rotator.position.z = 6;
+            solarGroup.add(rotator);
+
+            // Солнечная панель (двойная)
+            const panelGroup = new THREE.Group();
+
+            for (let side of [-1, 1]) {
+                const panel = new THREE.Mesh(
+                        new THREE.BoxGeometry(18, 6, 0.15, 36, 12, 1),
+                        new THREE.MeshStandardMaterial({
+                            color: 0x1a237e,
+                            metalness: 0.95,
+                            roughness: 0.05,
+                            emissive: 0x0d47a1,
+                            emissiveIntensity: 0.15
+                        })
+                );
+                panel.position.x = side * 9.1;
+                panelGroup.add(panel);
+
+                // Сетка ячеек солнечных батарей
+                const gridGeometry = new THREE.BufferGeometry();
+                const gridPoints = [];
+
+                // Горизонтальные линии
+                for (let i = -3; i <= 3; i += 0.5) {
+                    gridPoints.push(-9, i, 0.08, 9, i, 0.08);
+                }
+                // Вертикальные линии
+                for (let j = -9; j <= 9; j += 0.5) {
+                    gridPoints.push(j, -3, 0.08, j, 3, 0.08);
+                }
+
+                gridGeometry.setAttribute('position', new THREE.Float32BufferAttribute(gridPoints, 3));
+                const grid = new THREE.LineSegments(
+                        gridGeometry,
+                        new THREE.LineBasicMaterial({color: 0x000033, linewidth: 1})
+                );
+                grid.position.x = side * 9.1;
+                panelGroup.add(grid);
+
+                // Рамка панели
+                const frameGeometry = new THREE.BoxGeometry(18.2, 6.2, 0.2);
+                const frameEdges = new THREE.EdgesGeometry(frameGeometry);
+                const frameLine = new THREE.LineSegments(
+                        frameEdges,
+                        new THREE.LineBasicMaterial({color: 0x333333, linewidth: 2})
+                );
+                frameLine.position.x = side * 9.1;
+                panelGroup.add(frameLine);
+            }
+
+            panelGroup.position.z = 6;
+            solarGroup.add(panelGroup);
+
+            solarGroup.position.set(x, y, z);
+            iss.add(solarGroup);
+
+            return panelGroup;
+        };
+
+        // 4 массива солнечных панелей
+        iss.solarPanels.push(createSolarArray(-12, 5, 0));
+        iss.solarPanels.push(createSolarArray(-12, -5, 0));
+        iss.solarPanels.push(createSolarArray(12, 5, 0));
+        iss.solarPanels.push(createSolarArray(12, -5, 0));
+
+        // === АНТЕННЫ И ОБОРУДОВАНИЕ ===
+
+        // Главная антенна
+        const mainAntenna = new THREE.Group();
+        const antennaDish = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.5, 1.5, 0.3, 32),
+                new THREE.MeshStandardMaterial({
+                    color: 0xeeeeee,
+                    metalness: 0.9,
+                    roughness: 0.1
+                })
+        );
+        antennaDish.rotation.x = Math.PI / 2;
+        mainAntenna.add(antennaDish);
+
+        const antennaArm = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.1, 0.1, 3, 8),
+                new THREE.MeshStandardMaterial({color: 0x666666})
+        );
+        antennaArm.position.y = 1.5;
+        mainAntenna.add(antennaArm);
+
+        mainAntenna.position.set(5, 4, 0);
+        iss.add(mainAntenna);
+
+        // Дополнительные антенны
+        for (let i = 0; i < 3; i++) {
+            const smallAntenna = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.05, 0.05, 2, 8),
+                    new THREE.MeshStandardMaterial({color: 0x555555})
+            );
+            smallAntenna.position.set(-8 + i * 8, 3.5, i % 2 === 0 ? 2 : -2);
+            smallAntenna.rotation.z = Math.PI / 6;
+            iss.add(smallAntenna);
+        }
+
+        iss.position.set(0, 0, 0);
+        scene.add(iss);
+    }
+
+    function createSpacecraft() {
+        spacecraft = new THREE.Group();
+
+        // Основной корпус капсулы
+        const capsule = new THREE.Mesh(
+                new THREE.SphereGeometry(2, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2),
+                new THREE.MeshStandardMaterial({
+                    color: 0xe0e0e0,
+                    metalness: 0.6,
+                    roughness: 0.4
+                })
+        );
+        capsule.castShadow = true;
+        capsule.receiveShadow = true;
+        spacecraft.add(capsule);
+
+        // Цилиндрический корпус
+        const body = new THREE.Mesh(
+                new THREE.CylinderGeometry(2, 2, 4, 32),
+                new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                    metalness: 0.7,
+                    roughness: 0.3
+                })
+        );
+        body.position.y = -2;
+        body.castShadow = true;
+        spacecraft.add(body);
+
+        // Служебный модуль
+        const serviceModule = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.8, 2.2, 3, 32),
+                new THREE.MeshStandardMaterial({
+                    color: 0xcccccc,
+                    metalness: 0.8,
+                    roughness: 0.2
+                })
+        );
+        serviceModule.position.y = -5.5;
+        serviceModule.castShadow = true;
+        spacecraft.add(serviceModule);
+
+        // Двигатели
+        const engines = [
+            {x: 1.5, z: 1.5},
+            {x: -1.5, z: 1.5},
+            {x: 1.5, z: -1.5},
+            {x: -1.5, z: -1.5}
+        ];
+
+        engines.forEach(e => {
+            const engine = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.3, 0.4, 1, 16),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x333333,
+                        metalness: 0.9,
+                        roughness: 0.1
+                    })
+            );
+            engine.position.set(e.x, -7.5, e.z);
+            spacecraft.add(engine);
+
+            // Свечение двигателя
+            const glow = new THREE.PointLight(0xff6600, 0, 5);
+            glow.position.set(e.x, -8, e.z);
+            spacecraft.add(glow);
+        });
+
+        // Стыковочный механизм
+        const dockingMech = new THREE.Group();
+
+        const mechBase = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.8, 1, 1.5, 16),
+                new THREE.MeshStandardMaterial({
+                    color: 0x888888,
+                    metalness: 0.8
+                })
+        );
+        dockingMech.add(mechBase);
+
+        const mechProbe = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.3, 0.3, 1, 16),
+                new THREE.MeshStandardMaterial({
+                    color: 0x555555,
+                    metalness: 0.9
+                })
+        );
+        mechProbe.position.y = 1.25;
+        dockingMech.add(mechProbe);
+
+        dockingMech.position.y = 2;
+        dockingMech.rotation.x = Math.PI;
+        spacecraft.add(dockingMech);
+
+        // Антенны
+        for (let i = 0; i < 4; i++) {
+            const angle = (Math.PI * 2 * i) / 4;
+            const antenna = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.05, 0.05, 3, 8),
+                    new THREE.MeshStandardMaterial({color: 0x444444})
+            );
+            antenna.position.set(
+                    Math.cos(angle) * 1.5,
+                    -3,
+                    Math.sin(angle) * 1.5
+            );
+            antenna.rotation.z = Math.PI / 6;
+            spacecraft.add(antenna);
+        }
+
+        // Огни навигации
+        const navLights = [
+            {color: 0x00ff00, pos: [0, 0, 2]},
+            {color: 0xff0000, pos: [0, 0, -2]},
+            {color: 0xffffff, pos: [2, 0, 0]},
+            {color: 0xffffff, pos: [-2, 0, 0]}
+        ];
+
+        navLights.forEach(l => {
+            const light = new THREE.PointLight(l.color, 0.5, 10);
+            light.position.set(...l.pos);
+            spacecraft.add(light);
+
+            const lightMesh = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.1, 8, 8),
+                    new THREE.MeshBasicMaterial({
+                        color: l.color,
+                        emissive: l.color,
+                        emissiveIntensity: 1
+                    })
+            );
+            lightMesh.position.set(...l.pos);
+            spacecraft.add(lightMesh);
+        });
+
+        spacecraft.position.set(0, 0, -150);
+        scene.add(spacecraft);
+    }
+
+    let dockingSpeed = 1.0;
+    let isPaused = false;
+
+    function updateSpeed() {
+        const value = document.getElementById('speed-slider').value;
+        dockingSpeed = value / 100;
+        document.getElementById('speed-val').textContent = value + '%';
+    }
+
+    function togglePause() {
+        isPaused = !isPaused;
+        const btn = document.getElementById('pause-btn');
+        if (isPaused) {
+            btn.textContent = '▶️ Продолжить';
+            btn.classList.add('active');
+        } else {
+            btn.textContent = '⏸️ Пауза';
+            btn.classList.remove('active');
+        }
+    }
+
+    function skipPhase() {
+        if (!dockingInProgress || dockingPhase >= 4) return;
+
+        dockingPhase++;
+
+        // Мгновенно переходим к началу следующей фазы
+        if (dockingPhase === 2) {
+            state.position.z = -30;
+            state.velocity = {x: 0, y: 0, z: 0};
+        } else if (dockingPhase === 3) {
+            state.position.z = -10;
+            state.position.x = 0;
+            state.position.y = 0;
+            state.velocity = {x: 0, y: 0, z: 0};
+        } else if (dockingPhase === 4) {
+            state.position.z = 0;
+            state.position.x = 0;
+            state.position.y = 0;
+            state.velocity = {x: 0, y: 0, z: 0};
+            state.rotation = 0;
+        }
+    }
+
+    function startDocking() {
+        if (dockingInProgress) return;
+
+        dockingInProgress = true;
+        dockingPhase = 1;
+        state.status = 'approaching';
+
+        document.getElementById('start-btn').disabled = true;
+        document.getElementById('start-btn').textContent = '⏳ Стыковка в процессе...';
+
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = 'НАЧАЛО СБЛИЖЕНИЯ';
+        statusEl.className = 'status-value approaching';
+    }
+
+    function updateDocking(delta) {
+        if (!dockingInProgress || isPaused) return;
+
+        // Применяем множитель скорости
+        delta *= dockingSpeed;
+
+        const distance = Math.sqrt(
+                state.position.x ** 2 +
+                state.position.y ** 2 +
+                state.position.z ** 2
+        );
+
+        const statusEl = document.getElementById('status');
+
+        // Фаза 1: Сближение с МКС (100м -> 30м)
+        if (dockingPhase === 1) {
+            statusEl.textContent = 'ФАЗА 1: СБЛИЖЕНИЕ';
+            statusEl.className = 'status-value approaching';
+
+            // Движение вперед со скоростью ~0.8 м/с
+            const targetZ = -30;
+            const speed = 0.5;
+
+            if (state.position.z < targetZ) {
+                state.velocity.z = speed;
+            } else {
+                state.velocity.z = 0;
+                dockingPhase = 2;
+            }
+
+            // Корректировка положения по X и Y
+            state.velocity.x = -state.position.x * 0.02;
+            state.velocity.y = -state.position.y * 0.02;
+        }
+
+        // Фаза 2: Точная коррекция (30м -> 10м)
+        else if (dockingPhase === 2) {
+            statusEl.textContent = 'ФАЗА 2: ТОЧНАЯ КОРРЕКЦИЯ';
+            statusEl.className = 'status-value aligned';
+
+            const targetZ = -10;
+            const speed = 0.2;
+
+            if (state.position.z < targetZ) {
+                state.velocity.z = speed;
+            } else {
+                state.velocity.z = 0;
+                dockingPhase = 3;
+            }
+
+            // Более точная коррекция
+            state.velocity.x = -state.position.x * 0.05;
+            state.velocity.y = -state.position.y * 0.05;
+
+            // Выравнивание по углу
+            state.rotationVel = -state.rotation * 0.1;
+        }
+
+        // Фаза 3: Финальное сближение и захват (10м -> 0м)
+        else if (dockingPhase === 3) {
+            statusEl.textContent = 'ФАЗА 3: ЗАХВАТ';
+            statusEl.className = 'status-value docked';
+
+            const targetZ = 0;
+            const speed = 0.1;
+
+            if (state.position.z < targetZ - 0.5) {
+                state.velocity.z = speed;
+            } else {
+                state.velocity.z = 0;
+                state.velocity.x = 0;
+                state.velocity.y = 0;
+                dockingPhase = 4;
+
+                setTimeout(() => {
+                    statusEl.textContent = 'СТЫКОВКА ЗАВЕРШЕНА!';
+                    alert('🎉 Стыковка успешно завершена!\n\n' +
+                            'Все этапы пройдены:\n' +
+                            '✓ Фаза 1: Сближение\n' +
+                            '✓ Фаза 2: Точная коррекция\n' +
+                            '✓ Фаза 3: Захват и герметизация\n\n' +
+                            'Космический корабль успешно пристыкован к МКС!');
+                }, 1000);
+            }
+
+            // Очень точная коррекция
+            state.velocity.x = -state.position.x * 0.1;
+            state.velocity.y = -state.position.y * 0.1;
+            state.rotationVel = -state.rotation * 0.2;
+        }
+    }
+
+    function resetSimulation() {
+        dockingInProgress = false;
+        dockingPhase = 0;
+        isPaused = false;
+
+        state = {
+            position: {x: 0, y: 0, z: -100},
+            velocity: {x: 0, y: 0, z: 0},
+            rotation: 0,
+            rotationVel: 0,
+            fuel: 100,
+            status: 'standby'
+        };
+
+        document.getElementById('start-btn').disabled = false;
+        document.getElementById('start-btn').textContent = '🚀 Начать стыковку';
+
+        document.getElementById('pause-btn').textContent = '⏸️ Пауза';
+        document.getElementById('pause-btn').classList.remove('active');
+
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = 'ОЖИДАНИЕ';
+        statusEl.className = 'status-value standby';
+    }
+
+    function toggleTheory() {
+        const panel = document.getElementById('theory-panel');
+        panel.classList.toggle('visible');
+        document.getElementById('theory-btn').classList.toggle('active', panel.classList.contains('visible'));
+    }
+
+    function updatePhysics(delta) {
+        // Обновление позиции
+        state.position.x += state.velocity.x * delta * 60;
+        state.position.y += state.velocity.y * delta * 60;
+        state.position.z += state.velocity.z * delta * 60;
+        state.rotation += state.rotationVel * delta * 60;
+
+        // Затухание скорости
+        state.velocity.x *= 0.98;
+        state.velocity.y *= 0.98;
+        state.velocity.z *= 0.98;
+        state.rotationVel *= 0.98;
+
+        // Обновление позиции корабля
+        spacecraft.position.set(state.position.x, state.position.y, state.position.z);
+        spacecraft.rotation.y = state.rotation;
+
+        // Обновление телеметрии
+        const distance = Math.sqrt(
+                state.position.x ** 2 +
+                state.position.y ** 2 +
+                state.position.z ** 2
+        );
+        const velocity = Math.sqrt(
+                state.velocity.x ** 2 +
+                state.velocity.y ** 2 +
+                state.velocity.z ** 2
+        );
+
+        document.getElementById('distance').innerHTML = distance.toFixed(1) + '<span class="metric-unit">м</span>';
+        document.getElementById('velocity').innerHTML = velocity.toFixed(2) + '<span class="metric-unit">м/с</span>';
+        document.getElementById('angle').innerHTML = (Math.abs(state.rotation * 57.3)).toFixed(1) + '<span class="metric-unit">°</span>';
+
+        // Симуляция расхода топлива
+        if (dockingInProgress) {
+            state.fuel = Math.max(0, state.fuel - velocity * 0.05);
+        }
+        document.getElementById('fuel').innerHTML = state.fuel.toFixed(0) + '<span class="metric-unit">%</span>';
+
+        // Обновление выравнивания
+        const alignX = Math.max(0, Math.min(100, 100 - Math.abs(state.position.x) * 10));
+        const alignY = Math.max(0, Math.min(100, 100 - Math.abs(state.position.y) * 10));
+        const alignZ = Math.max(0, Math.min(100, 100 - Math.abs(state.position.z) * 2));
+
+        document.getElementById('align-x').style.width = alignX + '%';
+        document.getElementById('align-y').style.width = alignY + '%';
+        document.getElementById('align-z').style.width = alignZ + '%';
+    }
+
+    let lastTime = 0;
+
+    function animate(currentTime) {
+        requestAnimationFrame(animate);
+
+        const delta = (currentTime - lastTime) / 1000 || 0.016;
+        lastTime = currentTime;
+
+        // Процесс стыковки
+        updateDocking(delta);
+
+        // Физика
+        updatePhysics(delta);
+
+        // Медленное вращение МКС
+        iss.rotation.y += 0.0001;
+
+        // Медленное вращение солнечных панелей
+        if (iss.solarPanels) {
+            iss.solarPanels.forEach(panel => {
+                panel.rotation.z += 0.0005;
+            });
+        }
+
+        // Мерцание огней на корабле
+        const time = currentTime * 0.001;
+        spacecraft.children.forEach(child => {
+            if (child.type === 'PointLight') {
+                child.intensity = 0.5 + Math.sin(time * 3 + child.position.x * 10) * 0.3;
+            }
+        });
+
+        // Мерцание огней на МКС
+        iss.children.forEach(child => {
+            if (child.type === 'Group') {
+                child.children.forEach(subChild => {
+                    if (subChild.type === 'PointLight') {
+                        subChild.intensity = 0.8 + Math.sin(time * 2 + subChild.position.x * 5) * 0.4;
+                    }
+                });
+            }
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    window.addEventListener('resize', onWindowResize);
+
+    // Инициализация при загрузке
+    window.addEventListener('load', init);
+</script>
+</body>
+</html>

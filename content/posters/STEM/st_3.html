@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гидравлический Пресс - Закон Паскаля | STEM 3D</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Заголовок */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 30px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+            z-index: 100;
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .title span {
+            color: #4fc3f7;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* Панель управления */
+        .control-panel {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            width: 300px;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(79, 195, 247, 0.1);
+            z-index: 100;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #4fc3f7;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-group {
+            margin-bottom: 22px;
+        }
+
+        .control-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-value {
+            color: #4fc3f7;
+            font-weight: 600;
+            font-size: 14px;
+            background: rgba(79, 195, 247, 0.1);
+            padding: 3px 10px;
+            border-radius: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4fc3f7, #0288d1);
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(79, 195, 247, 0.5);
+            transition: transform 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #4fc3f7, #0288d1);
+            color: #000;
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 195, 247, 0.4);
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn.secondary.active {
+            background: rgba(79, 195, 247, 0.3);
+            border-color: #4fc3f7;
+        }
+
+        /* Информационная панель */
+        .info-panel {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            width: 320px;
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 152, 0, 0.1);
+            z-index: 100;
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ffb74d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .formula-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .formula-title {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .formula {
+            font-size: 22px;
+            font-family: 'Times New Roman', serif;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .formula sub {
+            font-size: 14px;
+        }
+
+        .calculation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .calc-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .calc-item.full-width {
+            grid-column: span 2;
+        }
+
+        .calc-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .calc-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .calc-value.force-in {
+            color: #4fc3f7;
+        }
+
+        .calc-value.force-out {
+            color: #ff7043;
+        }
+
+        .calc-value.pressure {
+            color: #ab47bc;
+        }
+
+        .calc-value.advantage {
+            color: #66bb6a;
+        }
+
+        .calc-value.area {
+            color: #ffb74d;
+        }
+
+        .calc-unit {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-left: 3px;
+        }
+
+        /* Индикатор давления */
+        .pressure-indicator {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(90deg, rgba(79, 195, 247, 0.2), rgba(171, 71, 188, 0.2));
+            border-radius: 12px;
+            border: 1px solid rgba(171, 71, 188, 0.3);
+        }
+
+        .pressure-bar-container {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .pressure-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4fc3f7, #ab47bc, #ff7043);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* Легенда */
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 15px 30px;
+            display: flex;
+            gap: 30px;
+            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* Подсказка */
+        .hint-box {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 152, 0, 0.15);
+            border: 1px solid rgba(255, 152, 0, 0.4);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 13px;
+            color: #ffb74d;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Загрузка */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #4fc3f7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Теория */
+        .theory-panel {
+            position: fixed;
+            left: 340px;
+            bottom: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+            border: 1px solid rgba(102, 187, 106, 0.3);
+            z-index: 100;
+            display: none;
+        }
+
+        .theory-panel.visible {
+            display: block;
+        }
+
+        .theory-title {
+            color: #66bb6a;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theory-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .theory-text strong {
+            color: #4fc3f7;
+        }
+
+        /* Анимация частиц давления */
+        @keyframes particleFlow {
+            0% {
+                transform: translateX(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Загрузка гидравлической системы...</div>
+</div>
+
+<div id="canvas-container"></div>
+
+<div class="header">
+    <div class="title">Гидравлический <span>Пресс</span></div>
+    <div class="subtitle">Закон Паскаля • Интерактивная 3D модель • STEM</div>
+</div>
+
+<div class="control-panel">
+    <div class="panel-title">⚙️ Параметры системы</div>
+
+    <div class="control-group">
+        <div class="control-label">
+            <span>Входная сила (F₁)</span>
+            <span class="control-value" id="force-value">100 Н</span>
+        </div>
+        <input type="range" id="input-force" min="10" max="500" value="100" step="10">
+    </div>
+
+    <div class="control-group">
+        <div class="control-label">
+            <span>Диаметр малого поршня (d₁)</span>
+            <span class="control-value" id="small-diameter-value">2 см</span>
+        </div>
+        <input type="range" id="small-diameter" min="1" max="5" value="2" step="0.5">
+    </div>
+
+    <div class="control-group">
+        <div class="control-label">
+            <span>Диаметр большого поршня (d₂)</span>
+            <span class="control-value" id="large-diameter-value">10 см</span>
+        </div>
+        <input type="range" id="large-diameter" min="5" max="20" value="10" step="1">
+    </div>
+
+    <button class="btn primary" id="press-btn" onclick="activatePress()">
+        ⬇️ Нажать на поршень
+    </button>
+
+    <button class="btn secondary" id="animate-btn" onclick="toggleAnimation()">
+        🔄 Автоматический цикл
+    </button>
+
+    <button class="btn secondary" id="particles-btn" onclick="toggleParticles()">
+        💧 Показать давление
+    </button>
+
+    <button class="btn secondary" id="cutaway-btn" onclick="toggleCutaway()">
+        🔍 Режим разреза
+    </button>
+
+    <button class="btn secondary" id="theory-btn" onclick="toggleTheory()">
+        📚 Теория
+    </button>
+</div>
+
+<div class="info-panel">
+    <div class="info-title">📊 Расчёты в реальном времени</div>
+
+    <div class="formula-section">
+        <div class="formula-title">Закон Паскаля</div>
+        <div class="formula">P = F / A</div>
+    </div>
+
+    <div class="formula-section">
+        <div class="formula-title">Соотношение сил</div>
+        <div class="formula">F₁/A₁ = F₂/A₂</div>
+    </div>
+
+    <div class="calculation-grid">
+        <div class="calc-item">
+            <div class="calc-label">Входная сила (F₁)</div>
+            <div class="calc-value force-in" id="calc-f1">100<span class="calc-unit">Н</span></div>
+        </div>
+        <div class="calc-item">
+            <div class="calc-label">Выходная сила (F₂)</div>
+            <div class="calc-value force-out" id="calc-f2">2500<span class="calc-unit">Н</span></div>
+        </div>
+        <div class="calc-item">
+            <div class="calc-label">Площадь S₁</div>
+            <div class="calc-value area" id="calc-a1">3.14<span class="calc-unit">см²</span></div>
+        </div>
+        <div class="calc-item">
+            <div class="calc-label">Площадь S₂</div>
+            <div class="calc-value area" id="calc-a2">78.5<span class="calc-unit">см²</span></div>
+        </div>
+        <div class="calc-item full-width">
+            <div class="calc-label">Давление в системе (P)</div>
+            <div class="calc-value pressure" id="calc-pressure">31.8<span class="calc-unit">Н/см²</span></div>
+        </div>
+        <div class="calc-item full-width">
+            <div class="calc-label">Механическое преимущество</div>
+            <div class="calc-value advantage" id="calc-advantage">×25</div>
+        </div>
+    </div>
+
+    <div class="pressure-indicator">
+        <div class="calc-label">Визуализация давления</div>
+        <div class="pressure-bar-container">
+            <div class="pressure-bar" id="pressure-bar" style="width: 30%"></div>
+        </div>
+    </div>
+</div>
+
+<div class="theory-panel" id="theory-panel">
+    <div class="theory-title">📖 Закон Паскаля</div>
+    <div class="theory-text">
+        <strong>Закон Паскаля</strong> гласит: давление, производимое на жидкость или газ, передаётся <strong>без
+        изменения</strong> во все точки жидкости или газа.
+        <br><br>
+        В гидравлическом прессе это означает, что <strong>давление одинаково</strong> под обоими поршнями. Поскольку P =
+        F/A, а давление равно, то:
+        <br><br>
+        <strong>F₂ = F₁ × (A₂/A₁)</strong>
+        <br><br>
+        Чем больше разница в площадях поршней, тем больше <strong>механическое преимущество</strong> системы!
+    </div>
+</div>
+
+<div class="legend">
+    <div class="legend-item">
+        <div class="legend-color" style="background: #4fc3f7;"></div>
+        <span>Малый поршень (вход)</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background: #ff7043;"></div>
+        <span>Большой поршень (выход)</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background: #ab47bc;"></div>
+        <span>Гидравлическая жидкость</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background: #66bb6a;"></div>
+        <span>Давление</span>
+    </div>
+</div>
+
+<div class="hint-box">
+    💡 Перетаскивайте мышь для вращения модели • Колёсико для масштаба
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Глобальные переменные
+    let scene, camera, renderer;
+    let hydraulicSystem = {};
+    let pressureParticles = [];
+    let inputForce = 100;
+    let smallDiameter = 2;
+    let largeDiameter = 10;
+    let isPressed = false;
+    let pressAnimation = 0;
+    let autoAnimate = false;
+    let showParticles = false;
+    let showCutaway = false;
+    let particleSystem;
+
+    function init() {
+        // Сцена
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a2e);
+
+        // Камера
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(30, 20, 30);
+        camera.lookAt(0, 0, 0);
+
+        // Рендерер
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Освещение
+        setupLighting();
+
+        // Создание гидравлической системы
+        createHydraulicPress();
+
+        // Пол
+        createEnvironment();
+
+        // Частицы давления
+        createPressureParticles();
+
+        // Управление камерой
+        setupControls();
+
+        // UI события
+        setupUIEvents();
+
+        // Анимация
+        animate();
+
+        // Расчёты и начальное состояние
+        updateCalculations();
+        updatePistonGeometry();
+
+        // Скрыть загрузку
+        setTimeout(() => {
+            document.getElementById('loading').classList.add('hidden');
+        }, 800);
+    }
+
+    function setupLighting() {
+        // Амбиентный свет
+        const ambient = new THREE.AmbientLight(0x404060, 0.6);
+        scene.add(ambient);
+
+        // Основной направленный свет
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1);
+        mainLight.position.set(20, 40, 20);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        scene.add(mainLight);
+
+        // Заполняющий свет
+        const fillLight = new THREE.DirectionalLight(0x4fc3f7, 0.4);
+        fillLight.position.set(-20, 20, -10);
+        scene.add(fillLight);
+
+        // Подсветка снизу
+        const bottomLight = new THREE.PointLight(0xab47bc, 0.5, 30);
+        bottomLight.position.set(0, -5, 0);
+        scene.add(bottomLight);
+    }
+
+    function createEnvironment() {
+        // Пол
+        const floorGeom = new THREE.PlaneGeometry(100, 100);
+        const floorMat = new THREE.MeshStandardMaterial({
+            color: 0x1a1a2e,
+            roughness: 0.8,
+            metalness: 0.2
+        });
+        const floor = new THREE.Mesh(floorGeom, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = -12;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // Сетка
+        const gridHelper = new THREE.GridHelper(60, 30, 0x333355, 0x222244);
+        gridHelper.position.y = -11.9;
+        scene.add(gridHelper);
+    }
+
+    function createHydraulicPress() {
+        const pressGroup = new THREE.Group();
+
+        // Материалы
+        const metalMat = new THREE.MeshStandardMaterial({
+            color: 0x555566,
+            roughness: 0.3,
+            metalness: 0.8
+        });
+
+        const fluidMat = new THREE.MeshStandardMaterial({
+            color: 0x7b1fa2,
+            roughness: 0.1,
+            metalness: 0.3,
+            transparent: true,
+            opacity: 0.85
+        });
+
+        const smallPistonMat = new THREE.MeshStandardMaterial({
+            color: 0x4fc3f7,
+            roughness: 0.3,
+            metalness: 0.7
+        });
+
+        const largePistonMat = new THREE.MeshStandardMaterial({
+            color: 0xff7043,
+            roughness: 0.3,
+            metalness: 0.7
+        });
+
+        const glassMat = new THREE.MeshStandardMaterial({
+            color: 0xaaddff,
+            roughness: 0.1,
+            metalness: 0.1,
+            transparent: true,
+            opacity: 0.3
+        });
+
+        // === ОСНОВАНИЕ ===
+        const baseGeom = new THREE.BoxGeometry(35, 2, 15);
+        const base = new THREE.Mesh(baseGeom, metalMat);
+        base.position.y = -10;
+        base.castShadow = true;
+        base.receiveShadow = true;
+        pressGroup.add(base);
+
+        // === МАЛЫЙ ЦИЛИНДР (ВХОД) ===
+        const smallRadius = smallDiameter / 2;
+        const smallCylinderGroup = new THREE.Group();
+        smallCylinderGroup.position.set(-10, 0, 0);
+
+        // Внешний корпус малого цилиндра
+        const smallOuterGeom = new THREE.CylinderGeometry(3, 3, 15, 32);
+        const smallOuter = new THREE.Mesh(smallOuterGeom, metalMat);
+        smallOuter.position.y = -1.5;
+        smallOuter.castShadow = true;
+        smallCylinderGroup.add(smallOuter);
+        hydraulicSystem.smallOuter = smallOuter;
+
+        // Стеклянная вставка (для визуализации)
+        const smallGlassGeom = new THREE.CylinderGeometry(2.8, 2.8, 12, 32, 1, true);
+        const smallGlass = new THREE.Mesh(smallGlassGeom, glassMat);
+        smallGlass.position.y = -0.5;
+        smallCylinderGroup.add(smallGlass);
+        hydraulicSystem.smallGlass = smallGlass;
+
+        // Жидкость в малом цилиндре
+        const smallFluidGeom = new THREE.CylinderGeometry(2.6, 2.6, 8, 32);
+        const smallFluid = new THREE.Mesh(smallFluidGeom, fluidMat);
+        smallFluid.position.y = -3;
+        smallCylinderGroup.add(smallFluid);
+        hydraulicSystem.smallFluid = smallFluid;
+
+        // Малый поршень
+        const smallPistonGeom = new THREE.CylinderGeometry(2.5, 2.5, 3, 32);
+        const smallPiston = new THREE.Mesh(smallPistonGeom, smallPistonMat);
+        smallPiston.position.y = 2.5;
+        smallPiston.castShadow = true;
+        smallCylinderGroup.add(smallPiston);
+        hydraulicSystem.smallPiston = smallPiston;
+
+        // Шток малого поршня
+        const smallRodGeom = new THREE.CylinderGeometry(0.8, 0.8, 8, 16);
+        const smallRod = new THREE.Mesh(smallRodGeom, metalMat);
+        smallRod.position.y = 7.5;
+        smallCylinderGroup.add(smallRod);
+        hydraulicSystem.smallRod = smallRod;
+
+        // Ручка/рычаг
+        const handleGeom = new THREE.BoxGeometry(6, 1, 2);
+        const handle = new THREE.Mesh(handleGeom, smallPistonMat);
+        handle.position.set(-3, 11.5, 0);
+        smallCylinderGroup.add(handle);
+        hydraulicSystem.handle = handle;
+
+        // Стрелка силы (вход)
+        const arrowInGroup = createArrow(0x4fc3f7, 'F₁');
+        arrowInGroup.position.set(-3, 15, 0);
+        smallCylinderGroup.add(arrowInGroup);
+        hydraulicSystem.arrowIn = arrowInGroup;
+
+        pressGroup.add(smallCylinderGroup);
+        hydraulicSystem.smallCylinder = smallCylinderGroup;
+
+        // === БОЛЬШОЙ ЦИЛИНДР (ВЫХОД) ===
+        const largeRadius = largeDiameter / 2;
+        const largeCylinderGroup = new THREE.Group();
+        largeCylinderGroup.position.set(10, 0, 0);
+
+        // Внешний корпус большого цилиндра
+        const largeOuterGeom = new THREE.CylinderGeometry(7, 7, 12, 32);
+        const largeOuter = new THREE.Mesh(largeOuterGeom, metalMat);
+        largeOuter.position.y = -3;
+        largeOuter.castShadow = true;
+        largeCylinderGroup.add(largeOuter);
+        hydraulicSystem.largeOuter = largeOuter;
+
+        // Стеклянная вставка
+        const largeGlassGeom = new THREE.CylinderGeometry(6.8, 6.8, 9, 32, 1, true);
+        const largeGlass = new THREE.Mesh(largeGlassGeom, glassMat);
+        largeGlass.position.y = -2;
+        largeCylinderGroup.add(largeGlass);
+        hydraulicSystem.largeGlass = largeGlass;
+
+        // Жидкость в большом цилиндре
+        const largeFluidGeom = new THREE.CylinderGeometry(6.5, 6.5, 6, 32);
+        const largeFluid = new THREE.Mesh(largeFluidGeom, fluidMat);
+        largeFluid.position.y = -4;
+        largeCylinderGroup.add(largeFluid);
+        hydraulicSystem.largeFluid = largeFluid;
+
+        // Большой поршень
+        const largePistonGeom = new THREE.CylinderGeometry(6.3, 6.3, 2.5, 32);
+        const largePiston = new THREE.Mesh(largePistonGeom, largePistonMat);
+        largePiston.position.y = 0;
+        largePiston.castShadow = true;
+        largeCylinderGroup.add(largePiston);
+        hydraulicSystem.largePiston = largePiston;
+
+        // Платформа на большом поршне
+        const platformGeom = new THREE.CylinderGeometry(8, 7, 1, 32);
+        const platform = new THREE.Mesh(platformGeom, metalMat);
+        platform.position.y = 1.75;
+        platform.castShadow = true;
+        largeCylinderGroup.add(platform);
+        hydraulicSystem.platform = platform;
+
+        // Груз на платформе
+        const weightGeom = new THREE.BoxGeometry(6, 4, 6);
+        const weightMat = new THREE.MeshStandardMaterial({
+            color: 0xff7043,
+            roughness: 0.5,
+            metalness: 0.5
+        });
+        const weight = new THREE.Mesh(weightGeom, weightMat);
+        weight.position.y = 4.25;
+        weight.castShadow = true;
+        largeCylinderGroup.add(weight);
+        hydraulicSystem.weight = weight;
+
+        // Стрелка силы (выход)
+        const arrowOutGroup = createArrow(0xff7043, 'F₂');
+        arrowOutGroup.position.set(0, 9, 0);
+        arrowOutGroup.rotation.z = Math.PI;
+        largeCylinderGroup.add(arrowOutGroup);
+        hydraulicSystem.arrowOut = arrowOutGroup;
+
+        pressGroup.add(largeCylinderGroup);
+        hydraulicSystem.largeCylinder = largeCylinderGroup;
+
+        // === СОЕДИНИТЕЛЬНАЯ ТРУБА ===
+        const pipeGroup = new THREE.Group();
+
+        // Горизонтальная часть трубы
+        const hPipeGeom = new THREE.CylinderGeometry(1.5, 1.5, 20, 16);
+        const hPipe = new THREE.Mesh(hPipeGeom, metalMat);
+        hPipe.rotation.z = Math.PI / 2;
+        hPipe.position.y = -7;
+        pipeGroup.add(hPipe);
+
+        // Жидкость в трубе
+        const pipeFluidGeom = new THREE.CylinderGeometry(1.2, 1.2, 19, 16);
+        const pipeFluid = new THREE.Mesh(pipeFluidGeom, fluidMat);
+        pipeFluid.rotation.z = Math.PI / 2;
+        pipeFluid.position.y = -7;
+        pipeGroup.add(pipeFluid);
+        hydraulicSystem.pipeFluid = pipeFluid;
+
+        // Вертикальные соединители
+        const vPipe1Geom = new THREE.CylinderGeometry(1.5, 1.5, 4, 16);
+        const vPipe1 = new THREE.Mesh(vPipe1Geom, metalMat);
+        vPipe1.position.set(-10, -7, 0);
+        pipeGroup.add(vPipe1);
+
+        const vPipe2Geom = new THREE.CylinderGeometry(1.5, 1.5, 4, 16);
+        const vPipe2 = new THREE.Mesh(vPipe2Geom, metalMat);
+        vPipe2.position.set(10, -7, 0);
+        pipeGroup.add(vPipe2);
+
+        pressGroup.add(pipeGroup);
+        hydraulicSystem.pipe = pipeGroup;
+
+        // === МАНОМЕТР ===
+        const gaugeGroup = new THREE.Group();
+        gaugeGroup.position.set(0, -4, 5);
+
+        // Корпус манометра
+        const gaugeBodyGeom = new THREE.CylinderGeometry(2, 2, 0.8, 32);
+        const gaugeBody = new THREE.Mesh(gaugeBodyGeom, metalMat);
+        gaugeBody.rotation.x = Math.PI / 2;
+        gaugeGroup.add(gaugeBody);
+
+        // Циферблат
+        const gaugeFaceGeom = new THREE.CircleGeometry(1.8, 32);
+        const gaugeFaceMat = new THREE.MeshBasicMaterial({color: 0xffffff});
+        const gaugeFace = new THREE.Mesh(gaugeFaceGeom, gaugeFaceMat);
+        gaugeFace.position.z = 0.41;
+        gaugeGroup.add(gaugeFace);
+
+        // Стрелка манометра (вращается вокруг центра)
+        const needlePivot = new THREE.Group();
+        needlePivot.position.set(0, 0, 0.45);
+
+        const needleGeom = new THREE.BoxGeometry(0.1, 1.4, 0.05);
+        const needleMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+        const needle = new THREE.Mesh(needleGeom, needleMat);
+        needle.position.y = 0.7; // Смещаем чтобы вращалась от основания
+        needlePivot.add(needle);
+
+        // Центральная точка крепления
+        const needleCenter = new THREE.Mesh(
+                new THREE.CircleGeometry(0.2, 16),
+                new THREE.MeshBasicMaterial({color: 0x333333})
+        );
+        needleCenter.position.z = 0.01;
+        needlePivot.add(needleCenter);
+
+        gaugeGroup.add(needlePivot);
+        hydraulicSystem.gaugeNeedle = needlePivot;
+
+        pressGroup.add(gaugeGroup);
+
+        // Добавляем метки на манометр
+        for (let i = 0; i <= 10; i++) {
+            const angle = (-Math.PI / 4) + (i / 10) * (Math.PI * 1.5);
+            const tickGeom = new THREE.BoxGeometry(0.05, 0.2, 0.02);
+            const tickMat = new THREE.MeshBasicMaterial({color: 0x000000});
+            const tick = new THREE.Mesh(tickGeom, tickMat);
+            tick.position.set(
+                    Math.sin(angle) * 1.5,
+                    Math.cos(angle) * 1.5,
+                    0.42
+            );
+            tick.rotation.z = -angle;
+            gaugeGroup.add(tick);
+        }
+
+        scene.add(pressGroup);
+        hydraulicSystem.group = pressGroup;
+    }
+
+    function createArrow(color, label) {
+        const group = new THREE.Group();
+
+        // Стержень стрелки
+        const shaftGeom = new THREE.CylinderGeometry(0.2, 0.2, 3, 8);
+        const arrowMat = new THREE.MeshStandardMaterial({
+            color: color,
+            emissive: color,
+            emissiveIntensity: 0.3
+        });
+        const shaft = new THREE.Mesh(shaftGeom, arrowMat);
+        shaft.position.y = 1.5;
+        group.add(shaft);
+
+        // Наконечник
+        const tipGeom = new THREE.ConeGeometry(0.5, 1, 8);
+        const tip = new THREE.Mesh(tipGeom, arrowMat);
+        tip.position.y = 0;
+        tip.rotation.z = Math.PI;
+        group.add(tip);
+
+        return group;
+    }
+
+    function createPressureParticles() {
+        const particleCount = 150;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            // Распределяем частицы по трём зонам: малый цилиндр, труба, большой цилиндр
+            const zone = Math.floor(Math.random() * 3);
+
+            if (zone === 0) {
+                // Малый цилиндр (слева)
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 2;
+                positions[i * 3] = -10 + Math.cos(angle) * radius;
+                positions[i * 3 + 1] = -7 + Math.random() * 6;
+                positions[i * 3 + 2] = Math.sin(angle) * radius;
+            } else if (zone === 1) {
+                // Соединительная труба
+                positions[i * 3] = -8 + Math.random() * 16;
+                positions[i * 3 + 1] = -7 + (Math.random() - 0.5) * 1.5;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 1.5;
+            } else {
+                // Большой цилиндр (справа)
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 5;
+                positions[i * 3] = 10 + Math.cos(angle) * radius;
+                positions[i * 3 + 1] = -7 + Math.random() * 5;
+                positions[i * 3 + 2] = Math.sin(angle) * radius;
+            }
+
+            // Цвет - зелёный для давления
+            colors[i * 3] = 0.4;
+            colors[i * 3 + 1] = 0.9;
+            colors[i * 3 + 2] = 0.5;
+
+            velocities.push({
+                zone: zone,
+                speed: 0.5 + Math.random() * 0.5,
+                angle: Math.random() * Math.PI * 2
+            });
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 0.35,
+            transparent: true,
+            opacity: 0.9,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending
+        });
+
+        particleSystem = new THREE.Points(geometry, material);
+        particleSystem.visible = false;
+        scene.add(particleSystem);
+
+        hydraulicSystem.particles = particleSystem;
+        hydraulicSystem.particleVelocities = velocities;
+    }
+
+    function setupControls() {
+        let isDragging = false;
+        let previousMouse = {x: 0, y: 0};
+        let cameraAngle = {theta: Math.PI / 4, phi: Math.PI / 6};
+        let cameraRadius = 45;
+
+        renderer.domElement.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMouse = {x: e.clientX, y: e.clientY};
+        });
+
+        renderer.domElement.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - previousMouse.x;
+            const deltaY = e.clientY - previousMouse.y;
+
+            cameraAngle.theta -= deltaX * 0.005;
+            cameraAngle.phi = Math.max(0.1, Math.min(Math.PI / 2.2, cameraAngle.phi + deltaY * 0.005));
+
+            updateCamera();
+            previousMouse = {x: e.clientX, y: e.clientY};
+        });
+
+        renderer.domElement.addEventListener('mouseup', () => isDragging = false);
+        renderer.domElement.addEventListener('mouseleave', () => isDragging = false);
+
+        renderer.domElement.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            cameraRadius = Math.max(25, Math.min(80, cameraRadius + e.deltaY * 0.05));
+            updateCamera();
+        });
+
+        function updateCamera() {
+            camera.position.x = cameraRadius * Math.sin(cameraAngle.theta) * Math.cos(cameraAngle.phi);
+            camera.position.y = cameraRadius * Math.sin(cameraAngle.phi);
+            camera.position.z = cameraRadius * Math.cos(cameraAngle.theta) * Math.cos(cameraAngle.phi);
+            camera.lookAt(0, -2, 0);
+        }
+
+        updateCamera();
+    }
+
+    function setupUIEvents() {
+        // Входная сила
+        document.getElementById('input-force').addEventListener('input', (e) => {
+            inputForce = parseInt(e.target.value);
+            document.getElementById('force-value').textContent = inputForce + ' Н';
+            updateCalculations();
+        });
+
+        // Малый диаметр
+        document.getElementById('small-diameter').addEventListener('input', (e) => {
+            smallDiameter = parseFloat(e.target.value);
+            document.getElementById('small-diameter-value').textContent = smallDiameter + ' см';
+            updatePistonGeometry();
+            updateCalculations();
+        });
+
+        // Большой диаметр
+        document.getElementById('large-diameter').addEventListener('input', (e) => {
+            largeDiameter = parseFloat(e.target.value);
+            document.getElementById('large-diameter-value').textContent = largeDiameter + ' см';
+            updatePistonGeometry();
+            updateCalculations();
+        });
+    }
+
+    function updatePistonGeometry() {
+        // Малый поршень: базовый радиус геометрии = 2.5
+        // При smallDiameter = 2 см, радиус = 1 см, нужен масштаб 1/2.5 = 0.4
+        // Формула: (smallDiameter / 2) / 2.5
+        if (hydraulicSystem.smallPiston) {
+            const smallScale = (smallDiameter / 2) / 2.5;
+            hydraulicSystem.smallPiston.scale.x = smallScale;
+            hydraulicSystem.smallPiston.scale.z = smallScale;
+        }
+
+        if (hydraulicSystem.smallFluid) {
+            const smallScale = (smallDiameter / 2) / 2.6;
+            hydraulicSystem.smallFluid.scale.x = smallScale;
+            hydraulicSystem.smallFluid.scale.z = smallScale;
+        }
+
+        // Большой поршень: базовый радиус геометрии = 6.3
+        // При largeDiameter = 10 см, радиус = 5 см, нужен масштаб 5/6.3 ≈ 0.79
+        if (hydraulicSystem.largePiston) {
+            const largeScale = (largeDiameter / 2) / 6.3;
+            hydraulicSystem.largePiston.scale.x = largeScale;
+            hydraulicSystem.largePiston.scale.z = largeScale;
+        }
+
+        if (hydraulicSystem.platform) {
+            const largeScale = (largeDiameter / 2) / 7; // платформа немного больше
+            hydraulicSystem.platform.scale.x = largeScale;
+            hydraulicSystem.platform.scale.z = largeScale;
+        }
+
+        if (hydraulicSystem.largeFluid) {
+            const largeScale = (largeDiameter / 2) / 6.5;
+            hydraulicSystem.largeFluid.scale.x = largeScale;
+            hydraulicSystem.largeFluid.scale.z = largeScale;
+        }
+
+        // Также масштабируем груз на платформе
+        if (hydraulicSystem.weight) {
+            const weightScale = Math.max(0.5, (largeDiameter / 2) / 7);
+            hydraulicSystem.weight.scale.x = weightScale;
+            hydraulicSystem.weight.scale.z = weightScale;
+        }
+    }
+
+    function updateCalculations() {
+        const r1 = smallDiameter / 2;
+        const r2 = largeDiameter / 2;
+        const a1 = Math.PI * r1 * r1;
+        const a2 = Math.PI * r2 * r2;
+        const pressure = inputForce / a1;
+        const outputForce = pressure * a2;
+        const advantage = a2 / a1;
+
+        // Обновляем отображение
+        document.getElementById('calc-f1').innerHTML = inputForce + '<span class="calc-unit">Н</span>';
+        document.getElementById('calc-f2').innerHTML = outputForce.toFixed(0) + '<span class="calc-unit">Н</span>';
+        document.getElementById('calc-a1').innerHTML = a1.toFixed(2) + '<span class="calc-unit">см²</span>';
+        document.getElementById('calc-a2').innerHTML = a2.toFixed(1) + '<span class="calc-unit">см²</span>';
+        document.getElementById('calc-pressure').innerHTML = pressure.toFixed(1) + '<span class="calc-unit">Н/см²</span>';
+        document.getElementById('calc-advantage').textContent = '×' + advantage.toFixed(1);
+
+        // Индикатор давления
+        const pressurePercent = Math.min(100, (pressure / 200) * 100);
+        document.getElementById('pressure-bar').style.width = pressurePercent + '%';
+
+        // Обновляем манометр (стрелка вращается от центра)
+        if (hydraulicSystem.gaugeNeedle) {
+            // Угол от -135° до +135° (270° диапазон)
+            const minAngle = Math.PI * 0.75;  // -135°
+            const maxAngle = -Math.PI * 0.75; // +135°
+            const needleAngle = minAngle + (pressurePercent / 100) * (maxAngle - minAngle);
+            hydraulicSystem.gaugeNeedle.rotation.z = needleAngle;
+        }
+
+        // Масштабируем стрелку выходной силы
+        if (hydraulicSystem.arrowOut) {
+            const scale = Math.min(3, advantage / 10 + 0.5);
+            hydraulicSystem.arrowOut.scale.set(scale, scale, scale);
+        }
+    }
+
+    function activatePress() {
+        if (isPressed) return;
+        isPressed = true;
+        document.getElementById('press-btn').textContent = '⏳ Нажатие...';
+    }
+
+    function toggleAnimation() {
+        autoAnimate = !autoAnimate;
+        document.getElementById('animate-btn').classList.toggle('active', autoAnimate);
+    }
+
+    function toggleParticles() {
+        showParticles = !showParticles;
+        document.getElementById('particles-btn').classList.toggle('active', showParticles);
+        hydraulicSystem.particles.visible = showParticles;
+    }
+
+    function toggleCutaway() {
+        showCutaway = !showCutaway;
+        document.getElementById('cutaway-btn').classList.toggle('active', showCutaway);
+
+        if (hydraulicSystem.smallGlass) {
+            hydraulicSystem.smallGlass.material.opacity = showCutaway ? 0.1 : 0.3;
+        }
+        if (hydraulicSystem.largeGlass) {
+            hydraulicSystem.largeGlass.material.opacity = showCutaway ? 0.1 : 0.3;
+        }
+        if (hydraulicSystem.smallOuter) {
+            hydraulicSystem.smallOuter.material.opacity = showCutaway ? 0.3 : 1;
+            hydraulicSystem.smallOuter.material.transparent = showCutaway;
+        }
+        if (hydraulicSystem.largeOuter) {
+            hydraulicSystem.largeOuter.material.opacity = showCutaway ? 0.3 : 1;
+            hydraulicSystem.largeOuter.material.transparent = showCutaway;
+        }
+    }
+
+    function toggleTheory() {
+        const panel = document.getElementById('theory-panel');
+        panel.classList.toggle('visible');
+        document.getElementById('theory-btn').classList.toggle('active', panel.classList.contains('visible'));
+    }
+
+    function updatePressAnimation(delta) {
+        if (autoAnimate) {
+            pressAnimation += delta * 0.5;
+            const cycle = (Math.sin(pressAnimation) + 1) / 2; // 0 to 1
+
+            // Анимация поршней
+            if (hydraulicSystem.smallPiston) {
+                hydraulicSystem.smallPiston.position.y = 2.5 - cycle * 3;
+                hydraulicSystem.smallRod.position.y = 7.5 - cycle * 3;
+                hydraulicSystem.handle.position.y = 11.5 - cycle * 3;
+                hydraulicSystem.arrowIn.position.y = 15 - cycle * 3;
+            }
+
+            if (hydraulicSystem.largePiston) {
+                // Большой поршень движется меньше из-за разницы в объёмах
+                const largeMove = cycle * 0.5;
+                hydraulicSystem.largePiston.position.y = 0 + largeMove;
+                hydraulicSystem.platform.position.y = 1.75 + largeMove;
+                hydraulicSystem.weight.position.y = 4.25 + largeMove;
+                hydraulicSystem.arrowOut.position.y = 9 + largeMove;
+            }
+
+            // Анимация жидкости
+            if (hydraulicSystem.smallFluid) {
+                hydraulicSystem.smallFluid.scale.y = 1 - cycle * 0.2;
+                hydraulicSystem.smallFluid.position.y = -3 - cycle * 1;
+            }
+
+            if (hydraulicSystem.largeFluid) {
+                hydraulicSystem.largeFluid.scale.y = 1 + cycle * 0.1;
+                hydraulicSystem.largeFluid.position.y = -4 + cycle * 0.3;
+            }
+
+        } else if (isPressed) {
+            pressAnimation += delta * 2;
+
+            if (pressAnimation < Math.PI) {
+                const cycle = Math.sin(pressAnimation);
+
+                if (hydraulicSystem.smallPiston) {
+                    hydraulicSystem.smallPiston.position.y = 2.5 - cycle * 3;
+                    hydraulicSystem.smallRod.position.y = 7.5 - cycle * 3;
+                    hydraulicSystem.handle.position.y = 11.5 - cycle * 3;
+                    hydraulicSystem.arrowIn.position.y = 15 - cycle * 3;
+                }
+
+                if (hydraulicSystem.largePiston) {
+                    const largeMove = cycle * 0.5;
+                    hydraulicSystem.largePiston.position.y = 0 + largeMove;
+                    hydraulicSystem.platform.position.y = 1.75 + largeMove;
+                    hydraulicSystem.weight.position.y = 4.25 + largeMove;
+                    hydraulicSystem.arrowOut.position.y = 9 + largeMove;
+                }
+            } else {
+                isPressed = false;
+                pressAnimation = 0;
+                document.getElementById('press-btn').textContent = '⬇️ Нажать на поршень';
+
+                // Сброс позиций
+                if (hydraulicSystem.smallPiston) {
+                    hydraulicSystem.smallPiston.position.y = 2.5;
+                    hydraulicSystem.smallRod.position.y = 7.5;
+                    hydraulicSystem.handle.position.y = 11.5;
+                    hydraulicSystem.arrowIn.position.y = 15;
+                }
+                if (hydraulicSystem.largePiston) {
+                    hydraulicSystem.largePiston.position.y = 0;
+                    hydraulicSystem.platform.position.y = 1.75;
+                    hydraulicSystem.weight.position.y = 4.25;
+                    hydraulicSystem.arrowOut.position.y = 9;
+                }
+            }
+        }
+    }
+
+    function updateParticles() {
+        if (!showParticles || !hydraulicSystem.particles) return;
+
+        const positions = hydraulicSystem.particles.geometry.attributes.position.array;
+        const velocities = hydraulicSystem.particleVelocities;
+        const time = Date.now() * 0.002;
+
+        for (let i = 0; i < velocities.length; i++) {
+            const v = velocities[i];
+
+            if (v.zone === 0) {
+                // Малый цилиндр - хаотичное движение внутри
+                const angle = v.angle + time * v.speed;
+                const radius = 1.5 + Math.sin(time + i) * 0.5;
+                positions[i * 3] = -10 + Math.cos(angle) * radius;
+                positions[i * 3 + 1] = -5 + Math.sin(time * 2 + i) * 2;
+                positions[i * 3 + 2] = Math.sin(angle) * radius;
+            } else if (v.zone === 1) {
+                // Труба - движение от малого к большому цилиндру и обратно
+                const progress = (Math.sin(time * v.speed + i * 0.5) + 1) / 2;
+                positions[i * 3] = -8 + progress * 16;
+                positions[i * 3 + 1] = -7 + Math.sin(time * 3 + i) * 0.5;
+                positions[i * 3 + 2] = Math.cos(time * 2 + i) * 0.5;
+            } else {
+                // Большой цилиндр - хаотичное движение внутри
+                const angle = v.angle + time * v.speed * 0.5;
+                const radius = 3 + Math.sin(time + i) * 1.5;
+                positions[i * 3] = 10 + Math.cos(angle) * radius;
+                positions[i * 3 + 1] = -5 + Math.sin(time * 1.5 + i) * 2;
+                positions[i * 3 + 2] = Math.sin(angle) * radius;
+            }
+        }
+
+        hydraulicSystem.particles.geometry.attributes.position.needsUpdate = true;
+    }
+
+    let lastTime = 0;
+
+    function animate(currentTime) {
+        requestAnimationFrame(animate);
+
+        const delta = (currentTime - lastTime) / 1000 || 0.016;
+        lastTime = currentTime;
+
+        // Анимация пресса
+        updatePressAnimation(delta);
+
+        // Анимация частиц
+        updateParticles();
+
+        // Пульсация стрелок
+        if (hydraulicSystem.arrowIn) {
+            const pulse = 1 + Math.sin(currentTime * 0.003) * 0.1;
+            hydraulicSystem.arrowIn.scale.set(pulse, pulse, pulse);
+        }
+
+        renderer.render(scene, camera);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    window.addEventListener('resize', onWindowResize);
+    init();
+</script>
+</body>
+</html>
